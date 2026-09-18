@@ -1,0 +1,29 @@
+\doxysection{visibility.\+hpp}
+\hypertarget{visibility_8hpp_source}{}\label{visibility_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/visibility.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/visibility.hpp}}
+\mbox{\hyperlink{visibility_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00007}00007\ \textcolor{comment}{/*\ @brief\ marks\ a\ type\ whose\ RTTI\ must\ be\ shared\ across\ shared-\/object\ boundaries.}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00008}00008\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00009}00009\ \textcolor{comment}{\ *\ The\ \`{}\_neon`\ Python\ extension\ is\ built\ \`{}-\/fvisibility=hidden`\ (nanobind's\ default),\ which\ by}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00010}00010\ \textcolor{comment}{\ *\ default\ also\ hides\ the\ typeinfo\ emitted\ for\ a\ non-\/polymorphic\ class.\ \`{}std::any`\ dispatches\ on}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00011}00011\ \textcolor{comment}{\ *\ \`{}type\_info`\ identity,\ so\ a\ payload\ boxed\ inside\ \`{}\_neon`\ (e.g.\ a\ Dictionary\ built\ by\ the}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00012}00012\ \textcolor{comment}{\ *\ Dictionary\ bindings)\ is\ unrecognisable\ to\ an\ \`{}any\_cast`\ compiled\ into\ libNeoN\ —\ \`{}isDict()`}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00013}00013\ \textcolor{comment}{\ *\ returns\ false\ and\ \`{}get<TokenList>()`\ throws\ \`{}bad\ any\ cast`.\ Forcing\ default\ visibility\ makes}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00014}00014\ \textcolor{comment}{\ *\ the\ typeinfo\ a\ coalesced\ weak\ symbol\ so\ both\ objects\ agree\ on\ the\ type.}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00015}00015\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00016}00016\ \textcolor{comment}{\ *\ Apply\ to\ any\ type\ that\ travels\ through\ \`{}std::any`\ (or\ is\ caught\ as\ an\ exception)\ across\ the}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ libNeoN\ /\ \`{}\_neon`\ boundary.}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00018}00018\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#if\ defined(\_WIN32)\ ||\ defined(\_\_CYGWIN\_\_)}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#define\ NEON\_TYPE\_VISIBLE}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00022}\mbox{\hyperlink{visibility_8hpp_a60bad5cfbd7e984c3cea1bfd6f45c06a}{00022}}\ \textcolor{preprocessor}{\#define\ NEON\_TYPE\_VISIBLE\ \_\_attribute\_\_((visibility("{}default"{})))}}
+\DoxyCodeLine{\Hypertarget{visibility_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

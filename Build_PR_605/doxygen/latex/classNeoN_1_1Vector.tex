@@ -1,0 +1,920 @@
+\doxysection{NeoN\+::Vector\texorpdfstring{$<$}{<} Value\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1Vector}{}\label{classNeoN_1_1Vector}\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+
+
+An executor-\/aware contiguous container for numerical data with vector-\/style arithmetic semantics.  
+
+
+
+
+{\ttfamily \#include $<$vector.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1Vector_abfab4edc3452c4ed762fa880f3065928}{Vector\+Value\+Type}} = Value\+Type
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_a756f74abb1e1975e0b1e66e35a18c0a9}{Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}})
+\begin{DoxyCompactList}\small\item\em Creates an uninitialized \doxylink{classNeoN_1_1Vector}{Vector} with the given size on an executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_a0ea5a308476eb99be20616fbe7657fdc}{Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}, const Value\+Type \texorpdfstring{$\ast$}{*}in, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}, \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} host\+Exec=\mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}())
+\begin{DoxyCompactList}\small\item\em Creates a \doxylink{classNeoN_1_1Vector}{Vector} with the given size from existing data on an executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_a45e24dccfd011f30f7b211ff35e1e3a3}{Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}, Value\+Type value)
+\begin{DoxyCompactList}\small\item\em Creates a \doxylink{classNeoN_1_1Vector}{Vector} with the given size and initializes all elements to a value. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_ac13dd0cde894a2f78a11286b20907f34}{Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}, std\+::vector$<$ Value\+Type $>$ in)
+\begin{DoxyCompactList}\small\item\em Creates a \doxylink{classNeoN_1_1Vector}{Vector} from a std\+::vector on the given executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_a3fda9acfd9787039435b92fe31c04049}{Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&in)
+\begin{DoxyCompactList}\small\item\em Creates a copy of another \doxylink{classNeoN_1_1Vector}{Vector} on the specified executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_a229d6abcc33e4040a5e5ee173e639070}{Vector}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_a15731af41b65b80b4b2c4539476a716e}{Vector}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\&rhs) noexcept
+\begin{DoxyCompactList}\small\item\em Move constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector_ab753dfc6e9baa593b957d324e2aa4835}{\texorpdfstring{$\sim$}{\string~}\+Vector}} ()
+\begin{DoxyCompactList}\small\item\em Destroys the \doxylink{classNeoN_1_1Vector}{Vector} object. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename func $>$ }\\void \mbox{\hyperlink{classNeoN_1_1Vector_aa6ac22b4e8d8aabbe6d6a100d67cc69c}{apply}} (func f)
+\begin{DoxyCompactList}\small\item\em Applies a function to the elements of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a2dc3e53a2f9cd9f1f5401bde925374fa}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
+\begin{DoxyCompactList}\small\item\em Creates a copy of the \doxylink{classNeoN_1_1Vector}{Vector} on the specified executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copy\+To\+Host}} () const
+\begin{DoxyCompactList}\small\item\em Creates a host-\/resident copy of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Vector_ac43473fb021aacee009af9163ff016a0}{copy\+To\+Host}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&result)
+\begin{DoxyCompactList}\small\item\em Copies the \doxylink{classNeoN_1_1Vector}{Vector} data to a host-\/resident \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Vector_a1a976f143f1b87614db92b4c501ed719}{operator\mbox{[}$\,$\mbox{]}}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i)=delete
+\begin{DoxyCompactList}\small\item\em Host-\/side element access is intentionally disabled. \end{DoxyCompactList}\item 
+const Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Vector_adfb14f80df8f4b622452818d3ac5f52f}{operator\mbox{[}$\,$\mbox{]}}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const =delete
+\item 
+void \mbox{\hyperlink{classNeoN_1_1Vector_a79947b149106e8cae946231f179639fe}{operator=}} (const Value\+Type \&rhs)
+\begin{DoxyCompactList}\small\item\em Assigns a value to every element of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Vector_ae8e2493ea02950235947c1c5e128e3c0}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Assigns the contents of another \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector_a5a9406cd5937caca19cbb5a340b3d640}{operator=}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\&rhs) noexcept
+\begin{DoxyCompactList}\small\item\em Move-\/assignment operator — transfers ownership of the data buffer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector_ab4d83cf671153e017e107f022d06d2a8}{operator+=}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Adds another \doxylink{classNeoN_1_1Vector}{Vector} element-\/wise. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector_add2cd47adb8b276c03f1f41a1e36cae1}{operator-\/=}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Subtracts another \doxylink{classNeoN_1_1Vector}{Vector} element-\/wise. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a3aea84baea4f7590d0ae483e3040f18e}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Multiplies two Vectors element-\/wise. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_aac491a8b16676c45119d703de8d710d9}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} rhs)
+\begin{DoxyCompactList}\small\item\em Multiplies every element of the \doxylink{classNeoN_1_1Vector}{Vector} by a scalar. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector_a9afacd6737415134f38fe9becb19d549}{operator\texorpdfstring{$\ast$}{*}=}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Multiplies this \doxylink{classNeoN_1_1Vector}{Vector} element-\/wise by another \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector_a8ada1ac2655eba6a62ecf23e01bce27d}{operator\texorpdfstring{$\ast$}{*}=}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} rhs)
+\begin{DoxyCompactList}\small\item\em Multiplies every element of the \doxylink{classNeoN_1_1Vector}{Vector} by a scalar. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Vector_a99e933d0a77f9ec5fef7d492f23c2219}{resize}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}})
+\begin{DoxyCompactList}\small\item\em Resizes the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Vector_a99e933d0a77f9ec5fef7d492f23c2219}{resize}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}})
+\item 
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1}{data}} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the underlying \doxylink{classNeoN_1_1Vector}{Vector} data. \end{DoxyCompactList}\item 
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector_a980245c8e0b2691d3014d49862b2145e}{data}} () const
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the underlying \doxylink{classNeoN_1_1Vector}{Vector} data. \end{DoxyCompactList}\item 
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector_af3ba6b1022281a560779993a95b39f6d}{begin}} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the first element of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector_a238922b03c94dd56f9fcd6400f372f22}{begin}} () const
+\begin{DoxyCompactList}\small\item\em Returns a const pointer to the first element of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector_abdf88a72a6bf82ef8f40c8040b5e5e70}{end}} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer one past the last element of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector_a3ec3319fa14127283f65f0d2293efaff}{end}} () const
+\begin{DoxyCompactList}\small\item\em Returns a const pointer one past the last element of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}} () const
+\begin{DoxyCompactList}\small\item\em Returns the executor associated with the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}} () const
+\begin{DoxyCompactList}\small\item\em Returns the number of elements in the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1Vector_a719edbafd35de9fdf99fd174fc8fd61e}{ssize}} () const
+\begin{DoxyCompactList}\small\item\em Returns the number of elements as a label. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classNeoN_1_1Vector_aa265640bf653ccc74f509d396ef7d977}{empty}} () const
+\begin{DoxyCompactList}\small\item\em Checks whether the \doxylink{classNeoN_1_1Vector}{Vector} contains no elements. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}} () \&\&=delete
+\begin{DoxyCompactList}\small\item\em Prevents creating a \doxylink{classNeoN_1_1View}{View} from a temporary \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_af41388de676f5d555c0a9a8fd65d0fdd}{view}} () const \&\&=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_afe9aade44dd8fd745d5ab63c5fa0c460}{view}} () \&
+\begin{DoxyCompactList}\small\item\em Returns a non-\/owning view of the \doxylink{classNeoN_1_1Vector}{Vector} data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a8204948c9a7c17e5bc7c67c88db802bd}{view}} () const \&
+\begin{DoxyCompactList}\small\item\em Returns a read-\/only, non-\/owning view of the \doxylink{classNeoN_1_1Vector}{Vector} data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_abb5eeffddc65955f57db055be73fbc07}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}) \&\&=delete
+\begin{DoxyCompactList}\small\item\em Prevents creating a view of a temporary \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a6d35eccebbae57201dad39e582656fd1}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}) const \&\&=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a43a0f39f3241e494950640dc4c673bf7}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}) \&
+\begin{DoxyCompactList}\small\item\em Returns a non-\/owning view of a range of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a9608fa4324d06e9099690c2ab02705de}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}) const \&
+\begin{DoxyCompactList}\small\item\em Returns a read-\/only, non-\/owning view of a range of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\item 
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}} () const
+\begin{DoxyCompactList}\small\item\em Returns the index range of the \doxylink{classNeoN_1_1Vector}{Vector}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type$>$\newline
+class Neo\+N\+::\+Vector$<$ Value\+Type $>$}
+An executor-\/aware contiguous container for numerical data with vector-\/style arithmetic semantics. 
+
+\doxylink{classNeoN_1_1Vector}{Vector} is intended for numerical quantities for which arithmetic operations on the elements or on the vector as a whole are meaningful.
+
+\doxylink{classNeoN_1_1Vector}{Vector} provides operations for performing arithmetic on its stored values. Use \doxylink{classNeoN_1_1Vector}{Vector} when the numerical meaning of the data and its arithmetic operations are an important part of its interface.
+
+For structural, indexing, or other non-\/arithmetic data, use \doxylink{classNeoN_1_1Array}{Array} instead.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The type of the elements stored in the vector. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00038}{38}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1Vector_abfab4edc3452c4ed762fa880f3065928}\label{classNeoN_1_1Vector_abfab4edc3452c4ed762fa880f3065928} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!VectorValueType@{VectorValueType}}
+\index{VectorValueType@{VectorValueType}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{VectorValueType}{VectorValueType}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector\+Value\+Type =  Value\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1Vector_a756f74abb1e1975e0b1e66e35a18c0a9}\label{classNeoN_1_1Vector_a756f74abb1e1975e0b1e66e35a18c0a9} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size }\end{DoxyParamCaption})}
+
+
+
+Creates an uninitialized \doxylink{classNeoN_1_1Vector}{Vector} with the given size on an executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the vector data is allocated. \\
+\hline
+{\em size} & Number of elements in the vector. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_a0ea5a308476eb99be20616fbe7657fdc}\label{classNeoN_1_1Vector_a0ea5a308476eb99be20616fbe7657fdc} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const Value\+Type \texorpdfstring{$\ast$}{*}}]{in,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size,  }\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{host\+Exec = {\ttfamily \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}()} }\end{DoxyParamCaption})}
+
+
+
+Creates a \doxylink{classNeoN_1_1Vector}{Vector} with the given size from existing data on an executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the vector data is allocated. \\
+\hline
+{\em in} & Pointer to the source data. \\
+\hline
+{\em size} & Number of elements to copy. \\
+\hline
+{\em host\+Exec} & Executor on which the source data is located. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_a45e24dccfd011f30f7b211ff35e1e3a3}\label{classNeoN_1_1Vector_a45e24dccfd011f30f7b211ff35e1e3a3} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size,  }\item[{Value\+Type}]{value }\end{DoxyParamCaption})}
+
+
+
+Creates a \doxylink{classNeoN_1_1Vector}{Vector} with the given size and initializes all elements to a value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the \doxylink{classNeoN_1_1Vector}{Vector} data is allocated. \\
+\hline
+{\em size} & Number of elements in the \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+{\em value} & Value used to initialize every element. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_ac13dd0cde894a2f78a11286b20907f34}\label{classNeoN_1_1Vector_ac13dd0cde894a2f78a11286b20907f34} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::vector$<$ Value\+Type $>$}]{in }\end{DoxyParamCaption})}
+
+
+
+Creates a \doxylink{classNeoN_1_1Vector}{Vector} from a std\+::vector on the given executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the \doxylink{classNeoN_1_1Vector}{Vector} data is allocated. \\
+\hline
+{\em in} & std\+::vector containing the values to copy into the \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_a3fda9acfd9787039435b92fe31c04049}\label{classNeoN_1_1Vector_a3fda9acfd9787039435b92fe31c04049} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{in }\end{DoxyParamCaption})}
+
+
+
+Creates a copy of another \doxylink{classNeoN_1_1Vector}{Vector} on the specified executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the new \doxylink{classNeoN_1_1Vector}{Vector} is allocated. \\
+\hline
+{\em in} & \doxylink{classNeoN_1_1Vector}{Vector} to copy. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_a229d6abcc33e4040a5e5ee173e639070}\label{classNeoN_1_1Vector_a229d6abcc33e4040a5e5ee173e639070} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Copy constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} to copy from. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_a15731af41b65b80b4b2c4539476a716e}\label{classNeoN_1_1Vector_a15731af41b65b80b4b2c4539476a716e} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!Vector@{Vector}}
+\index{Vector@{Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Vector()}{Vector()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\+Vector (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Move constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} whose resources are transferred to the new \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_ab753dfc6e9baa593b957d324e2aa4835}\label{classNeoN_1_1Vector_ab753dfc6e9baa593b957d324e2aa4835} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!````~Vector@{\texorpdfstring{$\sim$}{\string~}Vector}}
+\index{````~Vector@{\texorpdfstring{$\sim$}{\string~}Vector}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Vector()}{\string~Vector()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destroys the \doxylink{classNeoN_1_1Vector}{Vector} object. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1Vector_aa6ac22b4e8d8aabbe6d6a100d67cc69c}\label{classNeoN_1_1Vector_aa6ac22b4e8d8aabbe6d6a100d67cc69c} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!apply@{apply}}
+\index{apply@{apply}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{apply()}{apply()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+template$<$typename func $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::apply (\begin{DoxyParamCaption}\item[{func}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Applies a function to the elements of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & Function or functor applied to the \doxylink{classNeoN_1_1Vector}{Vector} elements.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+The function must be compatible with execution by Kokkos. Ideally, it should be a Kokkos lambda. 
+\end{DoxyNote}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00121}{121}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_af3ba6b1022281a560779993a95b39f6d}\label{classNeoN_1_1Vector_af3ba6b1022281a560779993a95b39f6d} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!begin@{begin}}
+\index{begin@{begin}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a pointer to the first element of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+Pointer to the first element. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00297}{297}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_a238922b03c94dd56f9fcd6400f372f22}\label{classNeoN_1_1Vector_a238922b03c94dd56f9fcd6400f372f22} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!begin@{begin}}
+\index{begin@{begin}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a const pointer to the first element of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+Const pointer to the first element. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00304}{304}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_a2dc3e53a2f9cd9f1f5401bde925374fa}\label{classNeoN_1_1Vector_a2dc3e53a2f9cd9f1f5401bde925374fa} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!copyToExecutor@{copyToExecutor}}
+\index{copyToExecutor@{copyToExecutor}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToExecutor()}{copyToExecutor()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::copy\+To\+Executor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{dst\+Exec }\end{DoxyParamCaption}) const}
+
+
+
+Creates a copy of the \doxylink{classNeoN_1_1Vector}{Vector} on the specified executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dst\+Exec} & Executor on which the copied \doxylink{classNeoN_1_1Vector}{Vector} is allocated. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} copy of this \doxylink{classNeoN_1_1Vector}{Vector} on {\ttfamily dst\+Exec}. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}\label{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!copyToHost@{copyToHost}}
+\index{copyToHost@{copyToHost}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Creates a host-\/resident copy of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} copy of this \doxylink{classNeoN_1_1Vector}{Vector} allocated on the host executor. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Vector_ac43473fb021aacee009af9163ff016a0}\label{classNeoN_1_1Vector_ac43473fb021aacee009af9163ff016a0} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!copyToHost@{copyToHost}}
+\index{copyToHost@{copyToHost}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{result }\end{DoxyParamCaption})}
+
+
+
+Copies the \doxylink{classNeoN_1_1Vector}{Vector} data to a host-\/resident \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em result} & Destination \doxylink{classNeoN_1_1Vector}{Vector}. Its size must match this \doxylink{classNeoN_1_1Vector}{Vector}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+An error is raised if {\ttfamily result} does not have the same size as this \doxylink{classNeoN_1_1Vector}{Vector}. 
+\end{DoxyWarning}
+\Hypertarget{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1}\label{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!data@{data}}
+\index{data@{data}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a pointer to the underlying \doxylink{classNeoN_1_1Vector}{Vector} data. 
+
+\begin{DoxyReturn}{Returns}
+Pointer to the first element of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00283}{283}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_a980245c8e0b2691d3014d49862b2145e}\label{classNeoN_1_1Vector_a980245c8e0b2691d3014d49862b2145e} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!data@{data}}
+\index{data@{data}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a pointer to the underlying \doxylink{classNeoN_1_1Vector}{Vector} data. 
+
+\begin{DoxyReturn}{Returns}
+Const pointer to the first element of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00290}{290}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_aa265640bf653ccc74f509d396ef7d977}\label{classNeoN_1_1Vector_aa265640bf653ccc74f509d396ef7d977} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!empty@{empty}}
+\index{empty@{empty}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+bool \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Checks whether the \doxylink{classNeoN_1_1Vector}{Vector} contains no elements. 
+
+\begin{DoxyReturn}{Returns}
+True if the \doxylink{classNeoN_1_1Vector}{Vector} is empty, otherwise false. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00346}{346}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_abdf88a72a6bf82ef8f40c8040b5e5e70}\label{classNeoN_1_1Vector_abdf88a72a6bf82ef8f40c8040b5e5e70} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!end@{end}}
+\index{end@{end}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a pointer one past the last element of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+Pointer one past the last element. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00311}{311}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_a3ec3319fa14127283f65f0d2293efaff}\label{classNeoN_1_1Vector_a3ec3319fa14127283f65f0d2293efaff} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!end@{end}}
+\index{end@{end}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a const pointer one past the last element of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+Const pointer one past the last element. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00318}{318}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}\label{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!exec@{exec}}
+\index{exec@{exec}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the executor associated with the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the \doxylink{classNeoN_1_1Vector}{Vector}\textquotesingle{}s executor. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00325}{325}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_aac491a8b16676c45119d703de8d710d9}\label{classNeoN_1_1Vector_aac491a8b16676c45119d703de8d710d9} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Multiplies every element of the \doxylink{classNeoN_1_1Vector}{Vector} by a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & Scalar multiplier. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} \doxylink{classNeoN_1_1Vector}{Vector} containing the scaled values.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+This operation is available only for Value\+Type combinations for which multiplication by scalar is well-\/defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See \href{https://eel.is/c++draft/expr.prim.req}{\texttt{ https\+://eel.\+is/c++draft/expr.\+prim.\+req}} for information on C++ requires-\/expressions. 
+\end{DoxyNote}
+\Hypertarget{classNeoN_1_1Vector_a3aea84baea4f7590d0ae483e3040f18e}\label{classNeoN_1_1Vector_a3aea84baea4f7590d0ae483e3040f18e} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}}
+\index{operator\texorpdfstring{$\ast$}{*}@{operator\texorpdfstring{$\ast$}{*}}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Multiplies two Vectors element-\/wise. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} to multiply with this \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} \doxylink{classNeoN_1_1Vector}{Vector} containing the element-\/wise product.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+This operation is available only for Value\+Type combinations for which element-\/wise multiplication is well-\/defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See \href{https://eel.is/c++draft/expr.prim.req}{\texttt{ https\+://eel.\+is/c++draft/expr.\+prim.\+req}} for information on C++ requires-\/expressions. 
+\end{DoxyNote}
+\Hypertarget{classNeoN_1_1Vector_a8ada1ac2655eba6a62ecf23e01bce27d}\label{classNeoN_1_1Vector_a8ada1ac2655eba6a62ecf23e01bce27d} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Multiplies every element of the \doxylink{classNeoN_1_1Vector}{Vector} by a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & Scalar multiplier. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} reference to this \doxylink{classNeoN_1_1Vector}{Vector} after the scalar multiplication.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+This operation is available only for Value\+Type combinations for which multiplication by scalar is well-\/defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See \href{https://eel.is/c++draft/expr.prim.req}{\texttt{ https\+://eel.\+is/c++draft/expr.\+prim.\+req}} for information on C++ requires-\/expressions. 
+\end{DoxyNote}
+\Hypertarget{classNeoN_1_1Vector_a9afacd6737415134f38fe9becb19d549}\label{classNeoN_1_1Vector_a9afacd6737415134f38fe9becb19d549} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Multiplies this \doxylink{classNeoN_1_1Vector}{Vector} element-\/wise by another \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} to multiply with this \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} reference to this \doxylink{classNeoN_1_1Vector}{Vector} after the element-\/wise multiplication.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+This operation is available only for Value\+Type combinations for which element-\/wise multiplication is well-\/defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See \href{https://eel.is/c++draft/expr.prim.req}{\texttt{ https\+://eel.\+is/c++draft/expr.\+prim.\+req}} for information on C++ requires-\/expressions. 
+\end{DoxyNote}
+\Hypertarget{classNeoN_1_1Vector_ab4d83cf671153e017e107f022d06d2a8}\label{classNeoN_1_1Vector_ab4d83cf671153e017e107f022d06d2a8} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator+=()}{operator+=()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Adds another \doxylink{classNeoN_1_1Vector}{Vector} element-\/wise. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} to add to this \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This \doxylink{classNeoN_1_1Vector}{Vector} after the element-\/wise addition. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Vector_add2cd47adb8b276c03f1f41a1e36cae1}\label{classNeoN_1_1Vector_add2cd47adb8b276c03f1f41a1e36cae1} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator-\/=()}{operator-=()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator-\/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Subtracts another \doxylink{classNeoN_1_1Vector}{Vector} element-\/wise. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} to subtract from this \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} reference to this \doxylink{classNeoN_1_1Vector}{Vector} after the element-\/wise subtraction. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Vector_a79947b149106e8cae946231f179639fe}\label{classNeoN_1_1Vector_a79947b149106e8cae946231f179639fe} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const Value\+Type \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Assigns a value to every element of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & Value assigned to each element. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_ae8e2493ea02950235947c1c5e128e3c0}\label{classNeoN_1_1Vector_ae8e2493ea02950235947c1c5e128e3c0} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Assigns the contents of another \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} to copy from.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+The size of this \doxylink{classNeoN_1_1Vector}{Vector} is adjusted to match {\ttfamily rhs} if necessary. 
+\end{DoxyWarning}
+\Hypertarget{classNeoN_1_1Vector_a5a9406cd5937caca19cbb5a340b3d640}\label{classNeoN_1_1Vector_a5a9406cd5937caca19cbb5a340b3d640} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Move-\/assignment operator — transfers ownership of the data buffer. 
+
+Swaps the data pointer and size from rhs in O(1) without launching any GPU kernel. The old buffer owned by \texorpdfstring{$\ast$}{*}this is freed first (after a fence if on GPU). After the move, rhs is left in an empty (size=0, data=nullptr) state. The executor is unchanged — exec\+\_\+ is const and cannot be moved.
+
+\begin{DoxyWarning}{Warning}
+Invalidates any existing \doxylink{classNeoN_1_1View}{View} objects that point into \texorpdfstring{$\ast$}{*}this.
+\begin{DoxyItemize}
+\item 
+\end{DoxyItemize}
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Vector}{Vector} whose resources are transferred to this \doxylink{classNeoN_1_1Vector}{Vector}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} reference to this \doxylink{classNeoN_1_1Vector}{Vector}. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1Vector_adfb14f80df8f4b622452818d3ac5f52f}\label{classNeoN_1_1Vector_adfb14f80df8f4b622452818d3ac5f52f} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1Vector_a1a976f143f1b87614db92b4c501ed719}\label{classNeoN_1_1Vector_a1a976f143f1b87614db92b4c501ed719} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Host-\/side element access is intentionally disabled. 
+
+\doxylink{classNeoN_1_1Vector}{Vector} data may reside in executor-\/specific memory, such as GPU memory. Direct host-\/side element access could therefore result in invalid memory access.
+
+\begin{DoxyNote}{Note}
+Use \doxylink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view()} or an executor-\/aware operation to access the data. 
+\end{DoxyNote}
+\Hypertarget{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}\label{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!range@{range}}
+\index{range@{range}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{range()}{range()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::range (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the index range of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+The half-\/open index range \mbox{[}0, \doxylink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size()}). 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00419}{419}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_a99e933d0a77f9ec5fef7d492f23c2219}\label{classNeoN_1_1Vector_a99e933d0a77f9ec5fef7d492f23c2219} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!resize@{resize}}
+\index{resize@{resize}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{resize()}{resize()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::resize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size }\end{DoxyParamCaption})}
+
+
+
+Resizes the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size} & New number of elements. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Vector_a99e933d0a77f9ec5fef7d492f23c2219}\label{classNeoN_1_1Vector_a99e933d0a77f9ec5fef7d492f23c2219} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!resize@{resize}}
+\index{resize@{resize}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{resize()}{resize()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::resize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}\label{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!size@{size}}
+\index{size@{size}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the number of elements in the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\begin{DoxyReturn}{Returns}
+Number of elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00332}{332}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_a719edbafd35de9fdf99fd174fc8fd61e}\label{classNeoN_1_1Vector_a719edbafd35de9fdf99fd174fc8fd61e} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!ssize@{ssize}}
+\index{ssize@{ssize}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{ssize()}{ssize()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::ssize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the number of elements as a label. 
+
+\begin{DoxyReturn}{Returns}
+Number of elements converted to label. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00339}{339}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_afe9aade44dd8fd745d5ab63c5fa0c460}\label{classNeoN_1_1Vector_afe9aade44dd8fd745d5ab63c5fa0c460} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a non-\/owning view of the \doxylink{classNeoN_1_1Vector}{Vector} data. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{classNeoN_1_1View}{View} of the \doxylink{classNeoN_1_1Vector}{Vector} data. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00363}{363}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}\label{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Prevents creating a \doxylink{classNeoN_1_1View}{View} from a temporary \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\doxylink{classA}{A} \doxylink{classNeoN_1_1View}{View} does not own the referenced data. Allowing a \doxylink{classNeoN_1_1View}{View} to be created from a temporary \doxylink{classNeoN_1_1Vector}{Vector} could therefore result in a dangling view. \Hypertarget{classNeoN_1_1Vector_a8204948c9a7c17e5bc7c67c88db802bd}\label{classNeoN_1_1Vector_a8204948c9a7c17e5bc7c67c88db802bd} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a read-\/only, non-\/owning view of the \doxylink{classNeoN_1_1Vector}{Vector} data. 
+
+\begin{DoxyReturn}{Returns}
+Read-\/only view of the \doxylink{classNeoN_1_1Vector}{Vector} data. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00373}{373}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_af41388de676f5d555c0a9a8fd65d0fdd}\label{classNeoN_1_1Vector_af41388de676f5d555c0a9a8fd65d0fdd} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1Vector_a43a0f39f3241e494950640dc4c673bf7}\label{classNeoN_1_1Vector_a43a0f39f3241e494950640dc4c673bf7} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a non-\/owning view of a range of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em range} & Half-\/open index range \mbox{[}first, last). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classNeoN_1_1View}{View} of the specified range. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00394}{394}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_abb5eeffddc65955f57db055be73fbc07}\label{classNeoN_1_1Vector_abb5eeffddc65955f57db055be73fbc07} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Prevents creating a view of a temporary \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+\doxylink{classA}{A} \doxylink{classNeoN_1_1View}{View} does not own the referenced data, so a view of a temporary \doxylink{classNeoN_1_1Vector}{Vector} could become dangling. \Hypertarget{classNeoN_1_1Vector_a9608fa4324d06e9099690c2ab02705de}\label{classNeoN_1_1Vector_a9608fa4324d06e9099690c2ab02705de} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) const \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a read-\/only, non-\/owning view of a range of the \doxylink{classNeoN_1_1Vector}{Vector}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em range} & Half-\/open index range \mbox{[}first, last). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Read-\/only view of the specified range. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{vector_8hpp_source_l00407}{407}} of file \mbox{\hyperlink{vector_8hpp_source}{vector.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Vector_a6d35eccebbae57201dad39e582656fd1}\label{classNeoN_1_1Vector_a6d35eccebbae57201dad39e582656fd1} 
+\index{NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Vector$<$ ValueType $>$@{NeoN::Vector$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) const \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/\mbox{\hyperlink{parallelAlgorithms_8hpp}{parallel\+Algorithms.\+hpp}}\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/vector/\mbox{\hyperlink{vector_8hpp}{vector.\+hpp}}\end{DoxyCompactItemize}

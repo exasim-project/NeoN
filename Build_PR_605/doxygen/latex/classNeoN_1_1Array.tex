@@ -1,0 +1,713 @@
+\doxysection{NeoN\+::Array\texorpdfstring{$<$}{<} Value\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1Array}{}\label{classNeoN_1_1Array}\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+
+
+An executor-\/aware contiguous container for structural and indexing data.  
+
+
+
+
+{\ttfamily \#include $<$array.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1Array_a703c735cebf9426e49cbf87af892f203}{Array\+Value\+Type}} = Value\+Type
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1Array_a43736b7f297035903604682cce147975}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}})
+\begin{DoxyCompactList}\small\item\em Creates an uninitialized \doxylink{classNeoN_1_1Array}{Array} with the given size on an executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array_abd63131ee4d72bb59e2f7e5e5ea4a092}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, const Value\+Type \texorpdfstring{$\ast$}{*}in, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}}, \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} host\+Exec=\mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}())
+\begin{DoxyCompactList}\small\item\em Creates an \doxylink{classNeoN_1_1Array}{Array} from existing data on the given executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array_a0da6227d6715ab3384654f6ca337ea16}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}}, Value\+Type value)
+\begin{DoxyCompactList}\small\item\em Creates an \doxylink{classNeoN_1_1Array}{Array} with the given size and initializes all elements to a value. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array_a986bc7e908a4195989bd4741153c042c}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, std\+::vector$<$ Value\+Type $>$ in)
+\begin{DoxyCompactList}\small\item\em Create an \doxylink{classNeoN_1_1Array}{Array} from a std\+::vector on a given executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array_aacaa3114b08907787d14213acbc817a9}{Array}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}}, const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&in)
+\begin{DoxyCompactList}\small\item\em Creates a copy of an \doxylink{classNeoN_1_1Array}{Array} on the specified executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array_aad5fa896fb65849722e3b9eadb426e3f}{Array}} (const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Creates a copy of another \doxylink{classNeoN_1_1Array}{Array} on the same executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array_a433fd96d7564e1cc0be986860fc605cf}{Array}} (\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&\&rhs) noexcept
+\begin{DoxyCompactList}\small\item\em Move constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array_aa95d39f2a20cea2dcdcf81cc2c4968a4}{\texorpdfstring{$\sim$}{\string~}\+Array}} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \doxylink{classNeoN_1_1Array}{Array} object. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename func $>$ }\\void \mbox{\hyperlink{classNeoN_1_1Array_aef8b781ed35a0af921248cbd451313bf}{apply}} (func f)
+\begin{DoxyCompactList}\small\item\em Applies a function to each element of the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a483343e23f928e9195d8711d7930c133}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
+\begin{DoxyCompactList}\small\item\em Creates a copy of the \doxylink{classNeoN_1_1Array}{Array} on a specified executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a2f6d531ad5afd6c76a32c6ab9d819839}{copy\+To\+Host}} () const
+\begin{DoxyCompactList}\small\item\em Creates a host-\/resident copy of the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Array_a31837fdb0cf05b95234a75964dcd141a}{copy\+To\+Host}} (\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&result)
+\begin{DoxyCompactList}\small\item\em Copies the \doxylink{classNeoN_1_1Array}{Array} data to a host-\/resident \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Array}{Array}} \& \mbox{\hyperlink{classNeoN_1_1Array_aa8a0ca63b7cc9231f5e07db81345f07c}{operator\mbox{[}$\,$\mbox{]}}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i)=delete
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Array}{Array}} \& \mbox{\hyperlink{classNeoN_1_1Array_a61186cad32f71dd9bc9d0340c1a83c36}{operator\mbox{[}$\,$\mbox{]}}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const =delete
+\item 
+void \mbox{\hyperlink{classNeoN_1_1Array_a60191b4699dbc021c6411f7f8534f03e}{operator=}} (const Value\+Type \&rhs)
+\begin{DoxyCompactList}\small\item\em Assigns a value to all elements of the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Array_ac1c4a13738703fe6e514ebe51cc9d822}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&rhs)
+\begin{DoxyCompactList}\small\item\em Copies the contents of another \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Array_adae762a549262c56fb922acb850d70e3}{resize}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}})
+\begin{DoxyCompactList}\small\item\em Resizes the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Array_afc980daee8c101771b614cc63bb4cd26}{data}} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the underlying array data. \end{DoxyCompactList}\item 
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Array_a11ce7e13bf9bf9b132948219b0eb24fa}{data}} () const
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the underlying array data. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}{exec}} () const
+\begin{DoxyCompactList}\small\item\em Returns the executor associated with the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size}} () const
+\begin{DoxyCompactList}\small\item\em Returns the number of elements in the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1Array_a5734c9aa61db833dd685290a46dc9277}{ssize}} () const
+\begin{DoxyCompactList}\small\item\em Returns the number of elements in the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classNeoN_1_1Array_a7f9394128c34e9f1785eb2f2af90191a}{empty}} () const
+\begin{DoxyCompactList}\small\item\em Checks whether the \doxylink{classNeoN_1_1Array}{Array} contains no elements. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a22f7000fe0f4474f3a74441b0929ebe3}{view}} () \&\&=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a86efccbe4371606aa4ed67941bc715c2}{view}} () const \&\&=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_aae640dc1b6f3ba143f417bc3bfc1da51}{view}} () \&
+\begin{DoxyCompactList}\small\item\em Returns a view of the \doxylink{classNeoN_1_1Array}{Array} data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a4c1054e4c6666d8383cc4a9b4574d6da}{view}} () const \&
+\begin{DoxyCompactList}\small\item\em Returns a view of the \doxylink{classNeoN_1_1Array}{Array} data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_ac1804522103d418476b150d9e359d9bc}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}{range}}) \&\&=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_ac1ec5e4c41b4b069c48c2c2676c2f6fe}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}{range}}) const \&\&=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a3f50cf874415f03ba54286b2570b15cb}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}{range}}) \&
+\begin{DoxyCompactList}\small\item\em Returns a view of a range of the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array_a65283be284e1cfdd0c4b2f2e42177861}{view}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}{range}}) const \&
+\begin{DoxyCompactList}\small\item\em Returns a view of a range of the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}{range}} () const
+\begin{DoxyCompactList}\small\item\em Returns the index range of the \doxylink{classNeoN_1_1Array}{Array}. \end{DoxyCompactList}\item 
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}{range}} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type$>$\newline
+class Neo\+N\+::\+Array$<$ Value\+Type $>$}
+An executor-\/aware contiguous container for structural and indexing data. 
+
+\doxylink{classNeoN_1_1Array}{Array} is intended for data that is primarily used as a generic collection, particularly for structural, indexing, or other non-\/arithmetic data.
+
+Unlike \doxylink{classNeoN_1_1Vector}{Vector}, \doxylink{classNeoN_1_1Array}{Array} does not primarily model numerical quantities or provide vector-\/style arithmetic semantics. Use \doxylink{classNeoN_1_1Array}{Array} when the primary purpose of the data is storage and indexed access rather than numerical operations.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The type of the elements stored in the array. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00037}{37}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1Array_a703c735cebf9426e49cbf87af892f203}\label{classNeoN_1_1Array_a703c735cebf9426e49cbf87af892f203} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!ArrayValueType@{ArrayValueType}}
+\index{ArrayValueType@{ArrayValueType}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{ArrayValueType}{ArrayValueType}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array\+Value\+Type =  Value\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00042}{42}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1Array_a43736b7f297035903604682cce147975}\label{classNeoN_1_1Array_a43736b7f297035903604682cce147975} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
+\index{Array@{Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Array()}{Array()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates an uninitialized \doxylink{classNeoN_1_1Array}{Array} with the given size on an executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the array data is allocated. \\
+\hline
+{\em size} & Number of elements in the array. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00050}{50}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_abd63131ee4d72bb59e2f7e5e5ea4a092}\label{classNeoN_1_1Array_abd63131ee4d72bb59e2f7e5e5ea4a092} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
+\index{Array@{Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Array()}{Array()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const Value\+Type \texorpdfstring{$\ast$}{*}}]{in,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size,  }\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{host\+Exec = {\ttfamily \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates an \doxylink{classNeoN_1_1Array}{Array} from existing data on the given executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the array data is allocated. \\
+\hline
+{\em in} & Pointer to the source data. \\
+\hline
+{\em size} & Number of elements to copy. \\
+\hline
+{\em host\+Exec} & Executor on which the source data is located. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00069}{69}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a0da6227d6715ab3384654f6ca337ea16}\label{classNeoN_1_1Array_a0da6227d6715ab3384654f6ca337ea16} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
+\index{Array@{Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Array()}{Array()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size,  }\item[{Value\+Type}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates an \doxylink{classNeoN_1_1Array}{Array} with the given size and initializes all elements to a value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the array data is allocated. \\
+\hline
+{\em size} & Number of elements in the array. \\
+\hline
+{\em value} & Value used to initialize all elements. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00095}{95}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a986bc7e908a4195989bd4741153c042c}\label{classNeoN_1_1Array_a986bc7e908a4195989bd4741153c042c} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
+\index{Array@{Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Array()}{Array()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::vector$<$ Value\+Type $>$}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Create an \doxylink{classNeoN_1_1Array}{Array} from a std\+::vector on a given executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the array data is allocated \\
+\hline
+{\em in} & std\+::vector containing the values to copy into the array \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00113}{113}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_aacaa3114b08907787d14213acbc817a9}\label{classNeoN_1_1Array_aacaa3114b08907787d14213acbc817a9} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
+\index{Array@{Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Array()}{Array()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a copy of an \doxylink{classNeoN_1_1Array}{Array} on the specified executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor on which the new array is allocated. \\
+\hline
+{\em in} & \doxylink{classNeoN_1_1Array}{Array} to copy. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00124}{124}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_aad5fa896fb65849722e3b9eadb426e3f}\label{classNeoN_1_1Array_aad5fa896fb65849722e3b9eadb426e3f} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
+\index{Array@{Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Array()}{Array()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a copy of another \doxylink{classNeoN_1_1Array}{Array} on the same executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Array}{Array} to copy from. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00133}{133}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a433fd96d7564e1cc0be986860fc605cf}\label{classNeoN_1_1Array_a433fd96d7564e1cc0be986860fc605cf} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!Array@{Array}}
+\index{Array@{Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{Array()}{Array()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\+Array (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&\&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Move constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Array}{Array} whose resources are transferred to the new \doxylink{classNeoN_1_1Array}{Array}. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00141}{141}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_aa95d39f2a20cea2dcdcf81cc2c4968a4}\label{classNeoN_1_1Array_aa95d39f2a20cea2dcdcf81cc2c4968a4} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!````~Array@{\texorpdfstring{$\sim$}{\string~}Array}}
+\index{````~Array@{\texorpdfstring{$\sim$}{\string~}Array}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Array()}{\string~Array()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1Array}{Array}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Destroy the \doxylink{classNeoN_1_1Array}{Array} object. 
+
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1Array_aef8b781ed35a0af921248cbd451313bf}\label{classNeoN_1_1Array_aef8b781ed35a0af921248cbd451313bf} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!apply@{apply}}
+\index{apply@{apply}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{apply()}{apply()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+template$<$typename func $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::apply (\begin{DoxyParamCaption}\item[{func}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Applies a function to each element of the \doxylink{classNeoN_1_1Array}{Array}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & Function or functor applied to the array elements.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+The function should be compatible with execution by Kokkos. Ideally, it should be Kokkos lambda. 
+\end{DoxyNote}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00165}{165}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a483343e23f928e9195d8711d7930c133}\label{classNeoN_1_1Array_a483343e23f928e9195d8711d7930c133} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!copyToExecutor@{copyToExecutor}}
+\index{copyToExecutor@{copyToExecutor}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToExecutor()}{copyToExecutor()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::copy\+To\+Executor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{dst\+Exec }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a copy of the \doxylink{classNeoN_1_1Array}{Array} on a specified executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dst\+Exec} & Executor on which the copied array is allocated. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} copy of this \doxylink{classNeoN_1_1Array}{Array} on {\ttfamily dst\+Exec}. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00176}{176}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a2f6d531ad5afd6c76a32c6ab9d819839}\label{classNeoN_1_1Array_a2f6d531ad5afd6c76a32c6ab9d819839} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!copyToHost@{copyToHost}}
+\index{copyToHost@{copyToHost}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a host-\/resident copy of the \doxylink{classNeoN_1_1Array}{Array}. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{classA}{A} copy of this \doxylink{classNeoN_1_1Array}{Array} allocated on the serial executor. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00191}{191}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a31837fdb0cf05b95234a75964dcd141a}\label{classNeoN_1_1Array_a31837fdb0cf05b95234a75964dcd141a} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!copyToHost@{copyToHost}}
+\index{copyToHost@{copyToHost}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&}]{result }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copies the \doxylink{classNeoN_1_1Array}{Array} data to a host-\/resident \doxylink{classNeoN_1_1Array}{Array}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em result} & Destination \doxylink{classNeoN_1_1Array}{Array}. Its size must match the source \doxylink{classNeoN_1_1Array}{Array}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+An error is raised if {\ttfamily result} does not have the same size as this \doxylink{classNeoN_1_1Array}{Array}. 
+\end{DoxyWarning}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00201}{201}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_afc980daee8c101771b614cc63bb4cd26}\label{classNeoN_1_1Array_afc980daee8c101771b614cc63bb4cd26} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!data@{data}}
+\index{data@{data}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a pointer to the underlying array data. 
+
+\begin{DoxyReturn}{Returns}
+Pointer to the first element. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00277}{277}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a11ce7e13bf9bf9b132948219b0eb24fa}\label{classNeoN_1_1Array_a11ce7e13bf9bf9b132948219b0eb24fa} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!data@{data}}
+\index{data@{data}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const Value\+Type \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a pointer to the underlying array data. 
+
+\begin{DoxyReturn}{Returns}
+Pointer to the first element. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00284}{284}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a7f9394128c34e9f1785eb2f2af90191a}\label{classNeoN_1_1Array_a7f9394128c34e9f1785eb2f2af90191a} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!empty@{empty}}
+\index{empty@{empty}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+bool \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Checks whether the \doxylink{classNeoN_1_1Array}{Array} contains no elements. 
+
+\begin{DoxyReturn}{Returns}
+True if the \doxylink{classNeoN_1_1Array}{Array} is empty, otherwise false. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00312}{312}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1}\label{classNeoN_1_1Array_a86786f624d5d9837305ae12bb6d5eea1} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!exec@{exec}}
+\index{exec@{exec}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the executor associated with the \doxylink{classNeoN_1_1Array}{Array}. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the \doxylink{classNeoN_1_1Array}{Array}\textquotesingle{}s executor. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00291}{291}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_ac1c4a13738703fe6e514ebe51cc9d822}\label{classNeoN_1_1Array_ac1c4a13738703fe6e514ebe51cc9d822} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ Value\+Type $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copies the contents of another \doxylink{classNeoN_1_1Array}{Array}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & \doxylink{classNeoN_1_1Array}{Array} to copy from.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+The source and destination Arrays must use the same executor. The destination is resized if necessary. 
+\end{DoxyWarning}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00234}{234}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a60191b4699dbc021c6411f7f8534f03e}\label{classNeoN_1_1Array_a60191b4699dbc021c6411f7f8534f03e} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const Value\+Type \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Assigns a value to all elements of the \doxylink{classNeoN_1_1Array}{Array}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rhs} & Value assigned to each element. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00220}{220}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a61186cad32f71dd9bc9d0340c1a83c36}\label{classNeoN_1_1Array_a61186cad32f71dd9bc9d0340c1a83c36} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Array}{Array}} \& \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1Array_aa8a0ca63b7cc9231f5e07db81345f07c}\label{classNeoN_1_1Array_aa8a0ca63b7cc9231f5e07db81345f07c} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Array}{Array}} \& \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}\label{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!range@{range}}
+\index{range@{range}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{range()}{range()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::range (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the index range of the \doxylink{classNeoN_1_1Array}{Array}. 
+
+\begin{DoxyReturn}{Returns}
+The half-\/open index range \mbox{[}0, \doxylink{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}{size()}). 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00377}{377}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33}\label{classNeoN_1_1Array_a4335763d7878a7e5887086d949c66b33} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!range@{range}}
+\index{range@{range}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{range()}{range()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::range (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00378}{378}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_adae762a549262c56fb922acb850d70e3}\label{classNeoN_1_1Array_adae762a549262c56fb922acb850d70e3} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!resize@{resize}}
+\index{resize@{resize}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{resize()}{resize()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::resize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Resizes the \doxylink{classNeoN_1_1Array}{Array}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size} & New number of elements. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00249}{249}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c}\label{classNeoN_1_1Array_a724b44f0930b2af455ca56c2811cb56c} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!size@{size}}
+\index{size@{size}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the number of elements in the \doxylink{classNeoN_1_1Array}{Array}. 
+
+\begin{DoxyReturn}{Returns}
+Number of elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00298}{298}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a5734c9aa61db833dd685290a46dc9277}\label{classNeoN_1_1Array_a5734c9aa61db833dd685290a46dc9277} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!ssize@{ssize}}
+\index{ssize@{ssize}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{ssize()}{ssize()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::ssize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the number of elements in the \doxylink{classNeoN_1_1Array}{Array}. 
+
+\begin{DoxyReturn}{Returns}
+Number of elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00305}{305}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_aae640dc1b6f3ba143f417bc3bfc1da51}\label{classNeoN_1_1Array_aae640dc1b6f3ba143f417bc3bfc1da51} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a view of the \doxylink{classNeoN_1_1Array}{Array} data. 
+
+\begin{DoxyReturn}{Returns}
+Non-\/owning view of the \doxylink{classNeoN_1_1Array}{Array} data. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00325}{325}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a22f7000fe0f4474f3a74441b0929ebe3}\label{classNeoN_1_1Array_a22f7000fe0f4474f3a74441b0929ebe3} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1Array_a4c1054e4c6666d8383cc4a9b4574d6da}\label{classNeoN_1_1Array_a4c1054e4c6666d8383cc4a9b4574d6da} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a view of the \doxylink{classNeoN_1_1Array}{Array} data. 
+
+\begin{DoxyReturn}{Returns}
+Non-\/owning view of the \doxylink{classNeoN_1_1Array}{Array} data. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00335}{335}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_a86efccbe4371606aa4ed67941bc715c2}\label{classNeoN_1_1Array_a86efccbe4371606aa4ed67941bc715c2} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1Array_a3f50cf874415f03ba54286b2570b15cb}\label{classNeoN_1_1Array_a3f50cf874415f03ba54286b2570b15cb} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a view of a range of the \doxylink{classNeoN_1_1Array}{Array}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em range} & Half-\/open range of elements to include in the view. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Non-\/owning view of the specified range. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00352}{352}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_ac1804522103d418476b150d9e359d9bc}\label{classNeoN_1_1Array_ac1804522103d418476b150d9e359d9bc} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1Array_a65283be284e1cfdd0c4b2f2e42177861}\label{classNeoN_1_1Array_a65283be284e1cfdd0c4b2f2e42177861} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) const \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a view of a range of the \doxylink{classNeoN_1_1Array}{Array}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em range} & Half-\/open range of elements to include in the view. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Non-\/owning view of the specified range. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{array_8hpp_source_l00365}{365}} of file \mbox{\hyperlink{array_8hpp_source}{array.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Array_ac1ec5e4c41b4b069c48c2c2676c2f6fe}\label{classNeoN_1_1Array_ac1ec5e4c41b4b069c48c2c2676c2f6fe} 
+\index{NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}!view@{view}}
+\index{view@{view}!NeoN::Array$<$ ValueType $>$@{NeoN::Array$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Array}{Neo\+N\+::\+Array}}$<$ Value\+Type $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) const \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/\mbox{\hyperlink{array_8hpp}{array.\+hpp}}\end{DoxyCompactItemize}
