@@ -16,14 +16,28 @@
 namespace NeoN
 {
 
-/**
- * @class Vector
- * @brief A class to contain the data and executors for a field and define some basic operations.
- *
- * @ingroup Vectors
- */
-template<typename ValueType>
-class Vector
+```cpp
+    /**
+     * @class Vector
+     * @brief An executor-aware contiguous container for numerical data with vector-style arithmetic
+     * semantics.
+     *
+     * @details
+     * Vector is intended for numerical quantities for which arithmetic operations
+     * on the elements or on the vector as a whole are meaningful.
+     *
+     * Vector provides operations for performing arithmetic on its stored values.
+     * Use Vector when the numerical meaning of the data and its arithmetic
+     * operations are an important part of its interface.
+     *
+     * For structural, indexing, or other non-arithmetic data, use Array instead.
+     *
+     * @tparam ValueType The type of the elements stored in the vector.
+     *
+     * @ingroup Vectors
+     */
+    template<typename ValueType>
+    class Vector
 {
 
 public:

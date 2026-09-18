@@ -19,7 +19,17 @@ namespace NeoN
 
 /**
  * @class Array
- * @brief A class to contain the data and executors for a field and define some basic operations.
+ * @brief An executor-aware contiguous container for structural and indexing data.
+ *
+ * @details
+ * Array is intended for data that is primarily used as a generic collection,
+ * particularly for structural, indexing, or other non-arithmetic data.
+ *
+ * Unlike Vector, Array does not primarily model numerical quantities or
+ * provide vector-style arithmetic semantics. Use Array when the primary
+ * purpose of the data is storage and indexed access rather than numerical operations.
+ *
+ * @tparam ValueType The type of the elements stored in the array.
  *
  * @ingroup Arrays
  */
