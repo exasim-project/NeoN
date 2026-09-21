@@ -40,6 +40,7 @@ set(NeoN_SRCS
     "linearAlgebra/faceToMatrixAddress.cpp"
     "linearAlgebra/cooSparsityPattern.cpp"
     "linearAlgebra/csrSparsityPattern.cpp"
+    "linearAlgebra/ellSparsityPattern.cpp"
     "linearAlgebra/meshIterationStrategies.cpp"
     "mesh/unstructured/boundaryMesh.cpp"
     "mesh/unstructured/unstructuredMesh.cpp"
