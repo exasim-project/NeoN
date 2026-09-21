@@ -295,6 +295,15 @@ if(${NeoN_WITH_GINKGO})
       endif()
     endforeach()
   endif()
+
+  # MergedPgm (include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp) and the multigrid scale_correction
+  # parameter it is meant to be driven with need gko::UpdateMatrixValue,
+  # gko::LinOpGenerateComponents and solver::Multigrid::scale_correction. None of the three exist in
+  # the Ginkgo NeoN pins, so both are compiled out by default and the code is carried inactive.
+  # Point NeoN at a Ginkgo that provides them (NeoN_GINKGO_TAG, or a system install) and set this to
+  # ON to build them.
+  option(NeoN_GINKGO_FORK "Ginkgo provides gko::UpdateMatrixValue and multigrid scale_correction"
+         OFF)
 endif()
 
 if(${NeoN_BUILD_PYTHON_BINDINGS})

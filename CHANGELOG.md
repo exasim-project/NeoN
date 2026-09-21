@@ -13,6 +13,7 @@
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
+- Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4`. Needs a Ginkgo providing `gko::UpdateMatrixValue` and `gko::LinOpGenerateComponents`, which the pinned one does not, so it is compiled out unless configured with `-DNeoN_GINKGO_FORK=ON` [#602](https://github.com/exasim-project/NeoN/pull/602)
 
 ### Misc
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)
@@ -25,6 +26,7 @@
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
 
 ## Fixes
+- Fix an intermittent segfault in the MPI unit tests: the IO serialization thread called MPI concurrently with the main thread even when the library only provided `MPI_THREAD_SINGLE` [#602](https://github.com/exasim-project/NeoN/pull/602)
 - Fix umpire/camp RPATH and macOS install names so wheels stay relocatable, and check relocatability on the unrepaired wheel in CI [#559](https://github.com/exasim-project/NeoN/pull/559)
 - Fix distributed processor-face correctness: multi-patch (scotch) halo exchange, ddtFluxCorr proc-face correction, processor BC on coupled patches, and row-sorted non-local COO for correct CUDA distributed apply [#528](https://github.com/exasim-project/NeoN/pull/528)
 
