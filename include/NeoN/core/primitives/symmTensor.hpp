@@ -4,7 +4,10 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include <cmath>
+#include <iosfwd>
+
+#include "NeoN/core/portability.hpp"
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
@@ -28,7 +31,7 @@ class SymmTensor
 {
 public:
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor()
     {
         for (int k = 0; k < 6; ++k)
@@ -38,7 +41,7 @@ public:
     }
 
     /** @brief Construct scalar-times-identity symmetric tensor */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     explicit SymmTensor(const scalar diag)
     {
         data_[0] = diag; // xx
@@ -49,7 +52,7 @@ public:
         data_[5] = diag; // zz
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor(scalar xx, scalar xy, scalar xz, scalar yy, scalar yz, scalar zz)
     {
         data_[0] = xx;
@@ -60,13 +63,13 @@ public:
         data_[5] = zz;
     }
 
-    KOKKOS_INLINE_FUNCTION scalar* data() { return data_; }
-    KOKKOS_INLINE_FUNCTION const scalar* data() const { return data_; }
+    NEON_INLINE_FUNCTION scalar* data() { return data_; }
+    NEON_INLINE_FUNCTION const scalar* data() const { return data_; }
 
-    KOKKOS_INLINE_FUNCTION constexpr size_t size() const { return 6; }
+    NEON_INLINE_FUNCTION constexpr size_t size() const { return 6; }
 
     /** @brief Component access — maps (i,j) to the stored upper-triangle */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     scalar operator()(const size_t i, const size_t j) const
     {
         // index map: (0,0)->0, (0,1)->1, (0,2)->2, (1,1)->3, (1,2)->4, (2,2)->5
@@ -75,14 +78,14 @@ public:
         return data_[lut[i][j]];
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     scalar& operator()(const size_t i, const size_t j)
     {
         static constexpr int lut[3][3] = {{0, 1, 2}, {1, 3, 4}, {2, 4, 5}};
         return data_[lut[i][j]];
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     bool operator==(const SymmTensor& rhs) const
     {
         for (int k = 0; k < 6; ++k)
@@ -92,7 +95,7 @@ public:
         return true;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor operator+(const SymmTensor& rhs) const
     {
         SymmTensor res;
@@ -103,7 +106,7 @@ public:
         return res;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor& operator+=(const SymmTensor& rhs)
     {
         for (int k = 0; k < 6; ++k)
@@ -113,7 +116,7 @@ public:
         return *this;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor operator-(const SymmTensor& rhs) const
     {
         SymmTensor res;
@@ -124,7 +127,7 @@ public:
         return res;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor& operator-=(const SymmTensor& rhs)
     {
         for (int k = 0; k < 6; ++k)
@@ -134,7 +137,7 @@ public:
         return *this;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor operator*(const scalar s) const
     {
         SymmTensor res;
@@ -145,7 +148,7 @@ public:
         return res;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor& operator*=(const scalar s)
     {
         for (int k = 0; k < 6; ++k)
@@ -156,11 +159,11 @@ public:
     }
 
     /** @brief Trace: xx + yy + zz */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     scalar trace() const { return data_[0] + data_[3] + data_[5]; }
 
     /** @brief Deviatoric part: S - (1/3)*tr(S)*I */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor dev() const
     {
         const scalar tr3 = trace() / scalar(3);
@@ -170,7 +173,7 @@ public:
     }
 
     /** @brief dev2: S - (2/3)*tr(S)*I  (used in viscous stress) */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     SymmTensor dev2() const
     {
         // TODO in case of trace returning a float, when NeoN_DEFINE_DP_SCALAR = OFF, this will
@@ -187,11 +190,11 @@ private:
 };
 
 
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 SymmTensor operator*(const scalar s, const SymmTensor& st) { return st * s; }
 
 /** @brief Symmetric matrix-vector product S·v */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 Vec3 operator&(const SymmTensor& s, const Vec3& v)
 {
     return Vec3(
@@ -202,7 +205,7 @@ Vec3 operator&(const SymmTensor& s, const Vec3& v)
 }
 
 /** @brief Frobenius norm */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 scalar mag(const SymmTensor& s)
 {
     // off-diagonal entries appear twice
@@ -213,7 +216,7 @@ scalar mag(const SymmTensor& s)
 }
 
 /** @brief Frobenius norm squared */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 scalar magSqr(const SymmTensor& s)
 {
     return s(0, 0) * s(0, 0) + s(1, 1) * s(1, 1) + s(2, 2) * s(2, 2)
@@ -221,7 +224,7 @@ scalar magSqr(const SymmTensor& s)
 }
 
 /** @brief Symmetric part of a full tensor: ½(T + T^T) */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 SymmTensor symm(const Tensor& t)
 {
     return SymmTensor(
@@ -235,7 +238,7 @@ SymmTensor symm(const Tensor& t)
 }
 
 /** @brief T + T^T (= 2*symm(T)) as a full tensor */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 Tensor twoSymm(const Tensor& t)
 {
     return Tensor(
@@ -252,7 +255,7 @@ Tensor twoSymm(const Tensor& t)
 }
 
 /** @brief T + T^T - (2/3)*tr(T)*I — used for viscous stress */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 SymmTensor devTwoSymm(const Tensor& t)
 {
     const scalar sph = (scalar(2) / scalar(3)) * (t(0, 0) + t(1, 1) + t(2, 2));
@@ -270,19 +273,19 @@ std::ostream& operator<<(std::ostream& out, const SymmTensor& s);
 
 
 template<>
-KOKKOS_INLINE_FUNCTION SymmTensor zero<SymmTensor>()
+NEON_INLINE_FUNCTION SymmTensor zero<SymmTensor>()
 {
     return SymmTensor(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 }
 
 template<>
-KOKKOS_INLINE_FUNCTION SymmTensor one<SymmTensor>()
+NEON_INLINE_FUNCTION SymmTensor one<SymmTensor>()
 {
     return SymmTensor(scalar(1));
 }
 
 template<>
-KOKKOS_INLINE_FUNCTION SymmTensor inv<SymmTensor>(SymmTensor)
+NEON_INLINE_FUNCTION SymmTensor inv<SymmTensor>(SymmTensor)
 {
     return SymmTensor(scalar(1));
 }

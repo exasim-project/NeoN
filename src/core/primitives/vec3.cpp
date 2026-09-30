@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <ostream>
+
 #include "NeoN/core/primitives/vec3.hpp"
 
 

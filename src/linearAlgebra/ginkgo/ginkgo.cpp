@@ -9,6 +9,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "NeoN/core/executor/kokkosExecutor.hpp"
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -165,16 +166,17 @@ std::array<std::shared_ptr<gko::Executor>, 3>& gkoExecutorCache()
 std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
 {
     // Defer to Ginkgo's Kokkos extension instead of a hand-rolled #ifdef mapping. Each NeoN
-    // executor exposes its backing Kokkos execution space as ExecType::exec (Kokkos::Serial,
-    // DefaultHostExecutionSpace or DefaultExecutionSpace), which is exactly what create_executor
-    // consumes. Crucially it threads the Kokkos execution-space stream, host executor and
-    // memory-space-matched device allocator through to the Ginkgo executor, so Ginkgo runs on the
-    // same stream Kokkos filled the matrix/RHS views on rather than on Ginkgo's default stream.
+    // executor maps to its backing Kokkos execution space via kokkosExecSpace<ExecType>
+    // (Kokkos::Serial, DefaultHostExecutionSpace or DefaultExecutionSpace), which is exactly what
+    // create_executor consumes. Crucially it threads the Kokkos execution-space stream, host
+    // executor and memory-space-matched device allocator through to the Ginkgo executor, so Ginkgo
+    // runs on the same stream Kokkos filled the matrix/RHS views on rather than on Ginkgo's default
+    // stream.
     return std::visit(
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
         {
             using ExecType = std::decay_t<decltype(concreteExec)>;
-            return gko::ext::kokkos::create_executor(typename ExecType::exec {});
+            return gko::ext::kokkos::create_executor(kokkosExecSpace<ExecType> {});
         },
         exec
     );

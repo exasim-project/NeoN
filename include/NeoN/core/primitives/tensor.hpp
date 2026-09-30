@@ -4,7 +4,10 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include <cmath>
+#include <iosfwd>
+
+#include "NeoN/core/portability.hpp"
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
@@ -26,7 +29,7 @@ class Tensor
 {
 public:
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor()
     {
         for (int k = 0; k < 9; ++k)
@@ -36,7 +39,7 @@ public:
     }
 
     /** @brief Construct scalar-times-identity tensor */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     explicit Tensor(const scalar diag)
     {
         for (int k = 0; k < 9; ++k)
@@ -48,7 +51,7 @@ public:
         data_[8] = diag;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor(
         scalar t00,
         scalar t01,
@@ -72,18 +75,18 @@ public:
         data_[8] = t22;
     }
 
-    KOKKOS_INLINE_FUNCTION scalar* data() { return data_; }
-    KOKKOS_INLINE_FUNCTION const scalar* data() const { return data_; }
+    NEON_INLINE_FUNCTION scalar* data() { return data_; }
+    NEON_INLINE_FUNCTION const scalar* data() const { return data_; }
 
     constexpr size_t size() const { return 9; }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     scalar& operator()(const size_t i, const size_t j) { return data_[3 * i + j]; }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     scalar operator()(const size_t i, const size_t j) const { return data_[3 * i + j]; }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     bool operator==(const Tensor& rhs) const
     {
         for (int k = 0; k < 9; ++k)
@@ -93,7 +96,7 @@ public:
         return true;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor operator+(const Tensor& rhs) const
     {
         Tensor res;
@@ -104,7 +107,7 @@ public:
         return res;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor& operator+=(const Tensor& rhs)
     {
         for (int k = 0; k < 9; ++k)
@@ -114,7 +117,7 @@ public:
         return *this;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor operator-(const Tensor& rhs) const
     {
         Tensor res;
@@ -125,7 +128,7 @@ public:
         return res;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor& operator-=(const Tensor& rhs)
     {
         for (int k = 0; k < 9; ++k)
@@ -135,7 +138,7 @@ public:
         return *this;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor operator*(const scalar s) const
     {
         Tensor res;
@@ -146,7 +149,7 @@ public:
         return res;
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor& operator*=(const scalar s)
     {
         for (int k = 0; k < 9; ++k)
@@ -157,11 +160,11 @@ public:
     }
 
     /** @brief Trace: sum of diagonal components */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     scalar trace() const { return data_[0] + data_[4] + data_[8]; }
 
     /** @brief Transpose */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Tensor T() const // NOLINT
     {
         return Tensor(
@@ -175,11 +178,11 @@ private:
 };
 
 
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 Tensor operator*(const scalar s, const Tensor& t) { return t * s; }
 
 /** @brief Matrix-vector product T·v */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 Vec3 operator&(const Tensor& t, const Vec3& v)
 {
     return Vec3(
@@ -190,7 +193,7 @@ Vec3 operator&(const Tensor& t, const Vec3& v)
 }
 
 /** @brief Row-vector times matrix v·T */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 Vec3 operator&(const Vec3& v, const Tensor& t)
 {
     return Vec3(
@@ -201,7 +204,7 @@ Vec3 operator&(const Vec3& v, const Tensor& t)
 }
 
 /** @brief Frobenius norm */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 scalar mag(const Tensor& t)
 {
     scalar s = 0;
@@ -213,7 +216,7 @@ scalar mag(const Tensor& t)
 }
 
 /** @brief Frobenius norm squared */
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 scalar magSqr(const Tensor& t)
 {
     scalar s = 0;
@@ -229,19 +232,19 @@ std::ostream& operator<<(std::ostream& out, const Tensor& t);
 
 
 template<>
-KOKKOS_INLINE_FUNCTION Tensor zero<Tensor>()
+NEON_INLINE_FUNCTION Tensor zero<Tensor>()
 {
     return Tensor(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 }
 
 template<>
-KOKKOS_INLINE_FUNCTION Tensor one<Tensor>()
+NEON_INLINE_FUNCTION Tensor one<Tensor>()
 {
     return Tensor(scalar(1));
 }
 
 template<>
-KOKKOS_INLINE_FUNCTION Tensor inv<Tensor>(Tensor)
+NEON_INLINE_FUNCTION Tensor inv<Tensor>(Tensor)
 {
     // Placeholder — matrix inverse not needed for field arithmetic
     return Tensor(scalar(1));

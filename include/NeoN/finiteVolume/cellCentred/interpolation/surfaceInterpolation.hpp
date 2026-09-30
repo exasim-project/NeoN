@@ -6,8 +6,6 @@
 
 #include <functional>
 
-#include <Kokkos_Core.hpp>
-
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"

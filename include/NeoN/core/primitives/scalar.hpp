@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include "NeoN/core/portability.hpp"
 
 #include "NeoN/core/primitives/traits.hpp"
 
@@ -19,24 +19,24 @@ typedef float scalar;
 
 constexpr scalar ROOTVSMALL = 1e-18;
 
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 scalar mag(const scalar& s) { return std::abs(s); }
 
 // traits for scalar
 template<>
-KOKKOS_INLINE_FUNCTION scalar one<scalar>()
+NEON_INLINE_FUNCTION scalar one<scalar>()
 {
     return 1.0;
 };
 
 template<>
-KOKKOS_INLINE_FUNCTION scalar zero<scalar>()
+NEON_INLINE_FUNCTION scalar zero<scalar>()
 {
     return 0.0;
 };
 
 template<>
-KOKKOS_INLINE_FUNCTION scalar inv<scalar>(scalar in)
+NEON_INLINE_FUNCTION scalar inv<scalar>(scalar in)
 {
     return 1.0 / in;
 };

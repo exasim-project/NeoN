@@ -20,35 +20,13 @@ namespace NeoN
 using Executor = std::variant<SerialExecutor, CPUExecutor, GPUExecutor>;
 
 /* @brief calls Kokkos::fence to wait for GPU kernels to be finished */
-inline void fence(const Executor& exec)
-{
-    if (std::holds_alternative<NeoN::GPUExecutor>(exec))
-    {
-        Kokkos::fence();
-    }
-}
+void fence(const Executor& exec);
 
 
 /* @brief creates highest available executor */
-inline Executor createDefaultExecutor(
+Executor createDefaultExecutor(
     std::unique_ptr<AllocatorStrategy> strategy = std::make_unique<DefaultAllocator>()
-)
-{
-#if defined(KOKKOS_ENABLE_CUDA)
-    return GPUExecutor {std::move(strategy)};
-#elif defined(KOKKOS_ENABLE_HIP)
-    return GPUExecutor {std::move(strategy)};
-#elif defined(KOKKOS_ENABLE_SYCL)
-    return GPUExecutor {std::move(strategy)};
-#endif
-
-#if defined(KOKKOS_ENABLE_OPENMP)
-    return CPUExecutor {std::move(strategy)};
-#elif defined(KOKKOS_ENABLE_THREADS)
-    return CPUExecutor {std::move(strategy)};
-#endif
-    return SerialExecutor {std::move(strategy)};
-}
+);
 
 inline std::string executorName(const Executor& exec)
 {
@@ -94,7 +72,9 @@ inline void setLogger(Executor& exec, std::shared_ptr<Logging::BaseLogger> logge
         {
             if constexpr (std::is_same_v<ExecLhs, ExecRhs>)
             {
-                return typename ExecLhs::exec() == typename ExecRhs::exec();
+                // Executors of the same type run on the default instance of the same Kokkos
+                // execution space, which always compare equal.
+                return true;
             }
             else
             {

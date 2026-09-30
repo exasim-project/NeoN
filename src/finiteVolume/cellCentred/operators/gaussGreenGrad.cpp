@@ -1,3 +1,5 @@
+#include "NeoN/core/portability.hpp"
+
 // SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
@@ -237,13 +239,13 @@ GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorSc
 
 // ---- Tensor gradient implementation ----------------------------------------
 
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 void atomicAddTensor(Tensor* target, size_t row, size_t col, scalar value)
 {
     Kokkos::atomic_add(&(*target)(row, col), value);
 }
 
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 void atomicSubTensor(Tensor* target, size_t row, size_t col, scalar value)
 {
     Kokkos::atomic_sub(&(*target)(row, col), value);
