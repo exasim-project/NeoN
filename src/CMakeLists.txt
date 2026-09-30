@@ -8,33 +8,18 @@ add_library(NeoN::NeoN ALIAS NeoN) # dummy target
 include(GNUInstallDirs)
 
 set(NeoN_SRCS
-    "core/primitives/vec3.cpp"
-    "core/primitives/tensor.cpp"
-    "core/primitives/symmTensor.cpp"
-    "core/time.cpp"
     "core/vector/vector.cpp"
     "core/vector/vectorFreeFunctions.cpp"
-    "core/database/database.cpp"
-    "core/database/collection.cpp"
-    "core/database/document.cpp"
     "core/database/fieldCollection.cpp"
     "core/database/oldTimeCollection.cpp"
     "core/backendInfo.cpp"
     "core/initialization.cpp"
     "executor/executor.cpp"
-    "core/memory/umpire.cpp"
     "core/memory/kokkos.cpp"
-    "core/dictionary.cpp"
-    "core/demangle.cpp"
-    "core/tokenList.cpp"
-    "core/logging.cpp"
     "dsl/coeff.cpp"
     "dsl/explicit.cpp"
     "dsl/spatialOperator.cpp"
     "dsl/temporalOperator.cpp"
-    "executor/CPUExecutor.cpp"
-    "executor/GPUExecutor.cpp"
-    "executor/serialExecutor.cpp"
     "linearAlgebra/utilities.cpp"
     "linearAlgebra/matrix.cpp"
     "linearAlgebra/ginkgo/ginkgo.cpp"
@@ -43,7 +28,6 @@ set(NeoN_SRCS
     "linearAlgebra/cooSparsityPattern.cpp"
     "linearAlgebra/csrSparsityPattern.cpp"
     "linearAlgebra/meshIterationStrategies.cpp"
-    "mesh/unstructured/boundaryMesh.cpp"
     "mesh/unstructured/unstructuredMesh.cpp"
     "mesh/unstructured/uniformMeshDataGenerator.cpp"
     "finiteVolume/cellCentred/stencil/geometryScheme.cpp"
@@ -77,9 +61,34 @@ set(NeoN_SRCS
     "timeIntegration/rungeKutta.cpp")
 
 if(NeoN_WITH_MPI)
-  list(APPEND NeoN_SRCS "core/mpi/halfDuplexCommBuffer.cpp" "mesh/unstructured/communicator.cpp"
+  list(APPEND NeoN_SRCS "mesh/unstructured/communicator.cpp"
        "mesh/unstructured/distributedUnstructuredMesh.cpp"
        "linearAlgebra/ginkgo/ginkgoDistributed.cpp")
+endif()
+
+# Host-only translation units (see doc/splitCompilation.rst). They include no Kokkos header, launch
+# no kernels and are compiled with NeoN_HOST_CXX_STANDARD as an object library linked into NeoN. The
+# device TUs above stay at CMAKE_CXX_STANDARD (C++20), the level nvcc supports.
+set(NeoN_HOST_SRCS
+    "core/primitives/vec3.cpp"
+    "core/primitives/tensor.cpp"
+    "core/primitives/symmTensor.cpp"
+    "core/time.cpp"
+    "core/database/database.cpp"
+    "core/database/collection.cpp"
+    "core/database/document.cpp"
+    "core/memory/umpire.cpp"
+    "core/dictionary.cpp"
+    "core/demangle.cpp"
+    "core/tokenList.cpp"
+    "core/logging.cpp"
+    "executor/CPUExecutor.cpp"
+    "executor/GPUExecutor.cpp"
+    "executor/serialExecutor.cpp"
+    "mesh/unstructured/boundaryMesh.cpp")
+
+if(NeoN_WITH_MPI)
+  list(APPEND NeoN_HOST_SRCS "core/mpi/halfDuplexCommBuffer.cpp")
 endif()
 
 # Only mark sources as the CUDA language in cmake-language mode. In traditional Kokkos mode
@@ -92,13 +101,18 @@ endif()
 
 target_sources(NeoN PRIVATE ${NeoN_SRCS})
 
+neon_add_host_object_library(NeoN_host SOURCES ${NeoN_HOST_SRCS})
+target_sources(NeoN PRIVATE $<TARGET_OBJECTS:NeoN_host>)
+
 if(NeoN_BUILD_PYTHON_BINDINGS)
   add_subdirectory(bindings)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Sanitizer.cmake)
-enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
-                  NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)
+foreach(_neon_target NeoN NeoN_host)
+  enable_sanitizers(${_neon_target} NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
+                    NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)
+endforeach()
 
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)

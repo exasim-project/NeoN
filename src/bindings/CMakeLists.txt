@@ -49,6 +49,23 @@ set(NeoN_PYTHON_BINDING_SRCS
     database/collection.cpp
     database/database.cpp)
 
+# Bindings that only touch Kokkos-free NeoN headers are host-only TUs: compiled at
+# NeoN_HOST_CXX_STANDARD into _neon_host below and never marked LANGUAGE CUDA.
+set(NeoN_PYTHON_HOST_BINDING_SRCS
+    neon.cpp
+    executors.cpp
+    scalar.cpp
+    vec3.cpp
+    tensor.cpp
+    vectors.cpp
+    boundaryMesh.cpp
+    inputs.cpp
+    initialization.cpp
+    database/document.cpp
+    database/collection.cpp
+    database/database.cpp)
+list(REMOVE_ITEM NeoN_PYTHON_BINDING_SRCS ${NeoN_PYTHON_HOST_BINDING_SRCS})
+
 if(NeoN_ENABLE_CUDA AND Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
   # CUDA-enabled Kokkos headers require translation units that include them to use CUDA mode. Only
   # in cmake-language mode; traditional mode compiles these as C++ via nvcc_wrapper.
@@ -63,6 +80,20 @@ if(NeoN_NANOBIND_SHARED)
 endif()
 
 nanobind_add_module(_neon ${NeoN_NANOBIND_LINKAGE} NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
+
+# The host-only bindings need nanobind's usage requirements (headers, Python, NB_SHARED). Take them
+# from whichever libnanobind variant nanobind_add_module linked to _neon rather than guessing its
+# name, which depends on the nanobind version and the module options.
+neon_add_host_object_library(_neon_host SOURCES ${NeoN_PYTHON_HOST_BINDING_SRCS})
+set_target_properties(_neon_host PROPERTIES CXX_VISIBILITY_PRESET default)
+get_target_property(_neon_link_libraries _neon LINK_LIBRARIES)
+foreach(_lib IN LISTS _neon_link_libraries)
+  if(_lib MATCHES "^nanobind")
+    target_link_libraries(_neon_host PRIVATE ${_lib})
+  endif()
+endforeach()
+target_include_directories(_neon_host PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_sources(_neon PRIVATE $<TARGET_OBJECTS:_neon_host>)
 
 # nanobind builds the module -fvisibility=hidden, which hides the typeinfo it emits for the types
 # crossing into libNeoN. This is the reason NEON_TYPE_VISIBLE exists (core/visibility.hpp); applying
