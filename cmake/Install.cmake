@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Unlicense
 
 install(
-  TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
+  TARGETS NeoN NeoN_config_api NeoN_public_api NeoN_options NeoN_warnings
   EXPORT ${PROJECT_NAME}Targets
   INCLUDES
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

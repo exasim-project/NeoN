@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -20,7 +22,7 @@ using SurfScalarField = SurfaceField<scalar>;
 namespace detail
 {
 
-KOKKOS_INLINE_FUNCTION
+NEON_INLINE_FUNCTION
 scalar ddtFluxCorrLimiter(const scalar fluxMag, const scalar corrMag)
 {
     constexpr scalar small = 1.0e-30;

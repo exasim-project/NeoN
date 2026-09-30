@@ -8,6 +8,8 @@
 #include <tuple>
 #include <Kokkos_Core.hpp>
 
+#include "NeoN/core/executor/kokkosExecutor.hpp"
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/view.hpp"
@@ -34,7 +36,7 @@ auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
     return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
     {
         Kokkos::deep_copy(
-            dstExec.createKokkosView(dstPtr, size), srcExec.createKokkosView(srcPtr, size)
+            createKokkosView(dstExec, dstPtr, size), createKokkosView(srcExec, srcPtr, size)
         );
     };
 };

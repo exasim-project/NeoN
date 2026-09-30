@@ -9,7 +9,6 @@
 
 #if NF_WITH_PETSC
 
-#include <Kokkos_Core.hpp>
 #include <petscvec_kokkos.hpp>
 #include <petscmat.h>
 #include <petscksp.h>

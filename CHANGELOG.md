@@ -13,6 +13,7 @@
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
+- Add split compilation: host-only translation units (configuration, database, logging, most Python bindings) never include Kokkos and build at `NeoN_HOST_CXX_STANDARD` (20, 23 or 26), while device code stays at C++20. Executors no longer expose Kokkos types; use `kokkosExecSpace<E>`, `underlyingExec(e)` and `createKokkosView(e, ptr, n)` from `executor/kokkosExecutor.hpp` instead
 
 ### Misc
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)

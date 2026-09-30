@@ -4,30 +4,34 @@
 
 #pragma once
 
+#if defined(NEON_HOST_ONLY_TU)
+#error "parallelAlgorithms.hpp launches Kokkos kernels and must not be included from a host-only \
+translation unit. Move the kernel into a device TU and call it through a non-template function."
+#endif
+
 #include <Kokkos_Core.hpp>
 #include <type_traits>
 
 #include "NeoN/core/logging.hpp"
+#include "NeoN/core/portability.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/executor/kokkosExecutor.hpp"
 
-#ifdef NN_WITH_KOKKOS
+// NeoN_public_api always defines NN_WITH_KOKKOS (to 1 or 0), so this has to test the value, not
+// whether the macro is defined. NeoN has no non-Kokkos kernel backend.
+#if !NN_WITH_KOKKOS
+#error "NeoN kernels require Kokkos (NeoN_WITH_KOKKOS=ON)"
+#endif
+
 #define NEON_LAMBDA KOKKOS_LAMBDA
-#define NEON_INLINE_FUNCTION KOKKOS_INLINE_FUNCTION
+
 namespace NeoN
 {
 // just pull Kokkos::atomic_* functions into NeoN namespace
 using Kokkos::atomic_add;
 using Kokkos::atomic_sub;
 }
-#else
-#define NEON_LAMBDA [&]
-namespace NeoN
-{
-// using atomic_add = [](auto& a, auto b){a+b;};
-// using atomic_sub = [](auto& a, auto b){a-b;};
-}
-#endif
 
 namespace NeoN
 {
@@ -74,7 +78,7 @@ void parallelFor(
     }
     else
     {
-        using runOn = typename ExecutorType::exec;
+        using runOn = kokkosExecSpace<ExecutorType>;
         // Pass `kernel` DIRECTLY to Kokkos (do not wrap it in another NEON_LAMBDA). The wrapper
         // makes `kernel`'s type only ever HOST-copied (into the wrapper's closure) and never the
         // type actually device-launched, so nvcc emits no — or, under -O3, a NULL — host copy
@@ -131,7 +135,7 @@ void parallelFor(
     }
     else
     {
-        using runOn = typename Executor::exec;
+        using runOn = kokkosExecSpace<Executor>;
         Kokkos::parallel_for(
             name,
             Kokkos::RangePolicy<runOn>(0, view.size()),
@@ -175,7 +179,7 @@ void parallelReduce(
     }
     else
     {
-        using runOn = typename Executor::exec;
+        using runOn = kokkosExecSpace<Executor>;
         Kokkos::parallel_reduce(
             "parallelReduce", Kokkos::RangePolicy<runOn>(start, end), kernel, value
         );
@@ -213,7 +217,7 @@ void parallelReduce(
     }
     else
     {
-        using runOn = typename Executor::exec;
+        using runOn = kokkosExecSpace<Executor>;
         Kokkos::parallel_reduce(
             "parallelReduce", Kokkos::RangePolicy<runOn>(0, field.size()), kernel, value
         );
@@ -232,7 +236,7 @@ void parallelScan(
 )
 {
     auto [start, end] = range;
-    using runOn = typename Executor::exec;
+    using runOn = kokkosExecSpace<Executor>;
     Kokkos::parallel_scan("parallelScan", Kokkos::RangePolicy<runOn>(start, end), kernel);
 }
 
@@ -253,7 +257,7 @@ void parallelScan(
 )
 {
     auto [start, end] = range;
-    using runOn = typename Executor::exec;
+    using runOn = kokkosExecSpace<Executor>;
     Kokkos::parallel_scan(
         "parallelScan", Kokkos::RangePolicy<runOn>(start, end), kernel, returnValue
     );

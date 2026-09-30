@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp>
+#include "NeoN/core/portability.hpp"
 
 #include <limits>
 #include <span>
@@ -45,16 +45,16 @@ public:
 
     /* Constructor from existing std::span
      */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     View(std::span<ValueType> in) : View(in.begin(), in.end()) {}
 
-    // KOKKOS_INLINE_FUNCTION (i.e. __host__ __device__) so element access is valid inside device
+    // NEON_INLINE_FUNCTION (i.e. __host__ __device__) so element access is valid inside device
     // kernels, consistent with the other accessors below. NOTE: this forwards to
     // std::span::operator[], itself a bare constexpr __host__ function, so on CUDA correctness
     // still relies on --expt-relaxed-constexpr (enabled via Kokkos_ENABLE_CUDA_CONSTEXPR=ON in
     // cmake/AutoEnableDevice.cmake). Without that flag nvcc miscompiles the device write silently
     // (warning 20013); the build promotes that warning to an error to prevent shipping it.
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
@@ -62,7 +62,7 @@ public:
         {
             if (abortOnFail)
             {
-                Kokkos::abort("Index is out of range.");
+                NEON_ABORT("Index is out of range.");
             }
             else
             {
@@ -73,16 +73,16 @@ public:
         return std::span<ValueType>::operator[](static_cast<size_t>(index));
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     localIdx size() const { return static_cast<localIdx>(base::size()); }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     View<ValueType> subview(localIdx start, localIdx length) const
     {
         return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
     }
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     View<ValueType> subview(localIdx start) const
     {
         return base::subspan(static_cast<size_t>(start));

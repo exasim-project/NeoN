@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp>
-
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"

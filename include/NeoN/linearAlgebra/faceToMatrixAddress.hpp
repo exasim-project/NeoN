@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include "NeoN/core/array.hpp"
 #include "NeoN/core/copyTo.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
@@ -28,7 +30,7 @@ struct FaceToMatrixView
     /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
      *  diagIdx(celli) = rowOffs[celli] + diagOffset[celli]
      */
-    KOKKOS_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
+    NEON_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
     {
         return rowOffs[celli] + diagOffset[celli];
     }
@@ -40,7 +42,7 @@ struct FaceToMatrixView
      *
      *  upperIdx(own, f) = rowOffs[own] + ownerOffset[f]
      */
-    KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx own, localIdx faceIdx) const
+    NEON_INLINE_FUNCTION localIdx upperIdx(localIdx own, localIdx faceIdx) const
     {
         return rowOffs[own] + ownerOffset[faceIdx];
     }
@@ -52,7 +54,7 @@ struct FaceToMatrixView
      *
      *  lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]
      */
-    KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx nei, localIdx faceIdx) const
+    NEON_INLINE_FUNCTION localIdx lowerIdx(localIdx nei, localIdx faceIdx) const
     {
         return rowOffs[nei] + neighbourOffset[faceIdx];
     }
