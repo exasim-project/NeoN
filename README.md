@@ -10,8 +10,6 @@
 
 ![image](https://raw.githubusercontent.com/exasim-project/NeoN/refs/heads/color-logo/assets/NeonLogoCrop.png)
 
-# NeoN
-
 NeoN is an open-source, high-performance C++ CFD library for modern heterogeneous computing systems. It currently provides data structures, parallel algorithms, and numerical infrastructure for the finite volume method.
 
 By combining finite-volume abstractions with modern C++ and performance-portable backends, NeoN enables developers to build maintainable, scalable, and high-performance fluid-flow solvers without writing architecture-specific code for each hardware platform.
