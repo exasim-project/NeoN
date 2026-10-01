@@ -43,25 +43,30 @@
 \DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00039}00039\ }
 \DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00040}00040\ \textcolor{comment}{/*\ @brief\ Abort\ the\ program\ from\ host\ or\ device\ code.}}
 \DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00041}00041\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00042}00042\ \textcolor{comment}{\ *\ Replacement\ for\ Kokkos::abort\ in\ headers\ that\ must\ stay\ Kokkos-\/free.\ On\ the\ device\ the\ message}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00043}00043\ \textcolor{comment}{\ *\ is\ printed\ and\ the\ kernel\ traps;\ on\ the\ host\ it\ is\ printed\ to\ stderr\ before\ std::abort.}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00044}00044\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00045}\mbox{\hyperlink{namespaceNeoN_1_1detail_aee6093469a8c178dcaf9ddaa87650637}{00045}}\ \mbox{\hyperlink{portability_8hpp_a6302db3d60e73669493bcfacc2e80d5c}{NEON\_INLINE\_FUNCTION}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1detail_aee6093469a8c178dcaf9ddaa87650637}{abort}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ message)}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00046}00046\ \{}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00047}00047\ \textcolor{preprocessor}{\#if\ defined(\_\_CUDA\_ARCH\_\_)}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00048}00048\ \ \ \ \ printf(\textcolor{stringliteral}{"{}NeoN\ abort:\ \%s\(\backslash\)n"{}},\ message);}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00049}00049\ \ \ \ \ \_\_trap();}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00050}00050\ \textcolor{preprocessor}{\#elif\ defined(\_\_HIP\_DEVICE\_COMPILE\_\_)\ ||\ defined(\_\_SYCL\_DEVICE\_ONLY\_\_)}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00051}00051\ \ \ \ \ (void)message;}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00052}00052\ \ \ \ \ \_\_builtin\_trap();}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00053}00053\ \textcolor{preprocessor}{\#else}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00054}00054\ \ \ \ \ std::fprintf(stderr,\ \textcolor{stringliteral}{"{}NeoN\ abort:\ \%s\(\backslash\)n"{}},\ message);}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00055}00055\ \ \ \ \ std::abort();}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00056}00056\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00057}00057\ \}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00058}00058\ }
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00059}00059\ \}\ \textcolor{comment}{//\ namespace\ NeoN::detail}}
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00061}\mbox{\hyperlink{portability_8hpp_ab225560f6c03fd75b35e5dab6af28c2e}{00061}}\ \textcolor{preprocessor}{\#define\ NEON\_ABORT(message)\ ::NeoN::detail::abort(message)}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00042}00042\ \textcolor{comment}{\ *\ Replacement\ for\ Kokkos::abort\ in\ headers\ that\ must\ stay\ Kokkos-\/free.\ On\ CUDA\ and\ HIP\ devices\ the}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00043}00043\ \textcolor{comment}{\ *\ message\ is\ printed\ and\ the\ kernel\ traps;\ on\ SYCL\ devices\ the\ kernel\ traps\ without\ a\ message,}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00044}00044\ \textcolor{comment}{\ *\ since\ device\ printf\ needs\ the\ SYCL\ headers;\ on\ the\ host\ it\ is\ printed\ to\ stderr\ before}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00045}00045\ \textcolor{comment}{\ *\ std::abort.}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00046}00046\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00047}\mbox{\hyperlink{namespaceNeoN_1_1detail_aee6093469a8c178dcaf9ddaa87650637}{00047}}\ \mbox{\hyperlink{portability_8hpp_a6302db3d60e73669493bcfacc2e80d5c}{NEON\_INLINE\_FUNCTION}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1detail_aee6093469a8c178dcaf9ddaa87650637}{abort}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ message)}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00048}00048\ \{}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00049}00049\ \textcolor{preprocessor}{\#if\ defined(\_\_CUDA\_ARCH\_\_)}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00050}00050\ \ \ \ \ printf(\textcolor{stringliteral}{"{}NeoN\ abort:\ \%s\(\backslash\)n"{}},\ message);}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00051}00051\ \ \ \ \ \_\_trap();}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00052}00052\ \textcolor{preprocessor}{\#elif\ defined(\_\_HIP\_DEVICE\_COMPILE\_\_)}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00053}00053\ \ \ \ \ printf(\textcolor{stringliteral}{"{}NeoN\ abort:\ \%s\(\backslash\)n"{}},\ message);}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00054}00054\ \ \ \ \ \_\_builtin\_trap();}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00055}00055\ \textcolor{preprocessor}{\#elif\ defined(\_\_SYCL\_DEVICE\_ONLY\_\_)}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00056}00056\ \ \ \ \ (void)message;}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00057}00057\ \ \ \ \ \_\_builtin\_trap();}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00058}00058\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00059}00059\ \ \ \ \ std::fprintf(stderr,\ \textcolor{stringliteral}{"{}NeoN\ abort:\ \%s\(\backslash\)n"{}},\ message);}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00060}00060\ \ \ \ \ std::abort();}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00061}00061\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00062}00062\ \}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00064}00064\ \}\ \textcolor{comment}{//\ namespace\ NeoN::detail}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00066}\mbox{\hyperlink{portability_8hpp_ab225560f6c03fd75b35e5dab6af28c2e}{00066}}\ \textcolor{preprocessor}{\#define\ NEON\_ABORT(message)\ ::NeoN::detail::abort(message)}}
 
 \end{DoxyCode}

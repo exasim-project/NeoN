@@ -1368,7 +1368,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/portability.hpp" line="61" column="9" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/portability.hpp" bodystart="61" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/portability.hpp" line="66" column="9" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/portability.hpp" bodystart="66" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -1417,26 +1417,31 @@
 <codeline lineno="39"><highlight class="normal"></highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Abort<sp/>the<sp/>program<sp/>from<sp/>host<sp/>or<sp/>device<sp/>code.</highlight></codeline>
 <codeline lineno="41"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="42"><highlight class="comment"><sp/>*<sp/>Replacement<sp/>for<sp/>Kokkos::abort<sp/>in<sp/>headers<sp/>that<sp/>must<sp/>stay<sp/>Kokkos-free.<sp/>On<sp/>the<sp/>device<sp/>the<sp/>message</highlight></codeline>
-<codeline lineno="43"><highlight class="comment"><sp/>*<sp/>is<sp/>printed<sp/>and<sp/>the<sp/>kernel<sp/>traps;<sp/>on<sp/>the<sp/>host<sp/>it<sp/>is<sp/>printed<sp/>to<sp/>stderr<sp/>before<sp/>std::abort.</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45" refid="namespaceNeoN_1_1detail_1aee6093469a8c178dcaf9ddaa87650637" refkind="member"><highlight class="normal"><ref refid="portability_8hpp_1a6302db3d60e73669493bcfacc2e80d5c" kindref="member">NEON_INLINE_FUNCTION</ref><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1detail_1aee6093469a8c178dcaf9ddaa87650637" kindref="member">abort</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>message)</highlight></codeline>
-<codeline lineno="46"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__CUDA_ARCH__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>printf(</highlight><highlight class="stringliteral">&quot;NeoN<sp/>abort:<sp/>%s\n&quot;</highlight><highlight class="normal">,<sp/>message);</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>__trap();</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__HIP_DEVICE_COMPILE__)<sp/>||<sp/>defined(__SYCL_DEVICE_ONLY__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>(void)message;</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>__builtin_trap();</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>std::fprintf(stderr,<sp/></highlight><highlight class="stringliteral">&quot;NeoN<sp/>abort:<sp/>%s\n&quot;</highlight><highlight class="normal">,<sp/>message);</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>std::abort();</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="57"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::detail</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight></codeline>
-<codeline lineno="61" refid="portability_8hpp_1ab225560f6c03fd75b35e5dab6af28c2e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NEON_ABORT(message)<sp/>::NeoN::detail::abort(message)</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/>*<sp/>Replacement<sp/>for<sp/>Kokkos::abort<sp/>in<sp/>headers<sp/>that<sp/>must<sp/>stay<sp/>Kokkos-free.<sp/>On<sp/>CUDA<sp/>and<sp/>HIP<sp/>devices<sp/>the</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/>*<sp/>message<sp/>is<sp/>printed<sp/>and<sp/>the<sp/>kernel<sp/>traps;<sp/>on<sp/>SYCL<sp/>devices<sp/>the<sp/>kernel<sp/>traps<sp/>without<sp/>a<sp/>message,</highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/>*<sp/>since<sp/>device<sp/>printf<sp/>needs<sp/>the<sp/>SYCL<sp/>headers;<sp/>on<sp/>the<sp/>host<sp/>it<sp/>is<sp/>printed<sp/>to<sp/>stderr<sp/>before</highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/>*<sp/>std::abort.</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="namespaceNeoN_1_1detail_1aee6093469a8c178dcaf9ddaa87650637" refkind="member"><highlight class="normal"><ref refid="portability_8hpp_1a6302db3d60e73669493bcfacc2e80d5c" kindref="member">NEON_INLINE_FUNCTION</ref><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1detail_1aee6093469a8c178dcaf9ddaa87650637" kindref="member">abort</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>message)</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__CUDA_ARCH__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>printf(</highlight><highlight class="stringliteral">&quot;NeoN<sp/>abort:<sp/>%s\n&quot;</highlight><highlight class="normal">,<sp/>message);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>__trap();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__HIP_DEVICE_COMPILE__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>printf(</highlight><highlight class="stringliteral">&quot;NeoN<sp/>abort:<sp/>%s\n&quot;</highlight><highlight class="normal">,<sp/>message);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>__builtin_trap();</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__SYCL_DEVICE_ONLY__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>(void)message;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>__builtin_trap();</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>std::fprintf(stderr,<sp/></highlight><highlight class="stringliteral">&quot;NeoN<sp/>abort:<sp/>%s\n&quot;</highlight><highlight class="normal">,<sp/>message);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>std::abort();</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::detail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="portability_8hpp_1ab225560f6c03fd75b35e5dab6af28c2e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NEON_ABORT(message)<sp/>::NeoN::detail::abort(message)</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/portability.hpp"/>
   </compounddef>
