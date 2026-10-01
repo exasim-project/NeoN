@@ -39,15 +39,20 @@ namespace NeoN::detail
 
 /* @brief Abort the program from host or device code.
  *
- * Replacement for Kokkos::abort in headers that must stay Kokkos-free. On the device the message
- * is printed and the kernel traps; on the host it is printed to stderr before std::abort.
+ * Replacement for Kokkos::abort in headers that must stay Kokkos-free. On CUDA and HIP devices the
+ * message is printed and the kernel traps; on SYCL devices the kernel traps without a message,
+ * since device printf needs the SYCL headers; on the host it is printed to stderr before
+ * std::abort.
  */
 NEON_INLINE_FUNCTION void abort(const char* message)
 {
 #if defined(__CUDA_ARCH__)
     printf("NeoN abort: %s\n", message);
     __trap();
-#elif defined(__HIP_DEVICE_COMPILE__) || defined(__SYCL_DEVICE_ONLY__)
+#elif defined(__HIP_DEVICE_COMPILE__)
+    printf("NeoN abort: %s\n", message);
+    __builtin_trap();
+#elif defined(__SYCL_DEVICE_ONLY__)
     (void)message;
     __builtin_trap();
 #else

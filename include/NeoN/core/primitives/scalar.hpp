@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "NeoN/core/portability.hpp"
 
 #include "NeoN/core/primitives/traits.hpp"
