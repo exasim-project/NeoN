@@ -176,7 +176,7 @@ std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
         {
             using ExecType = std::decay_t<decltype(concreteExec)>;
-            return gko::ext::kokkos::create_executor(kokkosExecSpace<ExecType> {});
+            return gko::ext::kokkos::create_executor(NeoN::kokkosExecSpace<ExecType> {});
         },
         exec
     );
