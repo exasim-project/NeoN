@@ -7,6 +7,7 @@
 #include <chrono>
 
 #include "NeoN/core/error.hpp"
+#include "NeoN/core/portability.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 
@@ -56,7 +57,7 @@ public:
 
                 if (diagIdx < 0)
                 {
-                    Kokkos::abort("DiagonalSolver: diagonal entry not found");
+                    NEON_ABORT("DiagonalSolver: diagonal entry not found");
                 }
 
                 xV[i] = bV[i] / mtxV.values[diagIdx];
@@ -104,7 +105,7 @@ public:
 
                 if (diagIdx < 0)
                 {
-                    Kokkos::abort("DiagonalSolver<Vec3>: diagonal entry not found");
+                    NEON_ABORT("DiagonalSolver<Vec3>: diagonal entry not found");
                 }
 
                 const Vec3& a = mtxV.values[diagIdx];

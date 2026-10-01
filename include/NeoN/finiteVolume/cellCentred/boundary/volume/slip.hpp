@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp>
-
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp"

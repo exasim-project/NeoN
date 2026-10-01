@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
@@ -42,7 +44,7 @@ struct MatrixView
      * @param j The column index.
      * @return Reference to the matrix element if it exists.
      */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     ValueType& entry(const localIdx i, const localIdx j) const
     {
         return values[sparsity.entry(i, j)];
@@ -53,7 +55,7 @@ struct MatrixView
      * @param offset The offset, from 0, to the value.
      * @return Reference to the matrix element if it exists.
      */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     ValueType& entry(const localIdx offset) const { return values[offset]; }
 
     View<ValueType> values; //!< View to the values of the CSR matrix.

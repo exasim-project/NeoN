@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
 
@@ -35,7 +37,7 @@ public:
 
     Coeff(const Vector<scalar>& field);
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     scalar operator[](const localIdx i) const { return (hasView_) ? view_[i] * coeff_ : coeff_; }
 
     bool hasView();

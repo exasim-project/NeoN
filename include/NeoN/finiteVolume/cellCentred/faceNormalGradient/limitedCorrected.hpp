@@ -13,8 +13,6 @@
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-#include <Kokkos_Core.hpp>
-
 #include <functional>
 
 

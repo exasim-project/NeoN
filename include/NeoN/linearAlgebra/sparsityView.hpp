@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include "NeoN/core/view.hpp"
 
 namespace NeoN::la
@@ -39,7 +41,7 @@ struct SparsityView
      * @param j The column index.
      * @return Reference to the matrix element if it exists.
      */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     IndexType entry(const IndexType i, const IndexType j) const
     {
         const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
@@ -52,7 +54,7 @@ struct SparsityView
             }
             if (colIdxs[localCol] > j) break;
         }
-        Kokkos::abort("Memory not allocated for CSR matrix component.");
+        NEON_ABORT("Memory not allocated for CSR matrix component.");
         return 0; // compiler warning suppression.
     }
 

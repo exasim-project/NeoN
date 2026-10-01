@@ -4,9 +4,6 @@
 
 #pragma once
 
-
-#include <Kokkos_Core.hpp>
-
 #include "NeoN/core/memory/allocator.hpp"
 
 namespace NeoN
@@ -19,9 +16,6 @@ class KokkosAllocator : public AllocatorStrategy
 {
 
 public:
-
-    using GPUMemSpace = Kokkos::DefaultExecutionSpace::memory_space;
-    using CPUMemSpace = Kokkos::HostSpace;
 
     void* alloc(size_t size) override;
 

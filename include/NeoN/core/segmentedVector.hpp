@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include "NeoN/core/view.hpp"
 #include "NeoN/core/copyTo.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -34,7 +36,7 @@ struct IntervalOffsetScan
     View<const IndexType> intervals;
     View<IndexType> offsets;
 
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     void operator()(const localIdx i, IndexType& update, const bool final) const
     {
         update += intervals[i];
@@ -106,7 +108,7 @@ public:
      * @param segI The index of the segment.
      * @return A pair of indices representing the start and end of the segment.
      */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Kokkos::pair<IndexType, IndexType> bounds(localIdx segI) const
     {
         return Kokkos::pair<IndexType, IndexType> {segments[segI], segments[segI + 1]};
@@ -118,7 +120,7 @@ public:
      * @param segI The index of the segment.
      * @return A pair of indices representing the start and length of the segment.
      */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     Kokkos::pair<IndexType, IndexType> range(localIdx segI) const
     {
         return Kokkos::pair<IndexType, IndexType> {
@@ -133,7 +135,7 @@ public:
      * @param segI The index of the segment.
      * @return A subview of values corresponding to the segment.
      */
-    KOKKOS_INLINE_FUNCTION View<ValueType> view(localIdx segI) const
+    NEON_INLINE_FUNCTION View<ValueType> view(localIdx segI) const
     {
         auto [start, length] = range(segI);
         return values.subview(start, length);
@@ -145,7 +147,7 @@ public:
      * @param i The index of the element.
      * @return The value of the element at the specified index.
      */
-    KOKKOS_INLINE_FUNCTION
+    NEON_INLINE_FUNCTION
     IndexType operator[](localIdx i) const { return segments[i]; }
 };
 
