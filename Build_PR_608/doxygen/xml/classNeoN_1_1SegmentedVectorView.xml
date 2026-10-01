@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1SegmentedVectorView" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::SegmentedVectorView</compoundname>
+    <includes refid="segmentedVector_8hpp" local="no">segmentedVector.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename ValueType</type>
+      </param>
+      <param>
+        <type>typename IndexType</type>
+        <defval><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">NeoN::localIdx</ref></defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1SegmentedVectorView_1ac9d5ff1ed74531fe956a31da40b0565e" prot="public" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
+        <definition>View&lt;ValueType&gt; NeoN::SegmentedVectorView&lt; ValueType, IndexType &gt;::values</definition>
+        <argsstring></argsstring>
+        <name>values</name>
+        <qualifiedname>NeoN::SegmentedVectorView::values</qualifiedname>
+        <briefdescription>
+<para><ref refid="classA" kindref="compound">A</ref> <ref refid="classNeoN_1_1View" kindref="compound">View</ref> with the values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="98" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1SegmentedVectorView_1a0e101da590fc55027c7a0d0e986d27d3" prot="public" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; IndexType &gt;</type>
+        <definition>View&lt;IndexType&gt; NeoN::SegmentedVectorView&lt; ValueType, IndexType &gt;::segments</definition>
+        <argsstring></argsstring>
+        <name>segments</name>
+        <qualifiedname>NeoN::SegmentedVectorView::segments</qualifiedname>
+        <briefdescription>
+<para><ref refid="classA" kindref="compound">A</ref> <ref refid="classNeoN_1_1View" kindref="compound">View</ref> of indices representing the segments. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="103" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="103" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVectorView_1ad28f5eefb273e2ec350ac5140d802052" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="portability_8hpp_1a6302db3d60e73669493bcfacc2e80d5c" kindref="member">NEON_INLINE_FUNCTION</ref> Kokkos::pair&lt; IndexType, IndexType &gt;</type>
+        <definition>NEON_INLINE_FUNCTION Kokkos::pair&lt; IndexType, IndexType &gt; NeoN::SegmentedVectorView&lt; ValueType, IndexType &gt;::bounds</definition>
+        <argsstring>(localIdx segI) const</argsstring>
+        <name>bounds</name>
+        <qualifiedname>NeoN::SegmentedVectorView::bounds</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>segI</declname>
+        </param>
+        <briefdescription>
+<para>Get the bounds of a segment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>segI</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the segment. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> pair of indices representing the start and end of the segment. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="112" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="112" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVectorView_1a9501941dfe782a38fb7cc92fe987b032" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="portability_8hpp_1a6302db3d60e73669493bcfacc2e80d5c" kindref="member">NEON_INLINE_FUNCTION</ref> Kokkos::pair&lt; IndexType, IndexType &gt;</type>
+        <definition>NEON_INLINE_FUNCTION Kokkos::pair&lt; IndexType, IndexType &gt; NeoN::SegmentedVectorView&lt; ValueType, IndexType &gt;::range</definition>
+        <argsstring>(localIdx segI) const</argsstring>
+        <name>range</name>
+        <qualifiedname>NeoN::SegmentedVectorView::range</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>segI</declname>
+        </param>
+        <briefdescription>
+<para>Get the range, ie. [start,end), of a segment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>segI</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the segment. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> pair of indices representing the start and length of the segment. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="124" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="124" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVectorView_1a0c7600264105c67ecbced1b5dae31314" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="portability_8hpp_1a6302db3d60e73669493bcfacc2e80d5c" kindref="member">NEON_INLINE_FUNCTION</ref> <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
+        <definition>NEON_INLINE_FUNCTION View&lt; ValueType &gt; NeoN::SegmentedVectorView&lt; ValueType, IndexType &gt;::view</definition>
+        <argsstring>(localIdx segI) const</argsstring>
+        <name>view</name>
+        <qualifiedname>NeoN::SegmentedVectorView::view</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>segI</declname>
+        </param>
+        <briefdescription>
+<para>Get a subview of values corresponding to a segment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>segI</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the segment. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> subview of values corresponding to the segment. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="138" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="138" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1SegmentedVectorView_1ae71b726e57ae827bfe1f273a656dc187" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="portability_8hpp_1a6302db3d60e73669493bcfacc2e80d5c" kindref="member">NEON_INLINE_FUNCTION</ref> IndexType</type>
+        <definition>NEON_INLINE_FUNCTION IndexType NeoN::SegmentedVectorView&lt; ValueType, IndexType &gt;::operator[]</definition>
+        <argsstring>(localIdx i) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>NeoN::SegmentedVectorView::operator[]</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+<para>Access an element of the segments. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the element. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of the element at the specified index. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="151" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="151" bodyend="151"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classA" kindref="compound">A</ref> class representing a segment of indices. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>IndexType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the indices. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::SegmentedVectorView&lt; ValueType, IndexType &gt;</label>
+        <link refid="classNeoN_1_1SegmentedVectorView"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>segments</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN::View&lt; NeoN::localIdx &gt;</label>
+        <link refid="classNeoN_1_1View"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::span&lt; NeoN::localIdx  &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" line="91" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/segmentedVector.hpp" bodystart="92" bodyend="152"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1SegmentedVectorView_1ad28f5eefb273e2ec350ac5140d802052" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVectorView</scope><name>bounds</name></member>
+      <member refid="classNeoN_1_1SegmentedVectorView_1ae71b726e57ae827bfe1f273a656dc187" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVectorView</scope><name>operator[]</name></member>
+      <member refid="classNeoN_1_1SegmentedVectorView_1a9501941dfe782a38fb7cc92fe987b032" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVectorView</scope><name>range</name></member>
+      <member refid="classNeoN_1_1SegmentedVectorView_1a0e101da590fc55027c7a0d0e986d27d3" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVectorView</scope><name>segments</name></member>
+      <member refid="classNeoN_1_1SegmentedVectorView_1ac9d5ff1ed74531fe956a31da40b0565e" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVectorView</scope><name>values</name></member>
+      <member refid="classNeoN_1_1SegmentedVectorView_1a0c7600264105c67ecbced1b5dae31314" prot="public" virt="non-virtual"><scope>NeoN::SegmentedVectorView</scope><name>view</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

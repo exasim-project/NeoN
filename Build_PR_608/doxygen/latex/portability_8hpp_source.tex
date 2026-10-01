@@ -1,0 +1,67 @@
+\doxysection{portability.\+hpp}
+\hypertarget{portability_8hpp_source}{}\label{portability_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/portability.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/portability.hpp}}
+\mbox{\hyperlink{portability_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00007}00007\ \textcolor{comment}{/*\ @file\ portability.hpp}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00008}00008\ \textcolor{comment}{\ *\ @brief\ Kokkos-\/free\ function\ annotations\ shared\ by\ device\ and\ host-\/only\ translation\ units.}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00009}00009\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00010}00010\ \textcolor{comment}{\ *\ NeoN\ compiles\ in\ two\ halves\ (see\ doc/splitCompilation.rst):}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00011}00011\ \textcolor{comment}{\ *\ \ \ -\/\ device\ TUs\ include\ Kokkos,\ may\ launch\ kernels\ (NEON\_LAMBDA,\ parallelFor)\ and\ are\ built\ with}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00012}00012\ \textcolor{comment}{\ *\ \ \ \ \ the\ device\ toolchain\ at\ C++20;}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00013}00013\ \textcolor{comment}{\ *\ \ \ -\/\ host-\/only\ TUs\ never\ see\ a\ Kokkos\ header\ and\ may\ be\ built\ with\ a\ different\ host\ compiler\ and}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00014}00014\ \textcolor{comment}{\ *\ \ \ \ \ a\ newer\ standard\ (NeoN\_HOST\_CXX\_STANDARD).\ They\ are\ compiled\ with\ NEON\_HOST\_ONLY\_TU=1.}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00015}00015\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00016}00016\ \textcolor{comment}{\ *\ Headers\ shared\ by\ both\ halves\ must\ therefore\ not\ include\ Kokkos.\ Functions\ that\ have\ to\ be}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ callable\ from\ kernels\ use\ NEON\_INLINE\_FUNCTION\ from\ this\ header\ instead\ of}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ KOKKOS\_INLINE\_FUNCTION.\ The\ expansion\ matches\ Kokkos'\ own\ for\ the\ CUDA\ and\ HIP\ backends;\ for\ all}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ other\ backends\ (Serial,\ OpenMP,\ Threads,\ SYCL)\ Kokkos\ expands\ it\ to\ plain\ \`{}inline`\ as\ well.}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00020}00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ The\ annotation\ differs\ between\ a\ CUDA/HIP\ TU\ and\ a\ host-\/only\ TU.\ That\ affects\ neither\ layout\ nor}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ mangling\ of\ the\ annotated\ function,\ and\ it\ is\ the\ same\ arrangement\ Eigen\ and\ Thrust\ rely\ on\ for}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ mixed\ .cpp/.cu\ builds.}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00024}00024\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#include\ <cstdio>}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00027}00027\ \textcolor{preprocessor}{\#include\ <cstdlib>}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00029}00029\ \textcolor{preprocessor}{\#if\ defined(\_\_CUDACC\_\_)\ ||\ defined(\_\_HIPCC\_\_)}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00030}00030\ \textcolor{preprocessor}{\#define\ NEON\_HOST\_DEVICE\ \_\_host\_\_\ \_\_device\_\_}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00031}00031\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00032}\mbox{\hyperlink{portability_8hpp_ad41288763398ff9c6f79e181ed151df3}{00032}}\ \textcolor{preprocessor}{\#define\ NEON\_HOST\_DEVICE}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00033}00033\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00035}\mbox{\hyperlink{portability_8hpp_a6302db3d60e73669493bcfacc2e80d5c}{00035}}\ \textcolor{preprocessor}{\#define\ NEON\_INLINE\_FUNCTION\ NEON\_HOST\_DEVICE\ inline}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00037}00037\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1detail}{NeoN::detail}}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00040}00040\ \textcolor{comment}{/*\ @brief\ Abort\ the\ program\ from\ host\ or\ device\ code.}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00041}00041\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00042}00042\ \textcolor{comment}{\ *\ Replacement\ for\ Kokkos::abort\ in\ headers\ that\ must\ stay\ Kokkos-\/free.\ On\ the\ device\ the\ message}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00043}00043\ \textcolor{comment}{\ *\ is\ printed\ and\ the\ kernel\ traps;\ on\ the\ host\ it\ is\ printed\ to\ stderr\ before\ std::abort.}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00044}00044\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00045}\mbox{\hyperlink{namespaceNeoN_1_1detail_aee6093469a8c178dcaf9ddaa87650637}{00045}}\ \mbox{\hyperlink{portability_8hpp_a6302db3d60e73669493bcfacc2e80d5c}{NEON\_INLINE\_FUNCTION}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1detail_aee6093469a8c178dcaf9ddaa87650637}{abort}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ message)}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00046}00046\ \{}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00047}00047\ \textcolor{preprocessor}{\#if\ defined(\_\_CUDA\_ARCH\_\_)}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00048}00048\ \ \ \ \ printf(\textcolor{stringliteral}{"{}NeoN\ abort:\ \%s\(\backslash\)n"{}},\ message);}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00049}00049\ \ \ \ \ \_\_trap();}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00050}00050\ \textcolor{preprocessor}{\#elif\ defined(\_\_HIP\_DEVICE\_COMPILE\_\_)\ ||\ defined(\_\_SYCL\_DEVICE\_ONLY\_\_)}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00051}00051\ \ \ \ \ (void)message;}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00052}00052\ \ \ \ \ \_\_builtin\_trap();}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00053}00053\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00054}00054\ \ \ \ \ std::fprintf(stderr,\ \textcolor{stringliteral}{"{}NeoN\ abort:\ \%s\(\backslash\)n"{}},\ message);}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00055}00055\ \ \ \ \ std::abort();}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00056}00056\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00057}00057\ \}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00059}00059\ \}\ \textcolor{comment}{//\ namespace\ NeoN::detail}}
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{portability_8hpp_source_l00061}\mbox{\hyperlink{portability_8hpp_ab225560f6c03fd75b35e5dab6af28c2e}{00061}}\ \textcolor{preprocessor}{\#define\ NEON\_ABORT(message)\ ::NeoN::detail::abort(message)}}
+
+\end{DoxyCode}
