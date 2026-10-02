@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
@@ -422,6 +423,43 @@ ScalarVol sqrtField(const ScalarVol& a)
     sqrtVec(r.exec(), r.boundaryData().value(), "fieldSqrt::b");
     return r;
 }
+
+// Impose per-face Dirichlet values on one patch by writing the mixed-BC coefficients the
+// operators read (refValue with valueFraction 1). The patch's own boundary condition is left
+// in place, so a later correctBoundaryConditions() re-applies it: externally driven patches
+// (e.g. a coupling interface) should be declared ``calculated``, whose correction is a no-op.
+void setPatchFixedValues(ScalarVol& field, NeoN::localIdx patchID, const ScalarVec& values)
+{
+    const auto& offset = field.mesh().boundaryMesh().offset();
+    if (patchID < 0 || static_cast<std::size_t>(patchID) + 1 >= offset.size())
+    {
+        throw std::invalid_argument("set_patch_fixed_values: patch id out of range");
+    }
+    const auto start = offset[static_cast<std::size_t>(patchID)];
+    const auto end = offset[static_cast<std::size_t>(patchID) + 1];
+    if (values.size() != end - start)
+    {
+        throw std::invalid_argument(
+            "set_patch_fixed_values: " + std::to_string(values.size()) + " values but patch "
+            + std::to_string(patchID) + " has " + std::to_string(end - start) + " faces"
+        );
+    }
+    auto& bd = field.boundaryData();
+    auto [refGrad, value, valueFraction, refValue] =
+        NeoN::views(bd.refGrad(), bd.value(), bd.valueFraction(), bd.refValue());
+    auto patchValues = values.view();
+    NeoN::parallelFor(
+        field.exec(),
+        {start, end},
+        NEON_LAMBDA(const NeoN::localIdx i) {
+            refValue[i] = patchValues[i - start];
+            value[i] = patchValues[i - start];
+            valueFraction[i] = 1.0;
+            refGrad[i] = 0.0;
+        },
+        "setPatchFixedValues"
+    );
+}
 } // namespace
 
 void registerVolumeField(nb::module_& m)
@@ -520,6 +558,24 @@ void registerVolumeField(nb::module_& m)
             { return field.boundaryData().value(); },
             nb::rv_policy::reference_internal,
             "Get the boundary data value vector"
+        )
+        .def(
+            "set_patch_fixed_values",
+            [](fvcc::VolumeField<NeoN::scalar>& self,
+               NeoN::localIdx patchID,
+               nb::ndarray<const NeoN::scalar, nb::ndim<1>, nb::c_contig, nb::device::cpu> values)
+            {
+                const auto n = static_cast<NeoN::localIdx>(values.shape(0));
+                NeoN::Vector<NeoN::scalar> deviceValues(
+                    self.exec(), values.data(), n, NeoN::SerialExecutor()
+                );
+                setPatchFixedValues(self, patchID, deviceValues);
+            },
+            "patch_id"_a,
+            "values"_a,
+            "Impose per-face Dirichlet values on one patch (refValue, valueFraction = 1). "
+            "A later correct_boundary_conditions() re-applies the patch's own boundary "
+            "condition, so declare externally driven patches 'calculated'."
         )
         .def(
             "mesh",

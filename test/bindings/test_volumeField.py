@@ -196,3 +196,55 @@ def test_vec3_field_cross(executor):
         np.asarray(omega.internal_vector().copy_to_host()),
         np.tile([0.0, 0.0, 5.0], (mesh.n_cells(), 1)),
     )
+
+
+def test_set_patch_fixed_values_drives_the_laplacian(executor):
+    """Per-face Dirichlet values imposed from Python reach the implicit laplacian.
+
+    On a 4-cell unit 1-D mesh the boundary face sits half a cell from its owner, so its
+    delta coefficient is 2 * 4 = 8: a fixed value T_b on the last patch adds -8 to that
+    cell's diagonal and -8 * T_b to its rhs. The default ``calculated`` patch keeps the
+    value through correct_boundary_conditions().
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4, 1.0)
+    T = neon.ScalarVolumeField(exec, "T", mesh)
+    gamma = neon.ScalarSurfaceField(exec, "gamma", mesh)
+    neon.fill(gamma.internal_vector(), 1.0)
+    neon.fill(gamma.boundary_data_value(), 1.0)
+    laplacian_schemes = neon.Dictionary()
+    laplacian_schemes.insert_token_list(
+        "laplacian(gamma,T)", neon.TokenList(["Gauss", "linear", "uncorrected"])
+    )
+    schemes = neon.Dictionary()
+    schemes.insert_dict("laplacianSchemes", laplacian_schemes)
+
+    def assemble():
+        eqn = neon.imp.laplacian(gamma, T) + neon.imp.laplacian(gamma, T)
+        eqn.read(schemes)
+        values, rhs = neon.assemble_spatial(eqn, mesh)
+        return np.array(values), np.array(rhs)
+
+    values_before, rhs_before = assemble()
+    T.set_patch_fixed_values(1, np.array([5.0]))
+    T.correct_boundary_conditions()
+    values_after, rhs_after = assemble()
+
+    # Two identical laplacian terms, so each change is doubled.
+    assert values_after[-1] - values_before[-1] == pytest.approx(2 * -8.0)
+    assert rhs_after - rhs_before == pytest.approx([0.0, 0.0, 0.0, 2 * -8.0 * 5.0])
+    boundary = np.asarray(T.boundary_data_value().copy_to_host())
+    assert boundary[1] == pytest.approx(5.0)
+
+
+def test_set_patch_fixed_values_rejects_a_wrong_size(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4, 1.0)
+    T = neon.ScalarVolumeField(exec, "T", mesh)
+
+    with pytest.raises(ValueError, match="2 values but patch 1 has 1 faces"):
+        T.set_patch_fixed_values(1, np.array([1.0, 2.0]))
+    with pytest.raises(ValueError, match="patch id out of range"):
+        T.set_patch_fixed_values(2, np.array([1.0]))
