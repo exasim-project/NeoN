@@ -263,4 +263,73 @@ TEST_CASE("MergedPgm generate_reuse - Ginkgo")
     }
 }
 
+TEST_CASE("MergedPgm merge depths - Ginkgo")
+{
+    auto exec = gko::ReferenceExecutor::create();
+    auto A = laplacian1D(exec, 400, 2.5);
+
+    gko::size_type prevCoarseRows = A->get_size()[0];
+    for (unsigned depth : {1u, 2u, 3u, 4u})
+    {
+        SECTION("merge_levels " + std::to_string(depth))
+        {
+            auto level = NeoN::la::ginkgo::makeMergedPgmFactory<double>(exec, depth)->generate(A);
+            auto P = gko::as<Csr>(level->get_prolong_op());
+            auto R = gko::as<Csr>(level->get_restrict_op());
+            auto coarse = gko::as<Csr>(level->get_coarse_op());
+            const auto nc = coarse->get_size()[0];
+
+            REQUIRE(P->get_size() == gko::dim<2> {A->get_size()[0], nc});
+            REQUIRE(R->get_size() == gko::dim<2> {nc, A->get_size()[0]});
+            REQUIRE(nc < A->get_size()[0]);
+
+            // the merged prolongation is an injection: one unit entry per fine row
+            REQUIRE(P->get_num_stored_elements() == A->get_size()[0]);
+            auto pValues = values(P.get());
+            REQUIRE(std::all_of(pValues.begin(), pValues.end(), [](double v) { return v == 1.0; }));
+
+            // the merged coarse operator is the Galerkin product R A P
+            auto AP = Csr::create(exec, gko::dim<2> {A->get_size()[0], nc});
+            A->apply(P, AP);
+            auto RAP = Csr::create(exec, gko::dim<2> {nc, nc});
+            R->apply(AP, RAP);
+            auto expected = Dense::create(exec);
+            auto actual = Dense::create(exec);
+            RAP->convert_to(expected);
+            coarse->convert_to(actual);
+            double maxDiff = 0.0;
+            for (gko::size_type i = 0; i < nc; ++i)
+            {
+                for (gko::size_type j = 0; j < nc; ++j)
+                {
+                    maxDiff = std::max(maxDiff, std::abs(actual->at(i, j) - expected->at(i, j)));
+                }
+            }
+            REQUIRE(maxDiff < 1e-12);
+
+            if (depth == 1)
+            {
+                // a single step is plain Pgm
+                auto pgm = gko::multigrid::Pgm<double, gko::int32>::build()
+                               .with_deterministic(true)
+                               .on(exec)
+                               ->generate(A);
+                REQUIRE(pgm->get_coarse_op()->get_size() == coarse->get_size());
+                REQUIRE(values(pgm->get_coarse_op().get()) == values(coarse.get()));
+            }
+        }
+    }
+
+    SECTION("deeper merges coarsen further")
+    {
+        for (unsigned depth : {1u, 2u, 3u, 4u})
+        {
+            auto level = NeoN::la::ginkgo::makeMergedPgmFactory<double>(exec, depth)->generate(A);
+            const auto nc = level->get_coarse_op()->get_size()[0];
+            REQUIRE(nc < prevCoarseRows);
+            prevCoarseRows = nc;
+        }
+    }
+}
+
 #endif
