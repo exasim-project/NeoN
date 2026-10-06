@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 #include <ginkgo/ginkgo.hpp>
@@ -23,10 +25,223 @@
 #ifdef NF_WITH_MPI_SUPPORT
 #include <ginkgo/core/distributed/base.hpp>
 #include <ginkgo/core/distributed/matrix.hpp>
+#include <ginkgo/core/distributed/vector.hpp>
 #endif
 
 namespace NeoN::la::ginkgo
 {
+
+namespace detail
+{
+
+/** @brief Residual a MergedPgm level last restricted, handed from its restriction to its
+ * prolongation. gko::solver::Multigrid restricts r = b - A x right before descending and prolongs
+ * the coarse correction right after returning, with r untouched in between, so the pointer is valid
+ * for exactly that prolongation. */
+struct ScaleCorrectionState
+{
+    const gko::LinOp* residual = nullptr;
+};
+
+/** @brief Restriction that records the residual it restricts for ScaledProlongation. */
+class RecordingRestriction : public gko::LinOp
+{
+public:
+
+    RecordingRestriction(
+        std::shared_ptr<const gko::LinOp> restrictOp, std::shared_ptr<ScaleCorrectionState> state
+    )
+        : gko::LinOp(restrictOp->get_executor(), restrictOp->get_size()),
+          restrict_ {std::move(restrictOp)}, state_ {std::move(state)}
+    {}
+
+protected:
+
+    void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
+    {
+        state_->residual = b;
+        restrict_->apply(b, x);
+    }
+
+    void apply_impl(
+        const gko::LinOp* alpha, const gko::LinOp* b, const gko::LinOp* beta, gko::LinOp* x
+    ) const override
+    {
+        state_->residual = nullptr;
+        restrict_->apply(alpha, b, beta, x);
+    }
+
+private:
+
+    std::shared_ptr<const gko::LinOp> restrict_;
+    std::shared_ptr<ScaleCorrectionState> state_;
+};
+
+/**
+ * @brief Prolongation with OpenFOAM-style scale correction (GAMGSolverScale.C) of the coarse
+ * correction.
+ *
+ * gko::solver::Multigrid adds the coarse correction through the advanced apply x += P e. When the
+ * level's RecordingRestriction recorded the residual r it descended with, the prolonged correction
+ * is Rayleigh-scaled and followed by one Jacobi step before it is added:
+ *   d  = P e,  sf = (d . r) / (d . A d)   (per column; sf = 1 where d . A d == 0)
+ *   x  = beta x + alpha (sf d + D^-1 (r - sf A d))
+ * The simple apply is the plain prolongation (used e.g. by the level's composition).
+ */
+template<typename ValueType, typename IndexType>
+class ScaledProlongation : public gko::LinOp
+{
+    using dense = gko::matrix::Dense<ValueType>;
+    using diagonal = gko::matrix::Diagonal<ValueType>;
+
+public:
+
+    /** @param fineOp  the level's fine operator A (Csr, or distributed::Matrix)
+     *  @param invDiag  D^-1 of A's (rank-local) diagonal block */
+    ScaledProlongation(
+        std::shared_ptr<const gko::LinOp> prolongOp,
+        std::shared_ptr<const gko::LinOp> fineOp,
+        std::shared_ptr<const diagonal> invDiag,
+        std::shared_ptr<ScaleCorrectionState> state
+    )
+        : gko::LinOp(prolongOp->get_executor(), prolongOp->get_size()),
+          prolong_ {std::move(prolongOp)}, fine_ {std::move(fineOp)}, invDiag_ {std::move(invDiag)},
+          state_ {std::move(state)}
+    {}
+
+protected:
+
+    void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override { prolong_->apply(b, x); }
+
+    void apply_impl(
+        const gko::LinOp* alpha, const gko::LinOp* b, const gko::LinOp* beta, gko::LinOp* x
+    ) const override
+    {
+        const auto* r = state_->residual;
+        state_->residual = nullptr;
+        if (r == nullptr || r->get_size() != x->get_size())
+        {
+            prolong_->apply(alpha, b, beta, x);
+            return;
+        }
+#ifdef NF_WITH_MPI_SUPPORT
+        using dist_vec = gko::experimental::distributed::Vector<ValueType>;
+        if (auto distX = dynamic_cast<dist_vec*>(x))
+        {
+            scaled(alpha, b, beta, distX, gko::as<const dist_vec>(r));
+            return;
+        }
+#endif
+        scaled(alpha, b, beta, gko::as<dense>(x), gko::as<const dense>(r));
+    }
+
+private:
+
+    static dense* local(dense* v) { return v; }
+    static const dense* local(const dense* v) { return v; }
+#ifdef NF_WITH_MPI_SUPPORT
+    static const dense* local(const gko::experimental::distributed::Vector<ValueType>* v)
+    {
+        return v->get_local_vector();
+    }
+    // mutable view of the rank-local part (distributed::Vector only exposes it read-only)
+    static std::unique_ptr<dense> local(gko::experimental::distributed::Vector<ValueType>* v)
+    {
+        const auto* l = v->get_local_vector();
+        return dense::create(
+            l->get_executor(),
+            l->get_size(),
+            gko::make_array_view(
+                l->get_executor(), l->get_size()[0] * l->get_stride(), v->get_local_values()
+            ),
+            l->get_stride()
+        );
+    }
+#endif
+
+    template<typename VecType>
+    VecType* workspace(std::unique_ptr<gko::LinOp>& slot, const VecType* like) const
+    {
+        auto ws = dynamic_cast<VecType*>(slot.get());
+        if (ws == nullptr || ws->get_size() != like->get_size())
+        {
+            slot = VecType::create_with_config_of(like);
+            ws = gko::as<VecType>(slot.get());
+        }
+        return ws;
+    }
+
+    template<typename VecType>
+    void scaled(
+        const gko::LinOp* alpha,
+        const gko::LinOp* e,
+        const gko::LinOp* beta,
+        VecType* x,
+        const VecType* r
+    ) const
+    {
+        auto exec = this->get_executor();
+        const auto ncols = x->get_size()[1];
+        auto* d = workspace(delta_, x);
+        auto* ad = workspace(aDelta_, x);
+        auto* t = workspace(tmp_, x);
+
+        prolong_->apply(e, d); // d = P e
+        fine_->apply(d, ad);   // ad = A d
+
+        auto num = dense::create(exec, gko::dim<2> {1, ncols});
+        auto den = dense::create(exec, gko::dim<2> {1, ncols});
+        d->compute_dot(r, num);
+        d->compute_dot(ad, den);
+        auto host = exec->get_master();
+        auto numHost = gko::clone(host, num);
+        auto denHost = gko::clone(host, den);
+        auto sfHost = dense::create(host, gko::dim<2> {1, ncols});
+        for (gko::size_type c = 0; c < ncols; ++c)
+        {
+            const auto dn = denHost->at(0, c);
+            sfHost->at(0, c) =
+                dn != gko::zero<ValueType>() ? numHost->at(0, c) / dn : gko::one<ValueType>();
+        }
+        auto sf = gko::clone(exec, sfHost);
+
+        auto one = gko::initialize<dense>({gko::one<ValueType>()}, exec);
+        ad->scale(sf); // ad = sf A d
+        t->copy_from(r);
+        t->sub_scaled(one, ad); // t = r - sf A d
+        d->scale(sf);           // d = sf d
+        invDiag_->apply(one, local(static_cast<const VecType*>(t)), one, local(d)); // d += D^-1 t
+
+        x->scale(beta);
+        x->add_scaled(alpha, d);
+    }
+
+    std::shared_ptr<const gko::LinOp> prolong_;
+    std::shared_ptr<const gko::LinOp> fine_;
+    std::shared_ptr<const diagonal> invDiag_;
+    std::shared_ptr<ScaleCorrectionState> state_;
+    mutable std::unique_ptr<gko::LinOp> delta_;
+    mutable std::unique_ptr<gko::LinOp> aDelta_;
+    mutable std::unique_ptr<gko::LinOp> tmp_;
+};
+
+/** @brief D^-1 of a Csr's diagonal (zero where the diagonal is zero). */
+template<typename ValueType, typename IndexType>
+std::shared_ptr<const gko::matrix::Diagonal<ValueType>>
+invertedDiagonal(const gko::matrix::Csr<ValueType, IndexType>* mtx)
+{
+    auto exec = mtx->get_executor();
+    auto diag = gko::clone(exec->get_master(), mtx->extract_diagonal());
+    auto* v = diag->get_values();
+    for (gko::size_type i = 0; i < diag->get_size()[0]; ++i)
+    {
+        v[i] =
+            v[i] != gko::zero<ValueType>() ? gko::one<ValueType>() / v[i] : gko::zero<ValueType>();
+    }
+    return gko::share(gko::clone(exec, diag));
+}
+
+} // namespace detail
 
 /**
  * @brief `mergeLevels`-style coarsening: Pgm run `merge_levels` times, prolongations
@@ -51,6 +266,12 @@ namespace NeoN::la::ginkgo
  * The factory supports LinOpFactory::generate_reuse() (see reuse_data_type), so a
  * gko::solver::Multigrid generated through generate_reuse() keeps the merged aggregation and only
  * recomputes the coarse operators.
+ *
+ * With scale_correction, the level's transfer operators apply OpenFOAM's GAMG scaleCorrection to
+ * the coarse correction (see detail::ScaledProlongation). Unlike OpenFOAM, it also applies on the
+ * level right above the coarsest (a level cannot tell its position in the hierarchy), and the
+ * downward pre-smoother correction is not scaled (gko::solver::Multigrid never hands it to a
+ * level).
  */
 template<typename ValueType = gko::default_precision, typename IndexType = gko::int32>
 class MergedPgm : public gko::LinOp, public gko::multigrid::EnableMultigridLevel<ValueType>
@@ -80,6 +301,8 @@ public:
         double GKO_FACTORY_PARAMETER_SCALAR(max_unassigned_ratio, 0.05);
         bool GKO_FACTORY_PARAMETER_SCALAR(deterministic, false);
         bool GKO_FACTORY_PARAMETER_SCALAR(skip_sorting, false);
+        /** Scale the coarse correction like OpenFOAM's GAMG scaleCorrection. */
+        bool GKO_FACTORY_PARAMETER_SCALAR(scale_correction, false);
     };
     class reuse_data_type;
     GKO_ENABLE_LIN_OP_FACTORY_WITH_REUSE(MergedPgm, parameters, Factory, reuse_data_type);
@@ -213,7 +436,7 @@ protected:
             restrict_ = gko::share(gko::as<csr>(pCsr->transpose())); // Csr, coarse x fine
         }
         // coarse == P_merged^T A P_merged already (last Pgm level's coarse op); use it directly.
-        this->set_multigrid_level(prolong_, coarse, restrict_);
+        setLevel(A, A.get(), coarse);
         recordReuse(reuseData, std::move(newSlots), false);
     }
 
@@ -277,7 +500,7 @@ protected:
             );
         }
         // coarse == the last inner Pgm's distributed coarse op == A_merged; use it directly.
-        this->set_multigrid_level(prolong_, coarse, restrict_);
+        setLevel(system_matrix_, gko::as<csr>(distFine->get_diag_matrix().get()), coarse);
         recordReuse(reuseData, std::move(newSlots), true);
     }
 #else
@@ -285,6 +508,30 @@ protected:
 #endif
 
 private:
+
+    // Set the level's operators; with scale_correction the transfer operators are wrapped (the
+    // plain prolong_/restrict_ stay what the reuse data records). `diagBlock` is the rank-local
+    // diagonal block of `fineOp` (the matrix itself in the local path).
+    void setLevel(
+        std::shared_ptr<const gko::LinOp> fineOp,
+        const csr* diagBlock,
+        std::shared_ptr<const gko::LinOp> coarse
+    )
+    {
+        if (!parameters_.scale_correction)
+        {
+            this->set_multigrid_level(prolong_, std::move(coarse), restrict_);
+            return;
+        }
+        auto state = std::make_shared<detail::ScaleCorrectionState>();
+        this->set_multigrid_level(
+            std::make_shared<detail::ScaledProlongation<ValueType, IndexType>>(
+                prolong_, std::move(fineOp), detail::invertedDiagonal(diagBlock), state
+            ),
+            std::move(coarse),
+            std::make_shared<detail::RecordingRestriction>(restrict_, state)
+        );
+    }
 
     // Generate inner Pgm level `i`: plainly without reuse data, through the recorded slot once the
     // reuse data is initialized, and otherwise through a fresh slot that recordReuse() commits.
@@ -438,13 +685,63 @@ private:
 // not for the abstract base — emplacing a shared_ptr<const LinOpFactory> fails to compile.
 template<typename ValueType = gko::default_precision, typename IndexType = gko::int32>
 inline std::shared_ptr<typename MergedPgm<ValueType, IndexType>::Factory> makeMergedPgmFactory(
-    std::shared_ptr<const gko::Executor> exec, unsigned mergeLevels, bool deterministic = true
+    std::shared_ptr<const gko::Executor> exec,
+    unsigned mergeLevels,
+    bool deterministic = true,
+    bool scaleCorrection = false
 )
 {
     return MergedPgm<ValueType, IndexType>::build()
         .with_merge_levels(mergeLevels)
         .with_deterministic(deterministic)
+        .with_scale_correction(scaleCorrection)
         .on(std::move(exec));
+}
+
+/**
+ * @brief Config-file support for `{"type": "neon::MergedPgm", ...}`, for the gko::config::registry
+ *        constructor. Keys: merge_levels, max_iterations, max_unassigned_ratio, deterministic,
+ *        skip_sorting, scale_correction (see MergedPgm::parameters).
+ */
+template<typename ValueType = gko::default_precision, typename IndexType = gko::int32>
+inline gko::config::configuration_map mergedPgmConfigMap()
+{
+    return {
+        {"neon::MergedPgm",
+         [](const gko::config::pnode& config,
+            const gko::config::registry&,
+            gko::config::type_descriptor) -> gko::deferred_factory_parameter<gko::LinOpFactory>
+         {
+             auto params = MergedPgm<ValueType, IndexType>::build();
+             auto toUnsigned = [](const gko::config::pnode& node, const std::string& key)
+             {
+                 const auto v = node.get_integer();
+                 if (v < 0)
+                 {
+                     throw std::invalid_argument("neon::MergedPgm: " + key + " must be >= 0");
+                 }
+                 return static_cast<unsigned>(v);
+             };
+             for (const auto& [key, value] : config.get_map())
+             {
+                 if (key == "type" || key == "value_type") continue;
+                 if (key == "merge_levels") params.with_merge_levels(toUnsigned(value, key));
+                 else if (key == "max_iterations")
+                     params.with_max_iterations(toUnsigned(value, key));
+                 else if (key == "max_unassigned_ratio")
+                     params.with_max_unassigned_ratio(value.get_real());
+                 else if (key == "deterministic")
+                     params.with_deterministic(value.get_boolean());
+                 else if (key == "skip_sorting")
+                     params.with_skip_sorting(value.get_boolean());
+                 else if (key == "scale_correction")
+                     params.with_scale_correction(value.get_boolean());
+                 else
+                     throw std::invalid_argument("neon::MergedPgm: unknown key '" + key + "'");
+             }
+             return params;
+         }}
+    };
 }
 
 } // namespace NeoN::la::ginkgo

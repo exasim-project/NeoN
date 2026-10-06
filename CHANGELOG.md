@@ -13,7 +13,7 @@
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
-- Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4`. Needs a Ginkgo providing `gko::UpdateMatrixValue` and `gko::LinOpGenerateComponents`, which the pinned one does not, so it is compiled out unless configured with `-DNeoN_GINKGO_FORK=ON` [#602](https://github.com/exasim-project/NeoN/pull/602)
+- Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4` or `{"type": "neon::MergedPgm", ...}`. It supports `generate_reuse`, which the Ginkgo solver now uses to reuse the multigrid setup across solves (`reuseSetup`, default on), and an OpenFOAM-style `scale_correction` of the coarse correction [#602](https://github.com/exasim-project/NeoN/pull/602)
 
 ### Misc
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)

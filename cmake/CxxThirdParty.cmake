@@ -340,10 +340,6 @@ if(${NeoN_WITH_GINKGO})
     endforeach()
   endif()
 
-  # The multigrid scale_correction parameter does not exist in the Ginkgo NeoN pins, so its test is
-  # compiled out by default. Point NeoN at a Ginkgo that provides it (NeoN_GINKGO_TAG, or a system
-  # install) and set this to ON to build it.
-  option(NeoN_GINKGO_FORK "Ginkgo provides multigrid scale_correction" OFF)
 endif()
 
 if(${NeoN_BUILD_PYTHON_BINDINGS})
