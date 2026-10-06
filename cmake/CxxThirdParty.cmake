@@ -247,8 +247,10 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
-  # A system Ginkgo is only used if it was built from the pinned commit: other builds may report the
-  # same version but lack APIs NeoN needs (e.g. LinOpFactory::generate_reuse). The installed
+  # FIXME: remove this commit check (back to a plain find_package) once ginkgo-project/ginkgo#2117
+  # has been merged and NeoN pins a Ginkgo release providing LinOpFactory::generate_reuse. A system
+  # Ginkgo is only used if it was built from the pinned commit: other builds may report the same
+  # version but lack APIs NeoN needs (e.g. LinOpFactory::generate_reuse). The installed
   # GinkgoConfig.cmake records the source commit as GINKGO_GIT_REVISION (for a merge commit it
   # records the merged branch tip instead, so such a pin always fetches). Read it before
   # find_package: once find_package has created the imported Ginkgo::ginkgo target, a CPM-fetched
