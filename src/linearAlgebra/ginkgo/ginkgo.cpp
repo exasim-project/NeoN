@@ -577,8 +577,32 @@ SolverStats GinkgoSolver::solve(
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
 // l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The loop is over
 // cells and each iteration writes its own (distinct) diagonal entry, so plain writes suffice.
-// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
-// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+// NOTE: the device kernels live in shiftImplicitTransformDiag, which is not templated on
+// GenerateType: nvcc forbids an extended __device__ lambda inside a function whose template
+// arguments include a function-local type (the `generate` lambda), or `auto` parameters.
+template<
+    unsigned int I,
+    typename ExecType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
+void shiftImplicitTransformDiag(
+    const ExecType& exec,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
+    localIdx nrows,
+    scalar sign
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += sign * diagC[cell][I]; },
+        "shiftImplicitTransformDiag"
+    );
+}
+
 template<
     unsigned int I,
     typename SystemType,
@@ -602,12 +626,7 @@ void solveImplicitTransformComponent(
     localIdx nrows
 )
 {
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
-        "applyImplicitTransformDiag"
-    );
+    shiftImplicitTransformDiag<I>(exec, values, ma, diagC, nrows, -1.0);
     gkoExec->synchronize();
 
     auto rhs = getComponent<I>(sys.rhs());
@@ -615,12 +634,7 @@ void solveImplicitTransformComponent(
     stats.entries.push_back(solve_impl(gkoExec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
     setComponent<I>(xcopy, x);
 
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
-        "restoreImplicitTransformDiag"
-    );
+    shiftImplicitTransformDiag<I>(exec, values, ma, diagC, nrows, 1.0);
     gkoExec->synchronize();
 }
 
