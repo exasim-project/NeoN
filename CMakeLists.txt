@@ -31,6 +31,9 @@ project(
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)
+# NeoN uses no C++20 modules. Since cmake 3.28 (CMP0155) C++20 targets and try_compile checks (e.g.
+# FindMPI) are scanned for modules, which fails with compilers lacking clang-scan-deps (ROCm, IWYU).
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 # Standard for NeoN's host-only translation units (NeoN_host in src/CMakeLists.txt). Everything that
 # includes Kokkos stays at CMAKE_CXX_STANDARD, the level nvcc and Kokkos accept for device code. See
 # doc/splitCompilation.rst.
