@@ -26,6 +26,11 @@
 #include <cstdio>
 #include <cstdlib>
 
+// Device printf is only declared by the HIP runtime header, not by <cstdio>.
+#if defined(__HIPCC__)
+#include <hip/hip_runtime.h>
+#endif
+
 #if defined(__CUDACC__) || defined(__HIPCC__)
 #define NEON_HOST_DEVICE __host__ __device__
 #else
