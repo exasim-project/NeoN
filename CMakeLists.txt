@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-cmake_minimum_required(VERSION 3.22.0)
+cmake_minimum_required(VERSION 3.28.0)
 
 # Re-run configuration when the version source of truth changes, otherwise the CMake project version
 # and generated neon.__version__ would go stale.

@@ -39,14 +39,16 @@ Its modular architecture enables performance-portable execution and solver backe
 
 NeoN has the following requirements
 
-*  _cmake > 3.22_
-*  _gcc >= 13_ or  _clang >= 19_
+*  _cmake >= 3.28_
+*  _gcc >= 13_, _clang >= 19_ or _MSVC (Visual Studio 2022)_
 *  _Kokkos 5.0.2_
 
 For GPU support
-* NVIDIA: CUDA _12+_
+* NVIDIA: CUDA _12.8_
 * AMD: ROCm _6.4.1_
-* Intel: oneAPI Base Toolkit _2024.2_
+* Intel: oneAPI Base Toolkit _2025.3_
+
+The CI tests gcc 13, 14 and 16, clang 19, Apple clang (macOS), MSVC (Visual Studio 2022) and cmake 3.28 and newer.
 
 For development it is required to use [pre-commit](https://pre-commit.com/).
 
@@ -119,7 +121,7 @@ intentionally not bundled). It does not require a local CUDA toolkit at runtime,
 but it does require glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+).
 
 **From source.** Building the bindings uses `scikit-build-core` and compiles the
-C++ library, so a C++20 compiler and CMake ≥ 3.22 are required:
+C++ library, so a C++20 compiler and CMake ≥ 3.28 are required:
 
     # CPU build. Both GPU backends must be disabled explicitly: with neither set,
     # AutoEnableDevice.cmake probes for nvcc/hipcc and enables that backend.

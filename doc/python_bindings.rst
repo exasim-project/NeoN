@@ -121,7 +121,7 @@ Building from source
 
 Building the bindings compiles the NeoN C++ library through
 `scikit-build-core <https://scikit-build-core.readthedocs.io>`_, so it needs a
-C++20 compiler and CMake ≥ 3.22 (see :doc:`installation`). From the repository
+C++20 compiler and CMake ≥ 3.28 (see :doc:`installation`). From the repository
 root:
 
 .. important::
