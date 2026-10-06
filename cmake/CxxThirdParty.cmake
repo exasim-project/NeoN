@@ -247,24 +247,43 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
-  # NeoN needs LinOpFactory::generate_reuse (ginkgo-project/ginkgo#2117), which a system Ginkgo
-  # reporting the same version may lack. Check its headers before find_package: once find_package
-  # has created the imported Ginkgo::ginkgo target, a CPM-fetched Ginkgo can no longer be added.
-  find_path(
-    _neon_ginkgo_include ginkgo/core/base/lin_op.hpp
-    HINTS ${Ginkgo_DIR}/../../../include ENV Ginkgo_ROOT
-    PATH_SUFFIXES include NO_CACHE)
-  set(_neon_ginkgo_usable ON)
-  if(_neon_ginkgo_include)
-    file(STRINGS "${_neon_ginkgo_include}/ginkgo/core/base/lin_op.hpp" _neon_ginkgo_reuse
-         REGEX "class ReuseData")
-    if(NOT _neon_ginkgo_reuse)
-      message(STATUS "System Ginkgo in ${_neon_ginkgo_include} lacks LinOpFactory::generate_reuse")
-      set(_neon_ginkgo_usable OFF)
+  # A system Ginkgo is only used if it was built from the pinned commit: other builds may report the
+  # same version but lack APIs NeoN needs (e.g. LinOpFactory::generate_reuse). The installed
+  # GinkgoConfig.cmake records the source commit as GINKGO_GIT_REVISION (for a merge commit it
+  # records the merged branch tip instead, so such a pin always fetches). Read it before
+  # find_package: once find_package has created the imported Ginkgo::ginkgo target, a CPM-fetched
+  # Ginkgo can no longer be added.
+  set(_neon_ginkgo_config_dirs)
+  foreach(_prefix ${Ginkgo_DIR} ${Ginkgo_ROOT} $ENV{Ginkgo_ROOT} ${CMAKE_PREFIX_PATH}
+                  $ENV{CMAKE_PREFIX_PATH} ${CMAKE_SYSTEM_PREFIX_PATH})
+    foreach(_suffix "" lib/cmake/Ginkgo lib64/cmake/Ginkgo
+                    lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/Ginkgo)
+      list(APPEND _neon_ginkgo_config_dirs "${_prefix}/${_suffix}")
+    endforeach()
+  endforeach()
+  find_file(
+    _neon_ginkgo_config GinkgoConfig.cmake
+    PATHS ${_neon_ginkgo_config_dirs}
+    NO_DEFAULT_PATH NO_CACHE)
+  if(_neon_ginkgo_config)
+    file(STRINGS "${_neon_ginkgo_config}" _neon_ginkgo_revision
+         REGEX "^set\\(GINKGO_GIT_REVISION \"[0-9a-f]*\"\\)")
+    string(REGEX REPLACE ".*\"([0-9a-f]*)\".*" "\\1" _neon_ginkgo_revision
+                         "${_neon_ginkgo_revision}")
+    if(_neon_ginkgo_revision STREQUAL NeoN_GINKGO_TAG)
+      get_filename_component(_neon_ginkgo_config_dir "${_neon_ginkgo_config}" DIRECTORY)
+      find_package(
+        Ginkgo
+        ${NeoN_GINKGO_VERSION}
+        CONFIG
+        QUIET
+        PATHS
+        "${_neon_ginkgo_config_dir}"
+        NO_DEFAULT_PATH)
+    else()
+      message(STATUS "System Ginkgo ${_neon_ginkgo_config} was built from commit "
+                     "'${_neon_ginkgo_revision}', not the pinned ${NeoN_GINKGO_TAG}")
     endif()
-  endif()
-  if(_neon_ginkgo_usable)
-    find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
   endif()
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
