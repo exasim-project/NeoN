@@ -247,11 +247,29 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
-  find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  # NeoN needs LinOpFactory::generate_reuse (ginkgo-project/ginkgo#2117), which a system Ginkgo
+  # reporting the same version may lack. Check its headers before find_package: once find_package
+  # has created the imported Ginkgo::ginkgo target, a CPM-fetched Ginkgo can no longer be added.
+  find_path(
+    _neon_ginkgo_include ginkgo/core/base/lin_op.hpp
+    HINTS ${Ginkgo_DIR}/../../../include ENV Ginkgo_ROOT
+    PATH_SUFFIXES include NO_CACHE)
+  set(_neon_ginkgo_usable ON)
+  if(_neon_ginkgo_include)
+    file(STRINGS "${_neon_ginkgo_include}/ginkgo/core/base/lin_op.hpp" _neon_ginkgo_reuse
+         REGEX "class ReuseData")
+    if(NOT _neon_ginkgo_reuse)
+      message(STATUS "System Ginkgo in ${_neon_ginkgo_include} lacks LinOpFactory::generate_reuse")
+      set(_neon_ginkgo_usable OFF)
+    endif()
+  endif()
+  if(_neon_ginkgo_usable)
+    find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  endif()
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
-    message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    message(STATUS "No usable system Ginkgo — fetching from GitHub via CPM.cmake...")
     cpmaddpackage(
       NAME
       Ginkgo
