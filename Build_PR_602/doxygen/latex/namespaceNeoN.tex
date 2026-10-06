@@ -30,7 +30,7 @@ class \mbox{\hyperlink{classNeoN_1_1AllocatorStrategy}{Allocator\+Strategy}}
 class \mbox{\hyperlink{classNeoN_1_1ArgList}{Arg\+List}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1Array}{Array}}
-\begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} class to contain the data and executors for a field and define some basic operations. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em An executor-\/aware contiguous container for structural and indexing data. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1BaseClassData}{Base\+Class\+Data}}
 \begin{DoxyCompactList}\small\item\em Represents the data for a base class. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1BaseClassDocumentation}{Base\+Class\+Documentation}}
@@ -100,7 +100,7 @@ class \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}}
 class \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}
 \begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} class for the representation of a 3D \doxylink{classNeoN_1_1Vec3}{Vec3}. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}
-\begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} class to contain the data and executors for a field and define some basic operations. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em An executor-\/aware contiguous container for numerical data with vector-\/style arithmetic semantics. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1View}{View}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Concepts}
@@ -324,9 +324,9 @@ template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1
 void \mbox{\hyperlink{namespaceNeoN_a32239764f88da7b65079e346a5f3c1f8}{log\+Out\+Range}} (const std\+::out\+\_\+of\+\_\+range \&e, const std\+::size\+\_\+t \&key, const std\+::vector$<$ std\+::any $>$ \&data)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_a71603fa147569d41a7bc7869f79f1e52}{operator+}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ lhs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic add operator, addition of two fields. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Adds two Vectors element-\/wise. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_a44e55549c34b75c79d8e9ce48fc3600a}{operator-\/}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ lhs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
-\begin{DoxyCompactList}\small\item\em Arithmetic subtraction operator, subtraction one field from another. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Subtracts two Vectors element-\/wise. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ \newline
 requires requires(Value\+Type a, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a7bc13d96001ba8567668541abb6a903a}{scalar\+Mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} value)
 \item 
@@ -1288,17 +1288,17 @@ Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00159}{159}} of file \mbox
 
 
 
-Arithmetic add operator, addition of two fields. 
+Adds two Vectors element-\/wise. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em lhs} & The field to add with this field. \\
+{\em lhs} & Left-\/hand \doxylink{classNeoN_1_1Vector}{Vector}. \\
 \hline
-{\em rhs} & The field to add with this field. \\
+{\em rhs} & Right-\/hand \doxylink{classNeoN_1_1Vector}{Vector}. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-The result of the addition. 
+\doxylink{classA}{A} \doxylink{classNeoN_1_1Vector}{Vector} containing the element-\/wise sum. 
 \end{DoxyReturn}
 \Hypertarget{namespaceNeoN_a44e55549c34b75c79d8e9ce48fc3600a}\label{namespaceNeoN_a44e55549c34b75c79d8e9ce48fc3600a} 
 \index{NeoN@{NeoN}!operator-\/@{operator-\/}}
@@ -1309,17 +1309,17 @@ The result of the addition.
 
 
 
-Arithmetic subtraction operator, subtraction one field from another. 
+Subtracts two Vectors element-\/wise. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em lhs} & The field to subtract from. \\
+{\em lhs} & Left-\/hand \doxylink{classNeoN_1_1Vector}{Vector}. \\
 \hline
-{\em rhs} & The field to subtract by. \\
+{\em rhs} & Right-\/hand \doxylink{classNeoN_1_1Vector}{Vector}. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-The result of the subtraction. 
+\doxylink{classA}{A} \doxylink{classNeoN_1_1Vector}{Vector} containing the element-\/wise difference. 
 \end{DoxyReturn}
 \Hypertarget{namespaceNeoN_aed585df60bb68f0c99e9dc3377883767}\label{namespaceNeoN_aed585df60bb68f0c99e9dc3377883767} 
 \index{NeoN@{NeoN}!operator/@{operator/}}

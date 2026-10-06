@@ -394,7 +394,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="35" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="35" bodyend="46"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="36" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="36" bodyend="47"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a414c82b2d4caf60720f2acddb8cb7749" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -417,7 +417,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="49" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="49" bodyend="73"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="50" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="50" bodyend="74"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ac219f7675251df9d46327915c48c74e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -440,7 +440,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="76" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="76" bodyend="96"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" line="77" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp" bodystart="77" bodyend="97"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a616a3a0d2d9285da79f5301efe88d399" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary" kindref="compound">SurfaceBoundary</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &gt;</type>
@@ -760,10 +760,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/volumeField.hpp" line="172" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/volumeField.hpp" bodystart="172" bodyend="180"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a525f8d2713b964a094fcfdaea56c173e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a67a1dc393fd4a960923840050d51ee27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::computeLimitedLinearWeights</definition>
-        <argsstring>(const VolumeField&lt; scalar &gt; &amp;src, const SurfaceField&lt; scalar &gt; &amp;flux, const SurfaceField&lt; scalar &gt; &amp;cdWeights, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaOwner, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaNeighbour, scalar twoByk, SurfaceField&lt; scalar &gt; &amp;weights)</argsstring>
+        <argsstring>(const VolumeField&lt; scalar &gt; &amp;src, const SurfaceField&lt; scalar &gt; &amp;flux, const SurfaceField&lt; scalar &gt; &amp;cdWeights, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaOwner, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaNeighbour, scalar twoByk, SurfaceField&lt; scalar &gt; &amp;weights, bool cellLimitedGradient=false)</argsstring>
         <name>computeLimitedLinearWeights</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::computeLimitedLinearWeights</qualifiedname>
         <param>
@@ -794,13 +794,18 @@
           <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>weights</declname>
         </param>
+        <param>
+          <type>bool</type>
+          <declname>cellLimitedGradient</declname>
+          <defval>false</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp" line="25" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp" declline="25" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp" line="26" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp" declline="26" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a5ee2b2f0634716198d36459918063de3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
