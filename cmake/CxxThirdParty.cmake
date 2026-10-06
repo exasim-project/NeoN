@@ -291,6 +291,10 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "No usable system Ginkgo — fetching from GitHub via CPM.cmake...")
+    # The commit check above already decided against the system Ginkgo; keep CPM's own find_package
+    # (CPM_USE_LOCAL_PACKAGES) from picking it up again.
+    set(_neon_cpm_use_local_packages ${CPM_USE_LOCAL_PACKAGES})
+    set(CPM_USE_LOCAL_PACKAGES OFF)
     cpmaddpackage(
       NAME
       Ginkgo
@@ -312,6 +316,7 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+    set(CPM_USE_LOCAL_PACKAGES ${_neon_cpm_use_local_packages})
 
     # Ginkgo's build_helpers.cmake forces its targets to ${PROJECT_BINARY_DIR}/lib, ignoring
     # CMAKE_LIBRARY_OUTPUT_DIRECTORY. Route them into our shared lib output dir so all CPM-built
