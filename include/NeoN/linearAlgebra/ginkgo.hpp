@@ -296,7 +296,7 @@ public:
         // a report sink. If the parsed config actually references it, the criterion lives
         // INSIDE the built solver (l1InConfig_) and reports via l1Report_; otherwise the
         // existing post-hoc attach in solve() handles the flag-only case unchanged.
-        gko::config::registry reg;
+        gko::config::registry reg(mergedPgmConfigMap<scalar>());
         if (l1Control_)
         {
             l1CritFactory_ = makeL1CriterionFactory(gkoExec_, *l1Control_, &l1Report_);
@@ -307,6 +307,9 @@ public:
         // Register NeoN's MergedPgm coarseners (mergeLevels-style: merge k Pgm steps into one level
         // via index-composed prolongations). A configFile's `mg_level` can then name them, e.g.
         // "mg_level": ["neon::pgmMerge2"]. Named-registry pattern, same as the L1 criterion above.
+        // For other parameters (e.g. scale_correction) a config names the type itself, e.g.
+        // {"type": "neon::MergedPgm", "merge_levels": 2, "scale_correction": true}, which the
+        // registry's mergedPgmConfigMap parses.
         // pgmMerge1 = merge_levels 1 = plain Pgm (single coarsening step), but via the SAME
         // MergedPgm code path as 2/3 -- so the reuse (generate_reuse) and distributed branches
         // behave identically across the merge-levels sweep, unlike swapping in native gko

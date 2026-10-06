@@ -27,13 +27,13 @@ namespace
 {
 
 /**
- * @brief End-to-end coverage of the Ginkgo multigrid `scale_correction` parameter.
+ * @brief End-to-end coverage of MergedPgm's `scale_correction` parameter.
  *
- * `scale_correction` is the OpenFOAM-style per-level Rayleigh-quotient scaling of the pre-smooth
- * and prolonged-coarse corrections (GAMGSolverSolve.C + GAMGSolverScale.C). It lives inside
- * Ginkgo's `MultigridState::run_cycle` and reaches NeoN through the solver dictionary's
- * `configFile` entry, so these tests drive the whole chain: NeoN Dictionary -> ginkgo::parse ->
- * gko::config::parse -> Multigrid::parse -> run_cycle.
+ * `scale_correction` is the OpenFOAM-style per-level Rayleigh-quotient scaling of the prolonged
+ * coarse correction (GAMGSolverScale.C). MergedPgm applies it through its transfer operators and
+ * it reaches NeoN through the solver dictionary's `configFile` entry, so these tests drive the
+ * whole chain: NeoN Dictionary -> ginkgo::parse -> gko::config::parse -> mergedPgmConfigMap ->
+ * Multigrid cycle.
  */
 
 /** @brief 1D Laplacian tridiag(-1, 2, -1): SPD, and large enough for Pgm to build several levels
@@ -111,12 +111,14 @@ std::string coarsestJson()
                             {"type": "ResidualNorm", "reduction_factor": 1e-4}]})";
 }
 
-/** @brief A Pgm V-cycle multigrid node. `criteria` bounds the number of cycles; when used as a
- * preconditioner that is a single cycle. */
+/** @brief A single-step MergedPgm V-cycle multigrid node. `criteria` bounds the number of cycles;
+ * when used as a preconditioner that is a single cycle. */
 std::string multigridJson(bool scaleCorrection, const std::string& criteria, bool providedGuess)
 {
-    std::string s = R"({"type": "solver::Multigrid",
-        "mg_level": [{"type": "multigrid::Pgm", "deterministic": true}],
+    std::string s = std::string(R"({"type": "solver::Multigrid",
+        "mg_level": [{"type": "neon::MergedPgm", "merge_levels": 1, "deterministic": true,
+                      "scale_correction": )")
+                  + (scaleCorrection ? "true" : "false") + R"(}],
         "pre_smoother": [)"
                   + smootherJson() + R"(],
         "post_smoother": [)"
@@ -124,9 +126,7 @@ std::string multigridJson(bool scaleCorrection, const std::string& criteria, boo
         "coarsest_solver": [)"
                   + coarsestJson() + R"(],
         "min_coarse_rows": 16,
-        "cycle": "v",
-        "scale_correction": )"
-                  + (scaleCorrection ? "true" : "false");
+        "cycle": "v")";
     if (providedGuess)
     {
         s += R"(, "default_initial_guess": "provided")";
@@ -201,8 +201,7 @@ TEST_CASE("Multigrid scale_correction - Ginkgo")
 
     SECTION("scale-corrected V-cycle preconditions CG to the exact solution " + execName)
     {
-        // Drives the whole scale-correction path (pre-smooth + coarse Rayleigh scaling through
-        // the device-side safe_inv_scale) once per outer CG iteration.
+        // Drives the coarse-correction Rayleigh scaling once per outer CG iteration.
         auto path = writeConfig("cg_mg_sc", cgMgJson(true));
         auto x = solveWith(exec, sys, path, n);
 
@@ -224,9 +223,8 @@ TEST_CASE("Multigrid scale_correction - Ginkgo")
 
     SECTION("the flag is honoured, not silently ignored " + execName)
     {
-        // Guards against scale_correction being dropped on the floor by the config layer (a
-        // wrong key name, or an unpatched Ginkgo whose Multigrid::parse has no such hook). Three
-        // fixed V-cycles with an iteration-only criterion: if the flag reached run_cycle the
+        // Guards against scale_correction being dropped on the floor by the config layer. Three
+        // fixed V-cycles with an iteration-only criterion: if the flag reached the level the
         // iterate differs, if it was ignored the two runs are bit-identical.
         const std::string cycles = R"({"type": "Iteration", "max_iters": 3})";
         auto xOff = solveWith(
@@ -244,10 +242,9 @@ TEST_CASE("Multigrid scale_correction - Ginkgo")
 
     SECTION("zero rhs stays zero without NaN " + execName)
     {
-        // Regression guard for the device-side reciprocal in ginkgo_local_stack.patch: with a
-        // zero rhs and zero initial guess every correction delta is exactly zero, so the Rayleigh
-        // denominator delta.A.delta is exactly zero. The guard must give a scale factor of
-        // 0/(0+eps) = 0, not a 0/0 NaN.
+        // With a zero rhs and zero initial guess every correction delta is exactly zero, so the
+        // Rayleigh denominator delta.A.delta is exactly zero. The guard must skip the scaling
+        // instead of producing a 0/0 NaN.
         CSRMatrix<scalar, localIdx> mtx(lap.values, lap.sparsity);
         Vector<scalar> bValues(exec, {});
         COOMatrix<scalar, localIdx> bMtx(bValues, lap.bSparsity);

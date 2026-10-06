@@ -332,4 +332,91 @@ TEST_CASE("MergedPgm merge depths - Ginkgo")
     }
 }
 
+TEST_CASE("MergedPgm scale_correction - Ginkgo")
+{
+    auto exec = gko::ReferenceExecutor::create();
+    auto A = laplacian1D(exec, 120, 2.3);
+    const gko::size_type n = A->get_size()[0];
+
+    auto plain = NeoN::la::ginkgo::makeMergedPgmFactory<double>(exec, 2)->generate(A);
+    auto scaled = NeoN::la::ginkgo::makeMergedPgmFactory<double>(exec, 2, true, true)->generate(A);
+    const gko::size_type nc = scaled->get_coarse_op()->get_size()[0];
+    REQUIRE(values(scaled->get_coarse_op().get()) == values(plain->get_coarse_op().get()));
+
+    auto vec = [&](gko::size_type rows, double shift)
+    {
+        auto v = Dense::create(exec, gko::dim<2> {rows, 1});
+        for (gko::size_type i = 0; i < rows; ++i)
+        {
+            v->at(i, 0) = std::sin(0.37 * static_cast<double>(i) + shift);
+        }
+        return v;
+    };
+    auto r = vec(n, 0.0);
+    auto e = vec(nc, 1.0);
+    auto x0 = vec(n, 2.0);
+    auto one = gko::initialize<Dense>({1.0}, exec);
+
+    SECTION("prolongation after a restriction applies the scaled correction")
+    {
+        auto g = Dense::create(exec, gko::dim<2> {nc, 1});
+        scaled->get_restrict_op()->apply(r, g);
+        auto x = gko::clone(x0);
+        scaled->get_prolong_op()->apply(one, e, one, x);
+
+        // expected: x0 + sf d + D^-1 (r - sf A d) with d = P e, sf = (d.r) / (d.A d)
+        auto d = Dense::create(exec, gko::dim<2> {n, 1});
+        plain->get_prolong_op()->apply(e, d);
+        auto ad = Dense::create(exec, gko::dim<2> {n, 1});
+        A->apply(d, ad);
+        double dr = 0.0, dad = 0.0;
+        for (gko::size_type i = 0; i < n; ++i)
+        {
+            dr += d->at(i, 0) * r->at(i, 0);
+            dad += d->at(i, 0) * ad->at(i, 0);
+        }
+        const double sf = dr / dad;
+        double maxDiff = 0.0;
+        for (gko::size_type i = 0; i < n; ++i)
+        {
+            const double expected =
+                x0->at(i, 0) + sf * d->at(i, 0) + (r->at(i, 0) - sf * ad->at(i, 0)) / 2.3;
+            maxDiff = std::max(maxDiff, std::abs(x->at(i, 0) - expected));
+        }
+        REQUIRE(maxDiff < 1e-12);
+    }
+
+    SECTION("prolongation without a preceding restriction is the plain prolongation")
+    {
+        auto x = gko::clone(x0);
+        scaled->get_prolong_op()->apply(one, e, one, x);
+        auto expected = gko::clone(x0);
+        plain->get_prolong_op()->apply(one, e, one, expected);
+        for (gko::size_type i = 0; i < n; ++i)
+        {
+            REQUIRE(x->at(i, 0) == expected->at(i, 0));
+        }
+    }
+
+    SECTION("generate_reuse keeps scale correction")
+    {
+        auto factory = NeoN::la::ginkgo::makeMergedPgmFactory<double>(exec, 2, true, true);
+        auto reuseData = factory->create_empty_reuse_data();
+        factory->generate_reuse(A, *reuseData);
+        auto level = factory->generate_reuse(laplacian1D(exec, 120, 2.6), *reuseData);
+        auto g = Dense::create(exec, gko::dim<2> {nc, 1});
+        level->get_restrict_op()->apply(r, g);
+        auto xScaled = gko::clone(x0);
+        level->get_prolong_op()->apply(one, e, one, xScaled);
+        auto xPlain = gko::clone(x0);
+        plain->get_prolong_op()->apply(one, e, one, xPlain);
+        double maxDiff = 0.0;
+        for (gko::size_type i = 0; i < n; ++i)
+        {
+            maxDiff = std::max(maxDiff, std::abs(xScaled->at(i, 0) - xPlain->at(i, 0)));
+        }
+        REQUIRE(maxDiff > 1e-6);
+    }
+}
+
 #endif
