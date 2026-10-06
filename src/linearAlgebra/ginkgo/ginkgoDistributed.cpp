@@ -442,7 +442,7 @@ void solveComponentDist(
     auto& sys,
     auto& x,
     auto& exec,
-    auto& factory,
+    auto& generate,
     auto& stats,
     const L1ResidualControl* l1Control,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
@@ -465,7 +465,7 @@ void solveComponentDist(
     );
     auto gkoMtx =
         createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern, imapCache, nonLocalMtxCache);
-    auto solver = gko::share(factory->generate(gkoMtx));
+    auto solver = gko::share(generate(gkoMtx));
     stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
 }
@@ -481,7 +481,7 @@ template<
     unsigned int I,
     typename SystemType,
     typename ExecType,
-    typename FactoryType,
+    typename GenerateType,
     typename ValuesType,
     typename MatAddrType,
     typename DiagType>
@@ -492,7 +492,7 @@ void solveImplicitTransformComponentDist(
     std::shared_ptr<const gko::Executor> gkoExec,
     const gko::experimental::mpi::communicator& comm,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    const FactoryType& factory,
+    const GenerateType& generate,
     SolverStats& stats,
     const L1ResidualControl* l1Control,
     ValuesType values,
@@ -511,7 +511,7 @@ void solveImplicitTransformComponentDist(
 
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
-    auto solver = gko::share(factory->generate(gkoMtx));
+    auto solver = gko::share(generate(gkoMtx));
     stats.entries.push_back(solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
 
@@ -541,7 +541,7 @@ SolverStats GinkgoSolver::solveDist(
         cachedImap_,
         cachedNonLocalMtx_
     );
-    auto solver = gko::share(factory_->generate(gkoMtx));
+    auto solver = gko::share(generateSolver(gkoMtx));
     // When the configFile names the L1 criterion it is already built into the solver
     // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
     const L1ResidualControl* l1Control =
@@ -558,14 +558,15 @@ SolverStats GinkgoSolver::solveDist(
     // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
+    auto generate = [this](auto mtx) { return generateSolver(mtx); };
     solveComponentDist<0>(
-        sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
+        sys, x, gkoExec_, generate, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
     solveComponentDist<1>(
-        sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
+        sys, x, gkoExec_, generate, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
     solveComponentDist<2>(
-        sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
+        sys, x, gkoExec_, generate, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
     return stats;
 }
@@ -599,6 +600,7 @@ SolverStats GinkgoSolver::solveDist(
     // time.
     if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
     {
+        auto generate = [this](auto mtx) { return generateSolver(mtx); };
         auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
         const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
         auto diagC = sys.diagCmpt()->view();
@@ -613,7 +615,7 @@ SolverStats GinkgoSolver::solveDist(
             gkoExec_,
             comm,
             gkoMtx,
-            factory_,
+            generate,
             stats,
             l1Control,
             values,
@@ -628,7 +630,7 @@ SolverStats GinkgoSolver::solveDist(
             gkoExec_,
             comm,
             gkoMtx,
-            factory_,
+            generate,
             stats,
             l1Control,
             values,
@@ -643,7 +645,7 @@ SolverStats GinkgoSolver::solveDist(
             gkoExec_,
             comm,
             gkoMtx,
-            factory_,
+            generate,
             stats,
             l1Control,
             values,
@@ -655,7 +657,7 @@ SolverStats GinkgoSolver::solveDist(
     }
 
 
-    auto solver = gko::share(factory_->generate(gkoMtx));
+    auto solver = gko::share(generateSolver(gkoMtx));
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
 
