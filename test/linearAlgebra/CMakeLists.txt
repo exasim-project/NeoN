@@ -14,6 +14,7 @@ neon_unit_test(utilities)
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
+  neon_unit_test(ginkgoMergedPgm)
   # scale_correction needs a Ginkgo that provides it (see NeoN_GINKGO_FORK in CxxThirdParty.cmake);
   # otherwise the configFile fails to parse at runtime.
   if(NeoN_GINKGO_FORK)

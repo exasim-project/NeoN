@@ -6,13 +6,7 @@
 
 // Guarded like ginkgo.hpp: the generated NeoN.hpp umbrella header includes every header
 // unconditionally, so this must be a no-op in a build configured without Ginkgo.
-//
-// Also requires NF_GINKGO_FORK, which is OFF by default: MergedPgm derives from
-// gko::UpdateMatrixValue and uses gko::LinOpGenerateComponents, neither of which exists in the
-// Ginkgo NeoN pins. This header is therefore carried inactive -- it compiles away and the
-// neon::pgmMerge* coarseners are not registered (see ginkgo.hpp). To build it, point NeoN at a
-// Ginkgo providing those APIs and configure with -DNeoN_GINKGO_FORK=ON.
-#if NF_WITH_GINKGO && NF_GINKGO_FORK
+#if NF_WITH_GINKGO
 
 #include <algorithm>
 #include <memory>
@@ -53,16 +47,14 @@ namespace NeoN::la::ginkgo
  *    RowGatherer exactly as in the local path, then re-wrap the merged local injection as a
  *    block-diagonal distributed::Matrix. A_merged is the last inner Pgm's distributed coarse
  *    op (already carries the correct off-diagonal coupling + coarse index map), used directly.
+ *
+ * The factory supports LinOpFactory::generate_reuse() (see reuse_data_type), so a
+ * gko::solver::Multigrid generated through generate_reuse() keeps the merged aggregation and only
+ * recomputes the coarse operators.
  */
 template<typename ValueType = gko::default_precision, typename IndexType = gko::int32>
-class MergedPgm :
-    public gko::EnableLinOp<MergedPgm<ValueType, IndexType>>,
-    public gko::multigrid::EnableMultigridLevel<ValueType>,
-    public gko::UpdateMatrixValue
+class MergedPgm : public gko::LinOp, public gko::multigrid::EnableMultigridLevel<ValueType>
 {
-    friend class gko::EnableLinOp<MergedPgm>;
-    friend class gko::EnablePolymorphicObject<MergedPgm, gko::LinOp>;
-
 public:
 
     using value_type = ValueType;
@@ -89,34 +81,27 @@ public:
         bool GKO_FACTORY_PARAMETER_SCALAR(deterministic, false);
         bool GKO_FACTORY_PARAMETER_SCALAR(skip_sorting, false);
     };
-    GKO_ENABLE_LIN_OP_FACTORY(MergedPgm, parameters, Factory);
+    class reuse_data_type;
+    GKO_ENABLE_LIN_OP_FACTORY_WITH_REUSE(MergedPgm, parameters, Factory, reuse_data_type);
     GKO_ENABLE_BUILD_METHOD(Factory);
 
-    void update_matrix_value(std::shared_ptr<const gko::LinOp> new_matrix) override
+    /**
+     * Records, on the first generate_reuse(), the reuse data of every inner Pgm and the merged
+     * prolong/restrict. Later generate_reuse() calls run each inner Pgm through its own
+     * generate_reuse() -- aggregates frozen, only the coarse values recomputed (no SpGEMM) -- so
+     * the composed aggregation, and with it the merged injection, stays valid and is reused as is.
+     */
+    class reuse_data_type : public gko::LinOpFactory::ReuseData
     {
-        system_matrix_ = new_matrix;
-        // Value-only refresh with FROZEN structure, cuSPARSE-free. The merged prolongation
-        // (prolong_/restrict_) is structural and stays fixed; only the coarse operator's values
-        // change. Rather than recompute A_merged = R A P by SpGEMM (cuSPARSE SpGEMM aborts with
-        // CUSPARSE_STATUS_INSUFFICIENT_RESOURCES on these large injection operands), walk the
-        // retained Pgm chain: each Pgm::update_matrix_value scatters the new fine values into its
-        // frozen coarse structure (no SpGEMM) and refreshes get_coarse_op() in place; that
-        // refreshed coarse feeds the next level's fine op. After the last level, get_coarse_op() is
-        // the refreshed A_merged. This keeps the cached-solver (update_matrix_value) reuse engaged.
-        const bool isDist = is_distributed(new_matrix);
-        // local path converts to Csr; distributed path feeds the distributed op through unchanged
-        // (Pgm::update_matrix_value has its own distributed branch).
-        std::shared_ptr<const gko::LinOp> fineOp = isDist ? new_matrix : as_csr(new_matrix);
-        for (auto& lvl : levels_)
-        {
-            gko::as<gko::UpdateMatrixValue>(lvl.get())->update_matrix_value(fineOp);
-            fineOp = gko::as<gko::multigrid::MultigridLevel>(lvl.get())->get_coarse_op();
-        }
-        std::shared_ptr<const gko::LinOp> coarse =
-            gko::as<gko::multigrid::MultigridLevel>(levels_.back().get())->get_coarse_op();
-        if (!isDist) coarse = as_csr(coarse);
-        this->set_multigrid_level(prolong_, coarse, restrict_);
-    }
+        friend class MergedPgm;
+
+        bool initialized_ = false;
+        bool distributed_ = false;
+        gko::dim<2> size_ {};
+        std::vector<std::unique_ptr<gko::LinOpFactory::ReuseData>> levels_;
+        std::shared_ptr<const gko::LinOp> prolong_;
+        std::shared_ptr<const gko::LinOp> restrict_;
+    };
 
 protected:
 
@@ -131,69 +116,110 @@ protected:
         this->get_composition()->apply(alpha, b, beta, x);
     }
 
-    explicit MergedPgm(std::shared_ptr<const gko::Executor> exec)
-        : gko::EnableLinOp<MergedPgm>(std::move(exec))
+    explicit MergedPgm(std::shared_ptr<const gko::Executor> exec) : gko::LinOp(std::move(exec)) {}
+
+    MergedPgm(const Factory* factory, std::shared_ptr<const gko::LinOp> system_matrix)
+        : MergedPgm(factory, std::move(system_matrix), nullptr)
     {}
 
-    MergedPgm(const Factory* factory, gko::LinOpGenerateComponents components)
-        : gko::EnableLinOp<MergedPgm>(
-            factory->get_executor(), components.system_matrix->get_size()
-        ),
-          gko::multigrid::EnableMultigridLevel<ValueType>(components.system_matrix),
-          parameters_ {factory->get_parameters()}, system_matrix_ {components.system_matrix}
+    MergedPgm(
+        const Factory* factory,
+        std::shared_ptr<const gko::LinOp> system_matrix,
+        reuse_data_type& reuse_data
+    )
+        : MergedPgm(factory, std::move(system_matrix), &reuse_data)
+    {}
+
+    MergedPgm(
+        const Factory* factory,
+        std::shared_ptr<const gko::LinOp> system_matrix,
+        reuse_data_type* reuse_data
+    )
+        : gko::LinOp(factory->get_executor(), system_matrix->get_size()),
+          gko::multigrid::EnableMultigridLevel<ValueType>(system_matrix),
+          parameters_ {factory->get_parameters()}, system_matrix_ {system_matrix}
     {
         GKO_ASSERT(parameters_.merge_levels >= 1u);
         if (system_matrix_->get_size()[0] != 0)
         {
-            if (is_distributed(system_matrix_))
+            if (is_distributed(system_matrix_.get()))
             {
-                generateDistributed();
+                generateDistributed(reuse_data);
             }
             else
             {
-                generateLocal();
+                generateLocal(reuse_data);
             }
         }
     }
 
-    // ---- localized / Schwarz path: fine op is a plain Csr on this rank ----
-    void generateLocal()
+    /** Throws if `input` can't be used with `reuse_data`. */
+    static void check_reuse_consistent(
+        const Factory*, const gko::LinOp* input, const reuse_data_type& reuse_data
+    )
     {
-        auto exec = this->get_executor();
+        if (!reuse_data.initialized_) return;
+        GKO_ASSERT_EQUAL_DIMENSIONS(input, reuse_data.size_);
+        if (is_distributed(input) != reuse_data.distributed_)
+        {
+            GKO_INVALID_STATE(
+                "generate_reuse needs a distributed matrix exactly if the reuse data was "
+                "initialized with one"
+            );
+        }
+    }
+
+    // ---- localized / Schwarz path: fine op is a plain Csr on this rank ----
+    void generateLocal(reuse_data_type* reuseData)
+    {
         auto A = as_csr(system_matrix_);
         const auto fineRows = A->get_size()[0];
+        const bool reuseMerged = reuseData && reuseData->initialized_;
 
         // Run Pgm `merge_levels` times, composing the per-level aggregations BY INDEX. Each inner
         // Pgm coarsens `coarse` and yields a piecewise-constant prolong (a RowGatherer: fine row ->
         // aggregate) plus the next coarse operator. Because the prolongs are injections, the merged
         // prolongation is the injection of the composed aggregate map `mergedAgg[i] =
         // aggThis[mergedAgg[i]]`
-        // -- no Csr*Csr SpGEMM (cuSPARSE aborts with INSUFFICIENT_RESOURCES on large operands). The
-        // Pgm levels are retained so update_matrix_value can refresh the coarse values in place.
-        levels_.clear();
+        // -- no Csr*Csr SpGEMM (cuSPARSE aborts with INSUFFICIENT_RESOURCES on large operands).
+        // When reusing, the inner aggregates are frozen, so the recorded merged injection is reused
+        // and only the coarse operator is refreshed.
+        auto pgmFactory = makePgm();
+        std::vector<std::unique_ptr<gko::LinOpFactory::ReuseData>> newSlots;
         std::shared_ptr<const csr> coarse = A;
         std::vector<IndexType> mergedAgg; // fine row -> current coarse index (host)
         gko::size_type coarseRows = 0;
         for (unsigned i = 0; i < parameters_.merge_levels; ++i)
         {
-            auto level = makePgm()->generate(coarse);
-            auto aggThis = gather_agg(level.get()); // host, length coarse->rows, in [0, coarseRows)
-            coarseRows = level->get_prolong_op()->get_size()[1];
-            composeAgg(mergedAgg, aggThis, fineRows, i);
+            auto level = generateLevel(pgmFactory.get(), coarse, i, reuseData, newSlots);
+            if (!reuseMerged)
+            {
+                auto aggThis = gather_agg(level.get()); // host, length coarse->rows
+                coarseRows = level->get_prolong_op()->get_size()[1];
+                composeAgg(mergedAgg, aggThis, fineRows, i);
+            }
             coarse = as_csr(level->get_coarse_op());
-            levels_.push_back(gko::share(std::move(level)));
         }
 
-        auto pCsr = make_injection(mergedAgg, fineRows, coarseRows); // Csr, fine x coarse
-        prolong_ = pCsr;
-        restrict_ = gko::share(gko::as<csr>(pCsr->transpose())); // Csr, coarse x fine
+        if (reuseMerged)
+        {
+            prolong_ = reuseData->prolong_;
+            restrict_ = reuseData->restrict_;
+        }
+        else
+        {
+            auto pCsr = make_injection(mergedAgg, fineRows, coarseRows); // Csr, fine x coarse
+            prolong_ = pCsr;
+            restrict_ = gko::share(gko::as<csr>(pCsr->transpose())); // Csr, coarse x fine
+        }
         // coarse == P_merged^T A P_merged already (last Pgm level's coarse op); use it directly.
         this->set_multigrid_level(prolong_, coarse, restrict_);
+        recordReuse(reuseData, std::move(newSlots), false);
     }
 
 #ifdef NF_WITH_MPI_SUPPORT
     // ---- global path: fine op is a distributed::Matrix ----
-    void generateDistributed()
+    void generateDistributed(reuse_data_type* reuseData)
     {
         auto exec = this->get_executor();
         auto distFine = gko::as<const dist_mtx>(system_matrix_);
@@ -203,52 +229,103 @@ protected:
         // The prolong composition is rank-local because the distributed Pgm prolong is
         // block-diagonal; all sizes below are LOCAL (this rank's diag block).
         const auto localFineRows = distFine->get_diag_matrix()->get_size()[0];
+        const bool reuseMerged = reuseData && reuseData->initialized_;
 
-        levels_.clear();
+        auto pgmFactory = makePgm();
+        std::vector<std::unique_ptr<gko::LinOpFactory::ReuseData>> newSlots;
         std::shared_ptr<const gko::LinOp> coarse = system_matrix_; // stays distributed
         std::vector<IndexType> mergedAgg; // LOCAL fine row -> LOCAL coarse idx
         gko::size_type localCoarseRows = 0;
         for (unsigned i = 0; i < parameters_.merge_levels; ++i)
         {
-            auto level = makePgm()->generate(coarse); // distributed Pgm level
-            // Aggregation lives in the block-diagonal prolong's DIAG block (a RowGatherer).
-            auto prolongDiag = gko::as<const dist_mtx>(level->get_prolong_op())->get_diag_matrix();
-            auto aggThis =
-                agg_from_rowgatherer(prolongDiag.get()); // host, length = local fine rows
-            // local coarse rows == this level's coarse DIAG block rows
-            localCoarseRows =
-                gko::as<const dist_mtx>(level->get_coarse_op())->get_diag_matrix()->get_size()[0];
-            composeAgg(mergedAgg, aggThis, localFineRows, i);
+            auto level = generateLevel(pgmFactory.get(), coarse, i, reuseData, newSlots);
+            if (!reuseMerged)
+            {
+                // Aggregation lives in the block-diagonal prolong's DIAG block (a RowGatherer).
+                auto prolongDiag =
+                    gko::as<const dist_mtx>(level->get_prolong_op())->get_diag_matrix();
+                auto aggThis =
+                    agg_from_rowgatherer(prolongDiag.get()); // host, length = local fine rows
+                // local coarse rows == this level's coarse DIAG block rows
+                localCoarseRows = gko::as<const dist_mtx>(level->get_coarse_op())
+                                      ->get_diag_matrix()
+                                      ->get_size()[0];
+                composeAgg(mergedAgg, aggThis, localFineRows, i);
+            }
             coarse = level->get_coarse_op(); // distributed coarse op -> next Pgm fine op
-            levels_.push_back(gko::share(std::move(level)));
         }
-        const auto coarseGlobalRows = coarse->get_size()[0];
 
-        // Build the merged local injection Csr, then re-wrap prolong/restrict as block-diagonal
-        // distributed matrices (diag block only, empty off-diagonal) -- mirrors pgm.cpp's
-        // distributed_setup, which builds prolong/restrict from the local block alone.
-        std::shared_ptr<csr> pLocal = make_injection(mergedAgg, localFineRows, localCoarseRows);
-        std::shared_ptr<gko::LinOp> rLocal = gko::share(gko::as<csr>(pLocal->transpose()));
-        prolong_ = gko::share(
-            dist_mtx::create(exec, comm, gko::dim<2> {fineGlobalRows, coarseGlobalRows}, pLocal)
-        );
-        restrict_ = gko::share(
-            dist_mtx::create(exec, comm, gko::dim<2> {coarseGlobalRows, fineGlobalRows}, rLocal)
-        );
+        if (reuseMerged)
+        {
+            prolong_ = reuseData->prolong_;
+            restrict_ = reuseData->restrict_;
+        }
+        else
+        {
+            const auto coarseGlobalRows = coarse->get_size()[0];
+            // Build the merged local injection Csr, then re-wrap prolong/restrict as
+            // block-diagonal distributed matrices (diag block only, empty off-diagonal) -- mirrors
+            // pgm.cpp's distributed_setup, which builds prolong/restrict from the local block
+            // alone.
+            std::shared_ptr<csr> pLocal = make_injection(mergedAgg, localFineRows, localCoarseRows);
+            std::shared_ptr<gko::LinOp> rLocal = gko::share(gko::as<csr>(pLocal->transpose()));
+            prolong_ = gko::share(
+                dist_mtx::create(exec, comm, gko::dim<2> {fineGlobalRows, coarseGlobalRows}, pLocal)
+            );
+            restrict_ = gko::share(
+                dist_mtx::create(exec, comm, gko::dim<2> {coarseGlobalRows, fineGlobalRows}, rLocal)
+            );
+        }
         // coarse == the last inner Pgm's distributed coarse op == A_merged; use it directly.
         this->set_multigrid_level(prolong_, coarse, restrict_);
+        recordReuse(reuseData, std::move(newSlots), true);
     }
 #else
-    void generateDistributed() { GKO_NOT_IMPLEMENTED; }
+    void generateDistributed(reuse_data_type*) { GKO_NOT_IMPLEMENTED; }
 #endif
 
 private:
 
-    static bool is_distributed(const std::shared_ptr<const gko::LinOp>& op)
+    // Generate inner Pgm level `i`: plainly without reuse data, through the recorded slot once the
+    // reuse data is initialized, and otherwise through a fresh slot that recordReuse() commits.
+    static std::unique_ptr<pgm> generateLevel(
+        const typename pgm::Factory* pgmFactory,
+        std::shared_ptr<const gko::LinOp> fine,
+        unsigned i,
+        reuse_data_type* reuseData,
+        std::vector<std::unique_ptr<gko::LinOpFactory::ReuseData>>& newSlots
+    )
+    {
+        if (!reuseData) return pgmFactory->generate(std::move(fine));
+        if (reuseData->initialized_)
+        {
+            return pgmFactory->generate_reuse(std::move(fine), *reuseData->levels_.at(i));
+        }
+        newSlots.push_back(pgmFactory->create_empty_reuse_data());
+        return pgmFactory->generate_reuse(std::move(fine), *newSlots.back());
+    }
+
+    // Fill an empty reuse data only once the whole level was generated, so that a throw leaves it
+    // empty (LinOpFactory::generate_reuse_impl guarantee).
+    void recordReuse(
+        reuse_data_type* reuseData,
+        std::vector<std::unique_ptr<gko::LinOpFactory::ReuseData>> newSlots,
+        bool distributed
+    ) const
+    {
+        if (!reuseData || reuseData->initialized_) return;
+        reuseData->levels_ = std::move(newSlots);
+        reuseData->prolong_ = prolong_;
+        reuseData->restrict_ = restrict_;
+        reuseData->size_ = system_matrix_->get_size();
+        reuseData->distributed_ = distributed;
+        reuseData->initialized_ = true;
+    }
+
+    static bool is_distributed(const gko::LinOp* op)
     {
 #ifdef NF_WITH_MPI_SUPPORT
-        return std::dynamic_pointer_cast<const gko::experimental::distributed::DistributedBase>(op)
-            != nullptr;
+        return dynamic_cast<const gko::experimental::distributed::DistributedBase*>(op) != nullptr;
 #else
         static_cast<void>(op);
         return false;
@@ -343,16 +420,12 @@ private:
         return gko::share(gko::clone(exec, pHost));
     }
 
-    // NB: `parameters_` is provided by GKO_ENABLE_LIN_OP_FACTORY; do not redeclare it.
+    // NB: `parameters_` is provided by GKO_ENABLE_LIN_OP_FACTORY_WITH_REUSE; do not redeclare it.
     std::shared_ptr<const gko::LinOp> system_matrix_;
     // Merged prolong/restrict: a Csr in the local path, a block-diagonal distributed::Matrix in the
-    // global path. Structural (composed once); reused across update_matrix_value refreshes.
+    // global path. Structural (composed once); shared with the reuse data.
     std::shared_ptr<const gko::LinOp> prolong_;
     std::shared_ptr<const gko::LinOp> restrict_;
-    // Retained inner Pgm chain (each a MultigridLevel + UpdateMatrixValue): lets
-    // update_matrix_value refresh the merged coarse operator's values in place with frozen
-    // aggregation, cuSPARSE-free.
-    std::vector<std::shared_ptr<gko::LinOp>> levels_;
 };
 
 /**
