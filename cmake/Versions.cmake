@@ -14,7 +14,7 @@ set(NeoN_ADIOS2_VERSION "2.10.2")
 set(NeoN_SUNDIALS_VERSION "7.5.0")
 set(NeoN_JSON_VERSION "3.11.3")
 set(NeoN_GINKGO_VERSION "2.0.0")
-set(NeoN_GINKGO_TAG "6a3abf8c920228006f3b28bc3bf04fc7a5f6aee0")
+set(NeoN_GINKGO_TAG "db96ee80394c232b18e6713ec1ebbdf61b0dab55")
 set(NeoN_CATCH2_VERSION "3.4.0")
 set(NeoN_SPDLOG_VERSION "1.16.0")
 # Match the nanobind pybFoam builds against (pip, currently 2.13.0). With NeoN_NANOBIND_SHARED the

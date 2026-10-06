@@ -91,7 +91,8 @@ scalar retrieve(const InType& in)
 {
     using vec = gko::matrix::Dense<scalar>;
     auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
-    return host->copy_from(in)->at(0);
+    host->copy_from(in);
+    return host->at(0);
 }
 
 /** @brief Control parameters for the L1-scaled residual stopping criterion.
@@ -286,6 +287,7 @@ public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
+          reuseSetup_(solverConfig.get("reuseSetup", true)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig))
     {
         // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
@@ -303,24 +305,33 @@ public:
         }
 
         // Register NeoN's MergedPgm coarseners (mergeLevels-style: merge k Pgm steps into one level
-        // via SpGEMM-composed prolongations). A configFile's `mg_level` can then name them, e.g.
+        // via index-composed prolongations). A configFile's `mg_level` can then name them, e.g.
         // "mg_level": ["neon::pgmMerge2"]. Named-registry pattern, same as the L1 criterion above.
         // pgmMerge1 = merge_levels 1 = plain Pgm (single coarsening step), but via the SAME
-        // MergedPgm code path as 2/3 -- so the cache (update_matrix_value) and distributed branches
+        // MergedPgm code path as 2/3 -- so the reuse (generate_reuse) and distributed branches
         // behave identically across the merge-levels sweep, unlike swapping in native gko
         // multigrid::Pgm.
-        // Only available against the pinned Ginkgo fork -- see mergedPgm.hpp. With a stock (e.g.
-        // system-installed) Ginkgo the names are simply not registered, and a configFile naming
-        // one fails at parse time with Ginkgo's own "unknown type" error.
-#if NF_GINKGO_FORK
         reg.emplace("neon::pgmMerge1", makeMergedPgmFactory<scalar>(gkoExec_, 1));
         reg.emplace("neon::pgmMerge2", makeMergedPgmFactory<scalar>(gkoExec_, 2));
         reg.emplace("neon::pgmMerge3", makeMergedPgmFactory<scalar>(gkoExec_, 3));
         reg.emplace("neon::pgmMerge4", makeMergedPgmFactory<scalar>(gkoExec_, 4));
-#endif
 
-        factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
-                       .on(gkoExec_);
+        // With reuseSetup, a preconditioner given as a config map is parsed as a factory of its
+        // own and generated through generate_reuse() in generateSolver(), since the Krylov solvers
+        // do not forward reuse to their preconditioner. Its type descriptor is the one the solver
+        // would pass to it, unless the config sets a value_type, which is then left to Ginkgo.
+        const auto td = gko::config::make_type_descriptor<scalar>();
+        auto gkoSolverConfig = config_;
+        const auto& precondConfig = config_.get("preconditioner");
+        if (reuseSetup_ && precondConfig.get_tag() == gko::config::pnode::tag_t::map
+            && !config_.get("value_type"))
+        {
+            precondFactory_ = gko::config::parse(precondConfig, reg, td).on(gkoExec_);
+            auto map = config_.get_map();
+            map.erase("preconditioner");
+            gkoSolverConfig = gko::config::pnode(map);
+        }
+        factory_ = gko::config::parse(gkoSolverConfig, reg, td).on(gkoExec_);
     }
 
     static std::string name() { return "Ginkgo"; }
@@ -368,11 +379,28 @@ public:
 
 private:
 
+    /** @brief Generate the solver for @p mtx, reusing the setup of the previous solves.
+     *
+     * With reuseSetup, the preconditioner (or the solver itself when the config has no separate
+     * preconditioner, e.g. a Multigrid solver) goes through generate_reuse() with reuse data kept
+     * across solves, so e.g. Pgm/MergedPgm keep their aggregates and only recompute the coarse
+     * matrices. Factories without reuse support simply generate. A matrix that does not fit the
+     * recorded setup (size, sparsity or distribution changed) starts a new one.
+     */
+    std::unique_ptr<gko::LinOp> generateSolver(std::shared_ptr<const gko::LinOp> mtx) const;
+
     std::shared_ptr<const gko::Executor> gkoExec_;
     bool coupled_;
+    // Reuse the preconditioner/multigrid setup across solves (dictionary key reuseSetup).
+    bool reuseSetup_;
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
+    // Preconditioner factory split off the config for reuse (null without reuseSetup or when the
+    // config has no preconditioner map); generateSolver() attaches what it generates.
+    std::shared_ptr<const gko::LinOpFactory> precondFactory_;
+    // Reuse data of precondFactory_, or of factory_ without one; null until the first solve.
+    mutable std::unique_ptr<gko::LinOpFactory::ReuseData> reuseData_;
     // L1-scaled residual criterion registered into the config registry (l1Control_ set).
     std::shared_ptr<gko::stop::CriterionFactory> l1CritFactory_;
     // True when config_ names the L1 criterion, so it is built into factory_'s solver and

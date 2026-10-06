@@ -157,10 +157,8 @@ std::pair<scalar, std::vector<scalar>> computeL1NormFactor(
  * relies on this (JSON cannot carry the live operands); the programmatic path
  * (attachL1StopAndSolve) sets them explicitly and they take precedence.
  */
-class L1ResidualCriterion :
-    public gko::EnablePolymorphicObject<L1ResidualCriterion, gko::stop::Criterion>
+class L1ResidualCriterion : public gko::stop::Criterion
 {
-    friend class gko::EnablePolymorphicObject<L1ResidualCriterion, gko::stop::Criterion>;
     using Criterion = gko::stop::Criterion;
 
 public:
@@ -212,12 +210,11 @@ public:
     GKO_ENABLE_BUILD_METHOD(Factory);
 
     explicit L1ResidualCriterion(std::shared_ptr<const gko::Executor> exec)
-        : gko::EnablePolymorphicObject<L1ResidualCriterion, Criterion>(std::move(exec))
+        : Criterion(std::move(exec))
     {}
 
     explicit L1ResidualCriterion(const Factory* factory, const gko::stop::CriterionArgs& args)
-        : gko::EnablePolymorphicObject<L1ResidualCriterion, Criterion>(factory->get_executor()),
-          parameters_ {factory->get_parameters()}
+        : Criterion(factory->get_executor()), parameters_ {factory->get_parameters()}
     {
         // Prefer the explicitly-set factory operands (programmatic path); otherwise take the
         // system matrix and RHS the solver supplies through the CriterionArgs (config path).
