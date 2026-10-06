@@ -475,8 +475,32 @@ void solveComponentDist(
 // component's diagonal correction to the shared rank-local diagonal in place and reusing
 // solve_impl_dist (which honours the l1ScaledResidual criterion). The correction is rank-local, so
 // only the local diagonal entries are touched.
-// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
-// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+// NOTE: the device kernels live in shiftImplicitTransformDiagDist, which is not templated on
+// GenerateType: nvcc forbids an extended __device__ lambda inside a function whose template
+// arguments include a function-local type (the `generate` lambda), or `auto` parameters.
+template<
+    unsigned int I,
+    typename ExecType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
+void shiftImplicitTransformDiagDist(
+    const ExecType& exec,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
+    localIdx nrows,
+    scalar sign
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += sign * diagC[cell][I]; },
+        "shiftImplicitTransformDiagDist"
+    );
+}
+
 template<
     unsigned int I,
     typename SystemType,
@@ -501,12 +525,7 @@ void solveImplicitTransformComponentDist(
     localIdx nrows
 )
 {
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
-        "applyImplicitTransformDiagDist"
-    );
+    shiftImplicitTransformDiagDist<I>(exec, values, ma, diagC, nrows, -1.0);
     gkoExec->synchronize();
 
     auto rhs = getComponent<I>(sys.rhs());
@@ -515,12 +534,7 @@ void solveImplicitTransformComponentDist(
     stats.entries.push_back(solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
 
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
-        "restoreImplicitTransformDiagDist"
-    );
+    shiftImplicitTransformDiagDist<I>(exec, values, ma, diagC, nrows, 1.0);
     gkoExec->synchronize();
 }
 
