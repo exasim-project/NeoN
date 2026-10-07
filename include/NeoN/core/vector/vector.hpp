@@ -41,6 +41,7 @@ class Vector
 public:
 
     using VectorValueType = ValueType;
+    using SizeType = size_t;
 
     /**
      * @brief Creates an uninitialized Vector with the given size on an executor.
@@ -48,7 +49,7 @@ public:
      * @param exec Executor on which the vector data is allocated.
      * @param size Number of elements in the vector.
      */
-    Vector(const Executor& exec, localIdx size);
+    Vector(const Executor& exec, SizeType size);
 
     /**
      * @brief Creates a Vector with the given size from existing data on an executor.
@@ -61,7 +62,7 @@ public:
     Vector(
         const Executor& exec,
         const ValueType* in,
-        localIdx size,
+        SizeType size,
         Executor hostExec = SerialExecutor()
     );
 
@@ -72,7 +73,7 @@ public:
      * @param size Number of elements in the Vector.
      * @param value Value used to initialize every element.
      */
-    Vector(const Executor& exec, localIdx size, ValueType value);
+    Vector(const Executor& exec, SizeType size, ValueType value);
 
     /**
      * @brief Creates a Vector from a std::vector on the given executor.
@@ -272,7 +273,7 @@ public:
      *
      * @param size New number of elements.
      */
-    void resize(const localIdx size);
+    void resize(const SizeType size);
 
     /**
      * @brief Returns a pointer to the underlying Vector data.
@@ -328,7 +329,7 @@ public:
      *
      * @return Number of elements.
      */
-    [[nodiscard]] localIdx size() const { return size_; }
+    [[nodiscard]] SizeType size() const { return size_; }
 
     /**
      * @brief Returns the number of elements as a label.
@@ -359,10 +360,7 @@ public:
      *
      * @return View of the Vector data.
      */
-    [[nodiscard]] View<ValueType> view() &
-    {
-        return View<ValueType>(data_, static_cast<size_t>(size_));
-    }
+    [[nodiscard]] View<ValueType> view() & { return View<ValueType>(data_, size_); }
 
     /**
      * @brief Returns a read-only, non-owning view of the Vector data.
@@ -371,7 +369,7 @@ public:
      */
     [[nodiscard]] View<const ValueType> view() const&
     {
-        return View<const ValueType>(data_, static_cast<size_t>(size_));
+        return View<const ValueType>(data_, size_);
     }
 
     /**
@@ -380,9 +378,9 @@ public:
      * A View does not own the referenced data, so a view of a temporary Vector
      * could become dangling.
      */
-    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) && = delete;
+    [[nodiscard]] View<ValueType> view(std::pair<SizeType, SizeType> range) && = delete;
 
-    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&& = delete;
+    [[nodiscard]] View<const ValueType> view(std::pair<SizeType, SizeType> range) const&& = delete;
 
     /**
      * @brief Returns a non-owning view of a range of the Vector.
@@ -390,11 +388,9 @@ public:
      * @param range Half-open index range [first, last).
      * @return View of the specified range.
      */
-    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) &
+    [[nodiscard]] View<ValueType> view(std::pair<SizeType, SizeType> range) &
     {
-        return View<ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
-        );
+        return View<ValueType>(data_ + range.first, range.second - range.first);
     }
 
     /**
@@ -403,11 +399,9 @@ public:
      * @param range Half-open index range [first, last).
      * @return Read-only view of the specified range.
      */
-    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
+    [[nodiscard]] View<const ValueType> view(std::pair<SizeType, SizeType> range) const&
     {
-        return View<const ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
-        );
+        return View<const ValueType>(data_ + range.first, range.second - range.first);
     }
 
     /**
@@ -415,11 +409,11 @@ public:
      *
      * @return The half-open index range [0, size()).
      */
-    [[nodiscard]] std::pair<localIdx, localIdx> range() const { return {0, size()}; }
+    [[nodiscard]] std::pair<SizeType, SizeType> range() const { return {0, size()}; }
 
 private:
 
-    localIdx size_ {0};         //!< Size of the field.
+    SizeType size_ {0};         //!< Size of the field.
     ValueType* data_ {nullptr}; //!< Pointer to the field data.
     const Executor exec_;       //!< Executor associated with the field. (CPU, GPU, openMP, etc.)
 
