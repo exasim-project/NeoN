@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <stdexcept>
 #include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
@@ -106,4 +107,16 @@ public:
             __FILE__, __LINE__, __func__, s1, s2, "expected equal dimensions"                      \
         );                                                                                         \
     }
+
+// Validate range
+inline void validateRange(std::pair<localIdx, localIdx> range, size_t size)
+{
+    const auto begin = range.first;
+    const auto end = range.second;
+
+    if (begin < 0 || begin > end || static_cast<size_t>(end) > size)
+    {
+        throw std::out_of_range("The chosen range is not valid!");
+    }
 }
+} // namespace NeoN
