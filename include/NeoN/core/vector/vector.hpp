@@ -9,6 +9,7 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #include <vector>
 
@@ -378,9 +379,9 @@ public:
      * A View does not own the referenced data, so a view of a temporary Vector
      * could become dangling.
      */
-    [[nodiscard]] View<ValueType> view(std::pair<SizeType, SizeType> range) && = delete;
+    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) && = delete;
 
-    [[nodiscard]] View<const ValueType> view(std::pair<SizeType, SizeType> range) const&& = delete;
+    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&& = delete;
 
     /**
      * @brief Returns a non-owning view of a range of the Vector.
@@ -388,9 +389,12 @@ public:
      * @param range Half-open index range [first, last).
      * @return View of the specified range.
      */
-    [[nodiscard]] View<ValueType> view(std::pair<SizeType, SizeType> range) &
+    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
-        return View<ValueType>(data_ + range.first, range.second - range.first);
+        NeoN::validateRange(range, size());
+        return View<ValueType>(
+            data_ + range.first, static_cast<size_t>(range.second - range.first)
+        );
     }
 
     /**
@@ -401,7 +405,10 @@ public:
      */
     [[nodiscard]] View<const ValueType> view(std::pair<SizeType, SizeType> range) const&
     {
-        return View<const ValueType>(data_ + range.first, range.second - range.first);
+        NeoN::validateRange(range, size());
+        return View<const ValueType>(
+            data_ + range.first, static_cast<size_t>(range.second - range.first)
+        );
     }
 
     /**
@@ -409,7 +416,14 @@ public:
      *
      * @return The half-open index range [0, size()).
      */
-    [[nodiscard]] std::pair<SizeType, SizeType> range() const { return {0, size()}; }
+    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const
+    {
+        if (!std::in_range<localIdx>(size()))
+        {
+            throw std::length_error("Size cannot be represented by localIdx!");
+        }
+        return {0, size()};
+    }
 
 private:
 
