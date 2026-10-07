@@ -40,6 +40,7 @@ class Array
 public:
 
     using ArrayValueType = ValueType;
+    using SizeType = size_t;
 
     /**
      * @brief Creates an uninitialized Array with the given size on an executor.
@@ -52,7 +53,7 @@ public:
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
+            { ptr = concreteExec.template alloc<ValueType>(size); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -77,7 +78,7 @@ public:
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
+            { ptr = concreteExec.template alloc<ValueType>(size); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -97,9 +98,7 @@ public:
     {
         void* ptr = nullptr;
         std::visit(
-            [&ptr, size](const auto& execu)
-            { ptr = execu.template alloc<ValueType>(static_cast<size_t>(size)); },
-            exec_
+            [&ptr, size](const auto& execu) { ptr = execu.template alloc<ValueType>(size); }, exec_
         );
         data_ = static_cast<ValueType*>(ptr);
         NeoN::fill(*this, value);
@@ -110,9 +109,7 @@ public:
      * @param exec  Executor on which the array data is allocated
      * @param in std::vector containing the values to copy into the array
      */
-    Array(const Executor& exec, std::vector<ValueType> in)
-        : Array(exec, in.data(), static_cast<localIdx>(in.size()))
-    {}
+    Array(const Executor& exec, std::vector<ValueType> in) : Array(exec, in.data(), in.size()) {}
 
 
     /**
@@ -253,15 +250,14 @@ public:
         {
             std::visit(
                 [this, &ptr, size](const auto& exec)
-                { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
+                { ptr = exec.template realloc<ValueType>(this->data_, size); },
                 exec_
             );
         }
         else
         {
             std::visit(
-                [&ptr, size](const auto& exec)
-                { ptr = exec.template alloc<ValueType>(static_cast<size_t>(size)); },
+                [&ptr, size](const auto& exec) { ptr = exec.template alloc<ValueType>(size); },
                 exec_
             );
         }
@@ -322,10 +318,7 @@ public:
      *
      * @return Non-owning view of the Array data.
      */
-    [[nodiscard]] inline View<ValueType> view() &
-    {
-        return View<ValueType>(data_, static_cast<size_t>(size_));
-    }
+    [[nodiscard]] inline View<ValueType> view() & { return View<ValueType>(data_, size_); }
 
     /**
      * @brief Returns a view of the Array data.
@@ -334,7 +327,7 @@ public:
      */
     [[nodiscard]] inline View<const ValueType> view() const&
     {
-        return View<const ValueType>(data_, static_cast<size_t>(size_));
+        return View<const ValueType>(data_, size_);
     }
 
     // return of a temporary --> invalid memory access
@@ -378,7 +371,7 @@ public:
 
 private:
 
-    localIdx size_ {0};         //!< Number of elements in the Array.
+    SizeType size_ {0};         //!< Number of elements in the Array.
     ValueType* data_ {nullptr}; //!< Pointer to the underlying Array data.
     const Executor exec_;       //!< Executor associated with the Array.
 
