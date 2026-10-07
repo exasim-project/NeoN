@@ -546,6 +546,16 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
+    gkoExec_->synchronize();
+    auto t0 = std::chrono::steady_clock::now();
+    auto lap = [&]()
+    {
+        gkoExec_->synchronize();
+        auto t1 = std::chrono::steady_clock::now();
+        auto ms = std::chrono::duration<scalar, std::milli>(t1 - t0).count();
+        t0 = t1;
+        return ms;
+    };
     auto gkoMtx = createGkoMtxDist(
         gkoExec_,
         comm,
@@ -555,12 +565,17 @@ SolverStats GinkgoSolver::solveDist(
         cachedImap_,
         cachedNonLocalMtx_
     );
+    const auto convertMs = lap();
     auto solver = gko::share(generateSolver(gkoMtx));
+    const auto setupMs = lap();
+    if (logTiming_) logHierarchy(solver.get());
     // When the configFile names the L1 criterion it is already built into the solver
     // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
+    auto entry = solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
+    if (logTiming_) logSolve(convertMs, setupMs, entry);
+    return {entry};
 }
 
 SolverStats GinkgoSolver::solveDist(
