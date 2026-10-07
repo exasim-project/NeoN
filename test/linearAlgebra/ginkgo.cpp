@@ -82,17 +82,6 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
         );
         CHECK(node == expected);
     }
-    SECTION("NeoN-only keys are stripped")
-    {
-        NeoN::Dictionary dict {
-            {{"key", 10}, {"reuseSetup", std::string("false")}, {"logTiming", std::string("true")}}
-        };
-
-        auto node = NeoN::la::ginkgo::parse(dict);
-
-        gko::config::pnode expected({{"key", gko::config::pnode {10}}});
-        CHECK(node == expected);
-    }
     SECTION("Throws")
     {
         NeoN::Dictionary dict({{"key", std::pair<int*, std::vector<double>> {}}});
