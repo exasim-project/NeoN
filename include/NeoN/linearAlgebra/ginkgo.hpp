@@ -285,7 +285,6 @@ public:
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
           reuseSetup_(readFlag(solverConfig, "reuseSetup", true)),
-          logTiming_(readFlag(solverConfig, "logTiming", false)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig))
     {
         // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
@@ -390,23 +389,10 @@ private:
      */
     std::unique_ptr<gko::LinOp> generateSolver(std::shared_ptr<const gko::LinOp> mtx) const;
 
-    /** @brief With logTiming, log the per-solve time breakdown (matrix conversion, setup, solve).
-     */
-    void logSolve(scalar convertMs, scalar setupMs, const SolverStatsEntry& entry) const;
-
-    /** @brief With logTiming, log the multigrid hierarchy of @p solver once, after the first
-     * setup: level sizes and whether the levels are distributed (global) or rank-local. */
-    void logHierarchy(const gko::LinOp* solver) const;
-
     std::shared_ptr<const gko::Executor> gkoExec_;
     bool coupled_;
     // Reuse the preconditioner/multigrid setup across solves (dictionary key reuseSetup).
     bool reuseSetup_;
-    // Log a per-solve time breakdown (dictionary key logTiming).
-    bool logTiming_;
-    // How generateSolver() built the last setup: "full" (no reuse), "new" or "reuse".
-    mutable const char* lastSetup_ = "full";
-    mutable bool hierarchyLogged_ = false;
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;

@@ -34,12 +34,6 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("reuseSetup");
     }
 
-    // 'logTiming' enables the per-solve time breakdown (see GinkgoSolver::logSolve).
-    if (dict.contains("logTiming"))
-    {
-        dict.remove("logTiming");
-    }
-
     // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
     // residual reporting; it is not a Ginkgo config key.
     if (dict.contains("reportName"))
@@ -468,11 +462,7 @@ SolverStats solve_impl(
 std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const gko::LinOp> mtx
 ) const
 {
-    if (!reuseSetup_)
-    {
-        lastSetup_ = "full";
-        return factory_->generate(mtx);
-    }
+    if (!reuseSetup_) return factory_->generate(mtx);
     const auto& reusable = precondFactory_ ? precondFactory_ : factory_;
     auto generateReuse = [&]() -> std::unique_ptr<gko::LinOp>
     {
@@ -480,7 +470,6 @@ std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const g
         {
             try
             {
-                lastSetup_ = "reuse";
                 return reusable->generate_reuse(mtx, *reuseData_);
             }
             catch (const gko::DimensionMismatch&)
@@ -489,7 +478,6 @@ std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const g
             {}
         }
         // first solve, or the matrix does not fit the recorded setup: record a new one
-        lastSetup_ = "new";
         reuseData_ = reusable->create_empty_reuse_data();
         return reusable->generate_reuse(mtx, *reuseData_);
     };
@@ -499,85 +487,17 @@ std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const g
     return solver;
 }
 
-void GinkgoSolver::logSolve(scalar convertMs, scalar setupMs, const SolverStatsEntry& entry) const
-{
-    Logging::info(
-        "[GinkgoSolver] timing: convert {:.1f} ms, setup {:.1f} ms ({}), solve {:.1f} ms, "
-        "{} iterations",
-        convertMs,
-        setupMs,
-        lastSetup_,
-        entry.solveTime,
-        entry.numIter
-    );
-}
-
-void GinkgoSolver::logHierarchy(const gko::LinOp* solver) const
-{
-    if (hierarchyLogged_) return;
-    hierarchyLogged_ = true;
-
-    // The multigrid is either the solver itself or its preconditioner.
-    const gko::LinOp* op = solver;
-    if (auto precond = dynamic_cast<const gko::Preconditionable*>(solver);
-        precond && precond->get_preconditioner())
-    {
-        op = precond->get_preconditioner().get();
-    }
-    auto mg = dynamic_cast<const gko::solver::Multigrid*>(op);
-    if (!mg)
-    {
-        Logging::info("[GinkgoSolver] no multigrid at the top of the preconditioner");
-        return;
-    }
-    std::string rows;
-    bool distributed = false;
-    for (const auto& level : mg->get_mg_level_list())
-    {
-        if (rows.empty()) rows = std::to_string(level->get_fine_op()->get_size()[0]);
-        rows += " -> " + std::to_string(level->get_coarse_op()->get_size()[0]);
-#ifdef NF_WITH_MPI_SUPPORT
-        distributed = distributed
-                   || dynamic_cast<const gko::experimental::distributed::DistributedBase*>(
-                          level->get_fine_op().get()
-                      ) != nullptr;
-#endif
-    }
-    Logging::info(
-        "[GinkgoSolver] multigrid hierarchy ({}, {} levels): {} rows",
-        distributed ? "global, distributed levels" : "rank-local levels",
-        mg->get_mg_level_list().size(),
-        rows
-    );
-}
-
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
-    gkoExec_->synchronize();
-    auto t0 = std::chrono::steady_clock::now();
-    auto lap = [&]()
-    {
-        gkoExec_->synchronize();
-        auto t1 = std::chrono::steady_clock::now();
-        auto ms = std::chrono::duration<scalar, std::milli>(t1 - t0).count();
-        t0 = t1;
-        return ms;
-    };
     auto gkoMtx = createGkoMtx(sys.matrix());
-    const auto convertMs = lap();
-    auto solver = generateSolver(gkoMtx);
-    const auto setupMs = lap();
-    if (logTiming_) logHierarchy(solver.get());
     // When the configFile names the L1 criterion it is already built into the solver and
     // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
     // twice. The flag-only case (criterion not in the config) still attaches it here.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    auto entry = solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver), l1Control);
-    if (logTiming_) logSolve(convertMs, setupMs, entry);
-    return {entry};
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control)};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
