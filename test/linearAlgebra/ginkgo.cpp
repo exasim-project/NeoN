@@ -90,6 +90,23 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
     }
 }
 
+TEST_CASE("readFlag - Ginkgo")
+{
+    using NeoN::la::ginkgo::readFlag;
+
+    // A boolean read from a dictionary file arrives as a word, e.g. reuseSetup false;
+    NeoN::Dictionary dict {
+        {{"bool", false}, {"int", 1}, {"word", std::string("false")}, {"yes", std::string("yes")}}
+    };
+
+    CHECK(readFlag(dict, "bool", true) == false);
+    CHECK(readFlag(dict, "int", false) == true);
+    CHECK(readFlag(dict, "word", true) == false);
+    CHECK(readFlag(dict, "yes", false) == true);
+    CHECK(readFlag(dict, "missing", true) == true);
+    CHECK(readFlag(dict, "missing", false) == false);
+}
+
 TEST_CASE("gkoVecView - Ginkgo")
 {
     NeoN::Executor exec = NeoN::SerialExecutor {};

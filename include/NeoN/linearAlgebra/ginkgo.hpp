@@ -179,6 +179,24 @@ L1ResidualResult solveWithL1StopDist(
 );
 #endif
 
+/** @brief Read the boolean flag @p key of @p cfg, or @p fallback if it is absent.
+ *
+ * A boolean read from a dictionary file is stored as a word/string, not a bool, so the flag is
+ * accepted as a bool, an int, or a truthy word/string ("true"/"yes"/"on"/"1").
+ */
+inline bool readFlag(const Dictionary& cfg, const std::string& key, bool fallback)
+{
+    if (!cfg.contains(key)) return fallback;
+    if (cfg.isType<bool>(key)) return cfg.get<bool>(key);
+    if (cfg.isType<int>(key)) return cfg.get<int>(key) != 0;
+    if (cfg.isType<std::string>(key))
+    {
+        const std::string v = cfg.get<std::string>(key);
+        return v == "true" || v == "yes" || v == "on" || v == "1";
+    }
+    return false;
+}
+
 /** @brief Read the L1-scaled residual stopping controls from a solver configuration.
  *
  * Returns std::nullopt unless the solver dictionary opts in via "l1ScaledResidual".
@@ -189,28 +207,7 @@ L1ResidualResult solveWithL1StopDist(
  */
 inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& cfg)
 {
-    const std::string flag = "l1ScaledResidual";
-    if (!cfg.contains(flag))
-    {
-        return std::nullopt;
-    }
-    // A boolean read from a dictionary file is stored as a word/string, not a bool;
-    // accept the common representations rather than assuming a single type.
-    bool enabled = false;
-    if (cfg.isType<bool>(flag))
-    {
-        enabled = cfg.get<bool>(flag);
-    }
-    else if (cfg.isType<int>(flag))
-    {
-        enabled = cfg.get<int>(flag) != 0;
-    }
-    else if (cfg.isType<std::string>(flag))
-    {
-        const std::string v = cfg.get<std::string>(flag);
-        enabled = (v == "true" || v == "yes" || v == "on" || v == "1");
-    }
-    if (!enabled)
+    if (!readFlag(cfg, "l1ScaledResidual", false))
     {
         return std::nullopt;
     }
@@ -287,7 +284,7 @@ public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
-          reuseSetup_(solverConfig.get("reuseSetup", true)),
+          reuseSetup_(readFlag(solverConfig, "reuseSetup", true)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig))
     {
         // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
