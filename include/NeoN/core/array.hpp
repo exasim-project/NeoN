@@ -48,7 +48,7 @@ public:
      * @param exec Executor on which the array data is allocated.
      * @param size Number of elements in the array.
      */
-    Array(const Executor& exec, localIdx size) : size_(size), data_(nullptr), exec_(exec)
+    Array(const Executor& exec, SizeType size) : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
         std::visit(
@@ -70,7 +70,7 @@ public:
     Array(
         const Executor& exec,
         const ValueType* in,
-        localIdx size,
+        SizeType size,
         Executor hostExec = SerialExecutor()
     )
         : size_(size), data_(nullptr), exec_(exec)
@@ -93,7 +93,7 @@ public:
      * @param size Number of elements in the array.
      * @param value Value used to initialize all elements.
      */
-    Array(const Executor& exec, localIdx size, ValueType value)
+    Array(const Executor& exec, SizeType size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
@@ -243,7 +243,7 @@ public:
      *
      * @param size New number of elements.
      */
-    void resize(const localIdx size)
+    void resize(const SizeType size)
     {
         void* ptr = nullptr;
         if (!empty())
@@ -291,7 +291,7 @@ public:
      *
      * @return Number of elements.
      */
-    [[nodiscard]] inline localIdx size() const { return size_; }
+    [[nodiscard]] inline SizeType size() const { return size_; }
 
     /**
      * @brief Returns the number of elements in the Array.
@@ -331,10 +331,10 @@ public:
     }
 
     // return of a temporary --> invalid memory access
-    [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) && = delete;
+    [[nodiscard]] View<ValueType> view(std::pair<SizeType, SizeType> range) && = delete;
 
     // return of a temporary --> invalid memory access
-    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&& = delete;
+    [[nodiscard]] View<const ValueType> view(std::pair<SizeType, SizeType> range) const&& = delete;
 
     /**
      * @brief Returns a view of a range of the Array.
@@ -342,11 +342,9 @@ public:
      * @param range Half-open range of elements to include in the view.
      * @return Non-owning view of the specified range.
      */
-    [[nodiscard]] inline View<ValueType> view(std::pair<localIdx, localIdx> range) &
+    [[nodiscard]] inline View<ValueType> view(std::pair<SizeType, SizeType> range) &
     {
-        return View<ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
-        );
+        return View<ValueType>(data_ + range.first, range.second - range.first);
     }
 
     /**
@@ -355,11 +353,9 @@ public:
      * @param range Half-open range of elements to include in the view.
      * @return Non-owning view of the specified range.
      */
-    [[nodiscard]] inline View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
+    [[nodiscard]] inline View<const ValueType> view(std::pair<SizeType, SizeType> range) const&
     {
-        return View<const ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
-        );
+        return View<const ValueType>(data_ + range.first, range.second - range.first);
     }
 
     /**
@@ -367,7 +363,7 @@ public:
      *
      * @return The half-open index range [0, size()).
      */
-    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
+    [[nodiscard]] inline std::pair<SizeType, SizeType> range() const { return {0, size()}; }
 
 private:
 
