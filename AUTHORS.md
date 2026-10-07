@@ -12,5 +12,6 @@ Gregor Weiss <gregor.weiss@hlrs.de>, High-Performance Computing Center Stuttgart
 Henning Scheufler <henning.scheufler@web.de>\
 Hendrik Hetmann <hendrik.hetmann@upstream-cfd.de>, Upstream CFD GmbH\
 Marcel Koch <marcel.koch@kit.edu>, Karlsruhe Institute of Technology\
+Michael Alletto <michael.alletto@gmx.de>\
 Roman Mishchuk <roman.mishchuk@tum.de>, Technical University of Munich\
 Yu-Hsiang Tsai <yhmtsai@gmail.com>, Technical University of Munich
