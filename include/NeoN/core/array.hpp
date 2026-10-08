@@ -377,11 +377,7 @@ public:
      */
     [[nodiscard]] inline std::pair<localIdx, localIdx> range() const
     {
-        if (!std::in_range<localIdx>(size()))
-        {
-            throw std::length_error("Size cannot be represented by localIdx!");
-        }
-        return {0, size()};
+        return {0, NeoN::toLocalIdx(size())};
     }
 
 private:

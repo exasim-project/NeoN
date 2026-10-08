@@ -119,4 +119,14 @@ inline void validateRange(std::pair<localIdx, localIdx> range, size_t size)
         throw std::out_of_range("The chosen range is not valid!");
     }
 }
-} // namespace NeoN
+
+// Validate conversion to localIdx
+inline localIdx toLocalIdx(size_t value)
+{
+    if (!std::in_range<localIdx>(value))
+    {
+        throw std::length_error("Value cannot be represented by localIdx!");
+    }
+    return static_cast<localIdx>(value);
+}
+} // namespace Neoinline N
