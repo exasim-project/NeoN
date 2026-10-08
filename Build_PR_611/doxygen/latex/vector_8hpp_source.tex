@@ -1,0 +1,166 @@
+\doxysection{vector.\+hpp}
+\hypertarget{vector_8hpp_source}{}\label{vector_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp}}
+\mbox{\hyperlink{vector_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{view_8hpp}{NeoN/core/view.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{exceptions_8hpp}{NeoN/helpers/exceptions.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00038}00038\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1Vector}{00039}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00040}00040\ \{}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00042}00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1Vector_abfab4edc3452c4ed762fa880f3065928}{00044}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1Vector_abfab4edc3452c4ed762fa880f3065928}{VectorValueType}}\ =\ ValueType;}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00045}\mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{00045}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{SizeType}}\ =\ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\_t}};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1Vector_ae1624601f774260ffe0c66ea936452a9}{00053}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_ae1624601f774260ffe0c66ea936452a9}{Vector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}},\ \mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{SizeType}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}});}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1Vector_a3520e4f408205d65e18e4cc0fdf3f2a4}{00063}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_a3520e4f408205d65e18e4cc0fdf3f2a4}{Vector}}(}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}},}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ValueType*\ in,}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{SizeType}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}},}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ hostExec\ =\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{SerialExecutor}}()}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00068}00068\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1Vector_a1dc220d65ce8b66d378129f97bc5c6c3}{00077}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_a1dc220d65ce8b66d378129f97bc5c6c3}{Vector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}},\ \mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{SizeType}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}},\ ValueType\ value);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1Vector_ac13dd0cde894a2f78a11286b20907f34}{00085}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_ac13dd0cde894a2f78a11286b20907f34}{Vector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}},\ std::vector<ValueType>\ in);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1Vector_a3fda9acfd9787039435b92fe31c04049}{00093}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_a3fda9acfd9787039435b92fe31c04049}{Vector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ in);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00100}\mbox{\hyperlink{classNeoN_1_1Vector_a229d6abcc33e4040a5e5ee173e639070}{00100}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_a229d6abcc33e4040a5e5ee173e639070}{Vector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00107}\mbox{\hyperlink{classNeoN_1_1Vector_a15731af41b65b80b4b2c4539476a716e}{00107}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_a15731af41b65b80b4b2c4539476a716e}{Vector}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\&\ rhs)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00112}\mbox{\hyperlink{classNeoN_1_1Vector_ab753dfc6e9baa593b957d324e2aa4835}{00112}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_ab753dfc6e9baa593b957d324e2aa4835}{\string~Vector}}();}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ func>}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00123}\mbox{\hyperlink{classNeoN_1_1Vector_aa6ac22b4e8d8aabbe6d6a100d67cc69c}{00123}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Vector_aa6ac22b4e8d8aabbe6d6a100d67cc69c}{apply}}(func\ f)}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00124}00124\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b}{map}}(*\textcolor{keyword}{this},\ f);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00126}00126\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00134}\mbox{\hyperlink{classNeoN_1_1Vector_a2dc3e53a2f9cd9f1f5401bde925374fa}{00134}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a2dc3e53a2f9cd9f1f5401bde925374fa}{copyToExecutor}}(\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ dstExec)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00141}\mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{00141}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_ad9d97488c7ae4f82eb2f07c6001ca7e9}{copyToHost}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00142}00142\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00151}\mbox{\hyperlink{classNeoN_1_1Vector_ac43473fb021aacee009af9163ff016a0}{00151}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Vector_ac43473fb021aacee009af9163ff016a0}{copyToHost}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ result);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00152}00152\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00162}\mbox{\hyperlink{classNeoN_1_1Vector_a1a976f143f1b87614db92b4c501ed719}{00162}}\ \ \ \ \ ValueType\&\ \mbox{\hyperlink{classNeoN_1_1Vector_a1a976f143f1b87614db92b4c501ed719}{operator[]}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00164}\mbox{\hyperlink{classNeoN_1_1Vector_adfb14f80df8f4b622452818d3ac5f52f}{00164}}\ \ \ \ \ \textcolor{keyword}{const}\ ValueType\&\ \mbox{\hyperlink{classNeoN_1_1Vector_adfb14f80df8f4b622452818d3ac5f52f}{operator[]}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \textcolor{keyword}{const}\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00171}\mbox{\hyperlink{classNeoN_1_1Vector_a79947b149106e8cae946231f179639fe}{00171}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Vector_a79947b149106e8cae946231f179639fe}{operator=}}(\textcolor{keyword}{const}\ ValueType\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00180}\mbox{\hyperlink{classNeoN_1_1Vector_ae8e2493ea02950235947c1c5e128e3c0}{00180}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Vector_ae8e2493ea02950235947c1c5e128e3c0}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00181}00181\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00194}\mbox{\hyperlink{classNeoN_1_1Vector_a5a9406cd5937caca19cbb5a340b3d640}{00194}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_a5a9406cd5937caca19cbb5a340b3d640}{operator=}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\&\ rhs)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00195}00195\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00202}\mbox{\hyperlink{classNeoN_1_1Vector_ab4d83cf671153e017e107f022d06d2a8}{00202}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_ab4d83cf671153e017e107f022d06d2a8}{operator+=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00210}\mbox{\hyperlink{classNeoN_1_1Vector_add2cd47adb8b276c03f1f41a1e36cae1}{00210}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_add2cd47adb8b276c03f1f41a1e36cae1}{operator-\/=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00211}00211\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00224}\mbox{\hyperlink{classNeoN_1_1Vector_a3aea84baea4f7590d0ae483e3040f18e}{00224}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a3aea84baea4f7590d0ae483e3040f18e}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00225}00225\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}\ \textcolor{keyword}{requires}(ValueType\ a,\ ValueType\ b)\ \{\ a*\ b;\ \};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00226}00226\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00239}\mbox{\hyperlink{classNeoN_1_1Vector_aac491a8b16676c45119d703de8d710d9}{00239}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_aac491a8b16676c45119d703de8d710d9}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00240}00240\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}\ \textcolor{keyword}{requires}(ValueType\ a,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ b)\ \{\ a*\ b;\ \};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00241}00241\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00254}\mbox{\hyperlink{classNeoN_1_1Vector_a9afacd6737415134f38fe9becb19d549}{00254}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_a9afacd6737415134f38fe9becb19d549}{operator*=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00255}00255\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}\ \textcolor{keyword}{requires}(ValueType\ a,\ ValueType\ b)\ \{\ a\ *=\ b;\ \};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00256}00256\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00269}\mbox{\hyperlink{classNeoN_1_1Vector_a8ada1ac2655eba6a62ecf23e01bce27d}{00269}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_a8ada1ac2655eba6a62ecf23e01bce27d}{operator*=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00270}00270\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}\ \textcolor{keyword}{requires}(ValueType\ a,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ b)\ \{\ a\ *=\ b;\ \};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00271}00271\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00277}\mbox{\hyperlink{classNeoN_1_1Vector_ada29370378defbaad320d2e61e1a1ece}{00277}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Vector_ada29370378defbaad320d2e61e1a1ece}{resize}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{SizeType}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}});}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00278}00278\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00284}\mbox{\hyperlink{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1}{00284}}\ \ \ \ \ [[nodiscard]]\ ValueType*\ \mbox{\hyperlink{classNeoN_1_1Vector_a43e0722e173db5b15126abbc163b5eb1}{data}}()\ \{\ \textcolor{keywordflow}{return}\ data\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00285}00285\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00291}\mbox{\hyperlink{classNeoN_1_1Vector_a980245c8e0b2691d3014d49862b2145e}{00291}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ ValueType*\ \mbox{\hyperlink{classNeoN_1_1Vector_a980245c8e0b2691d3014d49862b2145e}{data}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ data\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00292}00292\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00298}\mbox{\hyperlink{classNeoN_1_1Vector_af3ba6b1022281a560779993a95b39f6d}{00298}}\ \ \ \ \ [[nodiscard]]\ ValueType*\ \mbox{\hyperlink{classNeoN_1_1Vector_af3ba6b1022281a560779993a95b39f6d}{begin}}()\ \{\ \textcolor{keywordflow}{return}\ data\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00299}00299\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00305}\mbox{\hyperlink{classNeoN_1_1Vector_a238922b03c94dd56f9fcd6400f372f22}{00305}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ ValueType*\ \mbox{\hyperlink{classNeoN_1_1Vector_a238922b03c94dd56f9fcd6400f372f22}{begin}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ data\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00306}00306\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00312}\mbox{\hyperlink{classNeoN_1_1Vector_abdf88a72a6bf82ef8f40c8040b5e5e70}{00312}}\ \ \ \ \ [[nodiscard]]\ ValueType*\ \mbox{\hyperlink{classNeoN_1_1Vector_abdf88a72a6bf82ef8f40c8040b5e5e70}{end}}()\ \{\ \textcolor{keywordflow}{return}\ data\_\ +\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}}();\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00313}00313\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00319}\mbox{\hyperlink{classNeoN_1_1Vector_a3ec3319fa14127283f65f0d2293efaff}{00319}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ ValueType*\ \mbox{\hyperlink{classNeoN_1_1Vector_a3ec3319fa14127283f65f0d2293efaff}{end}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ data\_\ +\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}}();\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00320}00320\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00326}\mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{00326}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1Vector_aaf18ea0e8c0b963eea6b54db622cd1fa}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ exec\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00327}00327\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00333}\mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{00333}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{SizeType}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ size\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00334}00334\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00340}\mbox{\hyperlink{classNeoN_1_1Vector_a719edbafd35de9fdf99fd174fc8fd61e}{00340}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a719edbafd35de9fdf99fd174fc8fd61e}{ssize}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}\textcolor{keyword}{>}(size\_);\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00341}00341\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00347}\mbox{\hyperlink{classNeoN_1_1Vector_aa265640bf653ccc74f509d396ef7d977}{00347}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1Vector_aa265640bf653ccc74f509d396ef7d977}{empty}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}}()\ ==\ 0;\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00348}00348\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00355}\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{00355}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}()\ \&\&\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00356}00356\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00357}\mbox{\hyperlink{classNeoN_1_1Vector_af41388de676f5d555c0a9a8fd65d0fdd}{00357}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_af41388de676f5d555c0a9a8fd65d0fdd}{view}}()\ const\&\&\ =\ delete;}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00358}00358\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00364}\mbox{\hyperlink{classNeoN_1_1Vector_afe9aade44dd8fd745d5ab63c5fa0c460}{00364}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1View}{View}}<ValueType>\ \mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}()\ \&\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}(data\_,\ size\_);\ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00365}00365\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00371}\mbox{\hyperlink{classNeoN_1_1Vector_a8204948c9a7c17e5bc7c67c88db802bd}{00371}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a8204948c9a7c17e5bc7c67c88db802bd}{view}}()\ const\&}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00372}00372\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00373}00373\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}(data\_,\ size\_);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00374}00374\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00375}00375\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00382}\mbox{\hyperlink{classNeoN_1_1Vector_abb5eeffddc65955f57db055be73fbc07}{00382}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_abb5eeffddc65955f57db055be73fbc07}{view}}(std::pair<localIdx,\ localIdx>\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}})\ \&\&\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00383}00383\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00384}\mbox{\hyperlink{classNeoN_1_1Vector_a6d35eccebbae57201dad39e582656fd1}{00384}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a6d35eccebbae57201dad39e582656fd1}{view}}(std::pair<localIdx,\ localIdx>\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}})\ \textcolor{keyword}{const}\&\&\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00385}00385\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00392}\mbox{\hyperlink{classNeoN_1_1Vector_a43a0f39f3241e494950640dc4c673bf7}{00392}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a43a0f39f3241e494950640dc4c673bf7}{view}}(std::pair<localIdx,\ localIdx>\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}})\ \&}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00393}00393\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00394}00394\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_adbeafc2f4edb3213dd4151be5dfd7c08}{NeoN::validateRange}}(\mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}},\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}}());}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00395}00395\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1View}{View<ValueType>}}(}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ data\_\ +\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}.first,\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(\mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}.second\ -\/\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}.first)}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00397}00397\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00398}00398\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00399}00399\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00406}\mbox{\hyperlink{classNeoN_1_1Vector_a0722ed7326e79aac006c2a7f663b614c}{00406}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}\ \mbox{\hyperlink{classNeoN_1_1Vector_a0722ed7326e79aac006c2a7f663b614c}{view}}(std::pair<SizeType,\ SizeType>\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}})\ \textcolor{keyword}{const}\&}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00407}00407\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00408}00408\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_adbeafc2f4edb3213dd4151be5dfd7c08}{NeoN::validateRange}}(\mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}},\ \mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}}());}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00409}00409\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}(}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00410}00410\ \ \ \ \ \ \ \ \ \ \ \ \ data\_\ +\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}.first,\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(\mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}.second\ -\/\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}.first)}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00411}00411\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00412}00412\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00413}00413\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00419}\mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{00419}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{inline}\ std::pair<localIdx,\ localIdx>\ \mbox{\hyperlink{classNeoN_1_1Vector_a66f57aa2034536ba371465eca36355a2}{range}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00420}00420\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00421}00421\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{0,\ \mbox{\hyperlink{namespaceNeoN_afa13a2472ea4a84b34dbe06d88101474}{NeoN::toLocalIdx}}(\mbox{\hyperlink{classNeoN_1_1Vector_a9f842aa0042a9aa39e71bcbf2bf1a779}{size}}())\};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00422}00422\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00423}00423\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00424}00424\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00425}00425\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00426}00426\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector_aafc3b31809bcd6725ff844888314ae39}{SizeType}}\ size\_\ \{0\};\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00427}00427\ \ \ \ \ ValueType*\ data\_\ \{\textcolor{keyword}{nullptr}\};\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00428}00428\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00429}00429\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00434}00434\ \ \ \ \ \textcolor{keywordtype}{void}\ validateOtherVector(\textcolor{keyword}{const}\ Vector<ValueType>\&\ rhs)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00435}00435\ \};}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00436}00436\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00444}00444\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00445}\mbox{\hyperlink{namespaceNeoN_a71603fa147569d41a7bc7869f79f1e52}{00445}}\ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_a71603fa147569d41a7bc7869f79f1e52}{operator+}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00446}00446\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00454}00454\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00455}\mbox{\hyperlink{namespaceNeoN_a44e55549c34b75c79d8e9ce48fc3600a}{00455}}\ [[nodiscard]]\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_a44e55549c34b75c79d8e9ce48fc3600a}{operator-\/}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00456}00456\ }
+\DoxyCodeLine{\Hypertarget{vector_8hpp_source_l00457}00457\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}
