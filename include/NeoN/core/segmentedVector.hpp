@@ -158,8 +158,9 @@ public:
 template<typename ValueType, typename IndexType>
 class SegmentedVector : public SupportsCopyTo<SegmentedVector<ValueType, IndexType>>
 {
-public:
+    using SizeType = size_t;
 
+public:
 
     /**
      * @brief Create a segmented vector with a given size and number of segments.
@@ -167,7 +168,7 @@ public:
      * @param size  size of the matrix
      * @param numSegments  number of segments
      */
-    SegmentedVector(const Executor& exec, localIdx size, localIdx numSegments)
+    SegmentedVector(const Executor& exec, SizeType size, localIdx numSegments)
         : values_(exec, size), segments_(exec, numSegments + 1)
     {}
 
@@ -207,13 +208,13 @@ public:
      * @brief Get the size of the segmented vector.
      * @return The size of the segmented vector.
      */
-    localIdx size() const { return values_.size(); }
+    SizeType size() const { return values_.size(); }
 
     /**
      * @brief Get the number of segments in the segmented vector.
      * @return The number of segments.
      */
-    localIdx numSegments() const { return segments_.size() - 1; }
+    SizeType numSegments() const { return segments_.size() - 1; }
 
     [[nodiscard]] SegmentedVector<ValueType, IndexType> copyToExecutor(Executor exec) const override
     {
