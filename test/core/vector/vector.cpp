@@ -14,7 +14,7 @@ TEST_CASE("Vector Constructors")
 
     SECTION("Copy Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::fill(a, 5.0);
         NeoN::Vector<NeoN::scalar> b(a);
@@ -67,7 +67,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator+= " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::fill(a, 5.0);
@@ -84,7 +84,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator-= " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::fill(a, 5.0);
@@ -101,7 +101,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator+ " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::Vector<NeoN::scalar> c(exec, size);
@@ -118,7 +118,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator-" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::Vector<NeoN::scalar> c(exec, size);
@@ -136,7 +136,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator*=" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::Vec3> a(exec, size);
         NeoN::fill(a, NeoN::Vec3 {5.0, 10.0, 15.0});
 
@@ -158,7 +158,7 @@ TEST_CASE("Vector Container Operations")
 
     SECTION("empty, size, range" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, 0);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         REQUIRE(a.empty() == true);
@@ -220,7 +220,7 @@ TEST_CASE("Vector Operations")
 
     SECTION("Vector_" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::fill(a, 5.0);
 
