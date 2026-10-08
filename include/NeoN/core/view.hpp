@@ -74,7 +74,7 @@ public:
     }
 
     KOKKOS_INLINE_FUNCTION
-    localIdx size() const { return static_cast<localIdx>(base::size()); }
+    size_t size() const { return base::size(); }
 
     KOKKOS_INLINE_FUNCTION
     View<ValueType> subview(localIdx start, localIdx length) const
