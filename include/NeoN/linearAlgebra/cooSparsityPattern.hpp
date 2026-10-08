@@ -58,25 +58,31 @@ public:
     /**@brief returns the non-const COO per-entry row indices (one per nnz) */
     [[nodiscard]] Vector<IndexType>& rowIdxs() { return rowIdxs_; };
 
-    /**@brief returns the COO per-entry row indices (one per nnz) */
+    /**@brief returns the row offsets, mapping a row to its start index in values */
     [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; };
 
-    /**@brief returns the non-const COO per-entry row indices (one per nnz) */
+    /**@brief returns the non-const row offsets */
     [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; };
 
     [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
 
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
+    /*@brief getter for the storage size, same as nnz() since COO has no padding */
+    [[nodiscard]] localIdx storageSize() const { return colIdxs_.size(); };
+
     [[nodiscard]] Dimensions dimension() const { return dimensions_; };
 
+    using ViewType = SparsityView<IndexType>;
+
     /**
-     * @brief Get a view representation of the matrix's data.
-     * @return MatrixView for easy access to matrix elements.
+     * @brief Get a view representation of the sparsity pattern.
+     * @return SparsityView for easy access to the stored entries. Backed by rowOffs_
+     * and not rowIdxs_, since entry() needs the row ranges.
      */
     [[nodiscard]] SparsityView<IndexType> view() const
     {
-        return SparsityView<IndexType>(colIdxs_.view(), rowIdxs_.view());
+        return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
     }
 
 private:
