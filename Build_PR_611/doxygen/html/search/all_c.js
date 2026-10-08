@@ -78,7 +78,7 @@ var searchData=
   ['nrows_75',['nRows',['../classNeoN_1_1la_1_1Matrix.html#a2f977c611cd68ce6c09cebbeb33fdd78',1,'NeoN::la::Matrix']]],
   ['ntotalfaces_76',['nTotalFaces',['../classNeoN_1_1UnstructuredMesh.html#ae862466f7a61edc2e01199c40bf74a3b',1,'NeoN::UnstructuredMesh']]],
   ['numiter_77',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#a3f5a2b6addcb2a66e3db567419f450f6',1,'NeoN::la::SolverStatsEntry']]],
-  ['numsegments_78',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]],
+  ['numsegments_78',['numSegments',['../classNeoN_1_1SegmentedVector.html#a23db371f7e480410e7fdd767387e7379',1,'NeoN::SegmentedVector']]],
   ['nx_79',['nx',['../structNeoN_1_1detail_1_1MeshParams.html#ad9362f60981ecfaa411f793619f7bc82',1,'NeoN::detail::MeshParams']]],
   ['ny_80',['ny',['../structNeoN_1_1detail_1_1MeshParams.html#a47a2ae7affb90dc1d34c8b950f06de2f',1,'NeoN::detail::MeshParams']]],
   ['nz_81',['nz',['../structNeoN_1_1detail_1_1MeshParams.html#a70327af024934248c1727eabbdbc719c',1,'NeoN::detail::MeshParams']]]

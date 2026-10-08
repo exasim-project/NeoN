@@ -21,5 +21,5 @@ var searchData=
   ['nprocboundarypatches_18',['nProcBoundaryPatches',['../classNeoN_1_1BoundaryMesh.html#a7fe54ce18d4a48815cc277e728fbe2f1',1,'NeoN::BoundaryMesh']]],
   ['nrows_19',['nRows',['../classNeoN_1_1la_1_1Matrix.html#a2f977c611cd68ce6c09cebbeb33fdd78',1,'NeoN::la::Matrix']]],
   ['ntotalfaces_20',['nTotalFaces',['../classNeoN_1_1UnstructuredMesh.html#ae862466f7a61edc2e01199c40bf74a3b',1,'NeoN::UnstructuredMesh']]],
-  ['numsegments_21',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]]
+  ['numsegments_21',['numSegments',['../classNeoN_1_1SegmentedVector.html#a23db371f7e480410e7fdd767387e7379',1,'NeoN::SegmentedVector']]]
 ];
