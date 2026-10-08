@@ -82,7 +82,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="classA.html">A</a> class to contain the data and executors for a field and define some basic operations.  
+<p>An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.  
  <a href="classNeoN_1_1Vector.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="vector_8hpp_source.html">vector.hpp</a>&gt;</code></p>
@@ -95,135 +95,147 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a756f74abb1e1975e0b1e66e35a18c0a9" id="r_a756f74abb1e1975e0b1e66e35a18c0a9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a756f74abb1e1975e0b1e66e35a18c0a9">Vector</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;<a class="el" href="classNeoN_1_1Vector.html#aaf18ea0e8c0b963eea6b54db622cd1fa">exec</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>)</td></tr>
-<tr class="memdesc:a756f74abb1e1975e0b1e66e35a18c0a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an uninitialized <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> with a given size on an executor.  <br /></td></tr>
+<tr class="memdesc:a756f74abb1e1975e0b1e66e35a18c0a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an uninitialized <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> with the given size on an executor.  <br /></td></tr>
 <tr class="separator:a756f74abb1e1975e0b1e66e35a18c0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ea5a308476eb99be20616fbe7657fdc" id="r_a0ea5a308476eb99be20616fbe7657fdc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a0ea5a308476eb99be20616fbe7657fdc">Vector</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;<a class="el" href="classNeoN_1_1Vector.html#aaf18ea0e8c0b963eea6b54db622cd1fa">exec</a>, const ValueType *in, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>, <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> hostExec=<a class="el" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a>())</td></tr>
-<tr class="memdesc:a0ea5a308476eb99be20616fbe7657fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> with a given size from existing memory on an executor.  <br /></td></tr>
+<tr class="memdesc:a0ea5a308476eb99be20616fbe7657fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> with the given size from existing data on an executor.  <br /></td></tr>
 <tr class="separator:a0ea5a308476eb99be20616fbe7657fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45e24dccfd011f30f7b211ff35e1e3a3" id="r_a45e24dccfd011f30f7b211ff35e1e3a3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a45e24dccfd011f30f7b211ff35e1e3a3">Vector</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;<a class="el" href="classNeoN_1_1Vector.html#aaf18ea0e8c0b963eea6b54db622cd1fa">exec</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>, ValueType value)</td></tr>
-<tr class="memdesc:a45e24dccfd011f30f7b211ff35e1e3a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> with a given size on an executor and uniform value.  <br /></td></tr>
+<tr class="memdesc:a45e24dccfd011f30f7b211ff35e1e3a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> with the given size and initializes all elements to a value.  <br /></td></tr>
 <tr class="separator:a45e24dccfd011f30f7b211ff35e1e3a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac13dd0cde894a2f78a11286b20907f34" id="r_ac13dd0cde894a2f78a11286b20907f34"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#ac13dd0cde894a2f78a11286b20907f34">Vector</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;<a class="el" href="classNeoN_1_1Vector.html#aaf18ea0e8c0b963eea6b54db622cd1fa">exec</a>, std::vector&lt; ValueType &gt; in)</td></tr>
-<tr class="memdesc:ac13dd0cde894a2f78a11286b20907f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> from a given vector of values on an executor.  <br /></td></tr>
+<tr class="memdesc:ac13dd0cde894a2f78a11286b20907f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> from a std::vector on the given executor.  <br /></td></tr>
 <tr class="separator:ac13dd0cde894a2f78a11286b20907f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fda9acfd9787039435b92fe31c04049" id="r_a3fda9acfd9787039435b92fe31c04049"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a3fda9acfd9787039435b92fe31c04049">Vector</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;<a class="el" href="classNeoN_1_1Vector.html#aaf18ea0e8c0b963eea6b54db622cd1fa">exec</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;in)</td></tr>
-<tr class="memdesc:a3fda9acfd9787039435b92fe31c04049"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> as a copy of a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> on a specified executor.  <br /></td></tr>
+<tr class="memdesc:a3fda9acfd9787039435b92fe31c04049"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a copy of another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> on the specified executor.  <br /></td></tr>
 <tr class="separator:a3fda9acfd9787039435b92fe31c04049"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a229d6abcc33e4040a5e5ee173e639070" id="r_a229d6abcc33e4040a5e5ee173e639070"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a229d6abcc33e4040a5e5ee173e639070">Vector</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:a229d6abcc33e4040a5e5ee173e639070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor, creates a new field with the same size and data as the parsed field.  <br /></td></tr>
+<tr class="memdesc:a229d6abcc33e4040a5e5ee173e639070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <br /></td></tr>
 <tr class="separator:a229d6abcc33e4040a5e5ee173e639070"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15731af41b65b80b4b2c4539476a716e" id="r_a15731af41b65b80b4b2c4539476a716e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a15731af41b65b80b4b2c4539476a716e">Vector</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&amp;rhs) noexcept</td></tr>
-<tr class="memdesc:a15731af41b65b80b4b2c4539476a716e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor, moves the data from the parsed field to the new field.  <br /></td></tr>
+<tr class="memdesc:a15731af41b65b80b4b2c4539476a716e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor.  <br /></td></tr>
 <tr class="separator:a15731af41b65b80b4b2c4539476a716e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab753dfc6e9baa593b957d324e2aa4835" id="r_ab753dfc6e9baa593b957d324e2aa4835"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#ab753dfc6e9baa593b957d324e2aa4835">~Vector</a> ()</td></tr>
-<tr class="memdesc:ab753dfc6e9baa593b957d324e2aa4835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> object.  <br /></td></tr>
+<tr class="memdesc:ab753dfc6e9baa593b957d324e2aa4835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> object.  <br /></td></tr>
 <tr class="separator:ab753dfc6e9baa593b957d324e2aa4835"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6ac22b4e8d8aabbe6d6a100d67cc69c" id="r_aa6ac22b4e8d8aabbe6d6a100d67cc69c"><td class="memTemplParams" colspan="2">template&lt;typename func &gt; </td></tr>
 <tr class="memitem:aa6ac22b4e8d8aabbe6d6a100d67cc69c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#aa6ac22b4e8d8aabbe6d6a100d67cc69c">apply</a> (func f)</td></tr>
-<tr class="memdesc:aa6ac22b4e8d8aabbe6d6a100d67cc69c"><td class="mdescLeft">&#160;</td><td class="mdescRight">applies a functor, transformation, to the field  <br /></td></tr>
+<tr class="memdesc:aa6ac22b4e8d8aabbe6d6a100d67cc69c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a function to the elements of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:aa6ac22b4e8d8aabbe6d6a100d67cc69c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dc3e53a2f9cd9f1f5401bde925374fa" id="r_a2dc3e53a2f9cd9f1f5401bde925374fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a2dc3e53a2f9cd9f1f5401bde925374fa">copyToExecutor</a> (<a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> dstExec) const</td></tr>
-<tr class="memdesc:a2dc3e53a2f9cd9f1f5401bde925374fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies the data to a new field on a specific executor.  <br /></td></tr>
+<tr class="memdesc:a2dc3e53a2f9cd9f1f5401bde925374fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a copy of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> on the specified executor.  <br /></td></tr>
 <tr class="separator:a2dc3e53a2f9cd9f1f5401bde925374fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9d97488c7ae4f82eb2f07c6001ca7e9" id="r_ad9d97488c7ae4f82eb2f07c6001ca7e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#ad9d97488c7ae4f82eb2f07c6001ca7e9">copyToHost</a> () const</td></tr>
-<tr class="memdesc:ad9d97488c7ae4f82eb2f07c6001ca7e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a copy of the field back to the host.  <br /></td></tr>
+<tr class="memdesc:ad9d97488c7ae4f82eb2f07c6001ca7e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a host-resident copy of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:ad9d97488c7ae4f82eb2f07c6001ca7e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac43473fb021aacee009af9163ff016a0" id="r_ac43473fb021aacee009af9163ff016a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#ac43473fb021aacee009af9163ff016a0">copyToHost</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;result)</td></tr>
-<tr class="memdesc:ac43473fb021aacee009af9163ff016a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies the data (from anywhere) to a parsed host field.  <br /></td></tr>
+<tr class="memdesc:ac43473fb021aacee009af9163ff016a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data to a host-resident <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:ac43473fb021aacee009af9163ff016a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a976f143f1b87614db92b4c501ed719" id="r_a1a976f143f1b87614db92b4c501ed719"><td class="memItemLeft" align="right" valign="top">ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a1a976f143f1b87614db92b4c501ed719">operator[]</a> (const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> i)=delete</td></tr>
+<tr class="memdesc:a1a976f143f1b87614db92b4c501ed719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side element access is intentionally disabled.  <br /></td></tr>
 <tr class="separator:a1a976f143f1b87614db92b4c501ed719"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfb14f80df8f4b622452818d3ac5f52f" id="r_adfb14f80df8f4b622452818d3ac5f52f"><td class="memItemLeft" align="right" valign="top">const ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#adfb14f80df8f4b622452818d3ac5f52f">operator[]</a> (const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> i) const =delete</td></tr>
 <tr class="separator:adfb14f80df8f4b622452818d3ac5f52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79947b149106e8cae946231f179639fe" id="r_a79947b149106e8cae946231f179639fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a79947b149106e8cae946231f179639fe">operator=</a> (const ValueType &amp;rhs)</td></tr>
-<tr class="memdesc:a79947b149106e8cae946231f179639fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment operator, Sets the field values to that of the passed value.  <br /></td></tr>
+<tr class="memdesc:a79947b149106e8cae946231f179639fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns a value to every element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a79947b149106e8cae946231f179639fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8e2493ea02950235947c1c5e128e3c0" id="r_ae8e2493ea02950235947c1c5e128e3c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#ae8e2493ea02950235947c1c5e128e3c0">operator=</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:ae8e2493ea02950235947c1c5e128e3c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment operator, Sets the field values to that of the parsed field.  <br /></td></tr>
+<tr class="memdesc:ae8e2493ea02950235947c1c5e128e3c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns the contents of another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:ae8e2493ea02950235947c1c5e128e3c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a9406cd5937caca19cbb5a340b3d640" id="r_a5a9406cd5937caca19cbb5a340b3d640"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a5a9406cd5937caca19cbb5a340b3d640">operator=</a> (<a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&amp;rhs) noexcept</td></tr>
 <tr class="memdesc:a5a9406cd5937caca19cbb5a340b3d640"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-assignment operator — transfers ownership of the data buffer.  <br /></td></tr>
 <tr class="separator:a5a9406cd5937caca19cbb5a340b3d640"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4d83cf671153e017e107f022d06d2a8" id="r_ab4d83cf671153e017e107f022d06d2a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#ab4d83cf671153e017e107f022d06d2a8">operator+=</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:ab4d83cf671153e017e107f022d06d2a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arithmetic add operator, addition of a second field.  <br /></td></tr>
+<tr class="memdesc:ab4d83cf671153e017e107f022d06d2a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> element-wise.  <br /></td></tr>
 <tr class="separator:ab4d83cf671153e017e107f022d06d2a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add2cd47adb8b276c03f1f41a1e36cae1" id="r_add2cd47adb8b276c03f1f41a1e36cae1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#add2cd47adb8b276c03f1f41a1e36cae1">operator-=</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:add2cd47adb8b276c03f1f41a1e36cae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arithmetic subtraction operator, subtraction by a second field.  <br /></td></tr>
+<tr class="memdesc:add2cd47adb8b276c03f1f41a1e36cae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subtracts another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> element-wise.  <br /></td></tr>
 <tr class="separator:add2cd47adb8b276c03f1f41a1e36cae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3aea84baea4f7590d0ae483e3040f18e" id="r_a3aea84baea4f7590d0ae483e3040f18e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a3aea84baea4f7590d0ae483e3040f18e">operator*</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:a3aea84baea4f7590d0ae483e3040f18e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arithmetic multiply operator, multiply by a second field.  <br /></td></tr>
+<tr class="memdesc:a3aea84baea4f7590d0ae483e3040f18e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiplies two Vectors element-wise.  <br /></td></tr>
 <tr class="separator:a3aea84baea4f7590d0ae483e3040f18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac491a8b16676c45119d703de8d710d9" id="r_aac491a8b16676c45119d703de8d710d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#aac491a8b16676c45119d703de8d710d9">operator*</a> (const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> rhs)</td></tr>
-<tr class="memdesc:aac491a8b16676c45119d703de8d710d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arithmetic multiply operator, multiplies every cell in the field by a scalar.  <br /></td></tr>
+<tr class="memdesc:aac491a8b16676c45119d703de8d710d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiplies every element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> by a scalar.  <br /></td></tr>
 <tr class="separator:aac491a8b16676c45119d703de8d710d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9afacd6737415134f38fe9becb19d549" id="r_a9afacd6737415134f38fe9becb19d549"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a9afacd6737415134f38fe9becb19d549">operator*=</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:a9afacd6737415134f38fe9becb19d549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment multiply operator, multiplies this field by another field element-wise.  <br /></td></tr>
+<tr class="memdesc:a9afacd6737415134f38fe9becb19d549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiplies this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> element-wise by another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a9afacd6737415134f38fe9becb19d549"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ada1ac2655eba6a62ecf23e01bce27d" id="r_a8ada1ac2655eba6a62ecf23e01bce27d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a8ada1ac2655eba6a62ecf23e01bce27d">operator*=</a> (const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> rhs)</td></tr>
-<tr class="memdesc:a8ada1ac2655eba6a62ecf23e01bce27d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment multiply operator, multiplies every cell in the field by a scalar.  <br /></td></tr>
+<tr class="memdesc:a8ada1ac2655eba6a62ecf23e01bce27d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiplies every element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> by a scalar.  <br /></td></tr>
 <tr class="separator:a8ada1ac2655eba6a62ecf23e01bce27d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99e933d0a77f9ec5fef7d492f23c2219" id="r_a99e933d0a77f9ec5fef7d492f23c2219"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a99e933d0a77f9ec5fef7d492f23c2219">resize</a> (const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>)</td></tr>
-<tr class="memdesc:a99e933d0a77f9ec5fef7d492f23c2219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes the field to a new size.  <br /></td></tr>
+<tr class="memdesc:a99e933d0a77f9ec5fef7d492f23c2219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a99e933d0a77f9ec5fef7d492f23c2219"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43e0722e173db5b15126abbc163b5eb1" id="r_a43e0722e173db5b15126abbc163b5eb1"><td class="memItemLeft" align="right" valign="top">ValueType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a> ()</td></tr>
-<tr class="memdesc:a43e0722e173db5b15126abbc163b5eb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to the underlying field data.  <br /></td></tr>
+<tr class="memdesc:a43e0722e173db5b15126abbc163b5eb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the underlying <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data.  <br /></td></tr>
 <tr class="separator:a43e0722e173db5b15126abbc163b5eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a980245c8e0b2691d3014d49862b2145e" id="r_a980245c8e0b2691d3014d49862b2145e"><td class="memItemLeft" align="right" valign="top">const ValueType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a980245c8e0b2691d3014d49862b2145e">data</a> () const</td></tr>
-<tr class="memdesc:a980245c8e0b2691d3014d49862b2145e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to the underlying field data.  <br /></td></tr>
+<tr class="memdesc:a980245c8e0b2691d3014d49862b2145e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the underlying <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data.  <br /></td></tr>
 <tr class="separator:a980245c8e0b2691d3014d49862b2145e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3ba6b1022281a560779993a95b39f6d" id="r_af3ba6b1022281a560779993a95b39f6d"><td class="memItemLeft" align="right" valign="top">ValueType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#af3ba6b1022281a560779993a95b39f6d">begin</a> ()</td></tr>
-<tr class="memdesc:af3ba6b1022281a560779993a95b39f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to the underlying field data.  <br /></td></tr>
+<tr class="memdesc:af3ba6b1022281a560779993a95b39f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the first element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:af3ba6b1022281a560779993a95b39f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a238922b03c94dd56f9fcd6400f372f22" id="r_a238922b03c94dd56f9fcd6400f372f22"><td class="memItemLeft" align="right" valign="top">const ValueType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a238922b03c94dd56f9fcd6400f372f22">begin</a> () const</td></tr>
-<tr class="memdesc:a238922b03c94dd56f9fcd6400f372f22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to the underlying field data.  <br /></td></tr>
+<tr class="memdesc:a238922b03c94dd56f9fcd6400f372f22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a const pointer to the first element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a238922b03c94dd56f9fcd6400f372f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdf88a72a6bf82ef8f40c8040b5e5e70" id="r_abdf88a72a6bf82ef8f40c8040b5e5e70"><td class="memItemLeft" align="right" valign="top">ValueType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#abdf88a72a6bf82ef8f40c8040b5e5e70">end</a> ()</td></tr>
-<tr class="memdesc:abdf88a72a6bf82ef8f40c8040b5e5e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to the underlying field data.  <br /></td></tr>
+<tr class="memdesc:abdf88a72a6bf82ef8f40c8040b5e5e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer one past the last element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:abdf88a72a6bf82ef8f40c8040b5e5e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ec3319fa14127283f65f0d2293efaff" id="r_a3ec3319fa14127283f65f0d2293efaff"><td class="memItemLeft" align="right" valign="top">const ValueType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a3ec3319fa14127283f65f0d2293efaff">end</a> () const</td></tr>
-<tr class="memdesc:a3ec3319fa14127283f65f0d2293efaff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to the underlying field data.  <br /></td></tr>
+<tr class="memdesc:a3ec3319fa14127283f65f0d2293efaff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a const pointer one past the last element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a3ec3319fa14127283f65f0d2293efaff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf18ea0e8c0b963eea6b54db622cd1fa" id="r_aaf18ea0e8c0b963eea6b54db622cd1fa"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#aaf18ea0e8c0b963eea6b54db622cd1fa">exec</a> () const</td></tr>
-<tr class="memdesc:aaf18ea0e8c0b963eea6b54db622cd1fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the executor associated with the field.  <br /></td></tr>
+<tr class="memdesc:aaf18ea0e8c0b963eea6b54db622cd1fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the executor associated with the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:aaf18ea0e8c0b963eea6b54db622cd1fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ab8411bc0c72d42ce04c21f8a8a3438" id="r_a2ab8411bc0c72d42ce04c21f8a8a3438"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a> () const</td></tr>
-<tr class="memdesc:a2ab8411bc0c72d42ce04c21f8a8a3438"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size of the field.  <br /></td></tr>
+<tr class="memdesc:a2ab8411bc0c72d42ce04c21f8a8a3438"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of elements in the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a2ab8411bc0c72d42ce04c21f8a8a3438"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a719edbafd35de9fdf99fd174fc8fd61e" id="r_a719edbafd35de9fdf99fd174fc8fd61e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a719edbafd35de9fdf99fd174fc8fd61e">ssize</a> () const</td></tr>
-<tr class="memdesc:a719edbafd35de9fdf99fd174fc8fd61e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size of the field.  <br /></td></tr>
+<tr class="memdesc:a719edbafd35de9fdf99fd174fc8fd61e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of elements as a label.  <br /></td></tr>
 <tr class="separator:a719edbafd35de9fdf99fd174fc8fd61e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa265640bf653ccc74f509d396ef7d977" id="r_aa265640bf653ccc74f509d396ef7d977"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#aa265640bf653ccc74f509d396ef7d977">empty</a> () const</td></tr>
-<tr class="memdesc:aa265640bf653ccc74f509d396ef7d977"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the field is empty.  <br /></td></tr>
+<tr class="memdesc:aa265640bf653ccc74f509d396ef7d977"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> contains no elements.  <br /></td></tr>
 <tr class="separator:aa265640bf653ccc74f509d396ef7d977"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad537cb55485b851cbc3c1f3760b77ab9" id="r_ad537cb55485b851cbc3c1f3760b77ab9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#ad537cb55485b851cbc3c1f3760b77ab9">view</a> () &amp;&amp;=delete</td></tr>
+<tr class="memdesc:ad537cb55485b851cbc3c1f3760b77ab9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prevents creating a <a class="el" href="classNeoN_1_1View.html">View</a> from a temporary <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:ad537cb55485b851cbc3c1f3760b77ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af41388de676f5d555c0a9a8fd65d0fdd" id="r_af41388de676f5d555c0a9a8fd65d0fdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#af41388de676f5d555c0a9a8fd65d0fdd">view</a> () const &amp;&amp;=delete</td></tr>
 <tr class="separator:af41388de676f5d555c0a9a8fd65d0fdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe9aade44dd8fd745d5ab63c5fa0c460" id="r_afe9aade44dd8fd745d5ab63c5fa0c460"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#afe9aade44dd8fd745d5ab63c5fa0c460">view</a> () &amp;</td></tr>
-<tr class="memdesc:afe9aade44dd8fd745d5ab63c5fa0c460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the field as a view.  <br /></td></tr>
+<tr class="memdesc:afe9aade44dd8fd745d5ab63c5fa0c460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a non-owning view of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data.  <br /></td></tr>
 <tr class="separator:afe9aade44dd8fd745d5ab63c5fa0c460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8204948c9a7c17e5bc7c67c88db802bd" id="r_a8204948c9a7c17e5bc7c67c88db802bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a8204948c9a7c17e5bc7c67c88db802bd">view</a> () const &amp;</td></tr>
-<tr class="memdesc:a8204948c9a7c17e5bc7c67c88db802bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the field as a view.  <br /></td></tr>
+<tr class="memdesc:a8204948c9a7c17e5bc7c67c88db802bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a read-only, non-owning view of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data.  <br /></td></tr>
 <tr class="separator:a8204948c9a7c17e5bc7c67c88db802bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb5eeffddc65955f57db055be73fbc07" id="r_abb5eeffddc65955f57db055be73fbc07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#abb5eeffddc65955f57db055be73fbc07">view</a> (std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; <a class="el" href="classNeoN_1_1Vector.html#a66f57aa2034536ba371465eca36355a2">range</a>) &amp;&amp;=delete</td></tr>
+<tr class="memdesc:abb5eeffddc65955f57db055be73fbc07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prevents creating a view of a temporary <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:abb5eeffddc65955f57db055be73fbc07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d35eccebbae57201dad39e582656fd1" id="r_a6d35eccebbae57201dad39e582656fd1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a6d35eccebbae57201dad39e582656fd1">view</a> (std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; <a class="el" href="classNeoN_1_1Vector.html#a66f57aa2034536ba371465eca36355a2">range</a>) const &amp;&amp;=delete</td></tr>
 <tr class="separator:a6d35eccebbae57201dad39e582656fd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43a0f39f3241e494950640dc4c673bf7" id="r_a43a0f39f3241e494950640dc4c673bf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a43a0f39f3241e494950640dc4c673bf7">view</a> (std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; <a class="el" href="classNeoN_1_1Vector.html#a66f57aa2034536ba371465eca36355a2">range</a>) &amp;</td></tr>
-<tr class="memdesc:a43a0f39f3241e494950640dc4c673bf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a sub view of the field as a view.  <br /></td></tr>
+<tr class="memdesc:a43a0f39f3241e494950640dc4c673bf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a non-owning view of a range of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a43a0f39f3241e494950640dc4c673bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9608fa4324d06e9099690c2ab02705de" id="r_a9608fa4324d06e9099690c2ab02705de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a9608fa4324d06e9099690c2ab02705de">view</a> (std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; <a class="el" href="classNeoN_1_1Vector.html#a66f57aa2034536ba371465eca36355a2">range</a>) const &amp;</td></tr>
-<tr class="memdesc:a9608fa4324d06e9099690c2ab02705de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a sub view of the field as a view.  <br /></td></tr>
+<tr class="memdesc:a9608fa4324d06e9099690c2ab02705de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a read-only, non-owning view of a range of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a9608fa4324d06e9099690c2ab02705de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66f57aa2034536ba371465eca36355a2" id="r_a66f57aa2034536ba371465eca36355a2"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vector.html#a66f57aa2034536ba371465eca36355a2">range</a> () const</td></tr>
-<tr class="memdesc:a66f57aa2034536ba371465eca36355a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the range of the field.  <br /></td></tr>
+<tr class="memdesc:a66f57aa2034536ba371465eca36355a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the index range of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.  <br /></td></tr>
 <tr class="separator:a66f57aa2034536ba371465eca36355a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType&gt;<br />
-class NeoN::Vector&lt; ValueType &gt;</div><p><a class="el" href="classA.html">A</a> class to contain the data and executors for a field and define some basic operations. </p>
+class NeoN::Vector&lt; ValueType &gt;</div><p>An executor-aware contiguous container for numerical data with vector-style arithmetic semantics. </p>
+<p><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> is intended for numerical quantities for which arithmetic operations on the elements or on the vector as a whole are meaningful.</p>
+<p><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> provides operations for performing arithmetic on its stored values. Use <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> when the numerical meaning of the data and its arithmetic operations are an important part of its interface.</p>
+<p>For structural, indexing, or other non-arithmetic data, use <a class="el" href="classNeoN_1_1Array.html" title="An executor-aware contiguous container for structural and indexing data.">Array</a> instead.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ValueType</td><td>The type of the elements stored in the vector. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00026">26</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00038">38</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="abfab4edc3452c4ed762fa880f3065928" name="abfab4edc3452c4ed762fa880f3065928"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abfab4edc3452c4ed762fa880f3065928">&#9670;&#160;</a></span>VectorValueType</h2>
@@ -239,7 +251,7 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00031">31</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00043">43</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -272,11 +284,11 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create an uninitialized <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> with a given size on an executor. </p>
+<p>Creates an uninitialized <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> with the given size on an executor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">exec</td><td>Executor associated to the field </td></tr>
-    <tr><td class="paramname">size</td><td>size of the field </td></tr>
+    <tr><td class="paramname">exec</td><td>Executor on which the vector data is allocated. </td></tr>
+    <tr><td class="paramname">size</td><td>Number of elements in the vector. </td></tr>
   </table>
   </dd>
 </dl>
@@ -323,13 +335,13 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> with a given size from existing memory on an executor. </p>
+<p>Creates a <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> with the given size from existing data on an executor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">exec</td><td>Executor associated to the field </td></tr>
-    <tr><td class="paramname">in</td><td>Pointer to existing data </td></tr>
-    <tr><td class="paramname">size</td><td>size of the field </td></tr>
-    <tr><td class="paramname">hostExec</td><td>Executor where the original data is located </td></tr>
+    <tr><td class="paramname">exec</td><td>Executor on which the vector data is allocated. </td></tr>
+    <tr><td class="paramname">in</td><td>Pointer to the source data. </td></tr>
+    <tr><td class="paramname">size</td><td>Number of elements to copy. </td></tr>
+    <tr><td class="paramname">hostExec</td><td>Executor on which the source data is located. </td></tr>
   </table>
   </dd>
 </dl>
@@ -370,12 +382,12 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> with a given size on an executor and uniform value. </p>
+<p>Creates a <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> with the given size and initializes all elements to a value. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">exec</td><td>Executor associated to the field </td></tr>
-    <tr><td class="paramname">size</td><td>size of the field </td></tr>
-    <tr><td class="paramname">value</td><td>the default value </td></tr>
+    <tr><td class="paramname">exec</td><td>Executor on which the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data is allocated. </td></tr>
+    <tr><td class="paramname">size</td><td>Number of elements in the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
+    <tr><td class="paramname">value</td><td>Value used to initialize every element. </td></tr>
   </table>
   </dd>
 </dl>
@@ -410,11 +422,11 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> from a given vector of values on an executor. </p>
+<p>Creates a <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> from a std::vector on the given executor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">exec</td><td>Executor associated to the field </td></tr>
-    <tr><td class="paramname">in</td><td>a vector of elements to copy over </td></tr>
+    <tr><td class="paramname">exec</td><td>Executor on which the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data is allocated. </td></tr>
+    <tr><td class="paramname">in</td><td>std::vector containing the values to copy into the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -449,11 +461,11 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> as a copy of a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> on a specified executor. </p>
+<p>Creates a copy of another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> on the specified executor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">exec</td><td>Executor associated to the field </td></tr>
-    <tr><td class="paramname">in</td><td>a <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> of elements to copy over </td></tr>
+    <tr><td class="paramname">exec</td><td>Executor on which the new <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> is allocated. </td></tr>
+    <tr><td class="paramname">in</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> to copy. </td></tr>
   </table>
   </dd>
 </dl>
@@ -478,10 +490,10 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Copy constructor, creates a new field with the same size and data as the parsed field. </p>
+<p>Copy constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The field to copy from. </td></tr>
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> to copy from. </td></tr>
   </table>
   </dd>
 </dl>
@@ -514,10 +526,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Move constructor, moves the data from the parsed field to the new field. </p>
+<p>Move constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The field to move from. </td></tr>
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> whose resources are transferred to the new <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -541,7 +553,7 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Destroy the <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> object. </p>
+<p>Destroys the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> object. </p>
 
 </div>
 </div>
@@ -574,16 +586,16 @@ template&lt;typename func &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>applies a functor, transformation, to the field </p>
+<p>Applies a function to the elements of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>The functor to map over the field. </td></tr>
+    <tr><td class="paramname">f</td><td>Function or functor applied to the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> elements.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Ideally the f should be a KOKKOS_LAMBA </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The function must be compatible with execution by Kokkos. Ideally, it should be a Kokkos lambda. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00099">99</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00121">121</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -612,10 +624,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Direct access to the underlying field data. </p>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
+<p>Returns a pointer to the first element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the first element. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00238">238</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00296">296</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -644,10 +656,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Direct access to the underlying field data. </p>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
+<p>Returns a const pointer to the first element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Const pointer to the first element. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00244">244</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00303">303</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -669,14 +681,14 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Copies the data to a new field on a specific executor. </p>
+<p>Creates a copy of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> on the specified executor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dstExec</td><td>The executor on which the data should be copied. </td></tr>
+    <tr><td class="paramname">dstExec</td><td>Executor on which the copied <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> is allocated. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> copy of the field on the host. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> copy of this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> on <code>dstExec</code>. </dd></dl>
 
 </div>
 </div>
@@ -697,8 +709,8 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a copy of the field back to the host. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> copy of the field on the host. </dd></dl>
+<p>Creates a host-resident copy of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> copy of this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> allocated on the host executor. </dd></dl>
 
 </div>
 </div>
@@ -720,14 +732,14 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Copies the data (from anywhere) to a parsed host field. </p>
+<p>Copies the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data to a host-resident <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">result</td><td>The field into which the data must be copied. Must be sized.</td></tr>
+    <tr><td class="paramname">result</td><td>Destination <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. Its size must match this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section warning"><dt>Warning</dt><dd>exits if the size of the result field is not the same as the source field. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>An error is raised if <code>result</code> does not have the same size as this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </dd></dl>
 
 </div>
 </div>
@@ -756,10 +768,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Direct access to the underlying field data. </p>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
+<p>Returns a pointer to the underlying <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data. </p>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the first element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00226">226</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00282">282</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -788,10 +800,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Direct access to the underlying field data. </p>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
+<p>Returns a pointer to the underlying <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data. </p>
+<dl class="section return"><dt>Returns</dt><dd>Const pointer to the first element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00232">232</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00289">289</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -820,10 +832,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Checks if the field is empty. </p>
-<dl class="section return"><dt>Returns</dt><dd>True if the field is empty, false otherwise. </dd></dl>
+<p>Checks whether the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> contains no elements. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> is empty, otherwise false. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00280">280</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00345">345</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -852,10 +864,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Direct access to the underlying field data. </p>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
+<p>Returns a pointer one past the last element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Pointer one past the last element. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00250">250</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00310">310</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -884,10 +896,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Direct access to the underlying field data. </p>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
+<p>Returns a const pointer one past the last element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Const pointer one past the last element. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00256">256</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00317">317</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -916,10 +928,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the executor associated with the field. </p>
-<dl class="section return"><dt>Returns</dt><dd>Reference to the executor. </dd></dl>
+<p>Returns the executor associated with the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>'s executor. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00262">262</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00324">324</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -941,15 +953,15 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Arithmetic multiply operator, multiplies every cell in the field by a scalar. </p>
+<p>Multiplies every element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> by a scalar. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The scalar to multiply with the field. </td></tr>
+    <tr><td class="paramname">rhs</td><td>Scalar multiplier. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The result of the multiplication.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> containing the scaled values.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This operation is available only for ValueType combinations for which multiplication by scalar is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> for information on C++ requires-expressions. </dd></dl>
 
 </div>
 </div>
@@ -971,15 +983,15 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Arithmetic multiply operator, multiply by a second field. </p>
+<p>Multiplies two Vectors element-wise. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The field to subtract from this field. </td></tr>
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> to multiply with this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The result of the multiply.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> containing the element-wise product.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This operation is available only for ValueType combinations for which element-wise multiplication is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> for information on C++ requires-expressions. </dd></dl>
 
 </div>
 </div>
@@ -1001,14 +1013,15 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Assignment multiply operator, multiplies every cell in the field by a scalar. </p>
+<p>Multiplies every element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> by a scalar. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The scalar to multiply with the field.</td></tr>
+    <tr><td class="paramname">rhs</td><td>Scalar multiplier. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> reference to this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> after the scalar multiplication.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This operation is available only for ValueType combinations for which multiplication by scalar is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> for information on C++ requires-expressions. </dd></dl>
 
 </div>
 </div>
@@ -1030,15 +1043,15 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Assignment multiply operator, multiplies this field by another field element-wise. </p>
+<p>Multiplies this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> element-wise by another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The field to multiply with this field. </td></tr>
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> to multiply with this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The result of the element-wise multiplication.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> reference to this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> after the element-wise multiplication.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This operation is available only for ValueType combinations for which element-wise multiplication is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <a href="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</a> for information on C++ requires-expressions. </dd></dl>
 
 </div>
 </div>
@@ -1060,14 +1073,14 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Arithmetic add operator, addition of a second field. </p>
+<p>Adds another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> element-wise. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The field to add with this field. </td></tr>
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> to add to this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The result of the addition. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> after the element-wise addition. </dd></dl>
 
 </div>
 </div>
@@ -1089,14 +1102,14 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Arithmetic subtraction operator, subtraction by a second field. </p>
+<p>Subtracts another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> element-wise. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The field to subtract from this field. </td></tr>
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> to subtract from this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The result of the subtraction. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> reference to this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> after the element-wise subtraction. </dd></dl>
 
 </div>
 </div>
@@ -1118,10 +1131,10 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Assignment operator, Sets the field values to that of the passed value. </p>
+<p>Assigns a value to every element of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The value to set the field to. </td></tr>
+    <tr><td class="paramname">rhs</td><td>Value assigned to each element. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1146,14 +1159,14 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Assignment operator, Sets the field values to that of the parsed field. </p>
+<p>Assigns the contents of another <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rhs</td><td>The field to copy from.</td></tr>
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> to copy from.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section warning"><dt>Warning</dt><dd>This field will be sized to the size of the parsed field. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>The size of this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> is adjusted to match <code>rhs</code> if necessary. </dd></dl>
 
 </div>
 </div>
@@ -1186,6 +1199,13 @@ template&lt;typename ValueType &gt; </div>
 <p>Move-assignment operator — transfers ownership of the data buffer. </p>
 <p>Swaps the data pointer and size from rhs in O(1) without launching any GPU kernel. The old buffer owned by *this is freed first (after a fence if on GPU). After the move, rhs is left in an empty (size=0, data=nullptr) state. The executor is unchanged — exec_ is const and cannot be moved.</p>
 <dl class="section warning"><dt>Warning</dt><dd>Invalidates any existing <a class="el" href="classNeoN_1_1View.html">View</a> objects that point into *this. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> whose resources are transferred to this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classA.html">A</a> reference to this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </dd></dl>
 
 </div>
 </div>
@@ -1243,6 +1263,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p>Host-side element access is intentionally disabled. </p>
+<p><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data may reside in executor-specific memory, such as GPU memory. Direct host-side element access could therefore result in invalid memory access.</p>
+<dl class="section note"><dt>Note</dt><dd>Use <a class="el" href="classNeoN_1_1Vector.html#ad537cb55485b851cbc3c1f3760b77ab9">view()</a> or an executor-aware operation to access the data. </dd></dl>
+
 </div>
 </div>
 <a id="a66f57aa2034536ba371465eca36355a2" name="a66f57aa2034536ba371465eca36355a2"></a>
@@ -1270,10 +1294,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the range of the field. </p>
-<dl class="section return"><dt>Returns</dt><dd>The range of the field {0, <a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438" title="Gets the size of the field.">size()</a>}. </dd></dl>
+<p>Returns the index range of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>The half-open index range [0, <a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438" title="Returns the number of elements in the Vector.">size()</a>). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00338">338</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00418">418</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1295,10 +1319,10 @@ template&lt;typename ValueType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Resizes the field to a new size. </p>
+<p>Resizes the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">size</td><td>The new size to set the field to. </td></tr>
+    <tr><td class="paramname">size</td><td>New number of elements. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1330,10 +1354,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the size of the field. </p>
-<dl class="section return"><dt>Returns</dt><dd>The size of the field. </dd></dl>
+<p>Returns the number of elements in the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of elements. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00268">268</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00331">331</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1362,10 +1386,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the size of the field. </p>
-<dl class="section return"><dt>Returns</dt><dd>The size of the field. </dd></dl>
+<p>Returns the number of elements as a label. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of elements converted to label. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00274">274</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00338">338</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1394,10 +1418,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the field as a view. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
+<p>Returns a non-owning view of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00292">292</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00362">362</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1426,6 +1450,9 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p>Prevents creating a <a class="el" href="classNeoN_1_1View.html">View</a> from a temporary <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<p><a class="el" href="classA.html">A</a> <a class="el" href="classNeoN_1_1View.html">View</a> does not own the referenced data. Allowing a <a class="el" href="classNeoN_1_1View.html">View</a> to be created from a temporary <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> could therefore result in a dangling view. </p>
+
 </div>
 </div>
 <a id="a8204948c9a7c17e5bc7c67c88db802bd" name="a8204948c9a7c17e5bc7c67c88db802bd"></a>
@@ -1453,10 +1480,10 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the field as a view. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
+<p>Returns a read-only, non-owning view of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data. </p>
+<dl class="section return"><dt>Returns</dt><dd>Read-only view of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> data. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00301">301</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00372">372</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1513,10 +1540,16 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a sub view of the field as a view. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
+<p>Returns a non-owning view of a range of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">range</td><td>Half-open index range [first, last). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the specified range. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00316">316</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00393">393</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1546,6 +1579,9 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p>Prevents creating a view of a temporary <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<p><a class="el" href="classA.html">A</a> <a class="el" href="classNeoN_1_1View.html">View</a> does not own the referenced data, so a view of a temporary <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> could become dangling. </p>
+
 </div>
 </div>
 <a id="a9608fa4324d06e9099690c2ab02705de" name="a9608fa4324d06e9099690c2ab02705de"></a>
@@ -1574,10 +1610,16 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets a sub view of the field as a view. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
+<p>Returns a read-only, non-owning view of a range of the <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">range</td><td>Half-open index range [first, last). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Read-only view of the specified range. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00327">327</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00406">406</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>

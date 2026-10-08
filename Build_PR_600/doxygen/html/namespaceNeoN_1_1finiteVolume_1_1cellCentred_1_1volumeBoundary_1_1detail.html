@@ -141,6 +141,9 @@ Functions</h2></td></tr>
 <tr class="separator:a242267c68134593d8f4f3dfcf2250609"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa045f711ab2b0d938268eec507c09efd" id="r_aa045f711ab2b0d938268eec507c09efd"><td class="memItemLeft" align="right" valign="top">template void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#aa045f711ab2b0d938268eec507c09efd">updateProcBoundaryOwnerValue&lt; Tensor &gt;</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; <a class="el" href="classNeoN_1_1Tensor.html">Tensor</a> &gt; &amp;, const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;)</td></tr>
 <tr class="separator:aa045f711ab2b0d938268eec507c09efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addb346e153f4099b2835d1420bbf723f" id="r_addb346e153f4099b2835d1420bbf723f"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:addb346e153f4099b2835d1420bbf723f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#addb346e153f4099b2835d1420bbf723f">setTotalPressureValue</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;domainVector, const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, ValueType p0, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">NeoN::scalar</a> &gt; boundaryFlux, bool hasFlux, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; boundaryVelocity, bool hasVelocity)</td></tr>
+<tr class="separator:addb346e153f4099b2835d1420bbf723f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ad3b44c9bd9296aadc06f4af287fe2ad6" name="ad3b44c9bd9296aadc06f4af287fe2ad6"></a>
@@ -768,6 +771,74 @@ template&lt;&gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="slipSymmetry_8hpp_source.html#l00122">122</a> of file <a class="el" href="slipSymmetry_8hpp_source.html">slipSymmetry.hpp</a>.</p>
+
+</div>
+</div>
+<a id="addb346e153f4099b2835d1420bbf723f" name="addb346e153f4099b2835d1420bbf723f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addb346e153f4099b2835d1420bbf723f">&#9670;&#160;</a></span>setTotalPressureValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setTotalPressureValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>domainVector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td>
+          <td class="paramname"><em>range</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ValueType&#160;</td>
+          <td class="paramname"><em>p0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">NeoN::scalar</a> &gt;&#160;</td>
+          <td class="paramname"><em>boundaryFlux</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hasFlux</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt;&#160;</td>
+          <td class="paramname"><em>boundaryVelocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hasVelocity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="totalPressure_8hpp_source.html#l00037">37</a> of file <a class="el" href="totalPressure_8hpp_source.html">totalPressure.hpp</a>.</p>
 
 </div>
 </div>

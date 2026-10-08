@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="31" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="31" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="43" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="43" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-attrib">
@@ -39,7 +39,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="342" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="342" bodyend="342"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="422" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="422" bodyend="422"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1Vector_1a0a81d796f2fec7e451c7c57c97e8971b" prot="private" static="no" mutable="no">
         <type>ValueType *</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="343" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="343" bodyend="343"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="423" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="423" bodyend="423"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1Vector_1abbb1575bba4ef6a8780d58852a88698d" prot="private" static="no" mutable="no">
         <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
@@ -70,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="344" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="344" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="424" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="424" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -89,7 +89,7 @@
           <declname>size</declname>
         </param>
         <briefdescription>
-<para>Create an uninitialized <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> with a given size on an executor. </para>
+<para>Creates an uninitialized <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> with the given size on an executor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -97,7 +97,7 @@
 <parametername>exec</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Executor associated to the field </para>
+<para>Executor on which the vector data is allocated. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -105,7 +105,7 @@
 <parametername>size</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size of the field </para>
+<para>Number of elements in the vector. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -113,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="38" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="51" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a0ea5a308476eb99be20616fbe7657fdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -139,7 +139,7 @@
           <defval><ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref>()</defval>
         </param>
         <briefdescription>
-<para>Create a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> with a given size from existing memory on an executor. </para>
+<para>Creates a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> with the given size from existing data on an executor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -147,7 +147,7 @@
 <parametername>exec</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Executor associated to the field </para>
+<para>Executor on which the vector data is allocated. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -155,7 +155,7 @@
 <parametername>in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to existing data </para>
+<para>Pointer to the source data. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -163,7 +163,7 @@
 <parametername>size</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size of the field </para>
+<para>Number of elements to copy. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -171,7 +171,7 @@
 <parametername>hostExec</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Executor where the original data is located </para>
+<para>Executor on which the source data is located. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -179,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="47" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="61" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a45e24dccfd011f30f7b211ff35e1e3a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -200,7 +200,7 @@
           <declname>value</declname>
         </param>
         <briefdescription>
-<para>Create a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> with a given size on an executor and uniform value. </para>
+<para>Creates a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> with the given size and initializes all elements to a value. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -208,7 +208,7 @@
 <parametername>exec</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Executor associated to the field </para>
+<para>Executor on which the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data is allocated. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -216,7 +216,7 @@
 <parametername>size</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size of the field </para>
+<para>Number of elements in the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -224,7 +224,7 @@
 <parametername>value</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>the default value </para>
+<para>Value used to initialize every element. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -232,7 +232,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="60" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="75" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1ac13dd0cde894a2f78a11286b20907f34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -249,7 +249,7 @@
           <declname>in</declname>
         </param>
         <briefdescription>
-<para>Create a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> from a given vector of values on an executor. </para>
+<para>Creates a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> from a std::vector on the given executor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -257,7 +257,7 @@
 <parametername>exec</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Executor associated to the field </para>
+<para>Executor on which the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data is allocated. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -265,7 +265,7 @@
 <parametername>in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>a vector of elements to copy over </para>
+<para>std::vector containing the values to copy into the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -273,7 +273,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="67" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="83" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a3fda9acfd9787039435b92fe31c04049" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -290,7 +290,7 @@
           <declname>in</declname>
         </param>
         <briefdescription>
-<para>Create a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> as a copy of a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> on a specified executor. </para>
+<para>Creates a copy of another <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> on the specified executor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -298,7 +298,7 @@
 <parametername>exec</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Executor associated to the field </para>
+<para>Executor on which the new <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> is allocated. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -306,7 +306,7 @@
 <parametername>in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>a <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of elements to copy over </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to copy. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -314,7 +314,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="74" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="91" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a229d6abcc33e4040a5e5ee173e639070" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -327,7 +327,7 @@
           <declname>rhs</declname>
         </param>
         <briefdescription>
-<para>Copy constructor, creates a new field with the same size and data as the parsed field. </para>
+<para>Copy constructor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -335,7 +335,7 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to copy from. </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to copy from. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -343,7 +343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="80" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="98" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a15731af41b65b80b4b2c4539476a716e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type></type>
@@ -356,7 +356,7 @@
           <declname>rhs</declname>
         </param>
         <briefdescription>
-<para>Move constructor, moves the data from the parsed field to the new field. </para>
+<para>Move constructor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -364,7 +364,7 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to move from. </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> whose resources are transferred to the new <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -372,7 +372,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="86" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="105" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1ab753dfc6e9baa593b957d324e2aa4835" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -381,13 +381,13 @@
         <name>~Vector</name>
         <qualifiedname>NeoN::Vector::~Vector</qualifiedname>
         <briefdescription>
-<para>Destroy the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> object. </para>
+<para>Destroys the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> object. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="91" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="110" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1aa6ac22b4e8d8aabbe6d6a100d67cc69c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -405,7 +405,7 @@
           <declname>f</declname>
         </param>
         <briefdescription>
-<para>applies a functor, transformation, to the field </para>
+<para>Applies a function to the elements of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -413,17 +413,17 @@
 <parametername>f</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The functor to map over the field. </para>
+<para>Function or functor applied to the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> elements.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="note"><para>Ideally the f should be a KOKKOS_LAMBA </para>
+<simplesect kind="note"><para>The function must be compatible with execution by Kokkos. Ideally, it should be a Kokkos lambda. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="99" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="99" bodyend="102"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="121" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="121" bodyend="124"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a2dc3e53a2f9cd9f1f5401bde925374fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt;</type>
@@ -436,7 +436,7 @@
           <declname>dstExec</declname>
         </param>
         <briefdescription>
-<para>Copies the data to a new field on a specific executor. </para>
+<para>Creates a copy of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> on the specified executor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -444,17 +444,17 @@
 <parametername>dstExec</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The executor on which the data should be copied. </para>
+<para>Executor on which the copied <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> is allocated. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> copy of the field on the host. </para>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> copy of this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> on <computeroutput>dstExec</computeroutput>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="109" column="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="132" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1ad9d97488c7ae4f82eb2f07c6001ca7e9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt;</type>
@@ -463,16 +463,16 @@
         <name>copyToHost</name>
         <qualifiedname>NeoN::Vector::copyToHost</qualifiedname>
         <briefdescription>
-<para>Returns a copy of the field back to the host. </para>
+<para>Creates a host-resident copy of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> copy of the field on the host. </para>
+<para><simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> copy of this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> allocated on the host executor. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="115" column="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="139" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1ac43473fb021aacee009af9163ff016a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -485,7 +485,7 @@
           <declname>result</declname>
         </param>
         <briefdescription>
-<para>Copies the data (from anywhere) to a parsed host field. </para>
+<para>Copies the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data to a host-resident <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -493,17 +493,17 @@
 <parametername>result</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field into which the data must be copied. Must be sized.</para>
+<para>Destination <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. Its size must match this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="warning"><para>exits if the size of the result field is not the same as the source field. </para>
+<simplesect kind="warning"><para>An error is raised if <computeroutput>result</computeroutput> does not have the same size as this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="125" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="149" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a1a976f143f1b87614db92b4c501ed719" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>ValueType &amp;</type>
@@ -516,12 +516,17 @@
           <declname>i</declname>
         </param>
         <briefdescription>
+<para>Host-side element access is intentionally disabled. </para>
         </briefdescription>
         <detaileddescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data may reside in executor-specific memory, such as GPU memory. Direct host-side element access could therefore result in invalid memory access.</para>
+<para><simplesect kind="note"><para>Use <ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view()</ref> or an executor-aware operation to access the data. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="128" column="15"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="160" column="15"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1adfb14f80df8f4b622452818d3ac5f52f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const ValueType &amp;</type>
@@ -539,7 +544,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="131" column="21"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="162" column="21"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a79947b149106e8cae946231f179639fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -552,7 +557,7 @@
           <declname>rhs</declname>
         </param>
         <briefdescription>
-<para>Assignment operator, Sets the field values to that of the passed value. </para>
+<para>Assigns a value to every element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -560,7 +565,7 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The value to set the field to. </para>
+<para>Value assigned to each element. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -568,7 +573,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="137" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="169" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1ae8e2493ea02950235947c1c5e128e3c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -581,7 +586,7 @@
           <declname>rhs</declname>
         </param>
         <briefdescription>
-<para>Assignment operator, Sets the field values to that of the parsed field. </para>
+<para>Assigns the contents of another <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -589,17 +594,17 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to copy from.</para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to copy from.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="warning"><para>This field will be sized to the size of the parsed field. </para>
+<simplesect kind="warning"><para>The size of this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> is adjusted to match <computeroutput>rhs</computeroutput> if necessary. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="145" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="178" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a5a9406cd5937caca19cbb5a340b3d640" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -618,11 +623,22 @@
 <para>Swaps the data pointer and size from rhs in O(1) without launching any GPU kernel. The old buffer owned by *this is freed first (after a fence if on GPU). After the move, rhs is left in an empty (size=0, data=nullptr) state. The executor is unchanged — exec_ is const and cannot be moved.</para>
 <para><simplesect kind="warning"><para>Invalidates any existing <ref refid="classNeoN_1_1View" kindref="compound">View</ref> objects that point into *this. </para>
 </simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>rhs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> whose resources are transferred to this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> reference to this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
+</simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="157" column="12"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="192" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1ab4d83cf671153e017e107f022d06d2a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -635,7 +651,7 @@
           <declname>rhs</declname>
         </param>
         <briefdescription>
-<para>Arithmetic add operator, addition of a second field. </para>
+<para>Adds another <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> element-wise. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -643,17 +659,17 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to add with this field. </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to add to this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The result of the addition. </para>
+<simplesect kind="return"><para>This <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> after the element-wise addition. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="164" column="12"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="200" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1add2cd47adb8b276c03f1f41a1e36cae1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -666,7 +682,7 @@
           <declname>rhs</declname>
         </param>
         <briefdescription>
-<para>Arithmetic subtraction operator, subtraction by a second field. </para>
+<para>Subtracts another <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> element-wise. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -674,17 +690,17 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to subtract from this field. </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to subtract from this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The result of the subtraction. </para>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> reference to this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> after the element-wise subtraction. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="171" column="12"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="208" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a3aea84baea4f7590d0ae483e3040f18e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt;</type>
@@ -698,7 +714,7 @@
         </param>
     <requiresclause>requires(ValueType a, ValueType b) { a* b; }    </requiresclause>
         <briefdescription>
-<para>Arithmetic multiply operator, multiply by a second field. </para>
+<para>Multiplies two Vectors element-wise. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -706,19 +722,19 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to subtract from this field. </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to multiply with this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The result of the multiply.</para>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> containing the element-wise product.</para>
 </simplesect>
-<simplesect kind="note"><para>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> </para>
+<simplesect kind="note"><para>This operation is available only for ValueType combinations for which element-wise multiplication is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> for information on C++ requires-expressions. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="181" column="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="222" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1aac491a8b16676c45119d703de8d710d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt;</type>
@@ -732,7 +748,7 @@
         </param>
     <requiresclause>requires(ValueType a, scalar b) { a* b; }    </requiresclause>
         <briefdescription>
-<para>Arithmetic multiply operator, multiplies every cell in the field by a scalar. </para>
+<para>Multiplies every element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> by a scalar. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -740,19 +756,19 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The scalar to multiply with the field. </para>
+<para>Scalar multiplier. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The result of the multiplication.</para>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> containing the scaled values.</para>
 </simplesect>
-<simplesect kind="note"><para>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> </para>
+<simplesect kind="note"><para>This operation is available only for ValueType combinations for which multiplication by scalar is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> for information on C++ requires-expressions. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="192" column="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="237" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a9afacd6737415134f38fe9becb19d549" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -766,7 +782,7 @@
         </param>
     <requiresclause>requires(ValueType a, ValueType b) { a *= b; }    </requiresclause>
         <briefdescription>
-<para>Assignment multiply operator, multiplies this field by another field element-wise. </para>
+<para>Multiplies this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> element-wise by another <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -774,19 +790,19 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to multiply with this field. </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to multiply with this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The result of the element-wise multiplication.</para>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> reference to this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> after the element-wise multiplication.</para>
 </simplesect>
-<simplesect kind="note"><para>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> </para>
+<simplesect kind="note"><para>This operation is available only for ValueType combinations for which element-wise multiplication is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> for information on C++ requires-expressions. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="203" column="12"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="252" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a8ada1ac2655eba6a62ecf23e01bce27d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -800,7 +816,7 @@
         </param>
     <requiresclause>requires(ValueType a, scalar b) { a *= b; }    </requiresclause>
         <briefdescription>
-<para>Assignment multiply operator, multiplies every cell in the field by a scalar. </para>
+<para>Multiplies every element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> by a scalar. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -808,17 +824,19 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The scalar to multiply with the field.</para>
+<para>Scalar multiplier. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="note"><para>We exclude types where the multiplication operator is ambiguous, e.g. vec3. See notes regarding concepts <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> </para>
+<simplesect kind="return"><para><ref refid="classA" kindref="compound">A</ref> reference to this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> after the scalar multiplication.</para>
+</simplesect>
+<simplesect kind="note"><para>This operation is available only for ValueType combinations for which multiplication by scalar is well-defined. Types with ambiguous multiplication semantics, such as vec3, are excluded. See <ulink url="https://eel.is/c++draft/expr.prim.req">https://eel.is/c++draft/expr.prim.req</ulink> for information on C++ requires-expressions. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="213" column="12"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="267" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a99e933d0a77f9ec5fef7d492f23c2219" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -831,7 +849,7 @@
           <declname>size</declname>
         </param>
         <briefdescription>
-<para>Resizes the field to a new size. </para>
+<para>Resizes the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -839,7 +857,7 @@
 <parametername>size</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The new size to set the field to. </para>
+<para>New number of elements. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -847,7 +865,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="220" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="275" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>ValueType *</type>
@@ -856,16 +874,16 @@
         <name>data</name>
         <qualifiedname>NeoN::Vector::data</qualifiedname>
         <briefdescription>
-<para>Direct access to the underlying field data. </para>
+<para>Returns a pointer to the underlying <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>Pointer to the first cell data in the field. </para>
+<para><simplesect kind="return"><para>Pointer to the first element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="226" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="226" bodyend="226"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="282" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="282" bodyend="282"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a980245c8e0b2691d3014d49862b2145e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const ValueType *</type>
@@ -874,16 +892,16 @@
         <name>data</name>
         <qualifiedname>NeoN::Vector::data</qualifiedname>
         <briefdescription>
-<para>Direct access to the underlying field data. </para>
+<para>Returns a pointer to the underlying <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>Pointer to the first cell data in the field. </para>
+<para><simplesect kind="return"><para>Const pointer to the first element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="232" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="232" bodyend="232"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="289" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="289" bodyend="289"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1af3ba6b1022281a560779993a95b39f6d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>ValueType *</type>
@@ -892,16 +910,16 @@
         <name>begin</name>
         <qualifiedname>NeoN::Vector::begin</qualifiedname>
         <briefdescription>
-<para>Direct access to the underlying field data. </para>
+<para>Returns a pointer to the first element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>Pointer to the first cell data in the field. </para>
+<para><simplesect kind="return"><para>Pointer to the first element. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="238" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="238" bodyend="238"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="296" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="296" bodyend="296"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a238922b03c94dd56f9fcd6400f372f22" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const ValueType *</type>
@@ -910,16 +928,16 @@
         <name>begin</name>
         <qualifiedname>NeoN::Vector::begin</qualifiedname>
         <briefdescription>
-<para>Direct access to the underlying field data. </para>
+<para>Returns a const pointer to the first element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>Pointer to the first cell data in the field. </para>
+<para><simplesect kind="return"><para>Const pointer to the first element. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="244" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="244" bodyend="244"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="303" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="303" bodyend="303"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1abdf88a72a6bf82ef8f40c8040b5e5e70" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>ValueType *</type>
@@ -928,16 +946,16 @@
         <name>end</name>
         <qualifiedname>NeoN::Vector::end</qualifiedname>
         <briefdescription>
-<para>Direct access to the underlying field data. </para>
+<para>Returns a pointer one past the last element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>Pointer to the first cell data in the field. </para>
+<para><simplesect kind="return"><para>Pointer one past the last element. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="250" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="250" bodyend="250"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="310" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="310" bodyend="310"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a3ec3319fa14127283f65f0d2293efaff" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const ValueType *</type>
@@ -946,16 +964,16 @@
         <name>end</name>
         <qualifiedname>NeoN::Vector::end</qualifiedname>
         <briefdescription>
-<para>Direct access to the underlying field data. </para>
+<para>Returns a const pointer one past the last element of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>Pointer to the first cell data in the field. </para>
+<para><simplesect kind="return"><para>Const pointer one past the last element. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="256" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="256" bodyend="256"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="317" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="317" bodyend="317"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
@@ -964,16 +982,16 @@
         <name>exec</name>
         <qualifiedname>NeoN::Vector::exec</qualifiedname>
         <briefdescription>
-<para>Gets the executor associated with the field. </para>
+<para>Returns the executor associated with the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>Reference to the executor. </para>
+<para><simplesect kind="return"><para>Reference to the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&apos;s executor. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="262" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="262" bodyend="262"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="324" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="324" bodyend="324"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -982,16 +1000,16 @@
         <name>size</name>
         <qualifiedname>NeoN::Vector::size</qualifiedname>
         <briefdescription>
-<para>Gets the size of the field. </para>
+<para>Returns the number of elements in the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>The size of the field. </para>
+<para><simplesect kind="return"><para>Number of elements. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="268" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="268" bodyend="268"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="331" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="331" bodyend="331"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a719edbafd35de9fdf99fd174fc8fd61e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref></type>
@@ -1000,16 +1018,16 @@
         <name>ssize</name>
         <qualifiedname>NeoN::Vector::ssize</qualifiedname>
         <briefdescription>
-<para>Gets the size of the field. </para>
+<para>Returns the number of elements as a label. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>The size of the field. </para>
+<para><simplesect kind="return"><para>Number of elements converted to label. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="274" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="274" bodyend="274"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="338" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="338" bodyend="338"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1aa265640bf653ccc74f509d396ef7d977" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -1018,16 +1036,16 @@
         <name>empty</name>
         <qualifiedname>NeoN::Vector::empty</qualifiedname>
         <briefdescription>
-<para>Checks if the field is empty. </para>
+<para>Checks whether the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> contains no elements. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>True if the field is empty, false otherwise. </para>
+<para><simplesect kind="return"><para>True if the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> is empty, otherwise false. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="280" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="280" bodyend="280"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="345" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="345" bodyend="345"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
@@ -1036,12 +1054,14 @@
         <name>view</name>
         <qualifiedname>NeoN::Vector::view</qualifiedname>
         <briefdescription>
+<para>Prevents creating a <ref refid="classNeoN_1_1View" kindref="compound">View</ref> from a temporary <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
+<para><ref refid="classA" kindref="compound">A</ref> <ref refid="classNeoN_1_1View" kindref="compound">View</ref> does not own the referenced data. Allowing a <ref refid="classNeoN_1_1View" kindref="compound">View</ref> to be created from a temporary <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> could therefore result in a dangling view. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="283" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="353" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1af41388de676f5d555c0a9a8fd65d0fdd" prot="public" static="no" const="yes" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt;</type>
@@ -1055,7 +1075,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="286" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="355" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1afe9aade44dd8fd745d5ab63c5fa0c460" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
@@ -1064,16 +1084,16 @@
         <name>view</name>
         <qualifiedname>NeoN::Vector::view</qualifiedname>
         <briefdescription>
-<para>Gets the field as a view. </para>
+<para>Returns a non-owning view of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> of the field. </para>
+<para><simplesect kind="return"><para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="292" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="292" bodyend="295"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="362" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="362" bodyend="365"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a8204948c9a7c17e5bc7c67c88db802bd" prot="public" static="no" const="yes" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt;</type>
@@ -1082,16 +1102,16 @@
         <name>view</name>
         <qualifiedname>NeoN::Vector::view</qualifiedname>
         <briefdescription>
-<para>Gets the field as a view. </para>
+<para>Returns a read-only, non-owning view of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> of the field. </para>
+<para><simplesect kind="return"><para>Read-only view of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> data. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="301" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="301" bodyend="304"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="372" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="372" bodyend="375"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1abb5eeffddc65955f57db055be73fbc07" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
@@ -1104,12 +1124,14 @@
           <declname>range</declname>
         </param>
         <briefdescription>
+<para>Prevents creating a view of a temporary <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
+<para><ref refid="classA" kindref="compound">A</ref> <ref refid="classNeoN_1_1View" kindref="compound">View</ref> does not own the referenced data, so a view of a temporary <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> could become dangling. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="307" column="11"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="383" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a6d35eccebbae57201dad39e582656fd1" prot="public" static="no" const="yes" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt;</type>
@@ -1127,7 +1149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="310" column="11"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="385" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a43a0f39f3241e494950640dc4c673bf7" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; ValueType &gt;</type>
@@ -1140,16 +1162,25 @@
           <declname>range</declname>
         </param>
         <briefdescription>
-<para>Gets a sub view of the field as a view. </para>
+<para>Returns a non-owning view of a range of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> of the field. </para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>range</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Half-open index range [first, last). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> of the specified range. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="316" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="316" bodyend="321"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="393" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="393" bodyend="398"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a9608fa4324d06e9099690c2ab02705de" prot="public" static="no" const="yes" explicit="no" inline="yes" refqual="lvalue" virt="non-virtual">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt;</type>
@@ -1162,16 +1193,25 @@
           <declname>range</declname>
         </param>
         <briefdescription>
-<para>Gets a sub view of the field as a view. </para>
+<para>Returns a read-only, non-owning view of a range of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para><ref refid="classNeoN_1_1View" kindref="compound">View</ref> of the field. </para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>range</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Half-open index range [first, last). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Read-only view of the specified range. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="327" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="327" bodyend="332"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="406" column="11" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="406" bodyend="411"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1Vector_1a66f57aa2034536ba371465eca36355a2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
@@ -1180,16 +1220,16 @@
         <name>range</name>
         <qualifiedname>NeoN::Vector::range</qualifiedname>
         <briefdescription>
-<para>Gets the range of the field. </para>
+<para>Returns the index range of the <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="return"><para>The range of the field {0, <ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size()</ref>}. </para>
+<para><simplesect kind="return"><para>The half-open index range [0, <ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size()</ref>). </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="338" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="338" bodyend="338"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="418" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="418" bodyend="418"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -1204,7 +1244,7 @@
           <declname>rhs</declname>
         </param>
         <briefdescription>
-<para>Checks if two fields are the same size and have the same executor. </para>
+<para>Checks if two Vectors have the same size and the same executor. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -1212,7 +1252,7 @@
 <parametername>rhs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The field to compare with. </para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> to validate against this <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1220,15 +1260,28 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="350" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="430" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
-<para><ref refid="classA" kindref="compound">A</ref> class to contain the data and executors for a field and define some basic operations. </para>
+<para>An executor-aware contiguous container for numerical data with vector-style arithmetic semantics. </para>
     </briefdescription>
     <detaileddescription>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> is intended for numerical quantities for which arithmetic operations on the elements or on the vector as a whole are meaningful.</para>
+<para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> provides operations for performing arithmetic on its stored values. Use <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> when the numerical meaning of the data and its arithmetic operations are an important part of its interface.</para>
+<para>For structural, indexing, or other non-arithmetic data, use <ref refid="classNeoN_1_1Array" kindref="compound">Array</ref> instead.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the elements stored in the vector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="20" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="27" bodyend="351"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" line="19" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/vector/vector.hpp" bodystart="39" bodyend="431"/>
     <listofallmembers>
       <member refid="classNeoN_1_1Vector_1aa6ac22b4e8d8aabbe6d6a100d67cc69c" prot="public" virt="non-virtual"><scope>NeoN::Vector</scope><name>apply</name></member>
       <member refid="classNeoN_1_1Vector_1af3ba6b1022281a560779993a95b39f6d" prot="public" virt="non-virtual"><scope>NeoN::Vector</scope><name>begin</name></member>
