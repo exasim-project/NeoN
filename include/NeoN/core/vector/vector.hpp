@@ -403,7 +403,7 @@ public:
      * @param range Half-open index range [first, last).
      * @return Read-only view of the specified range.
      */
-    [[nodiscard]] View<const ValueType> view(std::pair<SizeType, SizeType> range) const&
+    [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
         NeoN::validateRange(range, size());
         return View<const ValueType>(
