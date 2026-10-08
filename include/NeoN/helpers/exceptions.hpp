@@ -108,7 +108,17 @@ public:
         );                                                                                         \
     }
 
-// Validate range
+/**
+ * Checks that the half-open range [begin, end) lies inside a container of the given size.
+ *
+ * A range is valid if 0 <= begin <= end <= size. An empty range
+ * (begin == end) is valid, including at begin == end == size.
+ *
+ * @param range  The pair {begin, end}, where end is exclusive
+ * @param size   The size of the container being indexed
+ *
+ * @throw std::out_of_range  if begin < 0, begin > end, or end > size
+ */
 inline void validateRange(std::pair<localIdx, localIdx> range, size_t size)
 {
     const auto begin = range.first;
@@ -120,7 +130,18 @@ inline void validateRange(std::pair<localIdx, localIdx> range, size_t size)
     }
 }
 
-// Validate conversion to localIdx
+/**
+ * Converts a size_t to localIdx, checking that the value fits.
+ *
+ * Use this instead of a plain static_cast when converting container sizes or
+ * indices. A plain cast can silently wrap around if the value is larger than
+ * the maximum localIdx.
+ *
+ * @param value  The unsigned value to convert, typically a size() result
+ * @return The same value as a localIdx
+ *
+ * @throw std::length_error  if value is greater than the maximum localIdx
+ */
 inline localIdx toLocalIdx(size_t value)
 {
     if (!std::in_range<localIdx>(value))
@@ -129,4 +150,4 @@ inline localIdx toLocalIdx(size_t value)
     }
     return static_cast<localIdx>(value);
 }
-} // namespace Neoinline N
+} // namespace NeoN
