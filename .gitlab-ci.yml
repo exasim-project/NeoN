@@ -6,24 +6,23 @@
 #  GPU-specific images and runner configuration
 # ============================================================
 # Ginkgo develop with LinOpFactory::ReuseData (ginkgo-project/ginkgo#2117), built by
-# exasim-project/ginkgo-packaging. Dated tags: the runner caches SIF images by name.
+# exasim-project/ginkgo-packaging, with MPICH built from source (GPU-aware for CUDA and ROCm).
+# Dated tags: the runner caches SIF images by name.
 .gpu-nvidia:
   tags: ["nvidia-gpus"]
-  image: ghcr.io/exasim-project/ginkgo-cuda:nightly-20261009
+  image: ghcr.io/exasim-project/ginkgo-cuda:nightly-20261009-2
   variables:
     GPU_VENDOR: nvidia
 
 .gpu-amd:
   tags: ["amd-gpus"]
-  # nightly-20261009 by digest: the runner's cached SIF of that tag is corrupt
-  # (read /bin/sh: input/output error), and a new reference forces a fresh pull.
-  image: ghcr.io/exasim-project/ginkgo-rocm@sha256:d304270541198a9035cdce73655074ba238ece3a996c15818851ddda48cc1f86
+  image: ghcr.io/exasim-project/ginkgo-rocm:nightly-20261009-2
   variables:
     GPU_VENDOR: amd
 
 .gpu-intel:
   tags: ["intel-gpus"]
-  image: ghcr.io/exasim-project/ginkgo-sycl:nightly-20261009
+  image: ghcr.io/exasim-project/ginkgo-sycl:nightly-20261009-2
   variables:
     GPU_VENDOR: intel
 
