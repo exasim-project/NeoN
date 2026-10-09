@@ -15,7 +15,6 @@
 
 namespace NeoN
 {
-
 localIdx computeGlobalOffset(const BoundaryMesh& boundaryMesh, localIdx localNCells)
 {
     if (!boundaryMesh.isDistributed())
