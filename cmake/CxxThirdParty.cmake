@@ -247,54 +247,11 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
-  # FIXME: remove this commit check (back to a plain find_package) once ginkgo-project/ginkgo#2117
-  # has been merged and NeoN pins a Ginkgo release providing LinOpFactory::generate_reuse. A system
-  # Ginkgo is only used if it was built from the pinned commit: other builds may report the same
-  # version but lack APIs NeoN needs (e.g. LinOpFactory::generate_reuse). The installed
-  # GinkgoConfig.cmake records the source commit as GINKGO_GIT_REVISION (for a merge commit it
-  # records the merged branch tip instead, so such a pin always fetches). Read it before
-  # find_package: once find_package has created the imported Ginkgo::ginkgo target, a CPM-fetched
-  # Ginkgo can no longer be added.
-  set(_neon_ginkgo_config_dirs)
-  foreach(_prefix ${Ginkgo_DIR} ${Ginkgo_ROOT} $ENV{Ginkgo_ROOT} ${CMAKE_PREFIX_PATH}
-                  $ENV{CMAKE_PREFIX_PATH} ${CMAKE_SYSTEM_PREFIX_PATH})
-    foreach(_suffix "" lib/cmake/Ginkgo lib64/cmake/Ginkgo
-                    lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/Ginkgo)
-      list(APPEND _neon_ginkgo_config_dirs "${_prefix}/${_suffix}")
-    endforeach()
-  endforeach()
-  find_file(
-    _neon_ginkgo_config GinkgoConfig.cmake
-    PATHS ${_neon_ginkgo_config_dirs}
-    NO_DEFAULT_PATH NO_CACHE)
-  if(_neon_ginkgo_config)
-    file(STRINGS "${_neon_ginkgo_config}" _neon_ginkgo_revision
-         REGEX "^set\\(GINKGO_GIT_REVISION \"[0-9a-f]*\"\\)")
-    string(REGEX REPLACE ".*\"([0-9a-f]*)\".*" "\\1" _neon_ginkgo_revision
-                         "${_neon_ginkgo_revision}")
-    if(_neon_ginkgo_revision STREQUAL NeoN_GINKGO_TAG)
-      get_filename_component(_neon_ginkgo_config_dir "${_neon_ginkgo_config}" DIRECTORY)
-      find_package(
-        Ginkgo
-        ${NeoN_GINKGO_VERSION}
-        CONFIG
-        QUIET
-        PATHS
-        "${_neon_ginkgo_config_dir}"
-        NO_DEFAULT_PATH)
-    else()
-      message(STATUS "System Ginkgo ${_neon_ginkgo_config} was built from commit "
-                     "'${_neon_ginkgo_revision}', not the pinned ${NeoN_GINKGO_TAG}")
-    endif()
-  endif()
+  find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
-    message(STATUS "No usable system Ginkgo — fetching from GitHub via CPM.cmake...")
-    # The commit check above already decided against the system Ginkgo; keep CPM's own find_package
-    # (CPM_USE_LOCAL_PACKAGES) from picking it up again.
-    set(_neon_cpm_use_local_packages ${CPM_USE_LOCAL_PACKAGES})
-    set(CPM_USE_LOCAL_PACKAGES OFF)
+    message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
     cpmaddpackage(
       NAME
       Ginkgo
@@ -316,7 +273,6 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
-    set(CPM_USE_LOCAL_PACKAGES ${_neon_cpm_use_local_packages})
 
     # Ginkgo's build_helpers.cmake forces its targets to ${PROJECT_BINARY_DIR}/lib, ignoring
     # CMAKE_LIBRARY_OUTPUT_DIRECTORY. Route them into our shared lib output dir so all CPM-built
@@ -339,7 +295,6 @@ if(${NeoN_WITH_GINKGO})
       endif()
     endforeach()
   endif()
-
 endif()
 
 if(${NeoN_BUILD_PYTHON_BINDINGS})
