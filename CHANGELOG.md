@@ -25,7 +25,7 @@
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
 
 ## Fixes
-- Fix CI workflows: sanitizer runs on push/schedule, full-ci Ubuntu build, broken cache conditions and keys; remove unused AWS workflow
+- Fix CI workflows: sanitizer runs on push/schedule, full-ci Ubuntu build, broken cache conditions and keys; remove unused AWS workflow [#612](https://github.com/exasim-project/NeoN/pull/612)
 - Fix citation metadata and publish releases on Zenodo automatically [#610](https://github.com/exasim-project/NeoN/pull/610)
 - Fix umpire/camp RPATH and macOS install names so wheels stay relocatable, and check relocatability on the unrepaired wheel in CI [#559](https://github.com/exasim-project/NeoN/pull/559)
 - Fix distributed processor-face correctness: multi-patch (scotch) halo exchange, ddtFluxCorr proc-face correction, processor BC on coupled patches, and row-sorted non-local COO for correct CUDA distributed apply [#528](https://github.com/exasim-project/NeoN/pull/528)
