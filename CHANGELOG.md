@@ -2,6 +2,8 @@
 ## Features
 ### Misc
 - Label PRs automatically by area (`type:*`) and kind of change [#725](https://github.com/exasim-project/NeoN/pull/725)
+## Fixes
+- Fix CI workflows: sanitizer runs on push/schedule, full-ci Ubuntu build, broken cache conditions and keys; remove unused AWS workflow [#612](https://github.com/exasim-project/NeoN/pull/612)
 
 # Version 0.3.0 (2026/11/23)
 ## Features
