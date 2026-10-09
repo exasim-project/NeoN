@@ -57,7 +57,6 @@
 - Add courant number calculation based on parallelFor [#224](https://github.com/exasim-project/NeoN/pull/224)
 - Add license automation [#343](https://github.com/exasim-project/NeoN/pull/343)
 ## Fixes
-- Fix CI workflows: sanitizer runs on push/schedule, full-ci Ubuntu build, broken cache conditions and keys; remove unused AWS workflow
 # Version 0.1.0
 - Improve build with MSVC and Clang on Windows [#163](https://github.com/exasim-project/NeoN/pull/163)
 - Add document based database [#155](https://github.com/exasim-project/NeoN/pull/155)
