@@ -15,7 +15,9 @@
 
 .gpu-amd:
   tags: ["amd-gpus"]
-  image: ghcr.io/exasim-project/ginkgo-rocm:nightly-20261009
+  # nightly-20261009 by digest: the runner's cached SIF of that tag is corrupt
+  # (read /bin/sh: input/output error), and a new reference forces a fresh pull.
+  image: ghcr.io/exasim-project/ginkgo-rocm@sha256:d304270541198a9035cdce73655074ba238ece3a996c15818851ddda48cc1f86
   variables:
     GPU_VENDOR: amd
 
