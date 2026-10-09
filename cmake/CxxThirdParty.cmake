@@ -11,6 +11,32 @@ if(NeoN_WITH_MPI)
     message(FATAL_ERROR "NeoN_WITH_MPI not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
+  # Distribution MPI builds record the distribution's build flags in their compiler wrappers, e.g.
+  # Ubuntu's MPICH reports -flto=auto -ffat-lto-objects. FindMPI passes them on through MPI::MPI_C
+  # and MPI::MPI_CXX, which silently enables GCC LTO for everything linking MPI. That breaks nvcc
+  # compiled code: LTO merges the per-object host stubs and their fatbinData symbols collide.
+  foreach(_neon_mpi_target MPI::MPI_C MPI::MPI_CXX)
+    if(NOT TARGET ${_neon_mpi_target})
+      continue()
+    endif()
+    foreach(_neon_prop INTERFACE_COMPILE_OPTIONS INTERFACE_LINK_OPTIONS)
+      get_target_property(_neon_opts ${_neon_mpi_target} ${_neon_prop})
+      if(NOT _neon_opts)
+        continue()
+      endif()
+      set(_neon_kept)
+      foreach(_neon_opt IN LISTS _neon_opts)
+        # An entry can hold several flags ("SHELL:-flto=auto -ffat-lto-objects ..."), so remove the
+        # LTO flags inside it rather than the entry.
+        string(REGEX REPLACE "(^|[ :])-f(no-)?(fat-)?lto[^ ]*" "\\1" _neon_opt "${_neon_opt}")
+        string(STRIP "${_neon_opt}" _neon_opt)
+        if(_neon_opt AND NOT _neon_opt STREQUAL "SHELL:")
+          list(APPEND _neon_kept "${_neon_opt}")
+        endif()
+      endforeach()
+      set_target_properties(${_neon_mpi_target} PROPERTIES ${_neon_prop} "${_neon_kept}")
+    endforeach()
+  endforeach()
   include(cmake/DetectMpiThreadSupport.cmake)
 endif()
 
