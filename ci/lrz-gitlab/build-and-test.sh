@@ -13,6 +13,18 @@ PRESET="develop"
 
 echo "Selected GPU type: $GPU_VENDOR"
 
+# The runner sets its own PATH, so the PATH entries of the image are lost: add the
+# GPU-aware MPICH of the Ginkgo images and the CUDA toolkit back (missing dirs are harmless).
+export PATH="/opt/mpich/bin:/usr/local/cuda/bin:${PATH}"
+
+# Launch the MPI tests with MPICH's own mpiexec, matching the libmpi NeoN links, and start
+# the ranks locally: inside the Slurm allocation hydra would otherwise bootstrap through
+# srun, and every rank comes up as a singleton.
+export HYDRA_BOOTSTRAP=fork
+MPIEXEC="$(command -v mpiexec.mpich || command -v mpiexec || true)"
+echo "=== MPI launcher: ${MPIEXEC} ==="
+[ -n "${MPIEXEC}" ] && { "${MPIEXEC}" --version | head -4 || true; }
+
 echo "=== Tool versions ==="
 cmake --version
 g++ --version || clang++ --version
@@ -29,6 +41,7 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
         -DCMAKE_CUDA_ARCHITECTURES=89 \
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_WITH_MPI=ON \
+        -DMPIEXEC_EXECUTABLE="${MPIEXEC}" \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
     # The CI OpenMPI uses the shared-memory transport (mca_btl_vader) which is
@@ -61,6 +74,7 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
         -DKokkos_ARCH_AMD_GFX90A=ON \
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_WITH_MPI=ON \
+        -DMPIEXEC_EXECUTABLE="${MPIEXEC}" \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
     # See NVIDIA comment above — same rationale for AMD ROCm MPI.
