@@ -5,6 +5,9 @@
 #pragma once
 
 #include <stdexcept>
+#include <source_location>
+#include <sstream>
+#include <string_view>
 #include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
@@ -150,4 +153,22 @@ inline localIdx toLocalIdx(size_t value)
     }
     return static_cast<localIdx>(value);
 }
+
+inline void requireInput(
+    bool condition,
+    std::string_view message,
+    const std::source_location location = std::source_location::current()
+)
+{
+    if (condition)
+    {
+        return;
+    }
+    std::ostringstream error;
+    error << "Invalid input: " << message << "\nFile: \n"
+          << location.file_name() << "\nLine: " << location.line();
+
+    throw NeoN::NeoNException(error.str());
+}
+
 } // namespace NeoN
