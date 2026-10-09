@@ -6,6 +6,9 @@
 
 #include <stdexcept>
 #include <utility>
+#include <source_location>
+#include <sstream>
+#include <string_view>
 #include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
@@ -84,11 +87,11 @@ public:
         const std::string& clarification
     )
         : Error(
-            file,
-            line,
-            func + ": Trying to perform binary operation " + " " + std::to_string(lengthA) + ", "
-                + std::to_string(lengthB) + " " + clarification
-        )
+              file,
+              line,
+              func + ": Trying to perform binary operation " + " " + std::to_string(lengthA) + ", "
+                  + std::to_string(lengthB) + " " + clarification
+          )
     {}
 };
 
@@ -151,4 +154,22 @@ inline localIdx toLocalIdx(sizeType value)
     }
     return static_cast<localIdx>(value);
 }
+
+inline void requireInput(
+    bool condition,
+    std::string_view message,
+    const std::source_location location = std::source_location::current()
+)
+{
+    if (condition)
+    {
+        return;
+    }
+    std::ostringstream error;
+    error << "Invalid input: " << message << "\nFile: \n"
+          << location.file_name() << "\nLine: " << location.line();
+
+    throw NeoN::NeoNException(error.str());
+}
+
 } // namespace NeoN
