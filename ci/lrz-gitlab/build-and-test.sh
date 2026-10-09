@@ -25,6 +25,7 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
     echo "=== Configuring, building, and testing NeoN on NVIDIA ==="
     export CUDA_VISIBLE_DEVICES=0
     cmake --preset develop \
+        -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_CUDA_ARCHITECTURES=89 \
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_WITH_MPI=ON \
@@ -50,6 +51,7 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
 
     echo "=== Configuring, building, and testing NeoN on AMD ==="
     cmake --preset develop \
+        -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_PREFIX_PATH=/opt/rocm \
         -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang \
         -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ \
@@ -81,6 +83,7 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
 
     echo "=== Configuring, building, and testing NeoN on Intel ==="
     cmake --preset develop \
+        -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_CXX_COMPILER=icpx \
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
         -DKokkos_ENABLE_SYCL=ON \
