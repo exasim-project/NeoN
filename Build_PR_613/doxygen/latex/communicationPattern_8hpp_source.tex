@@ -1,0 +1,41 @@
+\doxysection{communication\+Pattern.\+hpp}
+\hypertarget{communicationPattern_8hpp_source}{}\label{communicationPattern_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/distributed/communicationPattern.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/distributed/communicationPattern.hpp}}
+\mbox{\hyperlink{communicationPattern_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00025}00025\ \textcolor{keyword}{struct\ }CommunicationPattern}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00026}00026\ \{}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00032}00032\ \ \ \ \ std::vector<int>\ sendCounts;}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00040}00040\ \ \ \ \ std::vector<int>\ recvIdx;}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00053}00053\ \ \ \ \ std::vector<localIdx>\ boundaryMapVector;}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00056}00056\ \ \ \ \ mpi::Environment\ env;}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00069}00069\ \ \ \ \ std::vector<localIdx>\ offDiagRowSortPerm;}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00070}00070\ \};}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00086}00086\ CommunicationPattern\ computeCommunicationPattern(\textcolor{keyword}{const}\ UnstructuredMesh\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00088}00088\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{communicationPattern_8hpp_source_l00090}00090\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ NF\_WITH\_MPI\_SUPPORT}}
+
+\end{DoxyCode}
