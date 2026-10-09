@@ -13,7 +13,7 @@ namespace NeoN
 {
 
 template<typename ValueType>
-Vector<ValueType>::Vector(const Executor& exec, localIdx size)
+Vector<ValueType>::Vector(const Executor& exec, SizeType size)
     // Delegate to the value ctor so a freshly allocated Vector is zero-initialized rather than
     // holding uninitialized pool memory. The pool's alloc<>() does not clear memory, so without
     // this a field read before its first write returns garbage (huge/NaN), which silently poisons
@@ -24,14 +24,14 @@ Vector<ValueType>::Vector(const Executor& exec, localIdx size)
 
 template<typename ValueType>
 Vector<ValueType>::Vector(
-    const Executor& exec, const ValueType* in, localIdx size, Executor hostExec
+    const Executor& exec, const ValueType* in, SizeType size, Executor hostExec
 )
     : size_(size), data_(nullptr), exec_(exec)
 {
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& concreteExec)
-        { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
+        { ptr = concreteExec.template alloc<ValueType>(size); },
         exec_
     );
     data_ = static_cast<ValueType*>(ptr);
@@ -39,14 +39,12 @@ Vector<ValueType>::Vector(
 }
 
 template<typename ValueType>
-Vector<ValueType>::Vector(const Executor& exec, localIdx size, ValueType value)
+Vector<ValueType>::Vector(const Executor& exec, SizeType size, ValueType value)
     : size_(size), data_(nullptr), exec_(exec)
 {
     void* ptr = nullptr;
     std::visit(
-        [&ptr, size](const auto& execu)
-        { ptr = execu.template alloc<ValueType>(static_cast<size_t>(size)); },
-        exec_
+        [&ptr, size](const auto& execu) { ptr = execu.template alloc<ValueType>(size); }, exec_
     );
     data_ = static_cast<ValueType*>(ptr);
     NeoN::fill(*this, value);
@@ -54,7 +52,7 @@ Vector<ValueType>::Vector(const Executor& exec, localIdx size, ValueType value)
 
 template<typename ValueType>
 Vector<ValueType>::Vector(const Executor& exec, std::vector<ValueType> in)
-    : Vector(exec, in.data(), static_cast<localIdx>(in.size()))
+    : Vector(exec, in.data(), in.size())
 {}
 
 template<typename ValueType>
@@ -212,7 +210,7 @@ Vector<ValueType>& Vector<ValueType>::operator*=(const scalar rhs)
 }
 
 template<typename ValueType>
-void Vector<ValueType>::resize(const localIdx size)
+void Vector<ValueType>::resize(const SizeType size)
 {
     void* ptr = nullptr;
     if (!empty())
@@ -220,16 +218,14 @@ void Vector<ValueType>::resize(const localIdx size)
         // No fence before realloc: stream-ordered, same reasoning as the destructor.
         std::visit(
             [this, &ptr, size](const auto& exec)
-            { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
+            { ptr = exec.template realloc<ValueType>(this->data_, size); },
             exec_
         );
     }
     else
     {
         std::visit(
-            [&ptr, size](const auto& exec)
-            { ptr = exec.template alloc<ValueType>(static_cast<size_t>(size)); },
-            exec_
+            [&ptr, size](const auto& exec) { ptr = exec.template alloc<ValueType>(size); }, exec_
         );
     }
     data_ = static_cast<ValueType*>(ptr);

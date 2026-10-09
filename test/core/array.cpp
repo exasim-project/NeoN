@@ -14,14 +14,14 @@ TEST_CASE("Array Constructors")
 
     SECTION("Empty Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Array<NeoN::scalar> arrayA(exec, size);
         REQUIRE(arrayA.size() == size);
     }
 
     SECTION("Single Value Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::scalar value = 5.0;
         NeoN::Array<NeoN::scalar> arrayA(exec, size, value);
         REQUIRE(arrayA.size() == size);
@@ -34,7 +34,7 @@ TEST_CASE("Array Constructors")
 
     SECTION("Copy Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Array<NeoN::scalar> arrayA(exec, size);
         NeoN::fill(arrayA, 5.0);
         NeoN::Array<NeoN::scalar> arrayB(arrayA);
@@ -74,7 +74,7 @@ TEST_CASE("Array Container Operations")
 
     SECTION("empty, size, range" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::size_t size = 10;
         NeoN::Array<NeoN::scalar> arrayA(exec, 0);
         NeoN::Array<NeoN::scalar> arrayB(exec, size);
         REQUIRE(arrayA.empty() == true);

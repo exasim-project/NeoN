@@ -9,10 +9,10 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/view.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #include <variant>
 #include <vector>
-
 
 namespace NeoN
 {
@@ -40,6 +40,7 @@ class Array
 public:
 
     using ArrayValueType = ValueType;
+    using SizeType = size_t;
 
     /**
      * @brief Creates an uninitialized Array with the given size on an executor.
@@ -47,12 +48,12 @@ public:
      * @param exec Executor on which the array data is allocated.
      * @param size Number of elements in the array.
      */
-    Array(const Executor& exec, localIdx size) : size_(size), data_(nullptr), exec_(exec)
+    Array(const Executor& exec, SizeType size) : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
+            { ptr = concreteExec.template alloc<ValueType>(size); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -69,7 +70,7 @@ public:
     Array(
         const Executor& exec,
         const ValueType* in,
-        localIdx size,
+        SizeType size,
         Executor hostExec = SerialExecutor()
     )
         : size_(size), data_(nullptr), exec_(exec)
@@ -77,7 +78,7 @@ public:
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
+            { ptr = concreteExec.template alloc<ValueType>(size); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -92,14 +93,12 @@ public:
      * @param size Number of elements in the array.
      * @param value Value used to initialize all elements.
      */
-    Array(const Executor& exec, localIdx size, ValueType value)
+    Array(const Executor& exec, SizeType size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
         std::visit(
-            [&ptr, size](const auto& execu)
-            { ptr = execu.template alloc<ValueType>(static_cast<size_t>(size)); },
-            exec_
+            [&ptr, size](const auto& execu) { ptr = execu.template alloc<ValueType>(size); }, exec_
         );
         data_ = static_cast<ValueType*>(ptr);
         NeoN::fill(*this, value);
@@ -110,9 +109,7 @@ public:
      * @param exec  Executor on which the array data is allocated
      * @param in std::vector containing the values to copy into the array
      */
-    Array(const Executor& exec, std::vector<ValueType> in)
-        : Array(exec, in.data(), static_cast<localIdx>(in.size()))
-    {}
+    Array(const Executor& exec, std::vector<ValueType> in) : Array(exec, in.data(), in.size()) {}
 
 
     /**
@@ -246,22 +243,21 @@ public:
      *
      * @param size New number of elements.
      */
-    void resize(const localIdx size)
+    void resize(const SizeType size)
     {
         void* ptr = nullptr;
         if (!empty())
         {
             std::visit(
                 [this, &ptr, size](const auto& exec)
-                { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
+                { ptr = exec.template realloc<ValueType>(this->data_, size); },
                 exec_
             );
         }
         else
         {
             std::visit(
-                [&ptr, size](const auto& exec)
-                { ptr = exec.template alloc<ValueType>(static_cast<size_t>(size)); },
+                [&ptr, size](const auto& exec) { ptr = exec.template alloc<ValueType>(size); },
                 exec_
             );
         }
@@ -295,7 +291,7 @@ public:
      *
      * @return Number of elements.
      */
-    [[nodiscard]] inline localIdx size() const { return size_; }
+    [[nodiscard]] inline SizeType size() const { return size_; }
 
     /**
      * @brief Returns the number of elements in the Array.
@@ -322,10 +318,7 @@ public:
      *
      * @return Non-owning view of the Array data.
      */
-    [[nodiscard]] inline View<ValueType> view() &
-    {
-        return View<ValueType>(data_, static_cast<size_t>(size_));
-    }
+    [[nodiscard]] inline View<ValueType> view() & { return View<ValueType>(data_, size_); }
 
     /**
      * @brief Returns a view of the Array data.
@@ -334,7 +327,7 @@ public:
      */
     [[nodiscard]] inline View<const ValueType> view() const&
     {
-        return View<const ValueType>(data_, static_cast<size_t>(size_));
+        return View<const ValueType>(data_, size_);
     }
 
     // return of a temporary --> invalid memory access
@@ -348,9 +341,16 @@ public:
      *
      * @param range Half-open range of elements to include in the view.
      * @return Non-owning view of the specified range.
+     *
+     * @pre range.first <= range.second
+     * @pre range.second <= size()
+     *
+     * @note The returned view does not own the underlying data.
+     *       The Array must remain alive when the view is in use.
      */
     [[nodiscard]] inline View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
+        NeoN::validateRange(range, size());
         return View<ValueType>(
             data_ + range.first, static_cast<size_t>(range.second - range.first)
         );
@@ -364,6 +364,7 @@ public:
      */
     [[nodiscard]] inline View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
+        NeoN::validateRange(range, size());
         return View<const ValueType>(
             data_ + range.first, static_cast<size_t>(range.second - range.first)
         );
@@ -374,11 +375,14 @@ public:
      *
      * @return The half-open index range [0, size()).
      */
-    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
+    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const
+    {
+        return {0, NeoN::toLocalIdx(size())};
+    }
 
 private:
 
-    localIdx size_ {0};         //!< Number of elements in the Array.
+    SizeType size_ {0};         //!< Number of elements in the Array.
     ValueType* data_ {nullptr}; //!< Pointer to the underlying Array data.
     const Executor exec_;       //!< Executor associated with the Array.
 
