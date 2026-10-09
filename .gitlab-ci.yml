@@ -5,23 +5,23 @@
 # ============================================================
 #  GPU-specific images and runner configuration
 # ============================================================
+# Ginkgo develop with LinOpFactory::ReuseData (ginkgo-project/ginkgo#2117), built by
+# exasim-project/ginkgo-packaging. Dated tags: the runner caches SIF images by name.
 .gpu-nvidia:
   tags: ["nvidia-gpus"]
-  image: chihtaw/cuda-openfoam-ginkgo:12.8.1-v2412-arch_89
+  image: ghcr.io/exasim-project/ginkgo-cuda:nightly-20261009
   variables:
     GPU_VENDOR: nvidia
 
 .gpu-amd:
   tags: ["amd-gpus"]
-  # Ginkgo develop with LinOpFactory::ReuseData (ginkgo-project/ginkgo#2117), see
-  # exasim-project/ginkgo-packaging. Dated tag: the runner caches SIF images by name.
   image: ghcr.io/exasim-project/ginkgo-rocm:nightly-20261009
   variables:
     GPU_VENDOR: amd
 
 .gpu-intel:
   tags: ["intel-gpus"]
-  image: dheerajraghunathan/oneapi-openfoam-ginkgo:2025.3-v2412-arch_pvc
+  image: ghcr.io/exasim-project/ginkgo-sycl:nightly-20261009
   variables:
     GPU_VENDOR: intel
 
