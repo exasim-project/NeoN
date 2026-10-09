@@ -78,64 +78,6 @@ UnstructuredMesh::UnstructuredMesh(
     )
 {}
 
-
-const vectorVector& UnstructuredMesh::points() const { return points_; }
-
-vectorVector& UnstructuredMesh::points() { return points_; }
-
-const scalarVector& UnstructuredMesh::cellVolumes() const { return cellVolumes_; }
-
-scalarVector& UnstructuredMesh::cellVolumes() { return cellVolumes_; }
-
-const vectorVector& UnstructuredMesh::cellCenters() const { return cellCenters_; }
-
-vectorVector& UnstructuredMesh::cellCenters() { return cellCenters_; }
-
-const vectorVector& UnstructuredMesh::faceCenters() const { return faceCenters_; }
-
-vectorVector& UnstructuredMesh::faceCenters() { return faceCenters_; }
-
-const vectorVector& UnstructuredMesh::faceNormals() const { return faceNormals_; }
-
-vectorVector& UnstructuredMesh::faceNormals() { return faceNormals_; }
-
-const scalarVector& UnstructuredMesh::faceAreas() const { return faceAreas_; }
-
-scalarVector& UnstructuredMesh::faceAreas() { return faceAreas_; }
-
-const labelVector& UnstructuredMesh::faceOwners() const { return faceOwners_; }
-
-labelVector& UnstructuredMesh::faceOwners() { return faceOwners_; }
-
-const labelVector& UnstructuredMesh::faceNeighbors() const { return faceNeighbors_; }
-
-labelVector& UnstructuredMesh::faceNeighbors() { return faceNeighbors_; }
-
-localIdx UnstructuredMesh::nCells() const { return nCells_; }
-
-localIdx UnstructuredMesh::nInternalFaces() const { return nInternalFaces_; }
-
-localIdx UnstructuredMesh::nBoundaryFaces() const { return boundaryMesh_.nBoundaryFaces(); }
-
-localIdx UnstructuredMesh::nProcBoundaryFaces() const { return boundaryMesh_.nProcBoundaryFaces(); }
-
-localIdx UnstructuredMesh::nBoundaries() const { return boundaryMesh_.nBoundaries(); }
-
-localIdx UnstructuredMesh::nTotalFaces() const
-{
-    return nInternalFaces() + nBoundaryFaces() + nProcBoundaryFaces();
-}
-
-localIdx UnstructuredMesh::globalOffset() const { return globalOffset_; }
-
-const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
-
-BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
-
-Dictionary& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
-
-const Executor& UnstructuredMesh::exec() const { return exec_; }
-
 UnstructuredMesh createSingleCellMesh(const Executor exec)
 {
     // a 2D mesh in 3D space with left, right, top, bottom boundary faces
