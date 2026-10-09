@@ -27,7 +27,6 @@
 
 ## Fixes
 - Fix citation metadata and publish releases on Zenodo automatically [#610](https://github.com/exasim-project/NeoN/pull/610)
-- Fix the build against a system-installed Ginkgo: `MergedPgm` and multigrid `scale_correction` need the patch stack under `cmake/patches/`, which cannot be applied to a system Ginkgo, and now compile out via `NeoN_GINKGO_PATCHED` [#602](https://github.com/exasim-project/NeoN/pull/602)
 - Fix an intermittent segfault in the MPI unit tests: the IO serialization thread called MPI concurrently with the main thread even when the library only provided `MPI_THREAD_SINGLE` [#602](https://github.com/exasim-project/NeoN/pull/602)
 - Fix umpire/camp RPATH and macOS install names so wheels stay relocatable, and check relocatability on the unrepaired wheel in CI [#559](https://github.com/exasim-project/NeoN/pull/559)
 - Fix distributed processor-face correctness: multi-patch (scotch) halo exchange, ddtFluxCorr proc-face correction, processor BC on coupled patches, and row-sorted non-local COO for correct CUDA distributed apply [#528](https://github.com/exasim-project/NeoN/pull/528)
