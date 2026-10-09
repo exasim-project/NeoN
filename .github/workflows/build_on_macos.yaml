@@ -45,7 +45,8 @@ jobs:
        if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-cache')}}
        with:
          path: build
-         key: macos_build_PR_${{ github.event.pull_request.number }}_${{matrix.compiler.CC}}_${{matrix.preset}}
+         key: macos_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.compiler.CC}}_${{matrix.preset}}_${{ github.sha }}
+         restore-keys: macos_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.compiler.CC}}_${{matrix.preset}}_
 
      - name: Install dependencies
        run: |
