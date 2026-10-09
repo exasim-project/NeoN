@@ -13,7 +13,9 @@
 
 .gpu-amd:
   tags: ["amd-gpus"]
-  image: chihtaw/rocm-openfoam-ginkgo:6.4.1-v2412-arch_gfx90a
+  # Ginkgo develop with LinOpFactory::ReuseData (ginkgo-project/ginkgo#2117), see
+  # exasim-project/ginkgo-packaging. Dated tag: the runner caches SIF images by name.
+  image: ghcr.io/exasim-project/ginkgo-rocm:nightly-20261009
   variables:
     GPU_VENDOR: amd
 
