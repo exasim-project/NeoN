@@ -2,10 +2,18 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <Kokkos_Core.hpp>
+
 #include "NeoN/core/memory/kokkos.hpp"
 
 namespace NeoN
 {
+
+namespace
+{
+using GPUMemSpace = Kokkos::DefaultExecutionSpace::memory_space;
+using CPUMemSpace = Kokkos::HostSpace;
+}
 
 void* KokkosAllocator::alloc(size_t size)
 {

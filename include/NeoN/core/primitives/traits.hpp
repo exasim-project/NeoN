@@ -4,18 +4,18 @@
 
 #pragma once
 
-#include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include "NeoN/core/portability.hpp"
 
 namespace NeoN
 {
 
 template<typename T>
-KOKKOS_INLINE_FUNCTION T one();
+NEON_INLINE_FUNCTION T one();
 
 template<typename T>
-KOKKOS_INLINE_FUNCTION T zero();
+NEON_INLINE_FUNCTION T zero();
 
 template<typename T>
-KOKKOS_INLINE_FUNCTION T inv(T);
+NEON_INLINE_FUNCTION T inv(T);
 
 }

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-cmake_minimum_required(VERSION 3.22.0)
+cmake_minimum_required(VERSION 3.28.0)
 
 # Re-run configuration when the version source of truth changes, otherwise the CMake project version
 # and generated neon.__version__ would go stale.
@@ -31,6 +31,16 @@ project(
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)
+# NeoN uses no C++20 modules. Since cmake 3.28 (CMP0155) C++20 targets and try_compile checks (e.g.
+# FindMPI) are scanned for modules, which fails with compilers lacking clang-scan-deps (ROCm, IWYU).
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+# Standard for NeoN's host-only translation units (NeoN_host in src/CMakeLists.txt). Everything that
+# includes Kokkos stays at CMAKE_CXX_STANDARD, the level nvcc and Kokkos accept for device code. See
+# doc/splitCompilation.rst.
+set(NeoN_HOST_CXX_STANDARD
+    "20"
+    CACHE STRING "C++ standard for NeoN's host-only translation units (20, 23 or 26)")
+set_property(CACHE NeoN_HOST_CXX_STANDARD PROPERTY STRINGS 20 23 26)
 # Use relocatable RPATHs so installed binaries/libraries find their siblings regardless of the
 # prefix passed to `cmake --install --prefix`, which is not known at configure time.
 if(APPLE)
@@ -195,6 +205,7 @@ include(cmake/StandardProjectSettings.cmake)
 include(cmake/CompilerWarnings.cmake)
 include(cmake/Sanitizer.cmake)
 include(cmake/StaticAnalyzers.cmake)
+include(cmake/HostOnly.cmake)
 
 add_library(NeoN_options INTERFACE)
 add_library(NeoN_warnings INTERFACE)
@@ -309,7 +320,7 @@ include(cmake/banner.cmake)
 
 if(NeoN_INSTALL_CMAKE_PACKAGE)
   install(
-    TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
+    TARGETS NeoN NeoN_config_api NeoN_public_api NeoN_options NeoN_warnings
     EXPORT NeoNTargets
     INCLUDES
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

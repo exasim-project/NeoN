@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include <cstdint>
 
 #include "NeoN/core/primitives/traits.hpp"
@@ -58,13 +60,13 @@ using mpi_label_t = int;
 
 // traits for label
 template<>
-KOKKOS_INLINE_FUNCTION localIdx one<localIdx>()
+NEON_INLINE_FUNCTION localIdx one<localIdx>()
 {
     return 1;
 };
 
 template<>
-KOKKOS_INLINE_FUNCTION localIdx zero<localIdx>()
+NEON_INLINE_FUNCTION localIdx zero<localIdx>()
 {
     return 0;
 };

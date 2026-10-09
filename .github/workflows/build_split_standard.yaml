@@ -1,0 +1,85 @@
+name: Build NeoN with a newer host-only C++ standard
+run-name: "Split standard workflow"
+
+# Builds the host-only translation units (see doc/splitCompilation.rst) at a newer C++ standard
+# than the Kokkos half. The C++26 job uses the official GCC 16 image because Ubuntu 24.04 does not
+# package GCC 16; the C++23 job uses the runner's GCC 14.
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  workflow_dispatch:
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
+
+concurrency:
+  group: >
+    ${{ github.workflow }}-
+    ${{ github.event_name }}-
+    ${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  split-standard:
+    name: host C++${{ matrix.config.std }} (${{ matrix.config.name }})
+    runs-on: ubuntu-latest
+    container: ${{ matrix.config.container }}
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - name: gcc-14
+            std: 23
+            cxx: g++-14
+            container: ""
+          - name: gcc-16
+            std: 26
+            cxx: g++
+            container: gcc:16
+    steps:
+      - name: Checkout the latest code (shallow clone)
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          if command -v apt-get > /dev/null; then
+            SUDO=$(command -v sudo || true)
+            $SUDO apt-get update
+            $SUDO apt-get install -y ninja-build python3-pip python3-venv
+          fi
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install "cmake>=3.28" ninja
+          ${{ matrix.config.cxx }} --version
+
+      - name: Build NeoN
+        run: |
+          . venv/bin/activate
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} \
+            -DNeoN_HOST_CXX_STANDARD=${{ matrix.config.std }} \
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_WITH_GINKGO=OFF \
+            -DNeoN_WITH_MPI=OFF \
+            -DNeoN_WITH_UMPIRE=OFF \
+            -DNeoN_WITH_THREADS=OFF
+          cmake --build build
+
+      - name: Check that the host-only half really uses C++${{ matrix.config.std }}
+        run: |
+          . venv/bin/activate
+          ninja -C build -t commands src/CMakeFiles/NeoN_host.dir/core/dictionary.cpp.o \
+            | tail -1 | grep -E -- "-std=(c|gnu)\+\+(${{ matrix.config.std }}|2[bc])"
+
+      - name: Execute unit tests
+        run: |
+          . venv/bin/activate
+          ctest --test-dir build -E bench

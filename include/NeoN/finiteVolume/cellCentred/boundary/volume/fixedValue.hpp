@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#include <Kokkos_Core.hpp>
-
 #include "NeoN/core/error.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"

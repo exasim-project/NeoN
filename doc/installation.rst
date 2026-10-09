@@ -177,19 +177,21 @@ required tools for documentation:
     pip install pre-commit sphinx furo breathe sphinx-sitemap
 
 
-required tools for compilation (ubuntu latest 24.04):
+required tools for compilation (ubuntu latest 24.04, provides gcc 13 and cmake 3.28):
 
 .. code-block:: bash
 
     sudo apt update
     sudo apt install \
+    cmake \
     ninja-build \
-    clang-16 \
-    gcc-10 \
-    libomp-16-dev \
+    clang-19 \
+    libomp-19-dev \
     python3 \
     python3-dev \
     build-essential
+
+NeoN requires cmake >= 3.28 and gcc >= 13, clang >= 19 or MSVC (Visual Studio 2022).
 
 
 Workflow with vscode

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/portability.hpp"
+
 #include <memory>
 #include <utility>
 #include <concepts>
@@ -128,41 +130,41 @@ std::optional<la::SolverStats> solve(
 // ---------------------------------------------------------------------------
 
 //! @brief Returns |mag| carrying the sign of s (scalar overload).
-KOKKOS_INLINE_FUNCTION scalar copySign(const scalar mag, const scalar s)
+NEON_INLINE_FUNCTION scalar copySign(const scalar mag, const scalar s)
 {
     return (s >= 0) ? mag : -mag;
 }
 
 //! @brief Componentwise sign-copy (scalar overload).
-KOKKOS_INLINE_FUNCTION scalar componentCopySign(const scalar mag, const scalar s)
+NEON_INLINE_FUNCTION scalar componentCopySign(const scalar mag, const scalar s)
 {
     return copySign(mag, s);
 }
 
 //! @brief Componentwise sign-copy (Vec3 overload — all 3 components).
-KOKKOS_INLINE_FUNCTION Vec3 componentCopySign(const Vec3& mag, const Vec3& s)
+NEON_INLINE_FUNCTION Vec3 componentCopySign(const Vec3& mag, const Vec3& s)
 {
     return Vec3(copySign(mag[0], s[0]), copySign(mag[1], s[1]), copySign(mag[2], s[2]));
 }
 
 //! @brief Componentwise magnitude (scalar overload).
-KOKKOS_INLINE_FUNCTION scalar componentMag(const scalar value) { return Kokkos::abs(value); }
+NEON_INLINE_FUNCTION scalar componentMag(const scalar value) { return Kokkos::abs(value); }
 
 //! @brief Componentwise magnitude (Vec3 overload — keeps all 3 components, does
 //!        NOT collapse to the L2 norm that the global mag(Vec3) returns).
-KOKKOS_INLINE_FUNCTION Vec3 componentMag(const Vec3& value)
+NEON_INLINE_FUNCTION Vec3 componentMag(const Vec3& value)
 {
     return Vec3(Kokkos::abs(value[0]), Kokkos::abs(value[1]), Kokkos::abs(value[2]));
 }
 
 //! @brief Componentwise max (scalar overload).
-KOKKOS_INLINE_FUNCTION scalar componentMax(const scalar lhs, const scalar rhs)
+NEON_INLINE_FUNCTION scalar componentMax(const scalar lhs, const scalar rhs)
 {
     return Kokkos::max(lhs, rhs);
 }
 
 //! @brief Componentwise max (Vec3 overload — per component).
-KOKKOS_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
+NEON_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
 {
     return Vec3(
         Kokkos::max(lhs[0], rhs[0]), Kokkos::max(lhs[1], rhs[1]), Kokkos::max(lhs[2], rhs[2])

@@ -8,6 +8,7 @@
 #include "NeoN/core/primitives/vec3.hpp"
 
 #include <type_traits>
+#include <utility>
 
 namespace NeoN
 {

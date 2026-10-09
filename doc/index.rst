@@ -24,6 +24,7 @@ Table of Contents
 
    self
    installation
+   splitCompilation
    python_bindings
    contributing
    basics/index
