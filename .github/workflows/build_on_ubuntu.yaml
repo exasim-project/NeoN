@@ -56,7 +56,8 @@ jobs:
         if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-cache')}}
         with:
           path: build
-          key: ubuntu_build_PR_${{ github.event.pull_request.number }}_${{matrix.compiler.CC}}_${{matrix.preset}}
+          key: ubuntu_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.compiler.CC}}_${{matrix.preset}}_${{ github.sha }}
+          restore-keys: ubuntu_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.compiler.CC}}_${{matrix.preset}}_
 
       - name: Install dependencies
         run: |
@@ -94,7 +95,6 @@ jobs:
           pip install "nanobind>=3,<4" pytest numpy
 
       - name: Build NeoN without Ginkgo
-        if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
         run: |
           source venv/bin/activate
           cmake --preset ${{matrix.preset}} \
