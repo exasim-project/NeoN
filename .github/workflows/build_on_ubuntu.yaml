@@ -50,18 +50,13 @@ jobs:
       - name: Checkout to repository
         uses: actions/checkout@v4
 
-      - name: Add clang repo
-        run: |
-          sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
-          wget https://apt.llvm.org/llvm-snapshot.gpg.key
-          sudo apt-key add llvm-snapshot.gpg.key
-
       - name: Set up cache
         uses: actions/cache@v4
         if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-cache')}}
         with:
           path: build
-          key: ubuntu_build_PR_${{ github.event.pull_request.number }}_${{matrix.compiler.CC}}_${{matrix.preset}}
+          key: ubuntu_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.compiler.CC}}_${{matrix.preset}}_${{ github.sha }}
+          restore-keys: ubuntu_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.compiler.CC}}_${{matrix.preset}}_
 
       - name: Install dependencies
         run: |
@@ -99,7 +94,6 @@ jobs:
           pip install nanobind pytest numpy
 
       - name: Build NeoN without Ginkgo
-        if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
         run: |
           source venv/bin/activate
           cmake --preset ${{matrix.preset}} \
