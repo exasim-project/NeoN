@@ -14,6 +14,8 @@ neon_unit_test(utilities)
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
+  neon_unit_test(ginkgoMergedPgm)
+  neon_unit_test(ginkgoScaleCorrection)
 endif()
 
 if(NeoN_WITH_PETSC)

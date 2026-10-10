@@ -27,6 +27,13 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("coupled");
     }
 
+    // 'reuseSetup' controls reusing the preconditioner setup across solves (see
+    // GinkgoSolver::generateSolver); it is not a Ginkgo config key.
+    if (dict.contains("reuseSetup"))
+    {
+        dict.remove("reuseSetup");
+    }
+
     // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
     // residual reporting; it is not a Ginkgo config key.
     if (dict.contains("reportName"))
@@ -452,6 +459,34 @@ SolverStats solve_impl(
 }
 
 
+std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const gko::LinOp> mtx
+) const
+{
+    if (!reuseSetup_) return factory_->generate(mtx);
+    const auto& reusable = precondFactory_ ? precondFactory_ : factory_;
+    auto generateReuse = [&]() -> std::unique_ptr<gko::LinOp>
+    {
+        if (reuseData_)
+        {
+            try
+            {
+                return reusable->generate_reuse(mtx, *reuseData_);
+            }
+            catch (const gko::DimensionMismatch&)
+            {}
+            catch (const gko::InvalidStateError&)
+            {}
+        }
+        // first solve, or the matrix does not fit the recorded setup: record a new one
+        reuseData_ = reusable->create_empty_reuse_data();
+        return reusable->generate_reuse(mtx, *reuseData_);
+    };
+    if (!precondFactory_) return generateReuse();
+    auto solver = factory_->generate(mtx);
+    gko::as<gko::Preconditionable>(solver.get())->set_preconditioner(gko::share(generateReuse()));
+    return solver;
+}
+
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
@@ -462,7 +497,7 @@ SolverStats GinkgoSolver::solve(
     // twice. The flag-only case (criterion not in the config) still attaches it here.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx), l1Control)};
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control)};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -491,7 +526,7 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
 // wrapper to solve a single component of a <vec3> equation
 template<unsigned int I>
 void solveComponent(
-    auto& sys, auto& x, auto& exec, auto& factory, auto& stats, const L1ResidualControl* l1Control
+    auto& sys, auto& x, auto& exec, auto& generate, auto& stats, const L1ResidualControl* l1Control
 )
 {
     auto rhs = getComponent<I>(sys.rhs());
@@ -500,9 +535,7 @@ void solveComponent(
     auto sparsity = sys.matrix().sparsity();
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
     auto gkoMtx = createGkoMtx(mtx);
-    stats.entries.push_back(
-        solve_impl(exec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
-    );
+    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
     setComponent<I>(xcopy, x);
 }
 
@@ -522,7 +555,7 @@ SolverStats GinkgoSolver::solve(
         auto xCopy = unpackVecValues(x);
 
         auto stats =
-            solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, factory_->generate(gkoMtx), l1Control);
+            solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, generateSolver(gkoMtx), l1Control);
 
         packVecValues(xCopy, x);
         return {stats};
@@ -530,9 +563,10 @@ SolverStats GinkgoSolver::solve(
     else
     {
         auto stats = SolverStats {};
-        solveComponent<0>(sys, x, gkoExec_, factory_, stats, l1Control);
-        solveComponent<1>(sys, x, gkoExec_, factory_, stats, l1Control);
-        solveComponent<2>(sys, x, gkoExec_, factory_, stats, l1Control);
+        auto generate = [this](auto mtx) { return generateSolver(mtx); };
+        solveComponent<0>(sys, x, gkoExec_, generate, stats, l1Control);
+        solveComponent<1>(sys, x, gkoExec_, generate, stats, l1Control);
+        solveComponent<2>(sys, x, gkoExec_, generate, stats, l1Control);
         return stats;
     }
 }
@@ -543,13 +577,37 @@ SolverStats GinkgoSolver::solve(
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
 // l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The loop is over
 // cells and each iteration writes its own (distinct) diagonal entry, so plain writes suffice.
-// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
-// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+// NOTE: the device kernels live in shiftImplicitTransformDiag, which is not templated on
+// GenerateType: nvcc forbids an extended __device__ lambda inside a function whose template
+// arguments include a function-local type (the `generate` lambda), or `auto` parameters.
+template<
+    unsigned int I,
+    typename ExecType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
+void shiftImplicitTransformDiag(
+    const ExecType& exec,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
+    localIdx nrows,
+    scalar sign
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += sign * diagC[cell][I]; },
+        "shiftImplicitTransformDiag"
+    );
+}
+
 template<
     unsigned int I,
     typename SystemType,
     typename ExecType,
-    typename FactoryType,
+    typename GenerateType,
     typename ValuesType,
     typename MatAddrType,
     typename DiagType>
@@ -559,7 +617,7 @@ void solveImplicitTransformComponent(
     const ExecType& exec,
     std::shared_ptr<const gko::Executor> gkoExec,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    const FactoryType& factory,
+    const GenerateType& generate,
     SolverStats& stats,
     const L1ResidualControl* l1Control,
     ValuesType values,
@@ -568,27 +626,15 @@ void solveImplicitTransformComponent(
     localIdx nrows
 )
 {
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
-        "applyImplicitTransformDiag"
-    );
+    shiftImplicitTransformDiag<I>(exec, values, ma, diagC, nrows, -1.0);
     gkoExec->synchronize();
 
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
-    stats.entries.push_back(
-        solve_impl(gkoExec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
-    );
+    stats.entries.push_back(solve_impl(gkoExec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
     setComponent<I>(xcopy, x);
 
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
-        "restoreImplicitTransformDiag"
-    );
+    shiftImplicitTransformDiag<I>(exec, values, ma, diagC, nrows, 1.0);
     gkoExec->synchronize();
 }
 
@@ -620,14 +666,15 @@ SolverStats GinkgoSolver::solve(
         gkoExec_->synchronize();
 
         SolverStats stats;
+        auto generate = [this](auto mtx) { return generateSolver(mtx); };
         solveImplicitTransformComponent<0>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            sys, x, exec_, gkoExec_, gkoMtx, generate, stats, l1Control, values, ma, diagC, nrows
         );
         solveImplicitTransformComponent<1>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            sys, x, exec_, gkoExec_, gkoMtx, generate, stats, l1Control, values, ma, diagC, nrows
         );
         solveImplicitTransformComponent<2>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            sys, x, exec_, gkoExec_, gkoMtx, generate, stats, l1Control, values, ma, diagC, nrows
         );
         return stats;
     }
@@ -639,7 +686,7 @@ SolverStats GinkgoSolver::solve(
         label nrows = sys.rhs().size();
         const auto b = gkoVecView(gkoExec_, sys.rhs().data(), nrows); // [nrows x 3]
         auto xView = gkoVecView(gkoExec_, x.data(), nrows);           // [nrows x 3]
-        auto solver = factory_->generate(gkoMtx);
+        auto solver = generateSolver(gkoMtx);
         auto l1Res = solveWithL1Stop(gkoExec_, gkoMtx, b, xView, solver.get(), *l1Control);
 
         gkoExec_->synchronize();
@@ -692,7 +739,7 @@ SolverStats GinkgoSolver::solve(
         b_col->compute_norm2(initNorm_v); // initResNorm = ||b_col||₂  (x starts at 0)
         scalar initResNorm = retrieve(initNorm_v);
 
-        auto solver = factory_->generate(gkoMtx);
+        auto solver = generateSolver(gkoMtx);
         std::shared_ptr<const gko::log::Convergence<scalar>> logger =
             gko::log::Convergence<scalar>::create();
         solver->add_logger(logger);

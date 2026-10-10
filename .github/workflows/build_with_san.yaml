@@ -14,7 +14,6 @@ on:
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
   OMPI_MCA_rmaps_base_oversubscribe: 1
-  LSAN_OPTIONS: suppressions=/home/runner/work/NeoN/NeoN/scripts/san_ignores.txt
 
 
 concurrency:
@@ -39,15 +38,18 @@ jobs:
           "NeoN_ENABLE_SANITIZE_MEMORY=ON"
         ]
     runs-on: ubuntu-latest
+    # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging, see build_on_ubuntu.yaml
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/exasim-project/ginkgo-cpu:nightly
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
      - name: Checkout to repository
        uses: actions/checkout@v4
-
-     - name: Add clang repo
-       run: |
-         sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
-         wget https://apt.llvm.org/llvm-snapshot.gpg.key
-         sudo apt-key add llvm-snapshot.gpg.key
 
      - name: Set up cache
        uses: actions/cache@v4
@@ -55,17 +57,6 @@ jobs:
        with:
          path: build
          key: ubuntu_build_PR_${{ github.event.pull_request.number }}_${{matrix.compiler.CC}}_${{matrix.preset}}
-
-     - name: Install dependencies
-       run: |
-         sudo apt-get update
-         sudo apt-get install -y \
-           ninja-build \
-           python3 \
-           python3-dev \
-           build-essential \
-           libopenmpi-dev \
-           openmpi-bin
 
      - name: Get versions
        run: |
@@ -85,4 +76,5 @@ jobs:
 
      - name: Execute unit tests NeoN
        run: |
+         export LSAN_OPTIONS=suppressions=$GITHUB_WORKSPACE/scripts/san_ignores.txt
          LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/13/libasan.so ctest --preset develop

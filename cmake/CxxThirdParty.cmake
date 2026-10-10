@@ -11,6 +11,33 @@ if(NeoN_WITH_MPI)
     message(FATAL_ERROR "NeoN_WITH_MPI not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
+  # Distribution MPI builds record the distribution's build flags in their compiler wrappers, e.g.
+  # Ubuntu's MPICH reports -flto=auto -ffat-lto-objects. FindMPI passes them on through MPI::MPI_C
+  # and MPI::MPI_CXX, which silently enables GCC LTO for everything using MPI. That breaks nvcc
+  # compiled code: LTO merges the per-object host stubs and their fatbinData symbols collide.
+  #
+  # Scrub FindMPI's cache rather than the targets: every later find_package(MPI), e.g. the
+  # find_dependency(MPI) in GinkgoConfig.cmake, rebuilds the targets from these variables.
+  foreach(_neon_var MPI_C_COMPILE_OPTIONS MPI_CXX_COMPILE_OPTIONS MPI_C_LINK_FLAGS
+                    MPI_CXX_LINK_FLAGS)
+    if(NOT DEFINED CACHE{${_neon_var}})
+      continue()
+    endif()
+    set(_neon_value "$CACHE{${_neon_var}}")
+    string(REGEX REPLACE "(^|[ ;])-f(no-)?(fat-)?lto[^ ;]*" "\\1" _neon_value "${_neon_value}")
+    string(REGEX REPLACE "  +" " " _neon_value "${_neon_value}")
+    string(REGEX REPLACE ";;+" ";" _neon_value "${_neon_value}")
+    string(REGEX REPLACE "^[ ;]+|[ ;]+$" "" _neon_value "${_neon_value}")
+    get_property(
+      _neon_doc
+      CACHE ${_neon_var}
+      PROPERTY HELPSTRING)
+    set(${_neon_var}
+        "${_neon_value}"
+        CACHE STRING "${_neon_doc}" FORCE)
+  endforeach()
+  # Rebuild MPI::MPI_C and MPI::MPI_CXX from the scrubbed cache.
+  find_package(MPI 3.1 REQUIRED)
   include(cmake/DetectMpiThreadSupport.cmake)
 endif()
 
