@@ -201,12 +201,11 @@ private:
 
     int tag_ {-1};                        /*< The tag for the communication. */
     std::string commName_ {"unassigned"}; /*< The name of the communication. */
-    std::size_t typeSize_ {sizeof(char)}; /*< The data type currently stored in the buffer. */
+    sizeType typeSize_ {sizeof(char)};    /*< The data type currently stored in the buffer. */
     Environment mpiEnviron_;              /*< The MPI environment. */
     std::vector<MPI_Request> request_;    /*< The MPI request for communication with each rank. */
     std::vector<char> rankBuffer_;        /*< The buffer data for all ranks. Never shrinks. */
-    std::vector<std::size_t>
-        rankOffset_; /*< The offset (in bytes) for a rank data in the buffer. */
+    std::vector<sizeType> rankOffset_; /*< The offset (in bytes) for a rank data in the buffer. */
 
     /**
      * @brief Set the data type for the buffer.
@@ -235,9 +234,9 @@ private:
      * @param dataSize The size of the data to be stored in the buffer.
      */
     template<typename func>
-    void updateDataSize(func rankSize, std::size_t newSize)
+    void updateDataSize(func rankSize, sizeType newSize)
     {
-        std::size_t dataSize = 0;
+        sizeType dataSize = 0;
         for (sizeType rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
         {
             rankOffset_[rank] = dataSize;

@@ -28,7 +28,7 @@ std::shared_ptr<gko::LinOp> gkoVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create(
         exec,
         comm,
@@ -45,7 +45,7 @@ std::shared_ptr<gko::LinOp> gkoVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create(
         exec,
         comm,
@@ -68,7 +68,7 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create_const(
         exec,
         comm,
@@ -87,7 +87,7 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create_const(
         exec,
         comm,
@@ -375,7 +375,7 @@ SolverStats solve_impl_dist(
         if (!l1Res.perColInitNorms.empty())
         {
             SolverStats stats;
-            for (std::size_t i = 0; i < l1Res.perColInitNorms.size(); ++i)
+            for (sizeType i = 0; i < l1Res.perColInitNorms.size(); ++i)
             {
                 stats.entries.push_back(
                     {static_cast<sizeType>(l1Res.numIter),

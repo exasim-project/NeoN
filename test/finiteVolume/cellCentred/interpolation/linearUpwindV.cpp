@@ -76,7 +76,7 @@ TEST_CASE("linearUpwindV is exact for a linear vector field")
     auto interior = [&](localIdx celli)
     {
         const Vec3 p = cc[celli];
-        for (std::size_t dd = 0; dd < 3; ++dd)
+        for (sizeType dd = 0; dd < 3; ++dd)
         {
             if (p[dd] < h || p[dd] > l - h) return false;
         }
@@ -114,7 +114,7 @@ TEST_CASE("linearUpwindV is exact for a linear vector field")
         {
             if (!interior(own[facei]) || !interior(nei[facei])) continue;
             const Vec3 expected = f(fc[facei]);
-            for (std::size_t cmpt = 0; cmpt < 3; ++cmpt)
+            for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
             {
                 REQUIRE(outV[facei][cmpt] == Catch::Approx(expected[cmpt]).margin(1e-11));
             }
@@ -150,8 +150,8 @@ TEST_CASE("linearUpwindV bounds the reconstruction at a sharp extremum")
 
     // A single-cell spike: zero everywhere except one interior cell.
     const localIdx spike = nCells / 2;
-    std::vector<Vec3> values(static_cast<std::size_t>(nCells), Vec3 {0.0, 0.0, 0.0});
-    values[static_cast<std::size_t>(spike)] = Vec3 {10.0, -8.0, 6.0};
+    std::vector<Vec3> values(static_cast<sizeType>(nCells), Vec3 {0.0, 0.0, 0.0});
+    values[static_cast<sizeType>(spike)] = Vec3 {10.0, -8.0, 6.0};
 
     auto src = VolumeField<Vec3>(
         exec, "src", mesh, fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh)
@@ -165,9 +165,9 @@ TEST_CASE("linearUpwindV bounds the reconstruction at a sharp extremum")
     std::vector<Vec3> hi = values;
     for (localIdx facei = 0; facei < nInt; ++facei)
     {
-        const auto o = static_cast<std::size_t>(own[facei]);
-        const auto nb = static_cast<std::size_t>(nei[facei]);
-        for (std::size_t cmpt = 0; cmpt < 3; ++cmpt)
+        const auto o = static_cast<sizeType>(own[facei]);
+        const auto nb = static_cast<sizeType>(nei[facei]);
+        for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
         {
             lo[o][cmpt] = std::min(lo[o][cmpt], values[nb][cmpt]);
             hi[o][cmpt] = std::max(hi[o][cmpt], values[nb][cmpt]);
@@ -199,8 +199,8 @@ TEST_CASE("linearUpwindV bounds the reconstruction at a sharp extremum")
     bool differs = false;
     for (localIdx facei = 0; facei < nInt; ++facei)
     {
-        const auto o = static_cast<std::size_t>(own[facei]);
-        for (std::size_t cmpt = 0; cmpt < 3; ++cmpt)
+        const auto o = static_cast<sizeType>(own[facei]);
+        for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
         {
             REQUIRE(limited[facei][cmpt] >= lo[o][cmpt] - 1e-10);
             REQUIRE(limited[facei][cmpt] <= hi[o][cmpt] + 1e-10);

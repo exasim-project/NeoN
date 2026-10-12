@@ -270,10 +270,10 @@ public:
         else
         {
             auto valH = value_.copyToHost();
-            buf.sendBuf.resize(static_cast<std::size_t>(patchSize));
-            buf.recvBuf.resize(static_cast<std::size_t>(patchSize));
+            buf.sendBuf.resize(static_cast<sizeType>(patchSize));
+            buf.recvBuf.resize(static_cast<sizeType>(patchSize));
             for (localIdx k = 0; k < patchSize; k++)
-                buf.sendBuf[static_cast<std::size_t>(k)] = valH.view()[rangeStart + k];
+                buf.sendBuf[static_cast<sizeType>(k)] = valH.view()[rangeStart + k];
             mpi::isend<char>(
                 reinterpret_cast<const char*>(buf.sendBuf.data()),
                 byteCount,
@@ -344,7 +344,7 @@ public:
             for (const auto& buf : commBuffers_)
             {
                 for (localIdx k = 0; k < buf.patchSize; k++)
-                    valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<std::size_t>(k)];
+                    valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<sizeType>(k)];
             }
             Vector<ValueType> backToDevice = valH.copyToExecutor(exec_);
             value_ = backToDevice; // operator=(const Vector&): setContainer dispatches async kernel
@@ -360,7 +360,7 @@ public:
             {
                 ValueType* dst = value_.data() + buf.rangeStart;
                 for (localIdx k = 0; k < buf.patchSize; k++)
-                    dst[k] = buf.recvBuf[static_cast<std::size_t>(k)];
+                    dst[k] = buf.recvBuf[static_cast<sizeType>(k)];
             }
         }
         requests_.clear();

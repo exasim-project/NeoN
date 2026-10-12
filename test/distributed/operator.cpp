@@ -439,7 +439,7 @@ TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
 
     // distributed per-component convergence matches the serial reference (same arithmetic,
     // partitioned vs global operator)
-    for (std::size_t i = 0; i < 3; ++i)
+    for (sizeType i = 0; i < 3; ++i)
     {
         REQUIRE(
             solverStatsDist.entries[i].finalResNorm

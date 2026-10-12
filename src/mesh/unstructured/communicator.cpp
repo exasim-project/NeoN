@@ -26,8 +26,8 @@ Communicator::bufferType* Communicator::findDuplexBuffer()
 Communicator::bufferType* Communicator::createNewDuplexBuffer()
 {
     // determine buffer size.
-    std::vector<std::size_t> rankSendSize(mpiEnviron_.sizeRank());
-    std::vector<std::size_t> rankReceiveSize(mpiEnviron_.sizeRank());
+    std::vector<sizeType> rankSendSize(mpiEnviron_.sizeRank());
+    std::vector<sizeType> rankReceiveSize(mpiEnviron_.sizeRank());
     for (sizeType rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
     {
         rankSendSize[rank] = sendMap_[rank].size();
