@@ -75,13 +75,13 @@ public:
     KOKKOS_INLINE_FUNCTION scalar* data() { return data_; }
     KOKKOS_INLINE_FUNCTION const scalar* data() const { return data_; }
 
-    constexpr size_t size() const { return 9; }
+    constexpr sizeType size() const { return 9; }
 
     KOKKOS_INLINE_FUNCTION
-    scalar& operator()(const size_t i, const size_t j) { return data_[3 * i + j]; }
+    scalar& operator()(const sizeType i, const sizeType j) { return data_[3 * i + j]; }
 
     KOKKOS_INLINE_FUNCTION
-    scalar operator()(const size_t i, const size_t j) const { return data_[3 * i + j]; }
+    scalar operator()(const sizeType i, const sizeType j) const { return data_[3 * i + j]; }
 
     KOKKOS_INLINE_FUNCTION
     bool operator==(const Tensor& rhs) const

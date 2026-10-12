@@ -12,6 +12,7 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/info.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 
 namespace NeoN
@@ -91,14 +92,14 @@ public:
      *
      * @return The number of ranks.
      */
-    size_t sizeRank() const { return static_cast<size_t>(mpiSize); }
+    sizeType sizeRank() const { return static_cast<sizeType>(mpiSize); }
 
     /**
      * @brief Returns the rank of the current process.
      *
      * @return The rank of the current process.
      */
-    size_t rank() const { return static_cast<size_t>(mpiRank); }
+    sizeType rank() const { return static_cast<sizeType>(mpiRank); }
 
     /**
      * @brief Returns the communicator.

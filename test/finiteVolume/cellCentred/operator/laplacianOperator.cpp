@@ -319,10 +319,10 @@ TEST_CASE("laplacianOperator implicit transform diagCmpt")
         );
 
         // expected: per cell, sum over its boundary faces of γ|S|·coeff·Δ·|n_c|
-        std::vector<Vec3> expected(static_cast<size_t>(mesh.nCells()), Vec3(0.0, 0.0, 0.0));
+        std::vector<Vec3> expected(static_cast<sizeType>(mesh.nCells()), Vec3(0.0, 0.0, 0.0));
         for (NeoN::localIdx f = 0; f < mesh.nBoundaryFaces(); ++f)
         {
-            const auto own = static_cast<size_t>(ownerH.view()[f]);
+            const auto own = static_cast<sizeType>(ownerH.view()[f]);
             const auto n = nH.view()[f];
             const scalar w = gammaValue * magSfH.view()[f] * coeff * deltaH.view()[f];
             expected[own][0] += w * std::abs(n[0]);
@@ -335,7 +335,7 @@ TEST_CASE("laplacianOperator implicit transform diagCmpt")
         {
             for (auto d = 0u; d < 3; ++d)
             {
-                REQUIRE(diagV[c][d] == Catch::Approx(expected[static_cast<size_t>(c)][d]));
+                REQUIRE(diagV[c][d] == Catch::Approx(expected[static_cast<sizeType>(c)][d]));
             }
         }
         // no face on this mesh has a z-normal, so the z-component must be exactly zero

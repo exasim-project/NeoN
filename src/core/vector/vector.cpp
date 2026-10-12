@@ -13,7 +13,7 @@ namespace NeoN
 {
 
 template<typename ValueType>
-Vector<ValueType>::Vector(const Executor& exec, SizeType size)
+Vector<ValueType>::Vector(const Executor& exec, sizeType size)
     // Delegate to the value ctor so a freshly allocated Vector is zero-initialized rather than
     // holding uninitialized pool memory. The pool's alloc<>() does not clear memory, so without
     // this a field read before its first write returns garbage (huge/NaN), which silently poisons
@@ -24,7 +24,7 @@ Vector<ValueType>::Vector(const Executor& exec, SizeType size)
 
 template<typename ValueType>
 Vector<ValueType>::Vector(
-    const Executor& exec, const ValueType* in, SizeType size, Executor hostExec
+    const Executor& exec, const ValueType* in, sizeType size, Executor hostExec
 )
     : size_(size), data_(nullptr), exec_(exec)
 {
@@ -39,7 +39,7 @@ Vector<ValueType>::Vector(
 }
 
 template<typename ValueType>
-Vector<ValueType>::Vector(const Executor& exec, SizeType size, ValueType value)
+Vector<ValueType>::Vector(const Executor& exec, sizeType size, ValueType value)
     : size_(size), data_(nullptr), exec_(exec)
 {
     void* ptr = nullptr;
@@ -210,7 +210,7 @@ Vector<ValueType>& Vector<ValueType>::operator*=(const scalar rhs)
 }
 
 template<typename ValueType>
-void Vector<ValueType>::resize(const SizeType size)
+void Vector<ValueType>::resize(const sizeType size)
 {
     void* ptr = nullptr;
     if (!empty())

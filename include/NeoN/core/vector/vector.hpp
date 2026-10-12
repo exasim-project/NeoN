@@ -42,7 +42,6 @@ class Vector
 public:
 
     using VectorValueType = ValueType;
-    using SizeType = size_t;
 
     /**
      * @brief Creates an uninitialized Vector with the given size on an executor.
@@ -50,7 +49,7 @@ public:
      * @param exec Executor on which the vector data is allocated.
      * @param size Number of elements in the vector.
      */
-    Vector(const Executor& exec, SizeType size);
+    Vector(const Executor& exec, sizeType size);
 
     /**
      * @brief Creates a Vector with the given size from existing data on an executor.
@@ -63,7 +62,7 @@ public:
     Vector(
         const Executor& exec,
         const ValueType* in,
-        SizeType size,
+        sizeType size,
         Executor hostExec = SerialExecutor()
     );
 
@@ -74,7 +73,7 @@ public:
      * @param size Number of elements in the Vector.
      * @param value Value used to initialize every element.
      */
-    Vector(const Executor& exec, SizeType size, ValueType value);
+    Vector(const Executor& exec, sizeType size, ValueType value);
 
     /**
      * @brief Creates a Vector from a std::vector on the given executor.
@@ -274,7 +273,7 @@ public:
      *
      * @param size New number of elements.
      */
-    void resize(const SizeType size);
+    void resize(const sizeType size);
 
     /**
      * @brief Returns a pointer to the underlying Vector data.
@@ -330,7 +329,7 @@ public:
      *
      * @return Number of elements.
      */
-    [[nodiscard]] SizeType size() const { return size_; }
+    [[nodiscard]] sizeType size() const { return size_; }
 
     /**
      * @brief Returns the number of elements as a label.
@@ -393,7 +392,7 @@ public:
     {
         NeoN::validateRange(range, size());
         return View<ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
+            data_ + range.first, static_cast<sizeType>(range.second - range.first)
         );
     }
 
@@ -407,7 +406,7 @@ public:
     {
         NeoN::validateRange(range, size());
         return View<const ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
+            data_ + range.first, static_cast<sizeType>(range.second - range.first)
         );
     }
 
@@ -423,7 +422,7 @@ public:
 
 private:
 
-    SizeType size_ {0};         //!< Size of the field.
+    sizeType size_ {0};         //!< Size of the field.
     ValueType* data_ {nullptr}; //!< Pointer to the field data.
     const Executor exec_;       //!< Executor associated with the field. (CPU, GPU, openMP, etc.)
 

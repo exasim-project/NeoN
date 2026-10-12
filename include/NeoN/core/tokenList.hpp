@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/visibility.hpp"
 
 #include <vector>
@@ -39,7 +40,7 @@ public:
      * @brief Construct a TokenList object from a vector of std::any.
      * @param data A vector of std::any.
      */
-    TokenList(const std::vector<std::any>& data, size_t nextIndex = 0);
+    TokenList(const std::vector<std::any>& data, sizeType nextIndex = 0);
 
     /**
      * @brief Construct a TokenList object from an initializer list of std::any.
@@ -57,7 +58,7 @@ public:
      * @brief Removes a value from the token list based on the specified index.
      * @param index The index of the value to remove.
      */
-    void remove(size_t index);
+    void remove(sizeType index);
 
     /**
      * @brief Checks if the token list is empty.
@@ -83,7 +84,7 @@ public:
      * @brief Retrieves the size of the token list.
      * @return The size of the token list.
      */
-    [[nodiscard]] size_t size() const;
+    [[nodiscard]] sizeType size() const;
 
     /**
      * @brief Rewind the read cursor used by next<>() so the list can be
@@ -100,7 +101,7 @@ public:
      * type T.
      */
     template<typename ReturnType>
-    [[nodiscard]] ReturnType& get(const size_t& idx)
+    [[nodiscard]] ReturnType& get(const sizeType& idx)
     {
         try
         {
@@ -142,7 +143,7 @@ public:
      * type T.
      */
     template<typename ReturnType>
-    [[nodiscard]] const ReturnType& get(const size_t& idx) const
+    [[nodiscard]] const ReturnType& get(const sizeType& idx) const
     {
         try
         {
@@ -192,7 +193,7 @@ public:
      * @param idx The index to retrieve the value for.
      * @return A reference to the value associated with the index.
      */
-    [[nodiscard]] std::any& operator[](const size_t& idx);
+    [[nodiscard]] std::any& operator[](const sizeType& idx);
 
     [[nodiscard]] std::vector<std::any>& tokens();
 
@@ -200,7 +201,7 @@ public:
 private:
 
     std::vector<std::any> data_;
-    mutable size_t nextIndex_;
+    mutable sizeType nextIndex_;
 };
 
 } // namespace NeoN

@@ -39,7 +39,10 @@ CellBasedIterator::CellBasedIterator() : cellBasedIteratorData_(nullptr) {}
 
 std::string CellBasedIterator::name() const { return "CellBased"; }
 
-size_t CellBasedIterator::size() const { return static_cast<size_t>(cellBasedIteratorData_->size); }
+sizeType CellBasedIterator::size() const
+{
+    return static_cast<sizeType>(cellBasedIteratorData_->size);
+}
 
 std::shared_ptr<CellBasedIterator::CellBasedData> CellBasedIterator::getCellBasedData()
 {

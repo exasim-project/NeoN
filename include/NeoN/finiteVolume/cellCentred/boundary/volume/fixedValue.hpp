@@ -24,7 +24,7 @@ namespace detail
 // from a __device__ function is not allowed
 template<typename ValueType>
 void setFixedValue(
-    Field<ValueType>& domainVector, std::pair<size_t, size_t> range, ValueType fixedValue
+    Field<ValueType>& domainVector, std::pair<sizeType, sizeType> range, ValueType fixedValue
 )
 {
     auto [refGradient, value, valueFraction, refValue] = views(
@@ -52,7 +52,7 @@ void setFixedValue(
 template<typename ValueType>
 void setFixedValues(
     Field<ValueType>& domainVector,
-    std::pair<size_t, size_t> range,
+    std::pair<sizeType, sizeType> range,
     const Vector<ValueType>& fixedValues
 )
 {

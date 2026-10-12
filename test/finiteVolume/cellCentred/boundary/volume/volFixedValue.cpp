@@ -8,6 +8,8 @@
 
 #include "NeoN/NeoN.hpp"
 
+using NeoN::sizeType;
+
 TEST_CASE("fixedValue")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -73,11 +75,11 @@ TEST_CASE("fixedValue")
         NeoN::fill(field.boundaryData().value(), -1.0);
 
         const auto& offset = mesh.boundaryMesh().offset();
-        const auto patchSize = static_cast<size_t>(offset[1] - offset[0]);
+        const auto patchSize = static_cast<sizeType>(offset[1] - offset[0]);
 
         // one distinct value per face, as a nonuniform OpenFOAM patch field would supply
         std::vector<NeoN::scalar> perFace(patchSize);
-        for (size_t i = 0; i < patchSize; ++i)
+        for (sizeType i = 0; i < patchSize; ++i)
         {
             perFace[i] = 10.0 + static_cast<NeoN::scalar>(i);
         }
@@ -94,7 +96,7 @@ TEST_CASE("fixedValue")
         auto refValues = field.boundaryData().refValue().copyToHost();
         auto values = field.boundaryData().value().copyToHost();
 
-        size_t i = 0;
+        sizeType i = 0;
         for (auto& boundaryValue : values.view(boundary->range()))
         {
             REQUIRE(boundaryValue == perFace[i++]);
