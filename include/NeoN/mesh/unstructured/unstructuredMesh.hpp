@@ -31,8 +31,6 @@ class UnstructuredMesh
 {
 public:
 
-    using SizeType = size_t;
-
     /**
      * @brief Constructor for the UnstructuredMesh class.
      *
@@ -155,28 +153,28 @@ public:
      *
      * @return The number of cells in the mesh.
      */
-    SizeType nCells() const { return nCells_; }
+    sizeType nCells() const { return nCells_; }
 
     /**
      * @brief Get the number of internal faces in the mesh.
      *
      * @return The number of internal faces in the mesh.
      */
-    SizeType nInternalFaces() const { return nInternalFaces_; }
+    sizeType nInternalFaces() const { return nInternalFaces_; }
 
     /**
      * @brief Get the number of boundary faces in the mesh.
      *
      * @return The number of boundary faces in the mesh.
      */
-    SizeType nBoundaryFaces() const { return boundaryMesh_.nBoundaryFaces(); }
+    sizeType nBoundaryFaces() const { return boundaryMesh_.nBoundaryFaces(); }
 
     /**
      * @brief Get the total number of faces including boundary and processor faces in the mesh.
      *
      * @return The  total number of faces in the mesh.
      */
-    SizeType nTotalFaces() const
+    sizeType nTotalFaces() const
     {
         return nInternalFaces() + nBoundaryFaces() + nProcBoundaryFaces();
     }
@@ -186,14 +184,14 @@ public:
      *
      * @return The number of boundaries in the mesh.
      */
-    SizeType nBoundaries() const { return boundaryMesh_.nBoundaries(); }
+    sizeType nBoundaries() const { return boundaryMesh_.nBoundaries(); }
 
     /**
      * @brief Get the number of processor-boundary faces (inter-rank faces).
      *
      * Returns 0 for single-process runs.
      */
-    SizeType nProcBoundaryFaces() const { return boundaryMesh_.nProcBoundaryFaces(); }
+    sizeType nProcBoundaryFaces() const { return boundaryMesh_.nProcBoundaryFaces(); }
 
     /**
      * @brief the offset local cellIds for the global mesh.
@@ -279,12 +277,12 @@ private:
     /**
      * @brief Number of cells in the mesh.
      */
-    SizeType nCells_;
+    sizeType nCells_;
 
     /**
      * @brief Number of internal faces in the mesh.
      */
-    SizeType nInternalFaces_;
+    sizeType nInternalFaces_;
 
     /**
      * @brief Boundary mesh.
