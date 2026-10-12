@@ -155,7 +155,7 @@ inline localIdx toLocalIdx(sizeType value)
     return static_cast<localIdx>(value);
 }
 
-inline void requireInput(
+inline void validateInput(
     bool condition,
     std::string_view message,
     const std::source_location location = std::source_location::current()
