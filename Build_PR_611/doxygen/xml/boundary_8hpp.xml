@@ -319,6 +319,8 @@
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
       <node id="43">
         <label>NeoN/core/vector/vector.hpp</label>
@@ -1106,7 +1108,7 @@
 <codeline lineno="36" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab918b7425253d07393f1e18b71aa4e22" refkind="member"><highlight class="normal">std::vector&lt;BoundaryType&gt;<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab918b7425253d07393f1e18b71aa4e22" kindref="member">createCalculatedBCs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh)</highlight></codeline>
 <codeline lineno="37"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;BoundaryType&gt;<sp/>bcs;</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>bcs.reserve(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" kindref="member">nBoundaries</ref>()));</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>bcs.reserve(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a43f0805859cf059f7feeaf970df5c7b0" kindref="member">sizeType</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" kindref="member">nBoundaries</ref>()));</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchID<sp/>=<sp/>0;<sp/>patchID<sp/>&lt;<sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" kindref="member">nBoundaries</ref>();<sp/>patchID++)</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -1120,7 +1122,7 @@
 <codeline lineno="50" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a414c82b2d4caf60720f2acddb8cb7749" refkind="member"><highlight class="normal">std::vector&lt;BoundaryType&gt;<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a414c82b2d4caf60720f2acddb8cb7749" kindref="member">createCalculatedProcBCs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh)</highlight></codeline>
 <codeline lineno="51"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;BoundaryType&gt;<sp/>bcs;</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>bcs.reserve(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" kindref="member">nBoundaries</ref>()));</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>bcs.reserve(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a43f0805859cf059f7feeaf970df5c7b0" kindref="member">sizeType</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" kindref="member">nBoundaries</ref>()));</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Distributed-aware<sp/>&apos;calculated&apos;:<sp/>physical<sp/>patches<sp/>get<sp/>the<sp/>calculated<sp/>BC<sp/>(the<sp/>value<sp/>is<sp/>computed</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>by<sp/>an<sp/>operator),<sp/>but<sp/>processor<sp/>(coupled)<sp/>patches<sp/>must<sp/>carry<sp/>the<sp/>processor<sp/>halo-exchange<sp/>BC<sp/>so</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>that<sp/>a<sp/>single<sp/>correctBoundaryConditions()<sp/>fills<sp/>their<sp/>tail<sp/>with<sp/>the<sp/>NEIGHBOUR<sp/>cell<sp/>value</highlight><highlight class="normal"></highlight></codeline>
