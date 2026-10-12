@@ -88,7 +88,7 @@ TEST_CASE("limitedLinear is central differencing on a smooth profile")
     INFO("executor: " << execName);
 
     std::vector<scalar> cellValues(10);
-    for (std::size_t i = 0; i < cellValues.size(); i++)
+    for (sizeType i = 0; i < cellValues.size(); i++)
     {
         cellValues[i] = static_cast<scalar>(i);
     }
@@ -96,9 +96,8 @@ TEST_CASE("limitedLinear is central differencing on a smooth profile")
 
     for (localIdx i = 1; i < 8; i++)
     {
-        const scalar expected = 0.5
-                              * (cellValues[static_cast<std::size_t>(i)]
-                                 + cellValues[static_cast<std::size_t>(i) + 1]);
+        const scalar expected =
+            0.5 * (cellValues[static_cast<sizeType>(i)] + cellValues[static_cast<sizeType>(i) + 1]);
         REQUIRE(outHost.view()[i] == Catch::Approx(expected).margin(1e-12));
     }
 }

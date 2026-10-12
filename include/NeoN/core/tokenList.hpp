@@ -17,7 +17,7 @@ namespace NeoN
 
 
 void logOutRange(
-    const std::out_of_range& e, const std::size_t& key, const std::vector<std::any>& data
+    const std::out_of_range& e, const sizeType& key, const std::vector<std::any>& data
 );
 
 

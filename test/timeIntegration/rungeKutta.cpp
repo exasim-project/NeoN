@@ -83,7 +83,7 @@ TEST_CASE("TimeIntegration - Runge Kutta")
 
     SECTION("Solve on " + execName)
     {
-        std::size_t iTest = 0;
+        sizeType iTest = 0;
         std::array<NeoN::scalar, 2> error;
         for (auto dt : deltaTime)
         {

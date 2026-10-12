@@ -17,8 +17,8 @@ TEST_CASE("fullDuplexBuffer")
 {
 
     Environment mpiEnviron;
-    std::vector<std::size_t> rankSendCommSize(mpiEnviron.sizeRank(), 1);
-    std::vector<std::size_t> rankReceiveCommSize(mpiEnviron.sizeRank(), 1);
+    std::vector<sizeType> rankSendCommSize(mpiEnviron.sizeRank(), 1);
+    std::vector<sizeType> rankReceiveCommSize(mpiEnviron.sizeRank(), 1);
     FullDuplexCommBuffer buffer(mpiEnviron, rankSendCommSize, rankReceiveCommSize);
 
     SECTION("Parameterized Constructor")

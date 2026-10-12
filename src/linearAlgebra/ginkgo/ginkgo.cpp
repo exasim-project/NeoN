@@ -216,7 +216,7 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
     static std::mutex cacheMutex;
     const std::lock_guard<std::mutex> guard {cacheMutex};
     auto& cache = gkoExecutorCache();
-    const std::size_t idx = exec.index();
+    const sizeType idx = exec.index();
     if (!cache[idx])
     {
         cache[idx] = createGkoExecutor(exec);
