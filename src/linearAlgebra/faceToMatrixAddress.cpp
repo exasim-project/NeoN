@@ -96,7 +96,7 @@ void setBoundarySparsityPatternImpl(
     // is laid out [physical | processor]; in serial nProcBoundaryFaces() == 0 so the pattern is
     // unchanged.
     const auto nBoundaryFaces =
-        static_cast<std::size_t>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
+        static_cast<sizeType>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
     const auto diagOffsV = diagOffs.view();
     const auto faceCellsV = mesh.boundaryMesh().faceOwners().view();
     NF_ASSERT(nBoundaryFaces == rowIdx.size(), "Inconsistent size");
@@ -128,7 +128,7 @@ void setOffDiagonalSparsityPatternImpl(
 {
     const auto exec = mesh.exec();
     const auto nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
-    const auto nProcFaces = static_cast<std::size_t>(mesh.nProcBoundaryFaces());
+    const auto nProcFaces = static_cast<sizeType>(mesh.nProcBoundaryFaces());
     const auto faceCellsV = mesh.boundaryMesh().faceOwners().view();
     NF_ASSERT(nProcFaces == rowIdx.size(), "Inconsistent size");
     NF_ASSERT(nProcFaces == colIdx.size(), "Inconsistent size");

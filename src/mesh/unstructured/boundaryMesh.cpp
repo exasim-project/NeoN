@@ -47,7 +47,7 @@ View<const ValueType>
 extractSubView(const Vector<ValueType>& vec, const std::vector<localIdx>& offs, localIdx i)
 {
     // TODO make offset a Vector<localIdx> instead of std::vector
-    auto j = static_cast<std::size_t>(i);
+    auto j = static_cast<sizeType>(i);
     return vec.view({offs[j], offs[j + 1]});
 }
 
@@ -118,8 +118,8 @@ localIdx BoundaryMesh::neighbourRankForRange(std::pair<localIdx, localIdx> range
     const localIdx rangeStart = range.first;
     for (localIdx k = 0; k < static_cast<localIdx>(neighbourRank_.size()); k++)
     {
-        if (offset_[static_cast<std::size_t>(nInnerBoundaries + k)] == rangeStart)
-            return neighbourRank_[static_cast<std::size_t>(k)];
+        if (offset_[static_cast<sizeType>(nInnerBoundaries + k)] == rangeStart)
+            return neighbourRank_[static_cast<sizeType>(k)];
     }
     NF_ERROR_EXIT("No processor patch found for the given range.");
     return -1;
@@ -153,7 +153,7 @@ void BoundaryMesh::computeRowOrderWriteIndex()
     }
     const auto ownersHostVec = faceOwners_.copyToHost();
     const auto ownersHost = ownersHostVec.view();
-    rowSortPerm_.resize(static_cast<std::size_t>(nProcFaces));
+    rowSortPerm_.resize(static_cast<sizeType>(nProcFaces));
     std::iota(rowSortPerm_.begin(), rowSortPerm_.end(), localIdx(0));
     std::stable_sort(
         rowSortPerm_.begin(),
@@ -161,9 +161,9 @@ void BoundaryMesh::computeRowOrderWriteIndex()
         [&](localIdx a, localIdx b)
         { return ownersHost[nBndFaces + a] < ownersHost[nBndFaces + b]; }
     );
-    std::vector<localIdx> invPerm(static_cast<std::size_t>(nProcFaces));
+    std::vector<localIdx> invPerm(static_cast<sizeType>(nProcFaces));
     for (localIdx i = 0; i < nProcFaces; ++i)
-        invPerm[static_cast<std::size_t>(rowSortPerm_[static_cast<std::size_t>(i)])] = i;
+        invPerm[static_cast<sizeType>(rowSortPerm_[static_cast<sizeType>(i)])] = i;
     rowOrderWriteIndex_ = Vector<localIdx>(exec_, std::move(invPerm));
 }
 

@@ -16,7 +16,7 @@ TEST_CASE("halfDuplexBuffer")
 {
 
     Environment mpiEnviron;
-    std::vector<std::size_t> rankCommSize(mpiEnviron.sizeRank(), 1);
+    std::vector<sizeType> rankCommSize(mpiEnviron.sizeRank(), 1);
     HalfDuplexCommBuffer buffer(mpiEnviron, rankCommSize);
 
     SECTION("Default Constructor")

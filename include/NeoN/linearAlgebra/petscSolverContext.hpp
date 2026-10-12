@@ -70,8 +70,8 @@ public:
     //- Create auxiliary rows for calculation purposes
     void initialize(const LinearSystem<scalar>& sys)
     {
-        std::size_t size = sys.matrix().values().size();
-        std::size_t nrows = sys.rhs().size();
+        sizeType size = sys.matrix().values().size();
+        sizeType nrows = sys.rhs().size();
         PetscInt colIdx[size];
         PetscInt rowIdx[size];
         PetscInt rhsIdx[nrows];

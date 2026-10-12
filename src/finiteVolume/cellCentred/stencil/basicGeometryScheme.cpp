@@ -33,9 +33,9 @@ std::vector<std::pair<localIdx, localIdx>> collectProcPatchRanges(const Unstruct
     const auto nProcPatches = bMesh.nProcBoundaryPatches();
 
     std::vector<std::pair<localIdx, localIdx>> ranges;
-    ranges.reserve(static_cast<std::size_t>(nProcPatches));
+    ranges.reserve(static_cast<sizeType>(nProcPatches));
     for (localIdx i = nBounds - nProcPatches; i < nBounds; ++i)
-        ranges.push_back({off[static_cast<std::size_t>(i)], off[static_cast<std::size_t>(i + 1)]});
+        ranges.push_back({off[static_cast<sizeType>(i)], off[static_cast<sizeType>(i + 1)]});
     return ranges;
 }
 
@@ -79,20 +79,20 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
     auto ownH = ownCentreDev.copyToHost();
     const auto ownHView = ownH.view();
     // Flatten to contiguous [x, y, z] scalars per face for the typed MPI exchange.
-    std::vector<scalar> sendBuf(static_cast<std::size_t>(3 * nProcFaces));
+    std::vector<scalar> sendBuf(static_cast<sizeType>(3 * nProcFaces));
     for (localIdx i = 0; i < nProcFaces; ++i)
     {
         const Vec3 c = ownHView[i];
-        sendBuf[static_cast<std::size_t>(3 * i + 0)] = c[0];
-        sendBuf[static_cast<std::size_t>(3 * i + 1)] = c[1];
-        sendBuf[static_cast<std::size_t>(3 * i + 2)] = c[2];
+        sendBuf[static_cast<sizeType>(3 * i + 0)] = c[0];
+        sendBuf[static_cast<sizeType>(3 * i + 1)] = c[1];
+        sendBuf[static_cast<sizeType>(3 * i + 2)] = c[2];
     }
-    std::vector<scalar> recvBuf(static_cast<std::size_t>(3 * nProcFaces), scalar(0));
+    std::vector<scalar> recvBuf(static_cast<sizeType>(3 * nProcFaces), scalar(0));
 
     const auto ranges = collectProcPatchRanges(mesh);
     std::vector<MPI_Request> requests(2 * ranges.size(), MPI_REQUEST_NULL);
     mpi::Environment mpiEnv;
-    for (std::size_t p = 0; p < ranges.size(); ++p)
+    for (sizeType p = 0; p < ranges.size(); ++p)
     {
         const auto [rangeStart, rangeEnd] = ranges[p];
         const localIdx patchOff = 3 * (rangeStart - nBoundaryFaces);
@@ -117,12 +117,12 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
     }
     mpi::waitAll(requests);
 
-    std::vector<Vec3> neiCentre(static_cast<std::size_t>(nProcFaces));
+    std::vector<Vec3> neiCentre(static_cast<sizeType>(nProcFaces));
     for (localIdx i = 0; i < nProcFaces; ++i)
-        neiCentre[static_cast<std::size_t>(i)] = Vec3 {
-            recvBuf[static_cast<std::size_t>(3 * i + 0)],
-            recvBuf[static_cast<std::size_t>(3 * i + 1)],
-            recvBuf[static_cast<std::size_t>(3 * i + 2)]
+        neiCentre[static_cast<sizeType>(i)] = Vec3 {
+            recvBuf[static_cast<sizeType>(3 * i + 0)],
+            recvBuf[static_cast<sizeType>(3 * i + 1)],
+            recvBuf[static_cast<sizeType>(3 * i + 2)]
         };
     return Vector<Vec3>(exec, neiCentre);
 }

@@ -59,8 +59,8 @@ template<typename T>
 std::shared_ptr<gko::matrix::Dense<scalar>>
 gkoVecView(std::shared_ptr<const gko::Executor> exec, T* ptr, localIdx s)
 {
-    constexpr std::size_t cols = std::is_same_v<T, Vec3> ? 3 : 1;
-    auto size = static_cast<std::size_t>(s);
+    constexpr sizeType cols = std::is_same_v<T, Vec3> ? 3 : 1;
+    auto size = static_cast<sizeType>(s);
     return gko::share(gko::matrix::Dense<scalar>::create(
         exec,
         gko::dim<2> {size, cols},
@@ -74,8 +74,8 @@ template<typename T>
 std::shared_ptr<const gko::matrix::Dense<scalar>>
 gkoVecView(std::shared_ptr<const gko::Executor> exec, const T* ptr, localIdx s)
 {
-    constexpr std::size_t cols = std::is_same_v<T, Vec3> ? 3 : 1;
-    auto size = static_cast<std::size_t>(s);
+    constexpr sizeType cols = std::is_same_v<T, Vec3> ? 3 : 1;
+    auto size = static_cast<sizeType>(s);
     return gko::share(gko::matrix::Dense<scalar>::create_const(
         exec,
         gko::dim<2> {size, cols},
