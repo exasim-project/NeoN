@@ -134,8 +134,8 @@ UnstructuredMesh create3DUniformMesh(
 )
 {
     // Validate input parameters
-    requireInput(nx > 0 && ny > 0 && nz > 0, "Number of cells in each direction must be positive");
-    requireInput(lx > 0 && ly > 0 && lz > 0, "Domain lengths must be positive");
+    validateInput(nx > 0 && ny > 0 && nz > 0, "Number of cells in each direction must be positive");
+    validateInput(lx > 0 && ly > 0 && lz > 0, "Domain lengths must be positive");
 
     // Hold the mesh parameters
     detail::MeshParams p {nx, ny, nz, lx, ly, lz};
