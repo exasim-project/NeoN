@@ -40,6 +40,8 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/core/mpi/halfDuplexCommBuffer.hpp</label>
@@ -54,80 +56,80 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="16">
         <label>NeoN/core/mpi/operators.hpp</label>
         <link refid="operators_8hpp"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>NeoN/core/primitives/label.hpp</label>
+        <link refid="label_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>NeoN/core/primitives/scalar.hpp</label>
+        <link refid="scalar_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>NeoN/core/primitives/traits.hpp</label>
+        <link refid="traits_8hpp"/>
         <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="19">
-        <label>NeoN/core/primitives/label.hpp</label>
-        <link refid="label_8hpp"/>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>NeoN/core/primitives/scalar.hpp</label>
-        <link refid="scalar_8hpp"/>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
-      <node id="18">
-        <label>NeoN/core/primitives/traits.hpp</label>
-        <link refid="traits_8hpp"/>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
         <label>NeoN/core/primitives/vec3.hpp</label>
         <link refid="vec3_8hpp"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="21">
         <label>NeoN/core/view.hpp</label>
         <link refid="view_8hpp"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="15">
         <label>Kokkos_Core.hpp</label>
       </node>
-      <node id="13">
+      <node id="17">
         <label>complex</label>
       </node>
-      <node id="20">
+      <node id="13">
         <label>cstdint</label>
       </node>
       <node id="6">
@@ -151,7 +153,7 @@
       <node id="2">
         <label>string</label>
       </node>
-      <node id="14">
+      <node id="18">
         <label>type_traits</label>
       </node>
       <node id="3">
@@ -221,7 +223,7 @@
 <codeline lineno="59"><highlight class="normal"></highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>~HalfDuplexCommBuffer()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>HalfDuplexCommBuffer(Environment<sp/>mpiEnviron,<sp/>std::vector&lt;size_t&gt;<sp/>rankCommSize)</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>HalfDuplexCommBuffer(Environment<sp/>mpiEnviron,<sp/>std::vector&lt;sizeType&gt;<sp/>rankCommSize)</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>mpiEnviron_(mpiEnviron)</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>setCommRankSize&lt;char&gt;(rankCommSize);</highlight></codeline>
@@ -232,7 +234,7 @@
 <codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isCommInit()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tag_<sp/>!=<sp/>-1;<sp/>}</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"></highlight></codeline>
 <codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>valueType&gt;</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>setCommRankSize(std::vector&lt;size_t&gt;<sp/>rankCommSize)</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>setCommRankSize(std::vector&lt;sizeType&gt;<sp/>rankCommSize)</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(</highlight></codeline>
 <codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!isCommInit(),<sp/></highlight><highlight class="stringliteral">&quot;Communication<sp/>buffer<sp/>was<sp/>initialised<sp/>by<sp/>name:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>commName_<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;.&quot;</highlight><highlight class="normal"></highlight></codeline>
@@ -244,7 +246,7 @@
 <codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typeSize_<sp/>=<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(valueType);</highlight></codeline>
 <codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rankOffset_.resize(rankCommSize.size()<sp/>+<sp/>1);</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>request_.resize(rankCommSize.size(),<sp/>MPI_REQUEST_NULL);</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>updateDataSize([&amp;](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rank)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rankCommSize[rank];<sp/>},<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(valueType));</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>updateDataSize([&amp;](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sizeType<sp/>rank)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>rankCommSize[rank];<sp/>},<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(valueType));</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"></highlight></codeline>
 <codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>valueType&gt;</highlight></codeline>
@@ -271,7 +273,7 @@
 <codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>finaliseComm();</highlight></codeline>
 <codeline lineno="163"><highlight class="normal"></highlight></codeline>
 <codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>valueType&gt;</highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>View&lt;valueType&gt;<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rank)</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>View&lt;valueType&gt;<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sizeType<sp/>rank)</highlight></codeline>
 <codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(isCommInit(),<sp/></highlight><highlight class="stringliteral">&quot;Communication<sp/>buffer<sp/>is<sp/>not<sp/>initialised.&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(typeSize_<sp/>==<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(valueType),<sp/></highlight><highlight class="stringliteral">&quot;Data<sp/>type<sp/>(size)<sp/>mismatch.&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -282,7 +284,7 @@
 <codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="181"><highlight class="normal"></highlight></codeline>
 <codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>valueType&gt;</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>View&lt;const<sp/>valueType&gt;<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rank)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>View&lt;const<sp/>valueType&gt;<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sizeType<sp/>rank)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="191"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(isCommInit(),<sp/></highlight><highlight class="stringliteral">&quot;Communication<sp/>buffer<sp/>is<sp/>not<sp/>initialised.&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(typeSize_<sp/>==<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(valueType),<sp/></highlight><highlight class="stringliteral">&quot;Data<sp/>type<sp/>(size)<sp/>mismatch.&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -311,7 +313,7 @@
 <codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(0<sp/>==<sp/>(typeSize_<sp/>-<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(valueType)))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>updateDataSize(</highlight></codeline>
-<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[rankOffset<sp/>=<sp/>rankOffset_,<sp/>typeSize<sp/>=<sp/>typeSize_](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rank)</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[rankOffset<sp/>=<sp/>rankOffset_,<sp/>typeSize<sp/>=<sp/>typeSize_](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sizeType<sp/>rank)</highlight></codeline>
 <codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(rankOffset[rank<sp/>+<sp/>1]<sp/>-<sp/>rankOffset[rank])<sp/>/<sp/>typeSize;<sp/>},</highlight></codeline>
 <codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(valueType)</highlight></codeline>
 <codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
@@ -323,7 +325,7 @@
 <codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>updateDataSize(func<sp/>rankSize,<sp/>std::size_t<sp/>newSize)</highlight></codeline>
 <codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::size_t<sp/>dataSize<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rank<sp/>=<sp/>0;<sp/>rank<sp/>&lt;<sp/>mpiEnviron_.sizeRank();<sp/>++rank)</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(sizeType<sp/>rank<sp/>=<sp/>0;<sp/>rank<sp/>&lt;<sp/>mpiEnviron_.sizeRank();<sp/>++rank)</highlight></codeline>
 <codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rankOffset_[rank]<sp/>=<sp/>dataSize;</highlight></codeline>
 <codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dataSize<sp/>+=<sp/>rankSize(rank)<sp/>*<sp/>newSize;</highlight></codeline>

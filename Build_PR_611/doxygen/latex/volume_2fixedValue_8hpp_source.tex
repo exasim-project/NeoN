@@ -27,8 +27,8 @@
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00023}00023\ \textcolor{comment}{//\ Without\ this\ function\ the\ compiler\ warns\ that\ calling\ a\ \_\_host\_\_\ function}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00024}00024\ \textcolor{comment}{//\ from\ a\ \_\_device\_\_\ function\ is\ not\ allowed}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00025}00025\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}{00026}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}{setFixedValue}}(}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00027}00027\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,\ std::pair<size\_t,\ size\_t>\ range,\ ValueType\ fixedValue}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aad7bddb3932214b4d03d29f67c65c20f}{00026}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aad7bddb3932214b4d03d29f67c65c20f}{setFixedValue}}(}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00027}00027\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,\ std::pair<sizeType,\ sizeType>\ range,\ ValueType\ fixedValue}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00028}00028\ )}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00029}00029\ \{}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
@@ -54,9 +54,9 @@
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00050}00050\ \textcolor{comment}{//\ Per-\/face\ variant:\ the\ patch\ carries\ one\ value\ per\ boundary\ face,\ e.g.\ an\ inflow}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00051}00051\ \textcolor{comment}{//\ profile\ read\ from\ a\ nonuniform\ OpenFOAM\ patch\ field.}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00052}00052\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00053}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a667fb3bb78341f777e350e5a9cacc5a1}{00053}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a667fb3bb78341f777e350e5a9cacc5a1}{setFixedValues}}(}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00053}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5a5c6e9eaaf40e1d070770c7f788ea1e}{00053}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5a5c6e9eaaf40e1d070770c7f788ea1e}{setFixedValues}}(}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00054}00054\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00055}00055\ \ \ \ \ std::pair<size\_t,\ size\_t>\ range,}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00055}00055\ \ \ \ \ std::pair<sizeType,\ sizeType>\ range,}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ fixedValues}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00057}00057\ )}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00058}00058\ \{}
@@ -130,11 +130,11 @@
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00126}00126\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fixedValues\_.size()\ >\ 0)}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a667fb3bb78341f777e350e5a9cacc5a1}{detail::setFixedValues}}(domainVector,\ this-\/>range(),\ fixedValues\_);}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5a5c6e9eaaf40e1d070770c7f788ea1e}{detail::setFixedValues}}(domainVector,\ this-\/>range(),\ fixedValues\_);}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}{detail::setFixedValue}}(domainVector,\ this-\/>range(),\ fixedValue\_);}
+\DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aad7bddb3932214b4d03d29f67c65c20f}{detail::setFixedValue}}(domainVector,\ this-\/>range(),\ fixedValue\_);}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00135}00135\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{volume_2fixedValue_8hpp_source_l00136}00136\ }

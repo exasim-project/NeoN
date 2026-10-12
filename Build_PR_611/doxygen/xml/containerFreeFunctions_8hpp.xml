@@ -51,6 +51,8 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
@@ -70,6 +72,8 @@
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
@@ -123,6 +127,8 @@
         <link refid="allocator_8hpp"/>
         <childnode refid="16" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
@@ -133,6 +139,8 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
       </node>
       <node id="14">
         <label>NeoN/core/mpi/environment.hpp</label>
@@ -142,6 +150,8 @@
         <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -626,7 +636,7 @@
 <codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
 <codeline lineno="31" refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" kindref="member">deepCopyVisitor</ref>(<ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>ssize,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ValueType*<sp/>srcPtr,<sp/>ValueType*<sp/>dstPtr)</highlight></codeline>
 <codeline lineno="32"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(ssize);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a43f0805859cf059f7feeaf970df5c7b0" kindref="member">sizeType</ref><sp/>size<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a43f0805859cf059f7feeaf970df5c7b0" kindref="member">sizeType</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(ssize);</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>[size,<sp/>srcPtr,<sp/>dstPtr](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>srcExec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>dstExec)</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kokkos::deep_copy(</highlight></codeline>
@@ -745,7 +755,7 @@
 <codeline lineno="170"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>hostView<sp/>=<sp/>cont.copyToHost().view();</highlight></codeline>
 <codeline lineno="172"><highlight class="normal"></highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(hostView.size()<sp/>!=<sp/>view2.<ref refid="classNeoN_1_1View_1ac6dd0486a466690b061b0918cf120203" kindref="member">size</ref>())</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(hostView.size()<sp/>!=<sp/>view2.<ref refid="classNeoN_1_1View_1a1eeb4b72722b5570310afb267d0912fb" kindref="member">size</ref>())</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>

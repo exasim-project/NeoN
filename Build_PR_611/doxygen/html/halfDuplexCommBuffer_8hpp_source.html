@@ -124,7 +124,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    ~HalfDuplexCommBuffer() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    HalfDuplexCommBuffer(Environment mpiEnviron, std::vector&lt;size_t&gt; rankCommSize)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    HalfDuplexCommBuffer(Environment mpiEnviron, std::vector&lt;sizeType&gt; rankCommSize)</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        : mpiEnviron_(mpiEnviron)</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    {</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        setCommRankSize&lt;char&gt;(rankCommSize);</div>
@@ -135,7 +135,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> isCommInit()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> tag_ != -1; }</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> valueType&gt;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">void</span> setCommRankSize(std::vector&lt;size_t&gt; rankCommSize)</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">void</span> setCommRankSize(std::vector&lt;sizeType&gt; rankCommSize)</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    {</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <a class="code hl_define" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a>(</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            !isCommInit(), <span class="stringliteral">&quot;Communication buffer was initialised by name: &quot;</span> &lt;&lt; commName_ &lt;&lt; <span class="stringliteral">&quot;.&quot;</span></div>
@@ -147,7 +147,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        typeSize_ = <span class="keyword">sizeof</span>(valueType);</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        rankOffset_.resize(rankCommSize.size() + 1);</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        request_.resize(rankCommSize.size(), MPI_REQUEST_NULL);</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        updateDataSize([&amp;](<span class="keyword">const</span> <span class="keywordtype">size_t</span> rank) { <span class="keywordflow">return</span> rankCommSize[rank]; }, <span class="keyword">sizeof</span>(valueType));</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        updateDataSize([&amp;](<span class="keyword">const</span> sizeType rank) { <span class="keywordflow">return</span> rankCommSize[rank]; }, <span class="keyword">sizeof</span>(valueType));</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> valueType&gt;</div>
@@ -174,7 +174,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordtype">void</span> finaliseComm();</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> valueType&gt;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    View&lt;valueType&gt; get(<span class="keyword">const</span> <span class="keywordtype">size_t</span> rank)</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    View&lt;valueType&gt; get(<span class="keyword">const</span> sizeType rank)</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    {</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <a class="code hl_define" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a>(isCommInit(), <span class="stringliteral">&quot;Communication buffer is not initialised.&quot;</span>);</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <a class="code hl_define" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a>(typeSize_ == <span class="keyword">sizeof</span>(valueType), <span class="stringliteral">&quot;Data type (size) mismatch.&quot;</span>);</div>
@@ -185,7 +185,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> valueType&gt;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    View&lt;const valueType&gt; get(<span class="keyword">const</span> <span class="keywordtype">size_t</span> rank)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    View&lt;const valueType&gt; get(<span class="keyword">const</span> sizeType rank)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <a class="code hl_define" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a>(isCommInit(), <span class="stringliteral">&quot;Communication buffer is not initialised.&quot;</span>);</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <a class="code hl_define" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a>(typeSize_ == <span class="keyword">sizeof</span>(valueType), <span class="stringliteral">&quot;Data type (size) mismatch.&quot;</span>);</div>
@@ -214,7 +214,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        );</div>
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keywordflow">if</span> (0 == (typeSize_ - <span class="keyword">sizeof</span>(valueType))) <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        updateDataSize(</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            [rankOffset = rankOffset_, typeSize = typeSize_](<span class="keyword">const</span> <span class="keywordtype">size_t</span> rank)</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            [rankOffset = rankOffset_, typeSize = typeSize_](<span class="keyword">const</span> sizeType rank)</div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            { <span class="keywordflow">return</span> (rankOffset[rank + 1] - rankOffset[rank]) / typeSize; },</div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keyword">sizeof</span>(valueType)</div>
 <div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        );</div>
@@ -226,7 +226,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keywordtype">void</span> updateDataSize(func rankSize, std::size_t newSize)</div>
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    {</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        std::size_t dataSize = 0;</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> rank = 0; rank &lt; mpiEnviron_.sizeRank(); ++rank)</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">for</span> (sizeType rank = 0; rank &lt; mpiEnviron_.sizeRank(); ++rank)</div>
 <div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        {</div>
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            rankOffset_[rank] = dataSize;</div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            dataSize += rankSize(rank) * newSize;</div>

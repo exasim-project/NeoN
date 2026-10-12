@@ -55,7 +55,7 @@ var searchData=
   ['createemptylinearsystem_52',['createEmptyLinearSystem',['../namespaceNeoN_1_1la.html#aaae043565c645c4e3a2736f57d50edd5',1,'NeoN::la']]],
   ['createextrapolatedbcs_53',['createExtrapolatedBCs',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac219f7675251df9d46327915c48c74e4',1,'NeoN::finiteVolume::cellCentred']]],
   ['createfluxcorrbcsfromu_54',['createFluxCorrBCsFromU',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a616a3a0d2d9285da79f5301efe88d399',1,'NeoN::finiteVolume::cellCentred']]],
-  ['createkokkosview_55',['createkokkosview',['../classNeoN_1_1CPUExecutor.html#a5232ea309a5b0c1bc39b12fb1a791093',1,'NeoN::CPUExecutor::createKokkosView()'],['../classNeoN_1_1SerialExecutor.html#aa80fc6ac2a2a9afe4e016a193f6491c4',1,'NeoN::SerialExecutor::createKokkosView()'],['../classNeoN_1_1GPUExecutor.html#ab8e118a7aaf1d73ab37111449bd99a4e',1,'NeoN::GPUExecutor::createKokkosView()']]],
+  ['createkokkosview_55',['createkokkosview',['../classNeoN_1_1CPUExecutor.html#a831ad9de52078b78a71598ccbc4bf6e3',1,'NeoN::CPUExecutor::createKokkosView()'],['../classNeoN_1_1SerialExecutor.html#ae625f5d1b349f86aba89350ce8249bb3',1,'NeoN::SerialExecutor::createKokkosView()'],['../classNeoN_1_1GPUExecutor.html#a125c26ab830ec1c1def15fadc51821e2',1,'NeoN::GPUExecutor::createKokkosView()']]],
   ['createoffdiagonalsparsitypattern_56',['createOffDiagonalSparsityPattern',['../namespaceNeoN_1_1la.html#aa9fd5d1e4b81ca099097468430a2d32c',1,'NeoN::la']]],
   ['createsinglecellmesh_57',['createSingleCellMesh',['../namespaceNeoN.html#a8e4ff733c9dc00a516d09fbdacb127f4',1,'NeoN']]],
   ['createsparsitypatternfacetomatrixaddress_58',['createSparsityPatternFaceToMatrixAddress',['../namespaceNeoN_1_1la.html#a39fea8c16999d544a15d6d9cb8cb3cd6',1,'NeoN::la']]],
