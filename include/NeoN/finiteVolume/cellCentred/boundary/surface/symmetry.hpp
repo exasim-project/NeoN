@@ -19,7 +19,7 @@ namespace detail
 inline void applySymmetry(
     Field<scalar>& domainVector,
     [[maybe_unused]] const UnstructuredMesh&,
-    std::pair<size_t, size_t> range
+    std::pair<sizeType, sizeType> range
 )
 {
     auto [refValueV, valueV] =
@@ -38,7 +38,7 @@ inline void applySymmetry(
 
 // Vec3 specialization: zero the normal component of the existing face value
 inline void applySymmetry(
-    Field<Vec3>& domainVector, const UnstructuredMesh& mesh, std::pair<size_t, size_t> range
+    Field<Vec3>& domainVector, const UnstructuredMesh& mesh, std::pair<sizeType, sizeType> range
 )
 {
     auto [refValueV, valueV, nHatV] = views(

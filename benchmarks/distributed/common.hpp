@@ -37,7 +37,7 @@ std::vector<BoundaryType> createDistributedBCs(const NeoN::UnstructuredMesh& mes
     const auto nRegular = nBoundaries - nProcPatches;
 
     std::vector<BoundaryType> bcs;
-    bcs.reserve(static_cast<std::size_t>(nBoundaries));
+    bcs.reserve(static_cast<sizeType>(nBoundaries));
     for (NeoN::localIdx patchID = 0; patchID < nBoundaries; ++patchID)
     {
         const std::string type = (patchID >= nRegular) ? "processor" : "calculated";

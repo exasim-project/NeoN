@@ -74,7 +74,7 @@ public:
      * @return A view of data for the send buffer.
      */
     template<typename valueType>
-    View<valueType> getSend(const size_t rank)
+    View<valueType> getSend(const sizeType rank)
     {
         return send_.get<valueType>(rank);
     }
@@ -86,7 +86,7 @@ public:
      * @return A view of data for the send buffer.
      */
     template<typename valueType>
-    View<const valueType> getSend(const size_t rank) const
+    View<const valueType> getSend(const sizeType rank) const
     {
         return send_.get<valueType>(rank);
     }
@@ -98,7 +98,7 @@ public:
      * @return A view of data for the receive buffer.
      */
     template<typename valueType>
-    View<valueType> getReceive(const size_t rank)
+    View<valueType> getReceive(const sizeType rank)
     {
         return receive_.get<valueType>(rank);
     }
@@ -110,7 +110,7 @@ public:
      * @return A view of data for the receive buffer.
      */
     template<typename valueType>
-    View<const valueType> getReceive(const size_t rank) const
+    View<const valueType> getReceive(const sizeType rank) const
     {
         return receive_.get<valueType>(rank);
     }

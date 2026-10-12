@@ -12,15 +12,16 @@
 using NeoN::scalar;
 using NeoN::Tensor;
 using NeoN::Vec3;
+using NeoN::sizeType;
 
 TEST_CASE("Tensor - Constructors")
 {
     SECTION("Default constructor zeros all components")
     {
         Tensor t;
-        for (size_t i = 0; i < 3; ++i)
+        for (sizeType i = 0; i < 3; ++i)
         {
-            for (size_t j = 0; j < 3; ++j)
+            for (sizeType j = 0; j < 3; ++j)
             {
                 REQUIRE(t(i, j) == 0.0);
             }
@@ -120,9 +121,9 @@ TEST_CASE("Tensor - Transpose")
     Tensor a(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
     Tensor at = a.T();
 
-    for (size_t i = 0; i < 3; ++i)
+    for (sizeType i = 0; i < 3; ++i)
     {
-        for (size_t j = 0; j < 3; ++j)
+        for (sizeType j = 0; j < 3; ++j)
         {
             REQUIRE(at(i, j) == a(j, i));
         }
@@ -186,9 +187,9 @@ TEST_CASE("Tensor - Traits")
     SECTION("zero<Tensor>")
     {
         Tensor z = NeoN::zero<Tensor>();
-        for (size_t i = 0; i < 3; ++i)
+        for (sizeType i = 0; i < 3; ++i)
         {
-            for (size_t j = 0; j < 3; ++j)
+            for (sizeType j = 0; j < 3; ++j)
             {
                 REQUIRE(z(i, j) == 0.0);
             }

@@ -21,7 +21,7 @@ TEST_CASE("Communicator Vector Synchronization")
     // third block receive (size rank)
     Vector<int> field(SerialExecutor(), 3 * mpiEnviron.sizeRank());
 
-    for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
+    for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
         // we send the rank numbers
         field.view()[rank] = static_cast<int>(rank);
@@ -36,7 +36,7 @@ TEST_CASE("Communicator Vector Synchronization")
     // Set up buffer to local map, we will ignore global_idx
     CommMap rankSendMap(mpiEnviron.sizeRank());
     CommMap rankReceiveMap(mpiEnviron.sizeRank());
-    for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
+    for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
         rankSendMap[rank].emplace_back(NodeCommMap {.local_idx = static_cast<label>(rank)});
         NodeCommMap newNode {.local_idx = static_cast<label>(2 * mpiEnviron.sizeRank() + rank)};
@@ -52,7 +52,7 @@ TEST_CASE("Communicator Vector Synchronization")
     comm.finaliseComm(field, loc);
 
     // Check the values
-    for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
+    for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
         REQUIRE(field.view()[rank] == static_cast<int>(rank));
         REQUIRE(

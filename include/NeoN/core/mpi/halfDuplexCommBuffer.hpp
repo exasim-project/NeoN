@@ -68,7 +68,7 @@ public:
      * @param mpiEnviron The MPI environment.
      * @param rankCommSize The number of nodes per rank to be communicated with.
      */
-    HalfDuplexCommBuffer(Environment mpiEnviron, std::vector<size_t> rankCommSize)
+    HalfDuplexCommBuffer(Environment mpiEnviron, std::vector<sizeType> rankCommSize)
         : mpiEnviron_(mpiEnviron)
     {
         setCommRankSize<char>(rankCommSize);
@@ -95,7 +95,7 @@ public:
      * @param rankCommSize The number of nodes per rank to be communicated with.
      */
     template<typename valueType>
-    void setCommRankSize(std::vector<size_t> rankCommSize)
+    void setCommRankSize(std::vector<sizeType> rankCommSize)
     {
         NF_DEBUG_ASSERT(
             !isCommInit(), "Communication buffer was initialised by name: " << commName_ << "."
@@ -107,7 +107,7 @@ public:
         typeSize_ = sizeof(valueType);
         rankOffset_.resize(rankCommSize.size() + 1);
         request_.resize(rankCommSize.size(), MPI_REQUEST_NULL);
-        updateDataSize([&](const size_t rank) { return rankCommSize[rank]; }, sizeof(valueType));
+        updateDataSize([&](const sizeType rank) { return rankCommSize[rank]; }, sizeof(valueType));
     }
 
     /**
@@ -169,7 +169,7 @@ public:
      * @return View<valueType> A View of the data for the given rank.
      */
     template<typename valueType>
-    View<valueType> get(const size_t rank)
+    View<valueType> get(const sizeType rank)
     {
         NF_DEBUG_ASSERT(isCommInit(), "Communication buffer is not initialised.");
         NF_DEBUG_ASSERT(typeSize_ == sizeof(valueType), "Data type (size) mismatch.");
@@ -187,7 +187,7 @@ public:
      * @return View<const valueType> A View of the data for the given rank.
      */
     template<typename valueType>
-    View<const valueType> get(const size_t rank) const
+    View<const valueType> get(const sizeType rank) const
     {
         NF_DEBUG_ASSERT(isCommInit(), "Communication buffer is not initialised.");
         NF_DEBUG_ASSERT(typeSize_ == sizeof(valueType), "Data type (size) mismatch.");
@@ -219,7 +219,7 @@ private:
         );
         if (0 == (typeSize_ - sizeof(valueType))) return;
         updateDataSize(
-            [rankOffset = rankOffset_, typeSize = typeSize_](const size_t rank)
+            [rankOffset = rankOffset_, typeSize = typeSize_](const sizeType rank)
             { return (rankOffset[rank + 1] - rankOffset[rank]) / typeSize; },
             sizeof(valueType)
         );
@@ -238,7 +238,7 @@ private:
     void updateDataSize(func rankSize, std::size_t newSize)
     {
         std::size_t dataSize = 0;
-        for (size_t rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
+        for (sizeType rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
         {
             rankOffset_[rank] = dataSize;
             dataSize += rankSize(rank) * newSize;

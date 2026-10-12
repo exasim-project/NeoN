@@ -119,19 +119,19 @@ public:
  *
  * @throw std::out_of_range  if begin < 0, begin > end, or end > size
  */
-inline void validateRange(std::pair<localIdx, localIdx> range, size_t size)
+inline void validateRange(std::pair<localIdx, localIdx> range, sizeType size)
 {
     const auto begin = range.first;
     const auto end = range.second;
 
-    if (begin < 0 || begin > end || static_cast<size_t>(end) > size)
+    if (begin < 0 || begin > end || static_cast<sizeType>(end) > size)
     {
         throw std::out_of_range("The chosen range is not valid!");
     }
 }
 
 /**
- * Converts a size_t to localIdx, checking that the value fits.
+ * Converts a sizeType to localIdx, checking that the value fits.
  *
  * Use this instead of a plain static_cast when converting container sizes or
  * indices. A plain cast can silently wrap around if the value is larger than
@@ -142,7 +142,7 @@ inline void validateRange(std::pair<localIdx, localIdx> range, size_t size)
  *
  * @throw std::length_error  if value is greater than the maximum localIdx
  */
-inline localIdx toLocalIdx(size_t value)
+inline localIdx toLocalIdx(sizeType value)
 {
     if (!std::in_range<localIdx>(value))
     {
