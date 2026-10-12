@@ -222,7 +222,7 @@ void computeLaplacianBoundImpl(
 
             for (localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
             {
-                if (!bcs[static_cast<size_t>(patchID)].attributes().transformImplicit)
+                if (!bcs[static_cast<sizeType>(patchID)].attributes().transformImplicit)
                 {
                     continue;
                 }

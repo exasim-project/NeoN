@@ -19,7 +19,7 @@
  *   such as arrays, views, and local graph structures.
  * - `globalIdx` identifies globally unique entities in distributed-memory
  *   computations.
- * - `size_t` represents sizes and counts (e.g. container sizes, iteration
+ * - `sizeType` represents sizes and counts (e.g. container sizes, iteration
  *   counts, and memory sizes) and should not be used to identify mesh
  *   entities.
  *
@@ -53,7 +53,7 @@ using globalIdx = int64_t;
 
 #endif
 
-using size_t = std::size_t;
+using sizeType = std::size_t;
 using mpi_label_t = int;
 
 // traits for label

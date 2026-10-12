@@ -39,7 +39,7 @@ class Vector;
 
 // Concept to check if a callable is compatible with void(const size_t)
 template<typename Kernel>
-concept parallelForKernel = requires(Kernel t, size_t i) {
+concept parallelForKernel = requires(Kernel t, sizeType i) {
     {
         t(i)
     } -> std::same_as<void>;
@@ -130,7 +130,7 @@ void parallelFor(
 
 // Concept to check if a callable is compatible with ValueType(const size_t)
 template<typename Kernel, typename ValueType>
-concept parallelForContainerKernel = requires(Kernel t, ValueType val, size_t i) {
+concept parallelForContainerKernel = requires(Kernel t, ValueType val, sizeType i) {
     {
         t(i)
     } -> std::same_as<ValueType>;

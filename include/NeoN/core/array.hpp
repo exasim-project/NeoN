@@ -40,7 +40,6 @@ class Array
 public:
 
     using ArrayValueType = ValueType;
-    using SizeType = size_t;
 
     /**
      * @brief Creates an uninitialized Array with the given size on an executor.
@@ -48,7 +47,7 @@ public:
      * @param exec Executor on which the array data is allocated.
      * @param size Number of elements in the array.
      */
-    Array(const Executor& exec, SizeType size) : size_(size), data_(nullptr), exec_(exec)
+    Array(const Executor& exec, sizeType size) : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
         std::visit(
@@ -70,7 +69,7 @@ public:
     Array(
         const Executor& exec,
         const ValueType* in,
-        SizeType size,
+        sizeType size,
         Executor hostExec = SerialExecutor()
     )
         : size_(size), data_(nullptr), exec_(exec)
@@ -93,7 +92,7 @@ public:
      * @param size Number of elements in the array.
      * @param value Value used to initialize all elements.
      */
-    Array(const Executor& exec, SizeType size, ValueType value)
+    Array(const Executor& exec, sizeType size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
     {
         void* ptr = nullptr;
@@ -243,7 +242,7 @@ public:
      *
      * @param size New number of elements.
      */
-    void resize(const SizeType size)
+    void resize(const sizeType size)
     {
         void* ptr = nullptr;
         if (!empty())
@@ -291,7 +290,7 @@ public:
      *
      * @return Number of elements.
      */
-    [[nodiscard]] inline SizeType size() const { return size_; }
+    [[nodiscard]] inline sizeType size() const { return size_; }
 
     /**
      * @brief Returns the number of elements in the Array.
@@ -352,7 +351,7 @@ public:
     {
         NeoN::validateRange(range, size());
         return View<ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
+            data_ + range.first, static_cast<sizeType>(range.second - range.first)
         );
     }
 
@@ -366,7 +365,7 @@ public:
     {
         NeoN::validateRange(range, size());
         return View<const ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
+            data_ + range.first, static_cast<sizeType>(range.second - range.first)
         );
     }
 
@@ -382,7 +381,7 @@ public:
 
 private:
 
-    SizeType size_ {0};         //!< Number of elements in the Array.
+    sizeType size_ {0};         //!< Number of elements in the Array.
     ValueType* data_ {nullptr}; //!< Pointer to the underlying Array data.
     const Executor exec_;       //!< Executor associated with the Array.
 

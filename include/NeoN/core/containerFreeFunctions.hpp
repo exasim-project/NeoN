@@ -30,7 +30,7 @@ namespace detail
 template<typename ValueType>
 auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
 {
-    size_t size = static_cast<size_t>(ssize);
+    sizeType size = static_cast<sizeType>(ssize);
     return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
     {
         Kokkos::deep_copy(

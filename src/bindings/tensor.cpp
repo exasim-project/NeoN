@@ -23,7 +23,7 @@ namespace NeoN::bindings
 namespace
 {
 
-void checkIndex(size_t i, size_t j)
+void checkIndex(sizeType i, sizeType j)
 {
     if (i >= 3 || j >= 3) throw std::out_of_range("Tensor index out of range");
 }
@@ -77,7 +77,7 @@ void registerTensor(nb::module_& m)
                     );
                 }
                 new (&self) NeoN::Tensor();
-                for (size_t k = 0; k < 9; ++k)
+                for (sizeType k = 0; k < 9; ++k)
                 {
                     self.data()[k] = values[k];
                 }
@@ -88,7 +88,7 @@ void registerTensor(nb::module_& m)
 
         .def(
             "__getitem__",
-            [](const NeoN::Tensor& t, std::pair<size_t, size_t> ij)
+            [](const NeoN::Tensor& t, std::pair<sizeType, sizeType> ij)
             {
                 checkIndex(ij.first, ij.second);
                 return t(ij.first, ij.second);
@@ -98,7 +98,7 @@ void registerTensor(nb::module_& m)
         )
         .def(
             "__setitem__",
-            [](NeoN::Tensor& t, std::pair<size_t, size_t> ij, NeoN::scalar value)
+            [](NeoN::Tensor& t, std::pair<sizeType, sizeType> ij, NeoN::scalar value)
             {
                 checkIndex(ij.first, ij.second);
                 t(ij.first, ij.second) = value;
@@ -183,7 +183,7 @@ void registerTensor(nb::module_& m)
             "__array__",
             [](NeoN::Tensor& self)
             {
-                size_t shape[2] {3, 3};
+                sizeType shape[2] {3, 3};
                 return nb::ndarray<NeoN::scalar, nb::numpy, nb::c_contig>(self.data(), 2, shape);
             },
             nb::rv_policy::reference_internal,

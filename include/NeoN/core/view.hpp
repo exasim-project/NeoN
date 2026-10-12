@@ -66,26 +66,26 @@ public:
             }
             else
             {
-                return std::span<ValueType>::operator[](static_cast<size_t>(index));
+                return std::span<ValueType>::operator[](static_cast<sizeType>(index));
             }
         }
 #endif
-        return std::span<ValueType>::operator[](static_cast<size_t>(index));
+        return std::span<ValueType>::operator[](static_cast<sizeType>(index));
     }
 
     KOKKOS_INLINE_FUNCTION
-    size_t size() const { return base::size(); }
+    sizeType size() const { return base::size(); }
 
     KOKKOS_INLINE_FUNCTION
     View<ValueType> subview(localIdx start, localIdx length) const
     {
-        return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
+        return base::subspan(static_cast<sizeType>(start), static_cast<sizeType>(length));
     }
 
     KOKKOS_INLINE_FUNCTION
     View<ValueType> subview(localIdx start) const
     {
-        return base::subspan(static_cast<size_t>(start));
+        return base::subspan(static_cast<sizeType>(start));
     }
 };
 

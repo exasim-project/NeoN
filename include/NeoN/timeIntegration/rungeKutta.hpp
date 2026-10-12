@@ -178,7 +178,7 @@ private:
      * @param exec The executor of the field being integrated in time.
      * @param size The size of the vectors to be initialized
      */
-    void initSUNVector(const Executor& exec, size_t size);
+    void initSUNVector(const Executor& exec, sizeType size);
 
     /**
      * @brief Initializes the initial conditions for the solver.

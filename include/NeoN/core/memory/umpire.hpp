@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/memory/allocator.hpp"
 
 #if NF_WITH_UMPIRE
@@ -23,7 +24,7 @@ private:
 
 public:
 
-    static void setupUmpirePool(MemorySpace memSpace, size_t size);
+    static void setupUmpirePool(MemorySpace memSpace, sizeType size);
 
     static auto getUmpirePool(MemorySpace memSpace)
     {
@@ -49,9 +50,9 @@ class UmpireAllocator : public AllocatorStrategy
 
 public:
 
-    void* alloc(size_t size) override;
+    void* alloc(sizeType size) override;
 
-    void* realloc(void* ptr, size_t size) override;
+    void* realloc(void* ptr, sizeType size) override;
 
     void free(void* ptr) override;
 
@@ -64,9 +65,9 @@ class UmpirePoolAllocator : public AllocatorStrategy
 
 public:
 
-    void* alloc(size_t size) override;
+    void* alloc(sizeType size) override;
 
-    void* realloc(void* ptr, size_t size) override;
+    void* realloc(void* ptr, sizeType size) override;
 
     void free(void* ptr) override;
 

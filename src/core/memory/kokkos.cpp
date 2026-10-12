@@ -7,7 +7,7 @@
 namespace NeoN
 {
 
-void* KokkosAllocator::alloc(size_t size)
+void* KokkosAllocator::alloc(sizeType size)
 {
     switch (memSpace_)
     {
@@ -24,7 +24,7 @@ void* KokkosAllocator::alloc(size_t size)
     }
 }
 
-void* KokkosAllocator::realloc(void* ptr, size_t size)
+void* KokkosAllocator::realloc(void* ptr, sizeType size)
 {
     switch (memSpace_)
     {
