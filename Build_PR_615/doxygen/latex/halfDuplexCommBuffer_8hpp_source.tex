@@ -30,7 +30,7 @@
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ There\ is\ also\ an\ MPI\ environment\ value\ for\ that,\ but\ somehow\ it\ doesn't\ work\ using\ that}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ Also\ reserve\ 10\ tags\ for\ other\ uses}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ maxTagValue\ =\ 32767\ -\/\ 10;}
-\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00035}00035\ \ \ \ \ std::size\_t\ tag\ =\ std::hash<std::string>\ \{\}(str);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ tag\ =\ std::hash<std::string>\ \{\}(str);}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00036}00036\ \ \ \ \ tag\ \&=\ 0x7FFFFFFF;\ \textcolor{comment}{//\ turn\ 'int'\ signed\ bit\ to\ 0,\ MPI\ does\ not\ like\ negative\ tags.}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(tag)\ \%\ maxTagValue)\ +\ 10;}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00038}00038\ \}}
