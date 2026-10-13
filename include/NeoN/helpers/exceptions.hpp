@@ -5,6 +5,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <utility>
 #include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
