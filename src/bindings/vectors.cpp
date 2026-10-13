@@ -169,11 +169,6 @@ void registerVectors(nb::module_& m)
         m, "LabelVector", "A vector of label (integer) values with executor support"
     );
 
-    // Vector<localIdx> - CSR column/row-offset storage (Matrix::colIdxs()/rowOffs()).
-    // localIdx == label for some NeoN_DP_LABEL/NeoN_US_IDX combinations (binding it
-    // twice under two names would abort at registration), but a distinct type for
-    // others (e.g. NeoN_US_IDX=ON: localIdx is uint32_t, label is signed) - bind it
-    // separately only when it actually differs.
     if constexpr (!std::is_same_v<NeoN::localIdx, NeoN::label>)
     {
         declare_vector<NeoN::localIdx>(
