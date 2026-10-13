@@ -29,9 +29,8 @@ namespace detail
  * @returns A function that takes a source and an destination executor
  */
 template<typename ValueType>
-auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
+auto deepCopyVisitor(sizeType size, const ValueType* srcPtr, ValueType* dstPtr)
 {
-    sizeType size = static_cast<sizeType>(ssize);
     return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
     {
         Kokkos::deep_copy(
