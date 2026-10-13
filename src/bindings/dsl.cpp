@@ -280,6 +280,14 @@ void registerDSL(nb::module_& m)
         nb::keep_alive<0, 1>(),
         nb::keep_alive<0, 2>()
     );
+    // Density-weighted ddt(rho, T) overload (two scalar field args, e.g. an energy
+    // equation's ddt(rho, he) or a compressible pEqn's ddt(psi, p)).
+    imp_m.def(
+        "ddt",
+        [](ScalarVolField& rho, ScalarVolField& phi) { return dsl::imp::ddt<scalar>(rho, phi); },
+        nb::keep_alive<0, 1>(),
+        nb::keep_alive<0, 2>()
+    );
     imp_m.def("div", &dsl::imp::div<scalar>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
     imp_m.def("div", &dsl::imp::div<Vec3>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
     imp_m.def(
@@ -294,8 +302,22 @@ void registerDSL(nb::module_& m)
     imp_m.def("susp", &dsl::imp::susp<Vec3>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
 
     // Explicit factories
-    exp_m.def("ddt", &dsl::exp::ddt<scalar>, nb::keep_alive<0, 1>());
-    exp_m.def("ddt", &dsl::exp::ddt<Vec3>, nb::keep_alive<0, 1>());
+    exp_m.def(
+        "ddt",
+        [](ScalarVolField& phi) { return dsl::exp::ddt<scalar>(phi); },
+        nb::keep_alive<0, 1>()
+    );
+    exp_m.def(
+        "ddt", [](VectorVolField& phi) { return dsl::exp::ddt<Vec3>(phi); }, nb::keep_alive<0, 1>()
+    );
+    // Density-weighted explicit ddt(rho, K) overload (two scalar field args, e.g. an
+    // energy equation's explicit kinetic-energy transport term).
+    exp_m.def(
+        "ddt",
+        [](ScalarVolField& rho, ScalarVolField& phi) { return dsl::exp::ddt<scalar>(rho, phi); },
+        nb::keep_alive<0, 1>(),
+        nb::keep_alive<0, 2>()
+    );
     exp_m.def(
         "div",
         [](const ScalarSurfField& flux, const ScalarVolField& phi)
