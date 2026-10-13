@@ -285,9 +285,9 @@ public:
     /**
      * @brief Gets the number of documents in the collection.
      *
-     * @return std::size_t The number of documents.
+     * @return sizeType The number of documents.
      */
-    std::size_t size() const { return docs_.size(); }
+    sizeType size() const { return docs_.size(); }
 
     /**
      * @brief Gets a const reference to the database.
