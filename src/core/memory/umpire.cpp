@@ -32,7 +32,7 @@ bool UmpireMempoolHandler::hasPool(MemorySpace memSpace)
     return false;
 }
 
-void UmpireMempoolHandler::setupUmpirePool(MemorySpace memSpace, size_t size)
+void UmpireMempoolHandler::setupUmpirePool(MemorySpace memSpace, sizeType size)
 {
     auto& rm = umpire::ResourceManager::getInstance();
 
@@ -59,7 +59,7 @@ void UmpireMempoolHandler::setupUmpirePool(MemorySpace memSpace, size_t size)
 }
 
 
-void* UmpireAllocator::alloc(size_t size)
+void* UmpireAllocator::alloc(sizeType size)
 {
     auto& rm = umpire::ResourceManager::getInstance();
     switch (memSpace_)
@@ -80,7 +80,7 @@ void* UmpireAllocator::alloc(size_t size)
     return nullptr;
 }
 
-void* UmpireAllocator::realloc(void* ptr, size_t size)
+void* UmpireAllocator::realloc(void* ptr, sizeType size)
 {
     auto& rm = umpire::ResourceManager::getInstance();
     return rm.reallocate(ptr, size);
@@ -102,13 +102,13 @@ void UmpireAllocator::free(void* ptr)
     }
 }
 
-void* UmpirePoolAllocator::alloc(size_t size)
+void* UmpirePoolAllocator::alloc(sizeType size)
 {
     auto allocator = UmpireMempoolHandler::getUmpirePool(memSpace_);
     return allocator.allocate(size);
 }
 
-void* UmpirePoolAllocator::realloc(void* ptr, size_t size)
+void* UmpirePoolAllocator::realloc(void* ptr, sizeType size)
 {
     auto& rm = umpire::ResourceManager::getInstance();
     return rm.reallocate(ptr, size);
@@ -122,13 +122,13 @@ void UmpirePoolAllocator::free(void* ptr)
 
 #else
 
-void* UmpireAllocator::alloc(size_t size)
+void* UmpireAllocator::alloc(sizeType size)
 {
     NF_ERROR_EXIT("Not implemented. Build NeoN with -DNeoN_WITH_UMPIRE");
     return nullptr;
 }
 
-void* UmpireAllocator::realloc(void* ptr, size_t size)
+void* UmpireAllocator::realloc(void* ptr, sizeType size)
 {
     NF_ERROR_EXIT("Not implemented. Build NeoN with -DNeoN_WITH_UMPIRE");
     return nullptr;
@@ -139,12 +139,12 @@ void UmpireAllocator::free(void* ptr)
     NF_ERROR_EXIT("Not implemented. Build NeoN with -DNeoN_WITH_UMPIRE");
 }
 
-void* UmpirePoolAllocator::alloc(size_t size)
+void* UmpirePoolAllocator::alloc(sizeType size)
 {
     NF_ERROR_EXIT("Not implemented. Build NeoN with -DNeoN_WITH_UMPIRE");
 }
 
-void* UmpirePoolAllocator::realloc(void* ptr, size_t size)
+void* UmpirePoolAllocator::realloc(void* ptr, sizeType size)
 {
     NF_ERROR_EXIT("Not implemented. Build NeoN with -DNeoN_WITH_UMPIRE");
     return nullptr;

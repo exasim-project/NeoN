@@ -127,7 +127,7 @@ TEST_CASE("linearUpwind is exact for a linear scalar field")
     auto interior = [&](localIdx celli)
     {
         const Vec3 p = cc[celli];
-        for (std::size_t dd = 0; dd < 3; ++dd)
+        for (sizeType dd = 0; dd < 3; ++dd)
         {
             if (p[dd] < h || p[dd] > l - h) return false;
         }
@@ -208,7 +208,7 @@ TEST_CASE("linearUpwind is exact for a linear vector field")
     auto interior = [&](localIdx celli)
     {
         const Vec3 p = cc[celli];
-        for (std::size_t dd = 0; dd < 3; ++dd)
+        for (sizeType dd = 0; dd < 3; ++dd)
         {
             if (p[dd] < h || p[dd] > l - h) return false;
         }

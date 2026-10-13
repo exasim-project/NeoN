@@ -65,9 +65,9 @@ TEST_CASE("OffDiagonal column mapping (2x2 multi-patch)")
         // the column index for original proc face pfacei.
         for (localIdx p = 0; p < nProcPatches; ++p)
         {
-            const auto patchStart = offsets[static_cast<std::size_t>(nInnerBoundaries + p)];
-            const auto patchEnd = offsets[static_cast<std::size_t>(nInnerBoundaries + p + 1)];
-            const auto neigh = neighRanks[static_cast<std::size_t>(p)];
+            const auto patchStart = offsets[static_cast<sizeType>(nInnerBoundaries + p)];
+            const auto patchEnd = offsets[static_cast<sizeType>(nInnerBoundaries + p + 1)];
+            const auto neigh = neighRanks[static_cast<sizeType>(p)];
             const auto lo = neigh * nCellsPerRank;
             const auto hi = (neigh + 1) * nCellsPerRank;
             // proc faces are laid out [nBoundaryFaces, nBoundaryFaces + nProcFaces);

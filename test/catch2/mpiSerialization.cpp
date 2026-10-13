@@ -8,6 +8,9 @@
 #include <vector>
 
 #include "mpiGlobals.hpp"
+#include "NeoN/core/primitives/label.hpp"
+
+using NeoN::sizeType;
 
 void serializeIO(volatile bool* threadShutdown)
 {
@@ -16,18 +19,12 @@ void serializeIO(volatile bool* threadShutdown)
         return;
     }
 
-    std::vector<MPI_Request> req(static_cast<std::size_t>(COMM_SIZE));
+    std::vector<MPI_Request> req(static_cast<sizeType>(COMM_SIZE));
     bool recvBuffer;
     for (int i = 0; i < COMM_SIZE; ++i)
     {
         MPI_Irecv(
-            &recvBuffer,
-            1,
-            MPI_CXX_BOOL,
-            i,
-            SERIALIZATION_TAG,
-            COMM,
-            &req[static_cast<std::size_t>(i)]
+            &recvBuffer, 1, MPI_CXX_BOOL, i, SERIALIZATION_TAG, COMM, &req[static_cast<sizeType>(i)]
         );
     }
 
@@ -74,7 +71,7 @@ void serializeIO(volatile bool* threadShutdown)
             completed,
             SERIALIZATION_TAG,
             COMM,
-            &req[static_cast<std::size_t>(completed)]
+            &req[static_cast<sizeType>(completed)]
         );
     }
 }

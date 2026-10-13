@@ -77,7 +77,7 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
                 throw std::runtime_error("configFile token list is empty");
             }
 
-            for (size_t i = 0; i + 1 < token.size(); ++i)
+            for (sizeType i = 0; i + 1 < token.size(); ++i)
             {
                 s << token.next<std::string>() << '/';
             }
@@ -216,7 +216,7 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
     static std::mutex cacheMutex;
     const std::lock_guard<std::mutex> guard {cacheMutex};
     auto& cache = gkoExecutorCache();
-    const std::size_t idx = exec.index();
+    const sizeType idx = exec.index();
     if (!cache[idx])
     {
         cache[idx] = createGkoExecutor(exec);
@@ -358,7 +358,7 @@ SolverStatsEntry solve_impl(
             )
             / 1000.0;
         return {
-            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+            static_cast<sizeType>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
         };
     }
 
@@ -380,7 +380,7 @@ SolverStatsEntry solve_impl(
     solver->apply(b, x);
 
     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
-    auto numIter = static_cast<size_t>(logger->get_num_iterations());
+    auto numIter = static_cast<sizeType>(logger->get_num_iterations());
     exec->synchronize();
 
     auto endEval = std::chrono::steady_clock::now();
@@ -436,7 +436,7 @@ SolverStats solve_impl(
     mtx->apply(one, x, neg_one, resFinal);
     auto finalNorms = colNorms(resFinal);
 
-    auto numIter = static_cast<size_t>(logger->get_num_iterations());
+    auto numIter = static_cast<sizeType>(logger->get_num_iterations());
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -653,7 +653,7 @@ SolverStats GinkgoSolver::solve(
         SolverStats stats;
         for (int i = 0; i < 3; ++i)
             stats.entries.push_back(
-                {static_cast<size_t>(l1Res.numIter),
+                {static_cast<sizeType>(l1Res.numIter),
                  l1Res.perColInitNorms[i],
                  l1Res.perColFinalNorms[i],
                  duration}
@@ -706,7 +706,8 @@ SolverStats GinkgoSolver::solve(
                         )
                                                 .count())
                       / 1000.0;
-        stats.entries.push_back({static_cast<size_t>(numIter), initResNorm, finalResNorm, duration}
+        stats.entries.push_back(
+            {static_cast<sizeType>(numIter), initResNorm, finalResNorm, duration}
         );
     }
     return stats;

@@ -28,7 +28,7 @@ std::shared_ptr<gko::LinOp> gkoVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create(
         exec,
         comm,
@@ -45,7 +45,7 @@ std::shared_ptr<gko::LinOp> gkoVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create(
         exec,
         comm,
@@ -68,7 +68,7 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create_const(
         exec,
         comm,
@@ -87,7 +87,7 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
 {
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
     using vec = gko::matrix::Dense<scalar>;
-    auto size = static_cast<std::size_t>(s);
+    auto size = static_cast<sizeType>(s);
     return gko::share(dist_vec::create_const(
         exec,
         comm,
@@ -292,7 +292,7 @@ SolverStatsEntry solve_impl_dist(
             )
             / 1000.0;
         return {
-            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+            static_cast<sizeType>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
         };
     }
 
@@ -331,7 +331,7 @@ SolverStatsEntry solve_impl_dist(
         )
         / 1000.0;
 
-    return {static_cast<size_t>(numIter), initResNorm, finalResNorm, duration};
+    return {static_cast<sizeType>(numIter), initResNorm, finalResNorm, duration};
 }
 
 SolverStats solve_impl_dist(
@@ -375,10 +375,10 @@ SolverStats solve_impl_dist(
         if (!l1Res.perColInitNorms.empty())
         {
             SolverStats stats;
-            for (std::size_t i = 0; i < l1Res.perColInitNorms.size(); ++i)
+            for (sizeType i = 0; i < l1Res.perColInitNorms.size(); ++i)
             {
                 stats.entries.push_back(
-                    {static_cast<size_t>(l1Res.numIter),
+                    {static_cast<sizeType>(l1Res.numIter),
                      l1Res.perColInitNorms[i],
                      l1Res.perColFinalNorms[i],
                      duration}
@@ -387,7 +387,7 @@ SolverStats solve_impl_dist(
             return stats;
         }
         return {
-            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+            static_cast<sizeType>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
         };
     }
 
@@ -432,7 +432,7 @@ SolverStats solve_impl_dist(
     SolverStats stats;
     for (int i = 0; i < 3; ++i)
         stats.entries.push_back(
-            {static_cast<size_t>(numIter), initNorms[i], finalNorms[i], duration}
+            {static_cast<sizeType>(numIter), initNorms[i], finalNorms[i], duration}
         );
     return stats;
 }

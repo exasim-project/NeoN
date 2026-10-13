@@ -14,7 +14,7 @@ TEST_CASE("Vector Constructors")
 
     SECTION("Copy Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::fill(a, 5.0);
         NeoN::Vector<NeoN::scalar> b(a);
@@ -67,7 +67,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator+= " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::fill(a, 5.0);
@@ -84,7 +84,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator-= " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::fill(a, 5.0);
@@ -101,7 +101,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator+ " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::Vector<NeoN::scalar> c(exec, size);
@@ -118,7 +118,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator-" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         NeoN::Vector<NeoN::scalar> c(exec, size);
@@ -136,7 +136,7 @@ TEST_CASE("Vector Operator Overloads")
 
     SECTION("Vector Operator*=" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::Vec3> a(exec, size);
         NeoN::fill(a, NeoN::Vec3 {5.0, 10.0, 15.0});
 
@@ -158,7 +158,7 @@ TEST_CASE("Vector Container Operations")
 
     SECTION("empty, size, range" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, 0);
         NeoN::Vector<NeoN::scalar> b(exec, size);
         REQUIRE(a.empty() == true);
@@ -184,6 +184,35 @@ TEST_CASE("Vector Container Operations")
         auto subview = hostA.view({1, 3});
         REQUIRE(subview[0] == 2);
         REQUIRE(subview[1] == 3);
+    }
+
+    SECTION("view range validation " + execName)
+    {
+        NeoN::Vector<NeoN::label> a(exec, {1, 2, 3});
+        auto hostA = a.copyToHost();
+        const auto& constHostA = hostA;
+
+        // valid ranges
+        REQUIRE(hostA.view({0, 3}).size() == 3);
+        REQUIRE(hostA.view({0, 0}).size() == 0);
+        REQUIRE(hostA.view({3, 3}).size() == 0);
+        REQUIRE(constHostA.view({1, 3}).size() == 2);
+
+        // end beyond size
+        REQUIRE_THROWS_AS(hostA.view({0, 4}), std::out_of_range);
+        REQUIRE_THROWS_AS(hostA.view({4, 4}), std::out_of_range);
+        REQUIRE_THROWS_AS(constHostA.view({0, 4}), std::out_of_range);
+
+        // begin after end
+        REQUIRE_THROWS_AS(hostA.view({2, 1}), std::out_of_range);
+        REQUIRE_THROWS_AS(constHostA.view({2, 1}), std::out_of_range);
+
+        // negative begin (only expressible with a signed localIdx)
+        if constexpr (std::is_signed_v<NeoN::localIdx>)
+        {
+            REQUIRE_THROWS_AS(hostA.view({-1, 2}), std::out_of_range);
+            REQUIRE_THROWS_AS(constHostA.view({-1, 2}), std::out_of_range);
+        }
     }
 
     SECTION("viewVec3" + execName)
@@ -220,7 +249,7 @@ TEST_CASE("Vector Operations")
 
     SECTION("Vector_" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Vector<NeoN::scalar> a(exec, size);
         NeoN::fill(a, 5.0);
 

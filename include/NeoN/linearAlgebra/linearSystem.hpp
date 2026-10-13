@@ -392,19 +392,19 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
             // The column index stays global (it identifies a remote cell) and is consumed by
             // Ginkgo's distributed index_map.
             rowHV[i] = faceOwnersV[nBoundaryFaces + i];
-            colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<std::size_t>(i)]);
+            colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<sizeType>(i)]);
         }
         // offDiagRowSortPerm[j] = proc-face index whose row/col belongs at sorted position j.
         // Already computed (and stored) in BoundaryMesh; reuse it here to avoid re-sorting.
         const auto& offDiagRowSortPerm = mesh.boundaryMesh().getRowSortPerm();
         {
-            std::vector<IndexType> sortedRow(static_cast<std::size_t>(nProcFaces));
-            std::vector<IndexType> sortedCol(static_cast<std::size_t>(nProcFaces));
+            std::vector<IndexType> sortedRow(static_cast<sizeType>(nProcFaces));
+            std::vector<IndexType> sortedCol(static_cast<sizeType>(nProcFaces));
             for (localIdx j = 0; j < nProcFaces; ++j)
             {
-                auto src = offDiagRowSortPerm[static_cast<std::size_t>(j)];
-                sortedRow[static_cast<std::size_t>(j)] = rowHV[src];
-                sortedCol[static_cast<std::size_t>(j)] = colHV[src];
+                auto src = offDiagRowSortPerm[static_cast<sizeType>(j)];
+                sortedRow[static_cast<sizeType>(j)] = rowHV[src];
+                sortedCol[static_cast<sizeType>(j)] = colHV[src];
             }
             offDiagRowIdxs = Vector<IndexType>(exec, std::move(sortedRow));
             offDiagColIdxs = Vector<IndexType>(exec, std::move(sortedCol));

@@ -9,6 +9,7 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #include <vector>
 
@@ -48,7 +49,7 @@ public:
      * @param exec Executor on which the vector data is allocated.
      * @param size Number of elements in the vector.
      */
-    Vector(const Executor& exec, localIdx size);
+    Vector(const Executor& exec, sizeType size);
 
     /**
      * @brief Creates a Vector with the given size from existing data on an executor.
@@ -61,7 +62,7 @@ public:
     Vector(
         const Executor& exec,
         const ValueType* in,
-        localIdx size,
+        sizeType size,
         Executor hostExec = SerialExecutor()
     );
 
@@ -72,7 +73,7 @@ public:
      * @param size Number of elements in the Vector.
      * @param value Value used to initialize every element.
      */
-    Vector(const Executor& exec, localIdx size, ValueType value);
+    Vector(const Executor& exec, sizeType size, ValueType value);
 
     /**
      * @brief Creates a Vector from a std::vector on the given executor.
@@ -272,7 +273,7 @@ public:
      *
      * @param size New number of elements.
      */
-    void resize(const localIdx size);
+    void resize(const sizeType size);
 
     /**
      * @brief Returns a pointer to the underlying Vector data.
@@ -328,7 +329,7 @@ public:
      *
      * @return Number of elements.
      */
-    [[nodiscard]] localIdx size() const { return size_; }
+    [[nodiscard]] sizeType size() const { return size_; }
 
     /**
      * @brief Returns the number of elements as a label.
@@ -359,10 +360,7 @@ public:
      *
      * @return View of the Vector data.
      */
-    [[nodiscard]] View<ValueType> view() &
-    {
-        return View<ValueType>(data_, static_cast<size_t>(size_));
-    }
+    [[nodiscard]] View<ValueType> view() & { return View<ValueType>(data_, size_); }
 
     /**
      * @brief Returns a read-only, non-owning view of the Vector data.
@@ -371,7 +369,7 @@ public:
      */
     [[nodiscard]] View<const ValueType> view() const&
     {
-        return View<const ValueType>(data_, static_cast<size_t>(size_));
+        return View<const ValueType>(data_, size_);
     }
 
     /**
@@ -392,8 +390,9 @@ public:
      */
     [[nodiscard]] View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
+        NeoN::validateRange(range, size());
         return View<ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
+            data_ + range.first, static_cast<sizeType>(range.second - range.first)
         );
     }
 
@@ -405,8 +404,9 @@ public:
      */
     [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
+        NeoN::validateRange(range, size());
         return View<const ValueType>(
-            data_ + range.first, static_cast<size_t>(range.second - range.first)
+            data_ + range.first, static_cast<sizeType>(range.second - range.first)
         );
     }
 
@@ -415,11 +415,14 @@ public:
      *
      * @return The half-open index range [0, size()).
      */
-    [[nodiscard]] std::pair<localIdx, localIdx> range() const { return {0, size()}; }
+    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const
+    {
+        return {0, NeoN::toLocalIdx(size())};
+    }
 
 private:
 
-    localIdx size_ {0};         //!< Size of the field.
+    sizeType size_ {0};         //!< Size of the field.
     ValueType* data_ {nullptr}; //!< Pointer to the field data.
     const Executor exec_;       //!< Executor associated with the field. (CPU, GPU, openMP, etc.)
 

@@ -21,6 +21,7 @@
 #include <unordered_map>
 
 #include "error.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {

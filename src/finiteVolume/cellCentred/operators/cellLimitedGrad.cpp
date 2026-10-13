@@ -400,7 +400,7 @@ void computeCellLimitedGradTensor(
                 const auto facei = cellFaces[sIdx];
                 const auto other = (owner[facei] == celli) ? neighbour[facei] : owner[facei];
                 const Vec3 dU = uV[other] - uOwn;
-                for (size_t c = 0; c < 3; ++c)
+                for (sizeType c = 0; c < 3; ++c)
                 {
                     mx[c] = Kokkos::max(mx[c], dU[c]);
                     mn[c] = Kokkos::min(mn[c], dU[c]);
@@ -420,7 +420,7 @@ void computeCellLimitedGradTensor(
         NEON_LAMBDA(const localIdx bfi) {
             const auto own = bOwner[bfi];
             const Vec3 dU = uBoundary[bfi] - uV[own];
-            for (size_t c = 0; c < 3; ++c)
+            for (sizeType c = 0; c < 3; ++c)
             {
                 Kokkos::atomic_max(&maxD[own][c], dU[c]);
                 Kokkos::atomic_min(&minD[own][c], dU[c]);
@@ -438,7 +438,7 @@ void computeCellLimitedGradTensor(
                 const auto bfi = nBoundaryFaces + procFacei;
                 const auto own = bOwner[bfi];
                 const Vec3 dU = uBoundary[bfi] - uV[own];
-                for (size_t c = 0; c < 3; ++c)
+                for (sizeType c = 0; c < 3; ++c)
                 {
                     Kokkos::atomic_max(&maxD[own][c], dU[c]);
                     Kokkos::atomic_min(&minD[own][c], dU[c]);
@@ -458,7 +458,7 @@ void computeCellLimitedGradTensor(
             Vec3 mn = minD[celli];
             if (k < scalar(1))
             {
-                for (size_t c = 0; c < 3; ++c)
+                for (sizeType c = 0; c < 3; ++c)
                 {
                     const scalar d = (scalar(1) / k - scalar(1)) * (mx[c] - mn[c]);
                     mx[c] += d;
@@ -489,7 +489,7 @@ void computeCellLimitedGradTensor(
                 const Vec3 d =
                     (owner[facei] == celli) ? ownerToFace[facei] : neighbourToFace[facei];
                 const Vec3 extrap = gc & d; // predicted delta of each U component at the face
-                for (size_t c = 0; c < 3; ++c)
+                for (sizeType c = 0; c < 3; ++c)
                 {
                     l[c] = Kokkos::min(l[c], cellLimiterRatio(extrap[c], mx[c], mn[c]));
                 }
@@ -508,7 +508,7 @@ void computeCellLimitedGradTensor(
         NEON_LAMBDA(const localIdx bfi) {
             const auto own = bOwner[bfi];
             const Vec3 extrap = g[own] & (bFaceC[bfi] - bOwnerC[bfi]);
-            for (size_t c = 0; c < 3; ++c)
+            for (sizeType c = 0; c < 3; ++c)
             {
                 Kokkos::atomic_min(
                     &lim[own][c], cellLimiterRatio(extrap[c], maxD[own][c], minD[own][c])
@@ -527,7 +527,7 @@ void computeCellLimitedGradTensor(
                 const auto bfi = nBoundaryFaces + procFacei;
                 const auto own = bOwner[bfi];
                 const Vec3 extrap = g[own] & (bFaceC[bfi] - bOwnerC[bfi]);
-                for (size_t c = 0; c < 3; ++c)
+                for (sizeType c = 0; c < 3; ++c)
                 {
                     Kokkos::atomic_min(
                         &lim[own][c], cellLimiterRatio(extrap[c], maxD[own][c], minD[own][c])
@@ -546,10 +546,10 @@ void computeCellLimitedGradTensor(
             const Vec3 l = lim[celli];
             const scalar s = operatorScaling[celli];
             Tensor gc = g[celli];
-            for (size_t i = 0; i < 3; ++i)
+            for (sizeType i = 0; i < 3; ++i)
             {
                 const scalar si = l[i] * s;
-                for (size_t j = 0; j < 3; ++j)
+                for (sizeType j = 0; j < 3; ++j)
                 {
                     gc(i, j) *= si;
                 }

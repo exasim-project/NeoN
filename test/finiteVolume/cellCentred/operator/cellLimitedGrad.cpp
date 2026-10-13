@@ -275,7 +275,7 @@ TEST_CASE("cellLimited tensor gradient")
 
         for (localIdx i = 1; i < nCells - 1; ++i)
         {
-            for (size_t cmpt = 0; cmpt < 3; ++cmpt)
+            for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
             {
                 // gradient of U_cmpt in x is genuinely non-trivial and unclipped
                 REQUIRE(std::abs(hBaseV[i](cmpt, 0)) > 1e-6);
@@ -300,7 +300,7 @@ TEST_CASE("cellLimited tensor gradient")
         bool anyClipped = false;
         for (localIdx i = 1; i < nCells - 1; ++i)
         {
-            for (size_t cmpt = 0; cmpt < 3; ++cmpt)
+            for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
             {
                 const scalar magBase = std::abs(hBaseV[i](cmpt, 0));
                 const scalar magLim = std::abs(hLimV[i](cmpt, 0));
@@ -329,7 +329,7 @@ TEST_CASE("cellLimited tensor gradient")
 
         for (localIdx i = 1; i < nCells - 1; ++i)
         {
-            for (size_t cmpt = 0; cmpt < 3; ++cmpt)
+            for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
             {
                 REQUIRE(hLimV[i](cmpt, 0) == Catch::Approx(hBaseV[i](cmpt, 0)).margin(1e-12));
             }
