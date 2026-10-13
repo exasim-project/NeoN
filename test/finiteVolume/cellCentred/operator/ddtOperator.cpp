@@ -88,6 +88,32 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         }
     }
 
+    SECTION("explicit DdtOperator density-weighted " + execName)
+    {
+        fvcc::VolumeField<NeoN::scalar>& rho =
+            fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+                CreateVector<NeoN::scalar> {.name = "rho", .mesh = mesh, .timeIndex = 1}
+            );
+
+        fill(rho.internalVector(), 2.0 * one<NeoN::scalar>());
+        fill(rho.boundaryData().value(), zero<NeoN::scalar>());
+        rho.correctBoundaryConditions();
+        fill(oldTime(rho).internalVector(), 1.0 * one<NeoN::scalar>());
+
+        auto ddtOp = fvcc::DdtOperator<TestType>(Operator::Type::Explicit, rho, phi);
+        auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
+        ddtOp.explicitOperation(source, 1.0, 0.5);
+
+        const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+        const auto [volV, vals] = views(vol, hostSource);
+
+        // => (rho^{n+1}*phi^{n+1} - rho^{n}*phi^{n})/dt*V => (2*10 - 1*(-1))/.5*V = 42V
+        for (auto ii = 0; ii < vals.size(); ++ii)
+        {
+            REQUIRE(vals[ii] == volV[0] * TestType(42.0));
+        }
+    }
+
     SECTION("implicit DdtOperator (Euler) " + execName)
     {
         NeoN::Dictionary fvSchemes;
