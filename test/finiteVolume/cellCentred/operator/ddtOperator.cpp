@@ -6,6 +6,8 @@
                             // a custom main
 #include "catch2_common.hpp"
 
+#include <type_traits>
+
 #include "NeoN/NeoN.hpp"
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
@@ -185,6 +187,75 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
                 REQUIRE(mtxValsV[ii] == (3.0 * inv2dt) * volV[0] * one<TestType>());
                 // RHS: (4 phi^n - phi^{n-1})/(2dt)
                 REQUIRE(rhsV[ii] == ((4.0 * (-1.0) - (-2.0)) * inv2dt) * volV[0] * one<TestType>());
+            }
+        }
+    }
+
+    SECTION("scalar-scalar ddt(rho, phi) free functions " + execName)
+    {
+        // dsl::exp::ddt(rho,phi)/dsl::imp::ddt(rho,phi) scalar-scalar overloads are
+        // ValueType=scalar only (e.g. ddt(rho, he), ddt(psi, p)) — not parametrised
+        // over TestType, so run this body once rather than once per TestType.
+        if constexpr (!std::is_same_v<TestType, NeoN::scalar>)
+        {
+            return;
+        }
+
+        fvcc::VolumeField<NeoN::scalar>& rho =
+            fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+                CreateVector<NeoN::scalar> {.name = "rho", .mesh = mesh, .timeIndex = 1}
+            );
+        fill(rho.internalVector(), 2.0 * one<NeoN::scalar>());
+        fill(rho.boundaryData().value(), zero<NeoN::scalar>());
+        rho.correctBoundaryConditions();
+        fill(oldTime(rho).internalVector(), 1.0 * one<NeoN::scalar>());
+
+        fvcc::VolumeField<NeoN::scalar>& T =
+            fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+                CreateVector<NeoN::scalar> {.name = "T", .mesh = mesh, .timeIndex = 1}
+            );
+        fill(T.internalVector(), 10.0 * one<NeoN::scalar>());
+        fill(T.boundaryData().value(), zero<NeoN::scalar>());
+        T.correctBoundaryConditions();
+        fill(oldTime(T).internalVector(), -1.0 * one<NeoN::scalar>());
+
+        {
+            // explicit free function: dsl::exp::ddt(rho, T)
+            auto ddtOp = dsl::exp::ddt(rho, T);
+            auto source = Vector<NeoN::scalar>(exec, T.size(), zero<NeoN::scalar>());
+            ddtOp.explicitOperation(source, 1.0, 0.5);
+
+            const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+            const auto [volV, vals] = views(vol, hostSource);
+
+            // => (2*10 - 1*(-1))/.5*V = 42V
+            for (auto ii = 0; ii < vals.size(); ++ii)
+            {
+                REQUIRE(vals[ii] == volV[0] * 42.0);
+            }
+        }
+
+        {
+            // implicit free function: dsl::imp::ddt(rho, T), BDF1
+            NeoN::Dictionary fvSchemes;
+            NeoN::Dictionary ddtSchemes;
+            ddtSchemes.insert("ddt(T)", std::string("BDF1"));
+            fvSchemes.insert("ddtSchemes", ddtSchemes);
+
+            auto ls = NeoN::la::createEmptyLinearSystem<NeoN::scalar>(mesh);
+            auto ddtOp = dsl::imp::ddt(rho, T);
+            ddtOp.read(fvSchemes);
+            ddtOp.implicitOperation(ls, 1.0, 0.5);
+
+            const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+            const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
+
+            // diag += rhoNew*(1/dt)*V = 2*2*V = 4V ; rhs += rhoOld*(1/dt)*V*T_old = 1*2*V*(-1) =
+            // -2V
+            for (auto ii = 0; ii < mtxValsV.size(); ++ii)
+            {
+                REQUIRE(mtxValsV[ii] == 4.0 * volV[0]);
+                REQUIRE(rhsV[ii] == -2.0 * volV[0]);
             }
         }
     }
