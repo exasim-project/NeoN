@@ -11,6 +11,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
 {
@@ -85,7 +86,7 @@ void fill(
     NF_DEBUG_ASSERT(start <= end, "Range must be ordered in ascending fashion");
     if (end == 0)
     {
-        end = cont.size();
+        end = toLocalIdx(cont.size());
     }
     auto viewA = cont.view();
     parallelFor(
