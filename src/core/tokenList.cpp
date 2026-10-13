@@ -6,9 +6,7 @@
 
 namespace NeoN
 {
-void logOutRange(
-    const std::out_of_range& e, const std::size_t& key, const std::vector<std::any>& data
-)
+void logOutRange(const std::out_of_range& e, const sizeType& key, const std::vector<std::any>& data)
 {
     std::cerr << "Index is out of bounds: " << key << " \n"
               << "the size is :" << data.size() << " \n"
