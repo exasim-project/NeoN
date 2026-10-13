@@ -186,6 +186,35 @@ TEST_CASE("Vector Container Operations")
         REQUIRE(subview[1] == 3);
     }
 
+    SECTION("view range validation " + execName)
+    {
+        NeoN::Vector<NeoN::label> a(exec, {1, 2, 3});
+        auto hostA = a.copyToHost();
+        const auto& constHostA = hostA;
+
+        // valid ranges
+        REQUIRE(hostA.view({0, 3}).size() == 3);
+        REQUIRE(hostA.view({0, 0}).size() == 0);
+        REQUIRE(hostA.view({3, 3}).size() == 0);
+        REQUIRE(constHostA.view({1, 3}).size() == 2);
+
+        // end beyond size
+        REQUIRE_THROWS_AS(hostA.view({0, 4}), std::out_of_range);
+        REQUIRE_THROWS_AS(hostA.view({4, 4}), std::out_of_range);
+        REQUIRE_THROWS_AS(constHostA.view({0, 4}), std::out_of_range);
+
+        // begin after end
+        REQUIRE_THROWS_AS(hostA.view({2, 1}), std::out_of_range);
+        REQUIRE_THROWS_AS(constHostA.view({2, 1}), std::out_of_range);
+
+        // negative begin (only expressible with a signed localIdx)
+        if constexpr (std::is_signed_v<NeoN::localIdx>)
+        {
+            REQUIRE_THROWS_AS(hostA.view({-1, 2}), std::out_of_range);
+            REQUIRE_THROWS_AS(constHostA.view({-1, 2}), std::out_of_range);
+        }
+    }
+
     SECTION("viewVec3" + execName)
     {
         NeoN::Vector<NeoN::Vec3> a(exec, {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
