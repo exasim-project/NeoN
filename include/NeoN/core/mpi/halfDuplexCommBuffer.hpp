@@ -32,7 +32,7 @@ inline int bufferHash(const std::string& str)
     // There is also an MPI environment value for that, but somehow it doesn't work using that
     // Also reserve 10 tags for other uses
     constexpr int maxTagValue = 32767 - 10;
-    std::size_t tag = std::hash<std::string> {}(str);
+    sizeType tag = std::hash<std::string> {}(str);
     tag &= 0x7FFFFFFF; // turn 'int' signed bit to 0, MPI does not like negative tags.
     return (static_cast<int>(tag) % maxTagValue) + 10;
 }
