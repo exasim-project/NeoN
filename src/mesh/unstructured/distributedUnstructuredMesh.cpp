@@ -524,9 +524,7 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     // multiple proc patches to the same neighbour land contiguously (in proc-patch order) within
     // that rank's block.
     auto writeCursor = sdispl; // copy: running write position per rank
-    std::vector<int> sendBuffer(
-        static_cast<sizeType>(sendCounts[static_cast<sizeType>(mpiEnviron.sizeRank())])
-    );
+    std::vector<int> sendBuffer(static_cast<sizeType>(sendCounts[mpiEnviron.sizeRank()]));
     const auto faceCellsView = faceCellsH.view();
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
@@ -545,7 +543,7 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     auto recvCounts = std::vector<int>(mpiEnviron.sizeRank(), 0);
     mpi::allToAll<int>(sendCounts.data(), 1, recvCounts.data(), 1, mpiEnviron.comm());
 
-    auto rdispl = std::vector<int>(static_cast<sizeType>(mpiEnviron.sizeRank()), 0);
+    auto rdispl = std::vector<int>(mpiEnviron.sizeRank(), 0);
     for (int r = 1; r < sizeRank; ++r)
     {
         rdispl[static_cast<sizeType>(r)] =
