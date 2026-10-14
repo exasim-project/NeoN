@@ -546,7 +546,6 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     mpi::allToAll<int>(sendCounts.data(), 1, recvCounts.data(), 1, mpiEnviron.comm());
 
     auto rdispl = std::vector<int>(static_cast<sizeType>(mpiEnviron.sizeRank()), 0);
-    const auto sizeRank = toLocalIdx(mpiEnviron.sizeRank());
     for (int r = 1; r < sizeRank; ++r)
     {
         rdispl[static_cast<sizeType>(r)] =
