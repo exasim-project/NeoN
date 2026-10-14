@@ -12,6 +12,7 @@
 
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
+using NeoN::toLocalIdx;
 using Operator = NeoN::dsl::Operator;
 
 namespace NeoN
@@ -200,7 +201,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
         const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
 
-        for (auto ii = 0; ii < mtxValsV.size(); ++ii)
+        for (auto ii = 0; ii < toLocalIdx(mtxValsV.size()); ++ii)
         {
             // => 1/dt*V => 1/.5*V = 2V
             REQUIRE(mtxValsV[ii] == 2.0 * volV[0] * one<TestType>());
@@ -230,7 +231,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
             const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
 
-            for (auto ii = 0; ii < mtxValsV.size(); ++ii)
+            for (auto ii = 0; ii < toLocalIdx(mtxValsV.size()); ++ii)
             {
                 // => 1/dt*V => 1/.5*V = 2V
                 REQUIRE(mtxValsV[ii] == (1.0 / dt) * volV[0] * one<TestType>());
@@ -249,7 +250,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             const auto [mtxValsV, volV, rhsV] = views(lsHost.matrix().values(), vol, lsHost.rhs());
 
             const scalar inv2dt = 1.0 / (2.0 * dt);
-            for (auto ii = 0; ii < mtxValsV.size(); ++ii)
+            for (auto ii = 0; ii < toLocalIdx(mtxValsV.size()); ++ii)
             {
                 // BDF2 diagonal: 3/(2dt)
                 REQUIRE(mtxValsV[ii] == (3.0 * inv2dt) * volV[0] * one<TestType>());

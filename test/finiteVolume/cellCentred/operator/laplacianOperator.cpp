@@ -8,7 +8,7 @@
 
 #include "NeoN/NeoN.hpp"
 
-
+using NeoN::toLocalIdx;
 using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
 using NeoN::finiteVolume::cellCentred::VolumeField;
 using NeoN::finiteVolume::cellCentred::SurfaceField;
@@ -320,7 +320,7 @@ TEST_CASE("laplacianOperator implicit transform diagCmpt")
 
         // expected: per cell, sum over its boundary faces of γ|S|·coeff·Δ·|n_c|
         std::vector<Vec3> expected(mesh.nCells(), Vec3(0.0, 0.0, 0.0));
-        for (NeoN::localIdx f = 0; f < mesh.nBoundaryFaces(); ++f)
+        for (NeoN::localIdx f = 0; f < toLocalIdx(mesh.nBoundaryFaces()); ++f)
         {
             const auto own = static_cast<sizeType>(ownerH.view()[f]);
             const auto n = nH.view()[f];
@@ -331,7 +331,7 @@ TEST_CASE("laplacianOperator implicit transform diagCmpt")
         }
 
         auto diagV = diagCmptH.view();
-        for (NeoN::localIdx c = 0; c < mesh.nCells(); ++c)
+        for (NeoN::localIdx c = 0; c < toLocalIdx(mesh.nCells()); ++c)
         {
             for (auto d = 0u; d < 3; ++d)
             {

@@ -8,6 +8,8 @@
 
 #include "NeoN/NeoN.hpp"
 
+using NeoN::toLocalIdx;
+
 // fixedFluxPressure differs from fixedGradient in exactly one respect: refGrad is owned by an
 // external caller (NeoFOAM::constrainPressure sets it once per pressure corrector), so
 // correctBoundaryCondition must READ it and never overwrite it with a stored uniform. These
@@ -21,7 +23,7 @@ TEST_CASE("fixedFluxPressure")
     // unit cube mesh: one cell, six single-face boundary patches, deltaCoeffs == 2.0
     auto mesh = NeoN::createSingleCellMesh(exec);
     const NeoN::scalar deltaCoeff = 2.0;
-    const auto nBnd = mesh.nBoundaryFaces();
+    const auto nBnd = toLocalIdx(mesh.nBoundaryFaces());
 
     NeoN::Field<NeoN::scalar> domainVector(exec, mesh.nCells(), mesh.boundaryMesh().offset());
     NeoN::fill(domainVector.internalVector(), 1.0);
