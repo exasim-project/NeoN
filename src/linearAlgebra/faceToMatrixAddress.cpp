@@ -95,8 +95,7 @@ void setBoundarySparsityPatternImpl(
     // in boundaryMatrix and reversed by removeBoundaryContributions. boundaryMesh().faceOwners()
     // is laid out [physical | processor]; in serial nProcBoundaryFaces() == 0 so the pattern is
     // unchanged.
-    const auto nBoundaryFaces =
-        static_cast<sizeType>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
+    const auto nBoundaryFaces = mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces();
     const auto diagOffsV = diagOffs.view();
     const auto faceCellsV = mesh.boundaryMesh().faceOwners().view();
     NF_ASSERT(nBoundaryFaces == rowIdx.size(), "Inconsistent size");
@@ -127,8 +126,8 @@ void setOffDiagonalSparsityPatternImpl(
 )
 {
     const auto exec = mesh.exec();
-    const auto nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
-    const auto nProcFaces = static_cast<sizeType>(mesh.nProcBoundaryFaces());
+    const auto nBoundaryFaces = toLocalIdx(mesh.nBoundaryFaces());
+    const auto nProcFaces = mesh.nProcBoundaryFaces();
     const auto faceCellsV = mesh.boundaryMesh().faceOwners().view();
     NF_ASSERT(nProcFaces == rowIdx.size(), "Inconsistent size");
     NF_ASSERT(nProcFaces == colIdx.size(), "Inconsistent size");
@@ -374,8 +373,7 @@ createBoundarySparsityPattern<CooSparsityPattern<localIdx>>(
 )
 {
     const auto exec = mesh.exec();
-    const auto nBoundaryFaces =
-        static_cast<localIdx>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
+    const auto nBoundaryFaces = mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces();
     Vector<localIdx> rowIdx(exec, nBoundaryFaces, 0);
     Vector<localIdx> colIdx(exec, nBoundaryFaces, 0);
     setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);
@@ -392,8 +390,7 @@ createBoundarySparsityPattern<CsrSparsityPattern<localIdx>>(
 )
 {
     const auto exec = mesh.exec();
-    const auto nBoundaryFaces =
-        static_cast<localIdx>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
+    const auto nBoundaryFaces = mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces();
     Vector<localIdx> rowIdx(exec, nBoundaryFaces, 0);
     Vector<localIdx> colIdx(exec, nBoundaryFaces, 0);
     setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);
@@ -410,7 +407,7 @@ createOffDiagonalSparsityPattern<CooSparsityPattern<localIdx>>(
 )
 {
     const auto exec = mesh.exec();
-    const auto nProcFaces = static_cast<localIdx>(mesh.nProcBoundaryFaces());
+    const auto nProcFaces = mesh.nProcBoundaryFaces();
     Vector<localIdx> rowIdx(exec, nProcFaces, 0);
     Vector<localIdx> colIdx(exec, nProcFaces, 0);
 
@@ -421,7 +418,7 @@ createOffDiagonalSparsityPattern<CooSparsityPattern<localIdx>>(
 #endif
     setOffDiagonalSparsityPatternImpl(mesh, recvIdx, rowIdx, colIdx);
     return std::make_shared<const CooSparsityPattern<localIdx>>(
-        std::move(colIdx), std::move(rowIdx), Dimensions {mesh.nCells(), nProcFaces}
+        std::move(colIdx), std::move(rowIdx), Dimensions {mesh.nCells(), toLocalIdx(nProcFaces)}
     );
 }
 
@@ -432,7 +429,7 @@ createOffDiagonalSparsityPattern<CsrSparsityPattern<localIdx>>(
 )
 {
     const auto exec = mesh.exec();
-    const auto nProcFaces = static_cast<localIdx>(mesh.nProcBoundaryFaces());
+    const auto nProcFaces = mesh.nProcBoundaryFaces();
     Vector<localIdx> rowIdx(exec, nProcFaces, 0);
     Vector<localIdx> colIdx(exec, nProcFaces, 0);
 
@@ -444,7 +441,7 @@ createOffDiagonalSparsityPattern<CsrSparsityPattern<localIdx>>(
     setOffDiagonalSparsityPatternImpl(mesh, recvIdx, rowIdx, colIdx);
     auto rowPtrs = rowsToRowOffs(rowIdx);
     return std::make_shared<const CsrSparsityPattern<localIdx>>(
-        std::move(colIdx), std::move(rowPtrs), Dimensions {mesh.nCells(), nProcFaces}
+        std::move(colIdx), std::move(rowPtrs), Dimensions {mesh.nCells(), toLocalIdx(nProcFaces)}
     );
 }
 
