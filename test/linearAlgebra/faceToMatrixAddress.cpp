@@ -18,8 +18,8 @@ TEST_CASE("FaceToMatrixAddress")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    auto nCells = 10;
-    auto nFaces = 9;
+    const localIdx nCells = 10;
+    const sizeType nFaces = 9;
 
     // TODO use 2D/3D versions of create1DUniform mesh
     auto mesh = create1DUniformMesh(exec, nCells);
