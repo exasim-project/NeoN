@@ -40,7 +40,7 @@
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00036}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab918b7425253d07393f1e18b71aa4e22}{00036}}\ std::vector<BoundaryType>\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab918b7425253d07393f1e18b71aa4e22}{createCalculatedBCs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00037}00037\ \{}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00038}00038\ \ \ \ \ std::vector<BoundaryType>\ bcs;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00039}00039\ \ \ \ \ bcs.reserve(\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\textcolor{keyword}{>}(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a7efa2c053e06c7308a780236a8b3ac82}{nBoundaries}}()));}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00039}00039\ \ \ \ \ bcs.reserve(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a7efa2c053e06c7308a780236a8b3ac82}{nBoundaries}}());}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00040}00040\ }
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID\ =\ 0;\ patchID\ <\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a7efa2c053e06c7308a780236a8b3ac82}{nBoundaries}}();\ patchID++)}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00042}00042\ \ \ \ \ \{}
@@ -54,7 +54,7 @@
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00050}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a414c82b2d4caf60720f2acddb8cb7749}{00050}}\ std::vector<BoundaryType>\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a414c82b2d4caf60720f2acddb8cb7749}{createCalculatedProcBCs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00051}00051\ \{}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00052}00052\ \ \ \ \ std::vector<BoundaryType>\ bcs;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00053}00053\ \ \ \ \ bcs.reserve(\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\textcolor{keyword}{>}(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a7efa2c053e06c7308a780236a8b3ac82}{nBoundaries}}()));}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00053}00053\ \ \ \ \ bcs.reserve(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a7efa2c053e06c7308a780236a8b3ac82}{nBoundaries}}());}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ Distributed-\/aware\ 'calculated':\ physical\ patches\ get\ the\ calculated\ BC\ (the\ value\ is\ computed}}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{//\ by\ an\ operator),\ but\ processor\ (coupled)\ patches\ must\ carry\ the\ processor\ halo-\/exchange\ BC\ so}}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//\ that\ a\ single\ correctBoundaryConditions()\ fills\ their\ tail\ with\ the\ NEIGHBOUR\ cell\ value}}
