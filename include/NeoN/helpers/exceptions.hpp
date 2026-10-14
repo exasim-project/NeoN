@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string_view>
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/error.hpp"
 
 namespace NeoN
 {
@@ -87,11 +88,11 @@ public:
         const std::string& clarification
     )
         : Error(
-              file,
-              line,
-              func + ": Trying to perform binary operation " + " " + std::to_string(lengthA) + ", "
-                  + std::to_string(lengthB) + " " + clarification
-          )
+            file,
+            line,
+            func + ": Trying to perform binary operation " + " " + std::to_string(lengthA) + ", "
+                + std::to_string(lengthB) + " " + clarification
+        )
     {}
 };
 
