@@ -12,6 +12,7 @@ namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 using Scalar = NeoN::scalar;
 using NeoN::sizeType;
+using NeoN::toLocalIdx;
 using Vec3 = NeoN::Vec3;
 using VolScalar = fvcc::VolumeField<Scalar>;
 using VolVector = fvcc::VolumeField<Vec3>;
@@ -76,12 +77,12 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         const Scalar invDt = 1.0 / dt;
 
         // For single-cell mesh all faces are boundary faces; the test uses nBoundaryFaces
-        const auto nBndFaces = mesh.nBoundaryFaces();
+        const auto nBndFaces = toLocalIdx(mesh.nBoundaryFaces());
 
         // Helper: expected values for boundary faces (host-side)
         auto expectedFrom = [&](const SurfScalar& flux0Field)
         {
-            std::vector<Scalar> e(nBndFaces, 0.0);
+            std::vector<Scalar> e(mesh.nBoundaryFaces(), 0.0);
             auto flux0FieldH = flux0Field.boundaryData().value().copyToHost();
             auto flux0FieldV = flux0FieldH.view();
 
@@ -109,7 +110,7 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
 
             NeoN::parallelFor(
                 exec,
-                {sizeType(0), nBndFaces},
+                {0, nBndFaces},
                 NEON_LAMBDA(const NeoN::localIdx i) { flux0BV2[i] = (sfV2[i] & uf0BV2[i]); }
             );
 
