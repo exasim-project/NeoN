@@ -6,6 +6,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 
 namespace NeoN::la
@@ -190,7 +191,7 @@ Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows)
 {
     auto rowsHost = rows.copyToHost();
     const auto rowsV = rowsHost.view();
-    const auto nnz = rowsV.size();
+    const auto nnz = toLocalIdx(rowsV.size());
 
     if (nnz == 0)
     {
