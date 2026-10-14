@@ -91,7 +91,7 @@ public:
      *
      * @return The size of the internal field
      */
-    localIdx size() const { return field_.internalVector().size(); }
+    sizseType size() const { return field_.internalVector().size(); }
 
     /**
      * @brief Returns a const reference to the boundary field.
