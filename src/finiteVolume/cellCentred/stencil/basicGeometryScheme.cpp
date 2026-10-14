@@ -61,7 +61,7 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
 
     // Gather the owner-cell centre of each processor face on the device, so that only
     // the nProcFaces Vec3s actually exchanged reach the host.
-    Vector<Vec3> ownCentreDev(exec, nProcFaces, zero<Vec3>());
+    Vector<Vec3> ownCentreDev(exec, static_cast<sizeType>(nProcFaces), zero<Vec3>());
     {
         auto ownView = ownCentreDev.view();
         const auto cellCenters = mesh.cellCenters().view();

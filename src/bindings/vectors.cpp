@@ -128,7 +128,7 @@ declare_vector(nb::module_& m, const std::string& name, const std::string& doc =
                     using ComponentType = typename Traits::ComponentType;
 
                     std::vector<sizeType> shape;
-                    shape.push_back(static_cast<sizeType>(self.size()));
+                    shape.push_back(self.size());
                     if constexpr (Traits::components > 1)
                     {
                         shape.push_back(Traits::components);

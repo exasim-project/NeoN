@@ -82,7 +82,7 @@ TEMPLATE_TEST_CASE("BoundedDiv", "[template]", NeoN::scalar, NeoN::Vec3)
             auto res = Vector<scalar>(exec, mesh.nCells(), 0.0);
             computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
 
-            auto resExp = std::vector<NeoN::scalar>(static_cast<sizeType>(res.size()), 0);
+            auto resExp = std::vector<NeoN::scalar>(res.size(), 0);
             REQUIRE_THAT(res, Equals(resExp, Approx {1e-10}));
         }
     }
