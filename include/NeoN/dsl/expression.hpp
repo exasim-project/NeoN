@@ -314,7 +314,7 @@ public:
     }
 
     /* @brief perform all explicit operation and accumulate the result */
-    Vector<ValueType> explicitOperation(localIdx nCells) const
+    Vector<ValueType> explicitOperation(sizeType nCells) const
     {
         Vector<ValueType> source(exec_, nCells, zero<ValueType>());
         return explicitOperation(source);
@@ -381,7 +381,7 @@ public:
         la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
     ) const
     {
-        auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
+        auto expTmp = explicitOperation(mesh.nCells());
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
         parallelFor(
             ls.exec(),

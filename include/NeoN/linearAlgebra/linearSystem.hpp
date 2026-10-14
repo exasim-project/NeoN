@@ -366,8 +366,8 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     const auto& mi = bundle.faceToMatrixAddress;
     const auto& bSp = bundle.boundarySparsity;
     const auto exec = sp->exec();
-    const auto nCells = static_cast<localIdx>(mesh.nCells());
-    const auto nProcFaces = static_cast<localIdx>(mesh.nProcBoundaryFaces());
+    const auto nCells = toLocalIdx(mesh.nCells());
+    const auto nProcFaces = mesh.nProcBoundaryFaces();
     using IndexType = typename BoundaryMatrixType::MatrixSparsityType::SparsityIndexType;
 
     // Off-diagonal / proc-face sparsity stays per-system (comm-pattern-derived); not shared in v1.
@@ -378,7 +378,7 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     auto commPattern = computeCommunicationPattern(mesh);
     if (nProcFaces > 0)
     {
-        const localIdx nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
+        const auto nBoundaryFaces = toLocalIdx(mesh.nBoundaryFaces());
         const auto faceOwnersH = mesh.boundaryMesh().faceOwners().copyToHost();
         const auto faceOwnersV = faceOwnersH.view();
         Vector<IndexType> rowH(SerialExecutor {}, nProcFaces, 0);
