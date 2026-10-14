@@ -53,7 +53,7 @@ constexpr mpi_label_t PROC_NEIGHBOUR_CENTRE_TAG = 0x6763; // 'gc'
  *  Cnei (the neighbour face-normal distance is |n . (Cf - Cnei)|, not a separate exchange). */
 Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const UnstructuredMesh& mesh)
 {
-    const auto nProcFaces = mesh.nProcBoundaryFaces();
+    const localIdx nProcFaces = mesh.nProcBoundaryFaces();
     if (nProcFaces == 0) return Vector<Vec3>(exec, 0, zero<Vec3>());
 
     const auto& bMesh = mesh.boundaryMesh();
