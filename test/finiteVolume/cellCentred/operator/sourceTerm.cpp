@@ -167,7 +167,7 @@ TEMPLATE_TEST_CASE("SourceTerm Su constructor", "[template]", NeoN::scalar, NeoN
         auto source = Vector<TestType>(exec, coeff.size(), zero<TestType>());
         sTerm.explicitOperation(source);
 
-        auto exp = std::vector<TestType>(static_cast<sizeType>(coeff.size()), 5 * one<TestType>());
+        auto exp = std::vector<TestType>(coeff.size(), 5 * one<TestType>());
         REQUIRE_THAT(source, Equals(exp, EqualInt()));
     }
 }
