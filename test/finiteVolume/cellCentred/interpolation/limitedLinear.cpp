@@ -8,6 +8,7 @@
 
 #include "NeoN/NeoN.hpp"
 
+using NeoN::toLocalIdx;
 using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
 using NeoN::finiteVolume::cellCentred::VolumeField;
 using NeoN::finiteVolume::cellCentred::SurfaceField;
@@ -72,7 +73,7 @@ TEST_CASE("limitedLinear preserves a constant field")
     const std::vector<scalar> cellValues(10, 1.0);
     auto outHost = interpolateOnRamp(exec, cellValues, 1.0, 1.0);
 
-    for (localIdx i = 0; i < outHost.size(); i++)
+    for (localIdx i = 0; i < toLocalIdx(outHost.size()); i++)
     {
         REQUIRE(outHost.view()[i] == Catch::Approx(1.0).margin(1e-12));
     }
@@ -119,7 +120,7 @@ TEST_CASE("limitedLinear reduces to upwind at a local extremum")
     REQUIRE(outHost.view()[5] == Catch::Approx(1.0).margin(1e-12)); // upwind cell 5 -> 1
 
     // No face may exceed the range of the cell values it was built from.
-    for (localIdx i = 0; i < outHost.size(); i++)
+    for (localIdx i = 0; i < toLocalIdx(outHost.size()); i++)
     {
         REQUIRE(outHost.view()[i] >= -1e-12);
         REQUIRE(outHost.view()[i] <= 1.0 + 1e-12);
@@ -181,7 +182,7 @@ TEST_CASE("limitedLinear cellLimited leans further towards upwind")
     // Flux is +x, so the owner (lower index) is upwind on every face and central differencing sits
     // above the upwind value on this monotone profile.
     bool differs = false;
-    for (localIdx i = 0; i < plain.size(); i++)
+    for (localIdx i = 0; i < toLocalIdx(plain.size()); i++)
     {
         REQUIRE(limited.view()[i] <= plain.view()[i] + 1e-12);
         if (limited.view()[i] < plain.view()[i] - 1e-12) differs = true;

@@ -12,6 +12,7 @@
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 using Operator = NeoN::dsl::Operator;
+using NeoN::toLocalIdx;
 
 namespace NeoN
 {
@@ -76,7 +77,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         auto matHost = ls.matrix().values().copyToHost();
         auto matView = matHost.view();
         NeoN::scalar matAbsSum = 0.0;
-        for (localIdx i = 0; i < matView.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(matView.size()); ++i)
         {
             matAbsSum += std::abs(matView[i]);
         }
@@ -97,7 +98,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         auto matHost = ls.matrix().values().copyToHost();
         auto matView = matHost.view();
         NeoN::scalar matMagSum = 0.0;
-        for (localIdx i = 0; i < matView.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(matView.size()); ++i)
         {
             matMagSum += mag(matView[i]);
         }
@@ -133,7 +134,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         auto xHost = x.copyToHost();
         auto xView = xHost.view();
         NeoN::scalar xMagSum = 0.0;
-        for (localIdx i = 0; i < xView.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(xView.size()); ++i)
         {
             xMagSum += mag(xView[i]);
         }
