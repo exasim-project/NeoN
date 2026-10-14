@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
 {
@@ -58,7 +59,7 @@ public:
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
-        if (index < 0 || index >= this->size())
+        if (index < 0 || index >= toLocalIdx(this->size()))
         {
             if (abortOnFail)
             {

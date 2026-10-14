@@ -6,6 +6,7 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
 {
@@ -90,7 +91,9 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     {
         auto h = v.copyToHost();
         auto hv = h.view();
-        for (localIdx i = 0; i < h.size(); ++i)
+        const auto hSize = toLocalIdx(h.size());
+
+        for (localIdx i = 0; i < hSize; ++i)
             hv[i][0] += xOffset;
         v = h.copyToExecutor(exec);
     };
@@ -102,7 +105,8 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     auto ownerCellCentersH = baseMesh.boundaryMesh().ownerCellCenters().copyToHost();
     {
         auto v = ownerCellCentersH.view();
-        for (localIdx i = 0; i < ownerCellCentersH.size(); ++i)
+        const auto ownerCellCentersHSize = toLocalIdx(ownerCellCentersH.size());
+        for (localIdx i = 0; i < ownerCellCentersHSize; ++i)
             v[i][0] += xOffset;
     }
     auto ownerCellCentersGlobal = ownerCellCentersH.copyToExecutor(exec);
@@ -508,8 +512,9 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     // Send-displacement = prefix sum of per-rank send counts. This defines a contiguous block per
     // peer in the send buffer, so a peer that receives from two non-adjacent proc patches still
     // gets a single contiguous run (allToAllV cannot express a gapped per-peer region).
-    auto sdispl = std::vector<int>(static_cast<sizeType>(mpiEnviron.sizeRank()), 0);
-    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
+    auto sdispl = std::vector<int>(mpiEnviron.sizeRank(), 0);
+    const auto sizeRank = toLocalIdx(mpiEnviron.sizeRank());
+    for (int r = 1; r < sizeRank; ++r)
     {
         sdispl[static_cast<sizeType>(r)] =
             sdispl[static_cast<sizeType>(r - 1)] + sendCounts[static_cast<sizeType>(r - 1)];
@@ -537,11 +542,12 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
         }
     }
 
-    auto recvCounts = std::vector<int>(static_cast<sizeType>(mpiEnviron.sizeRank()), 0);
+    auto recvCounts = std::vector<int>(mpiEnviron.sizeRank(), 0);
     mpi::allToAll<int>(sendCounts.data(), 1, recvCounts.data(), 1, mpiEnviron.comm());
 
     auto rdispl = std::vector<int>(static_cast<sizeType>(mpiEnviron.sizeRank()), 0);
-    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
+    const auto sizeRnak = toLocalIdx(mpiEnviron.sizeRank());
+    for (int r = 1; r < sizeRank; ++r)
     {
         rdispl[static_cast<sizeType>(r)] =
             rdispl[static_cast<sizeType>(r - 1)] + recvCounts[static_cast<sizeType>(r - 1)];

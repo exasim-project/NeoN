@@ -8,6 +8,7 @@
 #include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/core/primitives/symmTensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #include "boundary/volume/empty.hpp"
 #include "boundary/volume/calculated.hpp"
@@ -38,7 +39,8 @@ std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
     std::vector<BoundaryType> bcs;
     bcs.reserve(mesh.nBoundaries());
 
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    for (localIdx patchID = 0; patchID < nBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("calculated")}});
         bcs.emplace_back(mesh, patchDict, patchID);
@@ -61,9 +63,10 @@ std::vector<BoundaryType> createCalculatedProcBCs(const UnstructuredMesh& mesh)
     // Processor (coupled) patches are the trailing patches of the boundary mesh;
     // nProcBoundaryPatches is 0 on a serial / non-distributed mesh, so this degenerates to
     // createCalculatedBCs there.
-    const auto nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
-    const auto firstProcPatch = mesh.nBoundaries() - nProcPatches;
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    const localIdx nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
+    const localIdx firstProcPatch = nBoundaries - nProcPatches;
+    for (localIdx patchID = 0; patchID < nBoundaries; patchID++)
     {
         const std::string type =
             (patchID >= firstProcPatch) ? std::string("processor") : std::string("calculated");
@@ -84,9 +87,10 @@ std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
     // An 'extrapolated' tail would instead hold the OWNER value, which silently degenerates
     // linear interpolation at proc faces to w*own+(1-w)*own=own (different on each rank) and so
     // makes the assembled pressure matrix non-symmetric. Only physical patches get 'extrapolated'.
-    const auto nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
-    const auto firstProcPatch = mesh.nBoundaries() - nProcPatches;
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    const localIdx nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
+    const localIdx firstProcPatch = nBoundaries - nProcPatches;
+    for (localIdx patchID = 0; patchID < nBoundaries; patchID++)
     {
         const std::string type =
             (patchID >= firstProcPatch) ? std::string("processor") : std::string("extrapolated");

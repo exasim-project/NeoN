@@ -13,6 +13,7 @@
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
@@ -113,7 +114,7 @@ public:
         // Validate on the key being present, not on the list being non-empty: an empty
         // 'fixedValues' on a non-empty patch is malformed per-face data, and testing the
         // size alone would let it through to the uniform fallback and silently apply zero.
-        if (hasPerFace && fixedValues_.size() != this->patchSize())
+        if (hasPerFace && toLocalIdx(fixedValues_.size()) != this->patchSize())
         {
             NF_THROW(
                 "'fixedValues' holds " + std::to_string(fixedValues_.size()) + " values but patch "

@@ -12,11 +12,14 @@
 
 #include "NeoN/NeoN.hpp"
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 #include "mpiGlobals.hpp"
 #include "mpiReporter.hpp"
 #include "mpiSerialization.hpp"
 
 using NeoN::sizeType;
+using NeoN::localIdx;
+using NeoN::toLocalIdx;
 std::pair<std::string, NeoN::Executor> createExecutorFromEnv();
 std::pair<NeoN::localIdx, NeoN::localIdx> createWeakScalingSizeFromEnv();
 std::pair<NeoN::localIdx, NeoN::localIdx> createStrongScalingSizeFromEnv();
@@ -34,12 +37,13 @@ std::pair<NeoN::localIdx, NeoN::localIdx> createStrongScalingSizeFromEnv();
 template<typename BoundaryType>
 std::vector<BoundaryType> createDistributedBCs(const NeoN::UnstructuredMesh& mesh)
 {
-    const auto nBoundaries = mesh.nBoundaries();
-    const auto nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
-    const auto nRegular = nBoundaries - nProcPatches;
-
     std::vector<BoundaryType> bcs;
-    bcs.reserve(nBoundaries);
+    bcs.reserve(mesh.nBoundaries());
+
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    const localIdx nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
+    const localIdx nRegular = nBoundaries - nProcPatches;
+
     for (NeoN::localIdx patchID = 0; patchID < nBoundaries; ++patchID)
     {
         const std::string type = (patchID >= nRegular) ? "processor" : "calculated";

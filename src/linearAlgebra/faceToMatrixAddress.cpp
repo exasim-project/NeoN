@@ -8,6 +8,7 @@
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #include <memory>
 #include <string>
@@ -352,6 +353,8 @@ createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const Uns
         auto cooRowIdxH = cooRowIdx.copyToHost();
         const auto rowOffsHV = rowOffsH.view();
         auto cooRowIdxHV = cooRowIdxH.view();
+        const auto nCells = toLocalIdx(mesh.nCells());
+
         for (localIdx r = 0; r < nCells; r++)
             for (localIdx j = rowOffsHV[r]; j < rowOffsHV[r + 1]; j++)
                 cooRowIdxHV[j] = r;
