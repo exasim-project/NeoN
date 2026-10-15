@@ -130,9 +130,9 @@ View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
     return extractSubView(deltaCoeffs_, offset_, i);
 }
 
-localIdx BoundaryMesh::nProcBoundaryPatches() const { return procBoundaryPatches_; }
+sizeType BoundaryMesh::nProcBoundaryPatches() const { return procBoundaryPatches_; }
 
-localIdx BoundaryMesh::nProcBoundaryFaces() const
+sizeType BoundaryMesh::nProcBoundaryFaces() const
 {
     if (nProcBoundaryPatches() == 0)
     {
