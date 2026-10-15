@@ -73,7 +73,7 @@ A simplified version of the ``parallelFor`` function is shown below.
 .. code-block:: cpp
     template<typename Executor, parallelForKernel Kernel>
     void parallelFor(
-        [[maybe_unused]] const Executor& exec, std::pair<size_t, size_t> range, Kernel kernel
+        [[maybe_unused]] const Executor& exec, std::pair<NeoN::sizeType, NeoN::sizeType> range, Kernel kernel
     )
     {
         auto [start, end] = range;
