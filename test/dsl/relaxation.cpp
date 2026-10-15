@@ -10,6 +10,7 @@
 
 using NeoN::scalar;
 using NeoN::localIdx;
+using NeoN::toLocalIdx;
 using NeoN::Vector;
 using NeoN::Vec3;
 namespace fvcc = NeoN::finiteVolume::cellCentred;
@@ -103,7 +104,7 @@ TEMPLATE_TEST_CASE(
     // Boundary conditions for the companion VolumeField (one per patch; values
     // are irrelevant — only the mesh topology / internalVector are read).
     std::vector<fvcc::VolumeBoundary<ValueType>> bcs {};
-    for (localIdx patchi = 0; patchi < mesh.nBoundaries(); ++patchi)
+    for (localIdx patchi = 0; patchi < toLocalIdx(mesh.nBoundaries()); ++patchi)
     {
         NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -517,7 +518,7 @@ TEMPLATE_TEST_CASE(
 
     // Companion boundary conditions (one per patch; only the internalVector is blended).
     std::vector<fvcc::VolumeBoundary<ValueType>> bcs {};
-    for (localIdx patchi = 0; patchi < mesh.nBoundaries(); ++patchi)
+    for (localIdx patchi = 0; patchi < toLocalIdx(mesh.nBoundaries()); ++patchi)
     {
         NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
