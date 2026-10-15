@@ -19,7 +19,7 @@ TEST_CASE("Communicator Vector Synchronization")
     // first block send (size rank)
     // second block remains the same
     // third block receive (size rank)
-    const localIdx sizeRank = toLocalIdx(mpiEnviron.sizeRank());
+    const auto sizeRank = toLocalIdx(mpiEnviron.sizeRank());
     Vector<int> field(SerialExecutor(), 3 * sizeRank);
 
     for (localIdx rank = 0; rank < sizeRank; rank++)
@@ -37,7 +37,7 @@ TEST_CASE("Communicator Vector Synchronization")
     // Set up buffer to local map, we will ignore global_idx
     CommMap rankSendMap(sizeRank);
     CommMap rankReceiveMap(sizeRank);
-    for (sizeType rank = 0; rank < sizeRank; rank++)
+    for (localIdx rank = 0; rank < sizeRank; rank++)
     {
         rankSendMap[rank].emplace_back(NodeCommMap {.local_idx = static_cast<label>(rank)});
         NodeCommMap newNode {.local_idx = static_cast<label>(2 * sizeRank + rank)};
