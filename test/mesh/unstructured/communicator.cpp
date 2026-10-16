@@ -19,27 +19,28 @@ TEST_CASE("Communicator Vector Synchronization")
     // first block send (size rank)
     // second block remains the same
     // third block receive (size rank)
-    Vector<int> field(SerialExecutor(), 3 * mpiEnviron.sizeRank());
+    const auto sizeRank = toLocalIdx(mpiEnviron.sizeRank());
+    Vector<int> field(SerialExecutor(), 3 * sizeRank);
 
-    for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); rank++)
+    for (localIdx rank = 0; rank < sizeRank; rank++)
     {
         // we send the rank numbers
         field.view()[rank] = static_cast<int>(rank);
 
         // just make sure its not a communicated value.
-        field.view()[rank + mpiEnviron.sizeRank()] = static_cast<int>(mpiEnviron.sizeRank() + rank);
+        field.view()[rank + sizeRank] = static_cast<int>(sizeRank + rank);
 
         // set to 0.0 to check if the value is communicated
-        field.view()[rank + 2 * mpiEnviron.sizeRank()] = 0;
+        field.view()[rank + 2 * sizeRank] = 0;
     }
 
     // Set up buffer to local map, we will ignore global_idx
-    CommMap rankSendMap(mpiEnviron.sizeRank());
-    CommMap rankReceiveMap(mpiEnviron.sizeRank());
-    for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); rank++)
+    CommMap rankSendMap(sizeRank);
+    CommMap rankReceiveMap(sizeRank);
+    for (localIdx rank = 0; rank < sizeRank; rank++)
     {
         rankSendMap[rank].emplace_back(NodeCommMap {.local_idx = static_cast<label>(rank)});
-        NodeCommMap newNode {.local_idx = static_cast<label>(2 * mpiEnviron.sizeRank() + rank)};
+        NodeCommMap newNode {.local_idx = static_cast<label>(2 * sizeRank + rank)};
         rankReceiveMap[rank].push_back(newNode); // got tired of fighting with clang-format.
     }
 
@@ -52,15 +53,10 @@ TEST_CASE("Communicator Vector Synchronization")
     comm.finaliseComm(field, loc);
 
     // Check the values
-    for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); rank++)
+    for (localIdx rank = 0; rank < sizeRank; rank++)
     {
         REQUIRE(field.view()[rank] == static_cast<int>(rank));
-        REQUIRE(
-            field.view()[rank + mpiEnviron.sizeRank()]
-            == static_cast<int>(mpiEnviron.sizeRank() + rank)
-        );
-        REQUIRE(
-            field.view()[rank + 2 * mpiEnviron.sizeRank()] == static_cast<int>(mpiEnviron.rank())
-        );
+        REQUIRE(field.view()[rank + sizeRank] == static_cast<int>(sizeRank + rank));
+        REQUIRE(field.view()[rank + 2 * sizeRank] == static_cast<int>(mpiEnviron.rank()));
     }
 }

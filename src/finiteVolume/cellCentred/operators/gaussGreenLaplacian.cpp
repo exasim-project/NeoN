@@ -4,6 +4,7 @@
 
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -219,8 +220,9 @@ void computeLaplacianBoundImpl(
         {
             auto diagCmptV = ls.ensureDiagCmpt().view();
             const auto bUnitNormals = mesh.boundaryMesh().faceUnitNormals().view();
+            const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
 
-            for (localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
+            for (localIdx patchID = 0; patchID < nBoundaries; ++patchID)
             {
                 if (!bcs[static_cast<sizeType>(patchID)].attributes().transformImplicit)
                 {

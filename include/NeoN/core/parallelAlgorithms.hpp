@@ -10,6 +10,7 @@
 #include "NeoN/core/logging.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #ifdef NN_WITH_KOKKOS
 #define NEON_LAMBDA KOKKOS_LAMBDA
@@ -150,9 +151,10 @@ void parallelFor(
 )
 {
     auto view = container.view();
+    const auto viewSize = toLocalIdx(view.size());
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        for (localIdx i = 0; i < view.size(); i++)
+        for (localIdx i = 0; i < viewSize; i++)
         {
             view[i] = kernel(i);
         }
@@ -162,7 +164,7 @@ void parallelFor(
         using runOn = typename Executor::exec;
         Kokkos::parallel_for(
             name,
-            Kokkos::RangePolicy<runOn>(0, view.size()),
+            Kokkos::RangePolicy<runOn>(0, viewSize),
             NEON_LAMBDA(const localIdx i) { view[i] = kernel(i); }
         );
     }

@@ -7,6 +7,7 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -126,7 +127,8 @@ void computeBoundaryGrad(
                 mesh.boundaryMesh().faceUnitNormals()
             );
 
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    for (localIdx patchID = 0; patchID < nBoundaries; ++patchID)
     {
         const auto attrs = boundaryConditions[static_cast<sizeType>(patchID)].attributes();
         const auto [start, end] = phi.boundaryData().range(patchID);
