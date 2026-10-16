@@ -1,0 +1,684 @@
+name: CI
+run-name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  schedule:
+    - cron: "00 8 * * 0" # weekly full run, Sundays 10 AM CEST (08:00 UTC)
+    - cron: "0 9 * * *" # daily sanitizer run
+  workflow_dispatch:
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
+  OMPI_MCA_rmaps_base_oversubscribe: 1
+
+concurrency:
+  group: >
+    ${{ github.workflow }}-
+    ${{ github.event_name }}-
+    ${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  # Evaluates the repository check and the PR labels once. Every other job needs it, so on
+  # forks everything is skipped.
+  gate:
+    name: Gate
+    if: github.repository == 'exasim-project/NeoN'
+    runs-on: ubuntu-latest
+    outputs:
+      lint: ${{ steps.gate.outputs.lint }}
+      build: ${{ steps.gate.outputs.build }}
+      sanitize: ${{ steps.gate.outputs.sanitize }}
+      benchmark: ${{ steps.gate.outputs.benchmark }}
+      skip-nvidia: ${{ steps.gate.outputs.skip-nvidia }}
+      skip-amd: ${{ steps.gate.outputs.skip-amd }}
+      skip-intel: ${{ steps.gate.outputs.skip-intel }}
+    steps:
+      - name: Evaluate event and labels
+        id: gate
+        env:
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          DAILY: ${{ github.event.schedule == '0 9 * * *' }}
+        run: |
+          has() { jq -e --arg l "$1" '(. // []) | index($l) != null' <<<"${LABELS:-[]}" >/dev/null; }
+          is_pr=$([[ "$GITHUB_EVENT_NAME" == pull_request ]] && echo true || echo false)
+
+          # The daily cron only runs the sanitizers
+          lint=$([[ "$DAILY" == true ]] && echo false || echo true)
+          build=$lint
+          if $is_pr && has skip-build; then build=false; fi
+
+          sanitize=true
+          if $is_pr && ! has full-ci; then sanitize=false; fi
+
+          {
+            echo "lint=$lint"
+            echo "build=$build"
+            echo "sanitize=$sanitize"
+            echo "benchmark=$($is_pr && has benchmark && echo true || echo false)"
+            echo "skip-nvidia=$(has skip-nvidia && echo true || echo false)"
+            echo "skip-amd=$(has skip-amd && echo true || echo false)"
+            echo "skip-intel=$(has skip-intel && echo true || echo false)"
+          } | tee -a "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------- static checks
+  pre-commit:
+    name: Pre-commit run
+    needs: gate
+    if: needs.gate.outputs.lint == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # auto-fix label pushes formatting fixes
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pre-commit
+          pip install identify --upgrade
+          pre-commit install
+      - name: Run pre-commit on all files
+        id: pre-commit
+        run: pre-commit run --all --color always --verbose
+      - name: Commit pre-commit fixes
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure() && steps.pre-commit.conclusion == 'failure' }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m 'fix format'
+          git push origin ${{ env.BRANCH_NAME }}
+      - name: Check for TODO DONT MERGE notes
+        if: ${{ !cancelled() }}
+        run: |
+          NTODOS="$(grep -r 'TODO DONT MERGE' --exclude-dir=.github | wc -l)"
+          echo "Found $NTODOS TODO DONT MERGE notes"
+          ! grep -q -r "TODO DONT MERGE" --exclude-dir=.github
+      - name: Check for FIXME notes
+        if: ${{ !cancelled() }}
+        uses: greole/action-fixme-check@master
+        with:
+          terms: "FIXME"
+          case-sensitive: false
+
+  changelog:
+    name: Changelog check
+    needs: gate
+    if: >
+      github.event_name == 'pull_request' &&
+      !contains(github.event.pull_request.labels.*.name, 'skip-changelog')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dangoslen/changelog-enforcer@v3
+        with:
+          changeLogPath: CHANGELOG.md
+
+  ci-script-tests:
+    name: CI script tests
+    needs: gate
+    if: needs.gate.outputs.lint == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install pytest
+      # These exercise ci/check_wheel_rpath.py, the wheel relocatability gate. They
+      # need no build: the fixtures are shared libraries compiled on the fly, which
+      # also covers the ELF side that the macOS developer machines cannot reach.
+      - name: Run CI script tests
+        run: python -m pytest test/ci -vv
+
+  iwyu:
+    name: Build with IWYU
+    needs: gate
+    if: needs.gate.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build \
+            iwyu \
+            clang-19 \
+            libomp-19-dev \
+            libopenmpi-dev \
+            openmpi-bin
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip-cache') }}
+        with:
+          path: build
+          key: static_${{ github.event.pull_request.number || github.ref_name }}_${{ github.sha }}
+          restore-keys: static_${{ github.event.pull_request.number || github.ref_name }}_
+
+      - name: Create Compilation Database
+        run: |
+          cmake --preset develop \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_WITH_GINKGO=OFF \
+            -DNeoN_WITH_SUNDIALS=OFF \
+            -DCMAKE_CXX_COMPILER=clang++-19 \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
+            -DNeoN_ENABLE_IWYU=ON \
+            -DGINKGO_BUILD_OMP=OFF \
+            -DGINKGO_ENABLE_HALF=OFF \
+            -DGINKGO_BUILD_MPI=OFF
+          cmake --build --preset develop -j 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: build
+
+  clang-tidy:
+    name: Clang-tidy Check
+    needs: iwyu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang-tidy-19 \
+            libomp-19-dev \
+            libopenmpi-dev \
+            openmpi-bin
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: build
+
+      - name: Run clang-tidy
+        run: |
+          # Create list of .cpp files belonging to this repository
+          git ls-files | grep -E "\.(cpp)" > pattern
+          # Create list of .cpp files that are in this repository and part of the
+          # compilation database
+          # also filters out " at the begin and end of the filename
+          jq ".[] | .file" build/develop/compile_commands.json \
+            | sed 's/^"\(.*\)"$/\1/' \
+            | grep -F -f pattern - > files
+          # run clang-tidy on all specified files
+          clang-tidy-19 --fix --extra-arg=-w -p build/develop $(cat files)
+      - name: Check for fixes
+        run: |
+          if [[ $(git ls-files -m | wc -l) -eq 0 ]]; then
+            exit 0
+          fi
+          echo "There are fixes available from clang-tidy."
+          echo "Please use your local clang-tidy or apply the following patch:"
+          git diff -p
+          exit 1
+
+  # ---------------------------------------------------------------- CPU builds
+  linux:
+    name: Linux ${{ matrix.compiler.CC }} ${{ matrix.preset }}
+    needs: gate
+    if: needs.gate.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - CC: clang
+            CXX: clang++
+          - CC: gcc
+            CXX: g++
+        preset: ["develop", "profiling", "production"]
+        exclude:
+          - compiler:
+              CC: gcc
+              CXX: g++
+            preset: "develop"
+          - compiler:
+              CC: clang
+              CXX: clang++
+            preset: "profiling"
+    steps:
+      - name: Checkout to repository
+        uses: actions/checkout@v4
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip-cache') }}
+        with:
+          path: build
+          key: ubuntu_build_${{ github.event.pull_request.number || github.ref_name }}_${{ matrix.compiler.CC }}_${{ matrix.preset }}_${{ github.sha }}
+          restore-keys: ubuntu_build_${{ github.event.pull_request.number || github.ref_name }}_${{ matrix.compiler.CC }}_${{ matrix.preset }}_
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build \
+            clang-19 \
+            gcc-10 \
+            libomp-16-dev \
+            build-essential \
+            libopenmpi-dev \
+            openmpi-bin
+          sudo apt-get remove -y clang-14
+          sudo rm /usr/bin/clang
+          sudo rm /usr/bin/clang++
+          sudo ln -s /usr/bin/clang-19 /usr/bin/clang
+          sudo ln -s /usr/bin/clang++-19 /usr/bin/clang++
+
+      - name: Get versions
+        run: |
+          clang --version
+          ninja --version
+          cmake --version
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install python package
+        run: |
+          # create virtual environment
+          python -m venv venv
+          source venv/bin/activate
+          pip install nanobind pytest numpy
+
+      - name: Build NeoN without Ginkgo
+        run: |
+          source venv/bin/activate
+          cmake --preset ${{ matrix.preset }} \
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_BUILD_PYTHON_BINDINGS=ON \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_WITH_GINKGO=OFF \
+            -DMPIEXEC_MAX_NUMPROCS=3 \
+            -DCMAKE_CXX_COMPILER=${{ matrix.compiler.CXX }} \
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+          cmake --build  --preset ${{ matrix.preset }}
+
+      - name: Execute unit tests NeoN
+        run: |
+          source venv/bin/activate
+          ctest --preset ${{ matrix.preset }} -E bench
+
+      - name: Install NeoN
+        run: |
+          cmake --install build/${{ matrix.preset }} --prefix $PWD/install
+          ls -la install/bin
+          ls -la install/lib
+          ./install/bin/neon_test_vector
+
+      - name: Verify installed libs resolve all dependencies
+        run: |
+          fail=0
+          for f in install/lib/lib*.so*; do
+            [ -L "$f" ] && continue
+            missing=$(ldd "$f" 2>/dev/null | grep 'not found' || true)
+            if [ -n "$missing" ]; then
+              echo "FAIL $f has unresolved deps:"
+              echo "$missing"
+              fail=1
+            fi
+          done
+          exit $fail
+
+  macos:
+    name: macOS ${{ matrix.compiler.CC }} ${{ matrix.preset }}
+    needs: gate
+    if: needs.gate.outputs.build == 'true'
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - CC: gcc
+            CXX: g++
+        preset: ["develop"]
+    steps:
+      - name: Checkout to repository
+        uses: actions/checkout@v4
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip-cache') }}
+        with:
+          path: build
+          key: macos_build_${{ github.event.pull_request.number || github.ref_name }}_${{ matrix.compiler.CC }}_${{ matrix.preset }}_${{ github.sha }}
+          restore-keys: macos_build_${{ github.event.pull_request.number || github.ref_name }}_${{ matrix.compiler.CC }}_${{ matrix.preset }}_
+
+      - name: Install dependencies
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install ninja cmake libomp open-mpi
+
+      - name: Get versions
+        run: |
+          clang --version
+          ninja --version
+          cmake --version
+
+      - name: Build NeoN without Ginkgo
+        run: |
+          CC=${{ matrix.compiler.CC }} \
+          CXX=${{ matrix.compiler.CXX }} \
+          cmake --preset ${{ matrix.preset }} \
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp/ \
+            -DNeoN_WITH_OMP=OFF \
+            -DKokkos_ENABLE_THREADS=OFF \
+            -DNeoN_WITH_GINKGO=OFF \
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+          cmake --build  --preset ${{ matrix.preset }}
+
+      - name: Execute unit tests NeoN
+        run: |
+          ctest --preset ${{ matrix.preset }}
+
+  windows:
+    name: Windows msvc
+    needs: gate
+    if: needs.gate.outputs.build == 'true'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout the latest code (shallow clone)
+        uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: seanmiddleditch/gha-setup-ninja@master
+      - name: configure
+        run: |
+          cmake --preset develop  -DKokkos_DIR="D:/dev/Kokkos/lib/cmake/Kokkos" -DNeoN_DEVEL_TOOLS=OFF -DNeoN_WITH_UMPIRE=OFF -DNeoN_WITH_GINKGO=OFF -DNeoN_WITH_MPI=OFF
+        shell: cmd
+
+      - name: build
+        run: |
+          cmake --build --preset develop
+        shell: cmd
+
+      - name: test
+        run: |
+          cmake --build --preset develop --target test
+        shell: cmd
+
+  sanitizer:
+    name: Sanitizer ${{ matrix.sanitizer }}
+    needs: gate
+    if: needs.gate.outputs.sanitize == 'true'
+    runs-on: ubuntu-latest
+    env:
+      LSAN_OPTIONS: suppressions=${{ github.workspace }}/scripts/san_ignores.txt
+    strategy:
+      fail-fast: false
+      matrix:
+        # gcc has no MemorySanitizer
+        sanitizer: [ADDRESS, UB]
+    steps:
+      - name: Checkout to repository
+        uses: actions/checkout@v4
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip-cache') }}
+        with:
+          path: build
+          key: san_build_${{ github.event.pull_request.number || github.ref_name }}_${{ matrix.sanitizer }}_${{ github.sha }}
+          restore-keys: san_build_${{ github.event.pull_request.number || github.ref_name }}_${{ matrix.sanitizer }}_
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build \
+            python3 \
+            python3-dev \
+            build-essential \
+            libopenmpi-dev \
+            openmpi-bin
+
+      - name: Get versions
+        run: |
+          g++ --version
+          ninja --version
+          cmake --version
+
+      - name: Build NeoN
+        run: |
+          CC=gcc CXX=g++ \
+          cmake --preset develop -DNeoN_ENABLE_SANITIZE_${{ matrix.sanitizer }}=ON \
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+          cmake --build  --preset develop
+
+      - name: Execute unit tests NeoN
+        run: |
+          if [[ "${{ matrix.sanitizer }}" == ADDRESS ]]; then
+            export LD_PRELOAD="$(gcc -print-file-name=libasan.so)"
+          fi
+          ctest --preset develop
+
+  # ---------------------------------------------------------------- downstream / GPU
+  # Only started once the Linux CPU builds pass, so a broken commit does not occupy the
+  # NeoFOAM and GPU resources.
+  neofoam:
+    name: NeoFOAM ${{ matrix.compiler.CC }}
+    needs: [gate, linux]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - CC: clang
+            CXX: clang++
+          - CC: gcc
+            CXX: g++
+    steps:
+      - name: Determine branch
+        run: |
+          # Detect current branch of NeoN
+          NEON_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          echo "Using NeoN branch: $NEON_BRANCH"
+          echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
+
+          REPO_URL="https://github.com/exasim-project/NeoFOAM"
+          echo "Checking if branch '$NEON_BRANCH' exists in NeoFOAM..."
+          if git ls-remote --exit-code --heads "$REPO_URL" "refs/heads/${NEON_BRANCH}" >/dev/null 2>&1; then
+            echo "NeoFOAM branch exists: $NEON_BRANCH"
+            echo "NEOFOAM_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
+          else
+            echo "NeoFOAM branch '$NEON_BRANCH' does not exist. Falling back to 'develop'."
+            echo "NEOFOAM_BRANCH=develop" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout NeoFOAM
+        uses: actions/checkout@v4
+        with:
+          repository: exasim-project/NeoFOAM
+          ref: ${{ env.NEOFOAM_BRANCH }}
+          fetch-depth: 1
+
+      - name: Set up OpenFOAM
+        uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 2406
+
+      - name: Install dependencies
+        uses: gerlero/apt-install@v1
+        with:
+          packages: >-
+            ninja-build
+            clang-16
+            gcc-10
+            libomp-16-dev
+            python3
+            python3-dev
+            build-essential
+            libopenmpi-dev
+            openmpi-bin
+
+      - name: Get versions
+        run: |
+          clang --version
+          ninja --version
+          cmake --version
+
+      - name: Build NeoFOAM
+        run: |
+          source /usr/lib/openfoam/openfoam2406/etc/bashrc || true
+          CC=${{ matrix.compiler.CC }} \
+          CXX=${{ matrix.compiler.CXX }} \
+          cmake --preset develop \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_BUILD_TESTS=OFF \
+            -DNEOFOAM_BUILD_BENCHMARKS=OFF \
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
+            -DNEOFOAM_NEON_VERSION=${{ env.NEON_BRANCH }}
+          cmake --build --preset develop
+
+      - name: Execute unit tests NeoFOAM
+        run: |
+          source /usr/lib/openfoam/openfoam2406/etc/bashrc || true
+          ctest --preset develop
+
+  gpu:
+    name: Build and test NeoN & NeoFOAM on GPU
+    needs: [gate, linux]
+    runs-on: ubuntu-latest
+    timeout-minutes: 1440 # 24 hours
+    env:
+      LRZ_GROUP: greole
+      LRZ_HOST: gitlab-ce.lrz.de
+      REPO_NAME: ${{ github.event.repository.name }}
+      NEOFOAM_REPO: NeoFOAM
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+      SKIP_NVIDIA: ${{ needs.gate.outputs.skip-nvidia }}
+      SKIP_AMD: ${{ needs.gate.outputs.skip-amd }}
+      SKIP_INTEL: ${{ needs.gate.outputs.skip-intel }}
+      NEON_PROJECT_TOKEN: ${{ secrets.LRZ_GITLAB_PROJECT_TOKEN }}
+      NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
+      NEOFOAM_PROJECT_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_PROJECT_TOKEN }}
+      NEOFOAM_TRIGGER_TOKEN: ${{ secrets.NEOFOAM_LRZ_GITLAB_TRIGGER_TOKEN }}
+      MAX_WAIT_MINUTES: 1440
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push commit to NeoN LRZ GitLab
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add lrz https://oauth2:${NEON_PROJECT_TOKEN}@${LRZ_HOST}/${LRZ_GROUP}/${REPO_NAME}.git
+          git fetch origin "${BRANCH}"
+          git checkout -B "${BRANCH}" "origin/${BRANCH}"
+          git reset --hard "origin/${BRANCH}"
+          git push --force lrz "HEAD:refs/heads/${BRANCH}"
+
+      - name: Cancel running/pending NeoN LRZ CI pipelines
+        if: ${{ github.event_name != 'push' }}
+        run: |
+          ./ci/github/cancel_triggered_pipelines.sh "${REPO_NAME}" "${BRANCH}" "${NEON_PROJECT_TOKEN}"
+
+      - name: Trigger NeoN LRZ GitLab CI pipeline
+        id: trigger-neon
+        run: |
+          ./ci/github/trigger_pipeline.sh \
+            "${REPO_NAME}" \
+            "${BRANCH}" \
+            "${NEON_PROJECT_TOKEN}" \
+            "${NEON_TRIGGER_TOKEN}" \
+            "variables[BENCHMARK]=false" \
+            "variables[SKIP_NVIDIA]=${SKIP_NVIDIA}" \
+            "variables[SKIP_AMD]=${SKIP_AMD}" \
+            "variables[SKIP_INTEL]=${SKIP_INTEL}"
+
+      - name: Wait for NeoN LRZ GitLab CI pipeline
+        run: |
+          ./ci/github/wait_pipeline.sh "${REPO_NAME}" "${{ steps.trigger-neon.outputs.pipeline_id }}" "${NEON_PROJECT_TOKEN}"
+
+      - name: Cancel running/pending NeoFOAM LRZ CI pipelines
+        run: |
+          ./ci/github/cancel_triggered_pipelines.sh "${NEOFOAM_REPO}" "${BRANCH}" "${NEOFOAM_PROJECT_TOKEN}"
+
+      - name: Trigger NeoFOAM LRZ GitLab CI pipeline
+        id: trigger-neofoam
+        run: |
+          ./ci/github/trigger_pipeline.sh \
+            "${NEOFOAM_REPO}" \
+            "${BRANCH}" \
+            "${NEOFOAM_PROJECT_TOKEN}" \
+            "${NEOFOAM_TRIGGER_TOKEN}" \
+            "variables[NEON_BRANCH]=${BRANCH}" \
+            "variables[TRIGGER_SOURCE]=${REPO_NAME}" \
+            "variables[BENCHMARK]=false" \
+            "variables[SKIP_NVIDIA]=${SKIP_NVIDIA}" \
+            "variables[SKIP_AMD]=${SKIP_AMD}" \
+            "variables[SKIP_INTEL]=${SKIP_INTEL}"
+
+      - name: Wait for NeoFOAM LRZ GitLab CI pipeline
+        run: |
+          ./ci/github/wait_pipeline.sh "${NEOFOAM_REPO}" "${{ steps.trigger-neofoam.outputs.pipeline_id }}" "${NEOFOAM_PROJECT_TOKEN}"
+
+  gpu-benchmark:
+    name: Benchmark NeoN on GPU
+    needs: [gate, gpu]
+    if: needs.gate.outputs.benchmark == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1440
+    env:
+      REPO_NAME: ${{ github.event.repository.name }}
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+      SKIP_NVIDIA: ${{ needs.gate.outputs.skip-nvidia }}
+      SKIP_AMD: ${{ needs.gate.outputs.skip-amd }}
+      SKIP_INTEL: ${{ needs.gate.outputs.skip-intel }}
+      NEON_PROJECT_TOKEN: ${{ secrets.LRZ_GITLAB_PROJECT_TOKEN }}
+      NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cancel running/pending NeoN LRZ CI pipelines
+        run: |
+          ./ci/github/cancel_triggered_pipelines.sh "${REPO_NAME}" "${BRANCH}" "${NEON_PROJECT_TOKEN}"
+
+      - name: Trigger NeoN LRZ GitLab CI pipeline for benchmarking
+        id: trigger-neon
+        run: |
+          ./ci/github/trigger_pipeline.sh \
+            "${REPO_NAME}" \
+            "${BRANCH}" \
+            "${NEON_PROJECT_TOKEN}" \
+            "${NEON_TRIGGER_TOKEN}" \
+            "variables[BENCHMARK]=true" \
+            "variables[PR_NUMBER]=${{ github.event.pull_request.number || 'no-pr' }}" \
+            "variables[SKIP_NVIDIA]=${SKIP_NVIDIA}" \
+            "variables[SKIP_AMD]=${SKIP_AMD}" \
+            "variables[SKIP_INTEL]=${SKIP_INTEL}"
+
+      - name: Wait for NeoN LRZ GitLab CI pipeline for benchmarking
+        run: |
+          ./ci/github/wait_pipeline.sh "${REPO_NAME}" "${{ steps.trigger-neon.outputs.pipeline_id }}" "${NEON_PROJECT_TOKEN}"

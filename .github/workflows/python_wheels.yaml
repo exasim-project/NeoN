@@ -81,19 +81,7 @@ jobs:
 
       - name: Resolve stable or nightly version
         id: version
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            version="${GITHUB_REF_NAME#v}"
-            channel="stable"
-          else
-            serial="$(date -u +%Y%m%d%H%M)${GITHUB_RUN_NUMBER}"
-            version="$(python scripts/set_package_version.py --nightly "${serial}")"
-            channel="nightly"
-          fi
-
-          echo "version=${version}" >> "${GITHUB_OUTPUT}"
-          echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
+        uses: ./.github/actions/resolve-version
 
   build-cpu-wheels:
     name: CPU ${{ matrix.python }} ${{ matrix.os }}
