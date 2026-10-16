@@ -59,7 +59,7 @@ public:
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
-        if (index < 0 || index >= toLocalIdx(this->size()))
+        if (index < 0 || static_cast<sizeType>(index) >= this->size())
         {
             if (abortOnFail)
             {
