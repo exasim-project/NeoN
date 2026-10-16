@@ -318,7 +318,7 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
 
     setSparsityPatternFaceToMatrixAddressSerial(mesh, diagOffs, ownOffs, neiOffs, rowOffs, colIdx);
     auto sp = std::make_shared<const SparsityType>(
-        std::move(colIdx), std::move(rowOffs), Dimensions {nCells, nCells}
+        std::move(colIdx), std::move(rowOffs), Dimensions {toLocalIdx(nCells), toLocalIdx(nCells)}
     );
     auto faceToMatrixAddress =
         std::make_shared<const FaceToMatrixAddress>(ownOffs, neiOffs, diagOffs);
@@ -336,7 +336,7 @@ createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const Uns
     const auto exec = mesh.exec();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nCells = mesh.nCells();
-    const localIdx nnz = nCells + 2 * nInternalFaces;
+    const localIdx nnz = toLocalIdx(nCells + 2 * nInternalFaces);
     Array<uint8_t> diagOffs(exec, nCells, 0);
     Array<uint8_t> ownOffs(exec, nInternalFaces, 0);
     Array<uint8_t> neiOffs(exec, nInternalFaces, 0);
@@ -359,7 +359,7 @@ createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const Uns
     }
 
     auto sp = std::make_shared<const CooSparsityPattern<localIdx>>(
-        std::move(colIdx), std::move(cooRowIdx), Dimensions {nCells, nCells}
+        std::move(colIdx), std::move(cooRowIdx), Dimensions {toLocalIdx(nCells), toLocalIdx(nCells)}
     );
     auto faceToMatrixAddress =
         std::make_shared<const FaceToMatrixAddress>(ownOffs, neiOffs, diagOffs);
@@ -378,7 +378,9 @@ createBoundarySparsityPattern<CooSparsityPattern<localIdx>>(
     Vector<localIdx> colIdx(exec, nBoundaryFaces, 0);
     setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);
     return std::make_shared<const CooSparsityPattern<localIdx>>(
-        std::move(colIdx), std::move(rowIdx), Dimensions {mesh.nCells(), mesh.nCells()}
+        std::move(colIdx),
+        std::move(rowIdx),
+        Dimensions {toLocalIdx(mesh.nCells()), toLocalIdx(mesh.nCells())}
     );
 }
 
@@ -396,7 +398,9 @@ createBoundarySparsityPattern<CsrSparsityPattern<localIdx>>(
     setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);
     auto rowPtrs = rowsToRowOffs(rowIdx);
     return std::make_shared<const CsrSparsityPattern<localIdx>>(
-        std::move(colIdx), std::move(rowPtrs), Dimensions {mesh.nCells(), nBoundaryFaces}
+        std::move(colIdx),
+        std::move(rowPtrs),
+        Dimensions {toLocalIdx(mesh.nCells()), toLocalIdx(nBoundaryFaces)}
     );
 }
 
@@ -418,7 +422,9 @@ createOffDiagonalSparsityPattern<CooSparsityPattern<localIdx>>(
 #endif
     setOffDiagonalSparsityPatternImpl(mesh, recvIdx, rowIdx, colIdx);
     return std::make_shared<const CooSparsityPattern<localIdx>>(
-        std::move(colIdx), std::move(rowIdx), Dimensions {mesh.nCells(), toLocalIdx(nProcFaces)}
+        std::move(colIdx),
+        std::move(rowIdx),
+        Dimensions {toLocalIdx(mesh.nCells()), toLocalIdx(nProcFaces)}
     );
 }
 
@@ -441,7 +447,9 @@ createOffDiagonalSparsityPattern<CsrSparsityPattern<localIdx>>(
     setOffDiagonalSparsityPatternImpl(mesh, recvIdx, rowIdx, colIdx);
     auto rowPtrs = rowsToRowOffs(rowIdx);
     return std::make_shared<const CsrSparsityPattern<localIdx>>(
-        std::move(colIdx), std::move(rowPtrs), Dimensions {mesh.nCells(), toLocalIdx(nProcFaces)}
+        std::move(colIdx),
+        std::move(rowPtrs),
+        Dimensions {toLocalIdx(mesh.nCells()), toLocalIdx(nProcFaces)}
     );
 }
 
