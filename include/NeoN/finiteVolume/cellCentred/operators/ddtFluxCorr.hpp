@@ -212,4 +212,54 @@ ddtFluxCorr(const VolVectorField& u, const SurfScalarField& phi, scalar dt, DdtS
     return fluxCorr;
 }
 
+// Density-weighted overload for compressible phi = rho_f * uf. Reuses the same BDF1/BDF2
+// kernels unchanged by pre-weighting uf with the old-time face density, so the kernels see a
+// rho*uf history consistent with phi's own old-time mass flux -- no persistent rhoUf field
+// needed, since rho and U already carry their own old-time storage.
+inline SurfScalarField ddtFluxCorr(
+    const VolumeField<scalar>& rho,
+    const VolVectorField& u,
+    const SurfScalarField& phi,
+    scalar dt,
+    DdtScheme scheme
+)
+{
+    const auto& mesh = u.mesh();
+    const auto& exec = phi.exec();
+
+    // --- interpolation
+    SurfaceInterpolation<Vec3> interpU(exec, mesh, TokenList({std::string("linear")}));
+    SurfaceInterpolation<scalar> interpRho(exec, mesh, TokenList({std::string("linear")}));
+
+    // --- boundary conditions consistent with U
+    auto surfaceBCs = createFluxCorrBCsFromU(mesh, u);
+
+    SurfScalarField fluxCorr(exec, "ddtFluxCorr", mesh, surfaceBCs);
+
+    const int level = oldTimeLevel(u);
+
+    // --- BDF1 / startup
+    const auto& u0 = oldTime(u);
+    const auto& rho0 = oldTime(rho);
+    const auto& phi0 = oldTime(phi);
+    auto rhoUf0 = interpRho.interpolate(rho0) * interpU.interpolate(u0);
+
+    if (scheme == DdtScheme::BDF2 && level >= 2) // --- BDF2 contribution
+    {
+        const auto& u00 = oldTime(u0);
+        const auto& rho00 = oldTime(rho0);
+        const auto& phi00 = oldTime(phi0);
+        auto rhoUf00 = interpRho.interpolate(rho00) * interpU.interpolate(u00);
+
+        detail::ddtFluxCorrBDF2Kernel(exec, mesh, phi0, phi00, rhoUf0, rhoUf00, fluxCorr, dt);
+    }
+    else
+    {
+        detail::ddtFluxCorrBDF1Kernel(exec, mesh, phi0, rhoUf0, fluxCorr, dt);
+    }
+
+    fluxCorr.correctBoundaryConditions();
+    return fluxCorr;
+}
+
 } // namespace NeoN::finiteVolume::cellCentred
