@@ -143,5 +143,86 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
                 );
             }
         }
+
+        // --- 6) Volume density field rho (with oldTime support), for the density-weighted
+        // overload. Uniform rho0 so rhoUf0 = rho0 * uf0 is just a scaled copy of uf0.
+        auto& rho = fieldCollection.registerVector<VolScalar>(CreateVolumeVector<Scalar> {
+            .name = "rho", .mesh = mesh, .value = Scalar {0.0}, .timeIndex = 1
+        });
+        auto& rho0 = fvcc::oldTime(rho);
+        NeoN::fill(rho0.internalVector(), Scalar {1.5});
+
+        fvcc::SurfaceInterpolation<Scalar> interpScalar(
+            exec, mesh, NeoN::TokenList({std::string("linear")})
+        );
+        auto rhoUf0 = interpScalar.interpolate(rho0) * uf0;
+
+        auto rhoUf0BH = rhoUf0.boundaryData().value().copyToHost();
+        auto rhoUf0BV = rhoUf0BH.view();
+
+        auto expectedRhoFrom = [&](const SurfScalar& flux0Field)
+        {
+            std::vector<Scalar> e(static_cast<sizeType>(nBndFaces), 0.0);
+            auto flux0FieldH = flux0Field.boundaryData().value().copyToHost();
+            auto flux0FieldV = flux0FieldH.view();
+
+            for (NeoN::localIdx i = 0; i < nBndFaces; ++i)
+            {
+                const Scalar d = (sfV[i] & rhoUf0BV[i]);
+                const auto tfluxCorr = (flux0FieldV[i] - d);
+                const auto ratio = NeoN::mag(tfluxCorr) / (NeoN::mag(flux0FieldV[i]) + 1.0e-30);
+                const auto coeff = 1.0 - Kokkos::min(ratio, Scalar(1));
+
+                e[static_cast<sizeType>(i)] = coeff * invDt * tfluxCorr;
+            }
+            return e;
+        };
+
+        // ─────────────────────────────────────────────
+        // Case C: flux0 = sf·(rho0*uf0)  ⇒ correction ≈ 0
+        // ─────────────────────────────────────────────
+        {
+            auto [flux0BV2, sfV2, rhoUf0BV2] = views(
+                flux0.boundaryData().value(),
+                mesh.boundaryMesh().faceNormals(),
+                rhoUf0.boundaryData().value()
+            );
+
+            NeoN::parallelFor(
+                exec,
+                {sizeType(0), static_cast<sizeType>(nBndFaces)},
+                NEON_LAMBDA(const NeoN::localIdx i) { flux0BV2[i] = (sfV2[i] & rhoUf0BV2[i]); }
+            );
+
+            flux.boundaryData().value() = flux0.boundaryData().value();
+
+            auto fluxCorr = fvcc::ddtFluxCorr(rho, u, flux, dt, scheme);
+            auto corrBH = fluxCorr.boundaryData().value().copyToHost();
+
+            for (NeoN::localIdx i = 0; i < nBndFaces; ++i)
+            {
+                REQUIRE(corrBH.view()[i] == Catch::Approx(0.0).margin(1e-12));
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // Case D: flux0 = 0  ⇒ correction = -(sf·rho0*uf0)/dt
+        // ─────────────────────────────────────────────
+        {
+            fill(flux0.boundaryData().value(), Scalar {0.0});
+            fill(flux.boundaryData().value(), Scalar {0.0});
+
+            auto expected = expectedRhoFrom(flux0);
+            auto fluxCorr = fvcc::ddtFluxCorr(rho, u, flux, dt, scheme);
+            auto corrBH = fluxCorr.boundaryData().value().copyToHost();
+
+            for (NeoN::localIdx i = 0; i < nBndFaces; ++i)
+            {
+                REQUIRE(
+                    corrBH.view()[i]
+                    == Catch::Approx(expected[static_cast<sizeType>(i)]).margin(1e-12)
+                );
+            }
+        }
     }
 }
