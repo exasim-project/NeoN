@@ -37,7 +37,7 @@ template<typename ValueType>
 class Vector;
 
 
-// Concept to check if a callable is compatible with void(const size_t)
+// Concept to check if a callable is compatible with void(const NeoN::sizeType)
 template<typename Kernel>
 concept parallelForKernel = requires(Kernel t, sizeType i) {
     {
@@ -128,7 +128,7 @@ void parallelFor(
     detail::visitExecutor(exec, [&](const auto& e) { parallelFor(e, range, kernel, name); });
 }
 
-// Concept to check if a callable is compatible with ValueType(const size_t)
+// Concept to check if a callable is compatible with ValueType(const NeoN::sizeType)
 template<typename Kernel, typename ValueType>
 concept parallelForContainerKernel = requires(Kernel t, ValueType val, sizeType i) {
     {

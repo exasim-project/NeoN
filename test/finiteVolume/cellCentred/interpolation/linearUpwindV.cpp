@@ -149,8 +149,8 @@ TEST_CASE("linearUpwindV bounds the reconstruction at a sharp extremum")
     const auto nInt = mesh.nInternalFaces();
 
     // A single-cell spike: zero everywhere except one interior cell.
-    const localIdx spike = nCells / 2;
-    std::vector<Vec3> values(static_cast<sizeType>(nCells), Vec3 {0.0, 0.0, 0.0});
+    const localIdx spike = toLocalIdx(nCells) / 2;
+    std::vector<Vec3> values(nCells, Vec3 {0.0, 0.0, 0.0});
     values[static_cast<sizeType>(spike)] = Vec3 {10.0, -8.0, 6.0};
 
     auto src = VolumeField<Vec3>(

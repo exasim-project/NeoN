@@ -347,7 +347,7 @@ public:
 
     virtual ~RuntimeSelectionFactory() = default;
 
-    static std::size_t size() { return table().size(); }
+    static sizeType size() { return table().size(); }
 
     /**
      * @brief Returns the lookup table for runtime selection.
