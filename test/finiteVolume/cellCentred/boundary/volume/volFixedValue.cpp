@@ -123,7 +123,7 @@ TEST_CASE("fixedValue")
         auto mesh = NeoN::createSingleCellMesh(exec);
 
         const auto& offset = mesh.boundaryMesh().offset();
-        const auto patchSize = static_cast<size_t>(offset[1] - offset[0]);
+        const auto patchSize = static_cast<sizeType>(offset[1] - offset[0]);
         REQUIRE(patchSize > 0);
 
         // neither a uniform nor a per-face entry: nothing to apply

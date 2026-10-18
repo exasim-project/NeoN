@@ -319,7 +319,7 @@ TEST_CASE("laplacianOperator implicit transform diagCmpt")
         );
 
         // expected: per cell, sum over its boundary faces of γ|S|·coeff·Δ·|n_c|
-        std::vector<Vec3> expected(static_cast<sizeType>(mesh.nCells()), Vec3(0.0, 0.0, 0.0));
+        std::vector<Vec3> expected(mesh.nCells(), Vec3(0.0, 0.0, 0.0));
         for (NeoN::localIdx f = 0; f < mesh.nBoundaryFaces(); ++f)
         {
             const auto own = static_cast<sizeType>(ownerH.view()[f]);
