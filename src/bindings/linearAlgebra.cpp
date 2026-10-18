@@ -64,6 +64,12 @@ void declare_linear_system(nb::module_& m, const std::string& suffix)
             static_cast<Mat& (LS::*)()>(&LS::matrix),
             nb::rv_policy::reference_internal,
             "Get the assembled CSR system matrix"
+        )
+        .def(
+            "rhs",
+            static_cast<Vector<RHSValueType>& (LS::*)()>(&LS::rhs),
+            nb::rv_policy::reference_internal,
+            "Get the rhs vector"
         );
 }
 
