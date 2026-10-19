@@ -13,6 +13,7 @@
 using NeoN::scalar;
 using NeoN::localIdx;
 using NeoN::Vector;
+using NeoN::toLocalIdx;
 
 // These tests prove that createEmptyLinearSystem caches and SHARES a single immutable,
 // topology-only sparsity bundle (CSR system sparsity + FaceToMatrixAddress + COO boundary
@@ -22,7 +23,7 @@ TEST_CASE("SharedSparsity")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    const auto nCells = 10;
+    const localIdx nCells = 10;
 
     SECTION(
         "shares system/address/boundary sparsity pointers across two systems on same mesh "
@@ -62,7 +63,7 @@ TEST_CASE("SharedSparsity")
 
         auto bHost = lsB.matrix().values().copyToHost();
         auto bHostV = bHost.view();
-        for (localIdx i = 0; i < bHostV.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(bHostV.size()); ++i)
         {
             REQUIRE(bHostV[i] == scalar {0.0});
         }
