@@ -62,7 +62,7 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
                                          - rhoOld[celli] * oldVector[celli])
                                       * vol[celli];
             },
-            "ddtOpertator::explicitOperation<rho>"
+            "ddtOperator::explicitOperation<rho>"
         );
     }
 }
