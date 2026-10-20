@@ -50,15 +50,17 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
     }
     else
     {
+        const auto operatorScaling = this->getCoefficient();
         const auto rhoNew = rho_->internalVector().view();
         const auto rhoOld = oldTime(*rho_).internalVector().view();
         parallelFor(
             source.exec(),
             source.range(),
             NEON_LAMBDA(const localIdx celli) {
-                sourceView[celli] +=
-                    dtInver * (rhoNew[celli] * field[celli] - rhoOld[celli] * oldVector[celli])
-                    * vol[celli];
+                sourceView[celli] += operatorScaling[celli] * dtInver
+                                      * (rhoNew[celli] * field[celli]
+                                         - rhoOld[celli] * oldVector[celli])
+                                      * vol[celli];
             },
             "ddtOpertator::explicitOperation<rho>"
         );
