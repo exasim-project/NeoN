@@ -196,3 +196,38 @@ def test_vec3_field_cross(executor):
         np.asarray(omega.internal_vector().copy_to_host()),
         np.tile([0.0, 0.0, 5.0], (mesh.n_cells(), 1)),
     )
+
+
+def test_vec3_field_mag_sqr(executor):
+    """Elementwise magSqr(U) -> scalar VolumeField, the kinetic-energy term's
+    building block (2*K = magSqr(U)).
+
+    A Kokkos kernel, so the assertions hold on every executor. Only the internal
+    values are checked, mirroring test_vec3_field_cross: VectorVolumeField exposes
+    no boundary accessor to Python.
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    velocity = neon.VectorVolumeField(exec, "U", mesh)
+    neon.fill(velocity.internal_vector(), neon.Vec3(1.0, 2.0, 3.0))
+
+    # |U|^2 = 1^2 + 2^2 + 3^2 = 14
+    result = neon.mag_sqr(velocity)
+    assert isinstance(result, neon.ScalarVolumeField)
+    values = np.asarray(result.internal_vector().copy_to_host())
+    assert values.shape == (mesh.n_cells(),)
+    np.testing.assert_allclose(values, 14.0)
+
+    # A different field gives a different result (catches a kernel that always
+    # returns a constant), and the operand itself is left untouched.
+    omega = neon.VectorVolumeField(exec, "omega", mesh)
+    neon.fill(omega.internal_vector(), neon.Vec3(0.0, 0.0, 5.0))
+    np.testing.assert_allclose(
+        np.asarray(neon.mag_sqr(omega).internal_vector().copy_to_host()), 25.0
+    )
+    np.testing.assert_allclose(
+        np.asarray(velocity.internal_vector().copy_to_host()),
+        np.tile([1.0, 2.0, 3.0], (mesh.n_cells(), 1)),
+    )
