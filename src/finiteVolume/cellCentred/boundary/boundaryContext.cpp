@@ -29,6 +29,11 @@ void BoundaryContext::insert(std::string name, const SurfaceField<NeoN::scalar>&
     surfaceScalarFields_.emplace(std::move(name), &f);
 }
 
+void BoundaryContext::insertValue(std::string name, scalar value)
+{
+    values_.emplace(std::move(name), value);
+}
+
 const VolumeField<NeoN::scalar>& BoundaryContext::scalarFieldPtr(const std::string& name) const
 {
     return *scalarFields_.at(name);
@@ -67,6 +72,13 @@ bool BoundaryContext::hasTensor(const std::string& name) const noexcept
 bool BoundaryContext::hasSurfaceScalar(const std::string& name) const noexcept
 {
     return surfaceScalarFields_.count(name) > 0;
+}
+
+scalar BoundaryContext::value(const std::string& name) const { return values_.at(name); }
+
+bool BoundaryContext::hasValue(const std::string& name) const noexcept
+{
+    return values_.count(name) > 0;
 }
 
 } // namespace NeoN::finiteVolume::cellCentred
