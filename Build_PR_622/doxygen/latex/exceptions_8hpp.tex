@@ -2,7 +2,11 @@
 \hypertarget{exceptions_8hpp}{}\label{exceptions_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp}}
 {\ttfamily \#include $<$stdexcept$>$}\newline
 {\ttfamily \#include $<$utility$>$}\newline
+{\ttfamily \#include $<$source\+\_\+location$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include $<$string\+\_\+view$>$}\newline
 {\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/error.\+hpp"{}}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
@@ -26,6 +30,8 @@ namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 void \mbox{\hyperlink{namespaceNeoN_a7656e70fc095635650cab909d1ecf543}{Neo\+N\+::validate\+Range}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{size\+Type}} size)
 \item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{namespaceNeoN_a36ddf31a207ee99bcbae033086b44b9c}{Neo\+N\+::to\+Local\+Idx}} (\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{size\+Type}} value)
+\item 
+void \mbox{\hyperlink{namespaceNeoN_ab8cf36aae0d67a4aaac60dae748fd174}{Neo\+N\+::validate\+Input}} (bool condition, std\+::string\+\_\+view message, const std\+::source\+\_\+location location=std\+::source\+\_\+location\+::current())
 \end{DoxyCompactItemize}
 
 
@@ -57,5 +63,5 @@ Asserts that {\ttfamily \+\_\+op1} and {\ttfamily \+\_\+op2} have the same lengt
 \end{DoxyExceptions}
 
 
-Definition at line \mbox{\hyperlink{exceptions_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{exceptions_8hpp_source}{exceptions.\+hpp}}.
+Definition at line \mbox{\hyperlink{exceptions_8hpp_source_l00106}{106}} of file \mbox{\hyperlink{exceptions_8hpp_source}{exceptions.\+hpp}}.
 

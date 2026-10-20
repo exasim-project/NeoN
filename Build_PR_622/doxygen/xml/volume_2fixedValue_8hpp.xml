@@ -9,6 +9,7 @@
     <includes refid="volumeBoundaryFactory_8hpp" local="yes">NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</includes>
     <includes refid="unstructuredMesh_8hpp" local="yes">NeoN/mesh/unstructured/unstructuredMesh.hpp</includes>
     <includes refid="parallelAlgorithms_8hpp" local="yes">NeoN/core/parallelAlgorithms.hpp</includes>
+    <includes refid="exceptions_8hpp" local="yes">NeoN/helpers/exceptions.hpp</includes>
     <includedby refid="boundary_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp</includedby>
     <incdepgraph>
       <node id="46">
@@ -176,6 +177,8 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
       </node>
       <node id="14">
         <label>NeoN/core/primitives/label.hpp</label>
@@ -270,6 +273,8 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
       </node>
       <node id="47">
         <label>NeoN/core/visibility.hpp</label>
@@ -336,6 +341,8 @@
         </childnode>
         <childnode refid="54" relation="include">
         </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
       </node>
       <node id="42">
         <label>NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</label>
@@ -360,7 +367,15 @@
         </childnode>
         <childnode refid="38" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
       <node id="57">
@@ -385,6 +400,8 @@
         <childnode refid="55" relation="include">
         </childnode>
         <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -683,147 +700,148 @@
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="volumeBoundaryFactory_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="unstructuredMesh_8hpp" kindref="compound">NeoN/mesh/unstructured/unstructuredMesh.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="parallelAlgorithms_8hpp" kindref="compound">NeoN/core/parallelAlgorithms.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary" kindref="compound">NeoN::finiteVolume::cellCentred::volumeBoundary</ref></highlight></codeline>
-<codeline lineno="18"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">detail</highlight></codeline>
-<codeline lineno="21"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO<sp/>move<sp/>to<sp/>source</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Without<sp/>this<sp/>function<sp/>the<sp/>compiler<sp/>warns<sp/>that<sp/>calling<sp/>a<sp/>__host__<sp/>function</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/>from<sp/>a<sp/>__device__<sp/>function<sp/>is<sp/>not<sp/>allowed</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="26" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aad7bddb3932214b4d03d29f67c65c20f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aad7bddb3932214b4d03d29f67c65c20f" kindref="member">setFixedValue</ref>(</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector,<sp/>std::pair&lt;sizeType,<sp/>sizeType&gt;<sp/>range,<sp/>ValueType<sp/>fixedValue</highlight></codeline>
-<codeline lineno="28"><highlight class="normal">)</highlight></codeline>
-<codeline lineno="29"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[refGradient,<sp/>value,<sp/>valueFraction,<sp/>refValue]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refGrad(),</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().value(),</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().valueFraction(),</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refValue()</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue[i]<sp/>=<sp/>fixedValue;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value[i]<sp/>=<sp/>fixedValue;</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction[i]<sp/>=<sp/>1.0;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>only<sp/>used<sp/>refValue</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGradient[i]<sp/>=<sp/>fixedValue;<sp/></highlight><highlight class="comment">//<sp/>not<sp/>used</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;setFixedValueVolume&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="48"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Per-face<sp/>variant:<sp/>the<sp/>patch<sp/>carries<sp/>one<sp/>value<sp/>per<sp/>boundary<sp/>face,<sp/>e.g.<sp/>an<sp/>inflow</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment">//<sp/>profile<sp/>read<sp/>from<sp/>a<sp/>nonuniform<sp/>OpenFOAM<sp/>patch<sp/>field.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="53" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a5a5c6e9eaaf40e1d070770c7f788ea1e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a5a5c6e9eaaf40e1d070770c7f788ea1e" kindref="member">setFixedValues</ref>(</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector,</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;sizeType,<sp/>sizeType&gt;<sp/>range,</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/>fixedValues</highlight></codeline>
-<codeline lineno="57"><highlight class="normal">)</highlight></codeline>
-<codeline lineno="58"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[refGradient,<sp/>value,<sp/>valueFraction,<sp/>refValue]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refGrad(),</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().value(),</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().valueFraction(),</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refValue()</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fixedValuesView<sp/>=<sp/>fixedValues.<ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view</ref>();</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>start<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(range.first);</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"></highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>patchValue<sp/>=<sp/>fixedValuesView[i<sp/>-<sp/>start];</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue[i]<sp/>=<sp/>patchValue;</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value[i]<sp/>=<sp/>patchValue;</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction[i]<sp/>=<sp/>1.0;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>only<sp/>used<sp/>refValue</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGradient[i]<sp/>=<sp/>patchValue;<sp/></highlight><highlight class="comment">//<sp/>not<sp/>used</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;setFixedValuesVolume&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="85" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue" kindref="compound">FixedValue</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory</ref>&lt;ValueType&gt;::template<sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt;FixedValue&lt;ValueType&gt;&gt;</highlight></codeline>
-<codeline lineno="86"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Base<sp/>=<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory&lt;ValueType&gt;::template</ref><sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register&lt;FixedValue&lt;ValueType&gt;</ref>&gt;;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Base::correctBoundaryCondition;</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"></highlight></codeline>
-<codeline lineno="93" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ab5c62ca19f89f2a843b2d71b5bce7313" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ab5c62ca19f89f2a843b2d71b5bce7313" kindref="member">FixedValue</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchID)</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(mesh,<sp/>dict,<sp/>patchID,<sp/>{.assignable<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/>.fixesValue<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">}),</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fixedValue_(</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">)<sp/>?<sp/>dict.get&lt;ValueType&gt;(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">)<sp/>:<sp/>ValueType<sp/>{}</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>),</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fixedValues_(</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh.exec(),</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValues&quot;</highlight><highlight class="normal">)<sp/>?<sp/>dict.get&lt;std::vector&lt;ValueType&gt;&gt;(</highlight><highlight class="stringliteral">&quot;fixedValues&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>std::vector&lt;ValueType&gt;<sp/>{}</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>hasUniform<sp/>=<sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>hasPerFace<sp/>=<sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValues&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!hasUniform<sp/>&amp;&amp;<sp/>!hasPerFace)</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" kindref="member">NF_THROW</ref>(</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;fixedValue<sp/>boundary<sp/>condition<sp/>on<sp/>patch<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(patchID)</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>requires<sp/>either<sp/>a<sp/>uniform<sp/>&apos;fixedValue&apos;<sp/>or<sp/>a<sp/>per-face<sp/>&apos;fixedValues&apos;<sp/>entry&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Validate<sp/>on<sp/>the<sp/>key<sp/>being<sp/>present,<sp/>not<sp/>on<sp/>the<sp/>list<sp/>being<sp/>non-empty:<sp/>an<sp/>empty</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>&apos;fixedValues&apos;<sp/>on<sp/>a<sp/>non-empty<sp/>patch<sp/>is<sp/>malformed<sp/>per-face<sp/>data,<sp/>and<sp/>testing<sp/>the</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>size<sp/>alone<sp/>would<sp/>let<sp/>it<sp/>through<sp/>to<sp/>the<sp/>uniform<sp/>fallback<sp/>and<sp/>silently<sp/>apply<sp/>zero.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(hasPerFace<sp/>&amp;&amp;<sp/>fixedValues_.size()<sp/>!=<sp/>this-&gt;patchSize())</highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" kindref="member">NF_THROW</ref>(</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&apos;fixedValues&apos;<sp/>holds<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(fixedValues_.size())<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>values<sp/>but<sp/>patch<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>std::to_string(patchID)<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>has<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(this-&gt;patchSize())<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>faces&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="125" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a4b9f9dfc246ffdf3568eb5bcb34cf8ec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a4b9f9dfc246ffdf3568eb5bcb34cf8ec" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector)<sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fixedValues_.size()<sp/>&gt;<sp/>0)</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a5a5c6e9eaaf40e1d070770c7f788ea1e" kindref="member">detail::setFixedValues</ref>(domainVector,<sp/>this-&gt;range(),<sp/>fixedValues_);</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aad7bddb3932214b4d03d29f67c65c20f" kindref="member">detail::setFixedValue</ref>(domainVector,<sp/>this-&gt;range(),<sp/>fixedValue_);</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"></highlight></codeline>
-<codeline lineno="137" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1afef3ea3db480582fa54b4f55969f7c78" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1afef3ea3db480582fa54b4f55969f7c78" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight></codeline>
-<codeline lineno="139" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af8e91a366657f22d0c6354c221af6994" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af8e91a366657f22d0c6354c221af6994" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1afef3ea3db480582fa54b4f55969f7c78" kindref="member">name</ref>();<sp/>}</highlight></codeline>
-<codeline lineno="140"><highlight class="normal"></highlight></codeline>
-<codeline lineno="141" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ae7b06ed504499c470bb4b22e60c19e96" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ae7b06ed504499c470bb4b22e60c19e96" kindref="member">doc</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Set<sp/>a<sp/>fixed<sp/>value<sp/>on<sp/>the<sp/>boundary&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight></codeline>
-<codeline lineno="143" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af89a1abef69d223e968f4ebcfa49d6b0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af89a1abef69d223e968f4ebcfa49d6b0" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"></highlight></codeline>
-<codeline lineno="145" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a06f07501b9dd47f398d8f1e8de8f4d4b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;VolumeBoundaryFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a06f07501b9dd47f398d8f1e8de8f4d4b" kindref="member">clone</ref>()<sp/>const<sp/>final</highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;FixedValue&gt;(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"></highlight></codeline>
-<codeline lineno="150"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"></highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType<sp/>fixedValue_;</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/>fixedValues_;<sp/></highlight></codeline>
-<codeline lineno="154"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"></highlight></codeline>
-<codeline lineno="156"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="exceptions_8hpp" kindref="compound">NeoN/helpers/exceptions.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary" kindref="compound">NeoN::finiteVolume::cellCentred::volumeBoundary</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">detail</highlight></codeline>
+<codeline lineno="22"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO<sp/>move<sp/>to<sp/>source</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Without<sp/>this<sp/>function<sp/>the<sp/>compiler<sp/>warns<sp/>that<sp/>calling<sp/>a<sp/>__host__<sp/>function</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/>from<sp/>a<sp/>__device__<sp/>function<sp/>is<sp/>not<sp/>allowed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="27" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aad7bddb3932214b4d03d29f67c65c20f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aad7bddb3932214b4d03d29f67c65c20f" kindref="member">setFixedValue</ref>(</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector,<sp/>std::pair&lt;sizeType,<sp/>sizeType&gt;<sp/>range,<sp/>ValueType<sp/>fixedValue</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="30"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[refGradient,<sp/>value,<sp/>valueFraction,<sp/>refValue]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refGrad(),</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().value(),</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().valueFraction(),</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refValue()</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue[i]<sp/>=<sp/>fixedValue;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value[i]<sp/>=<sp/>fixedValue;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction[i]<sp/>=<sp/>1.0;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>only<sp/>used<sp/>refValue</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGradient[i]<sp/>=<sp/>fixedValue;<sp/></highlight><highlight class="comment">//<sp/>not<sp/>used</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;setFixedValueVolume&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Per-face<sp/>variant:<sp/>the<sp/>patch<sp/>carries<sp/>one<sp/>value<sp/>per<sp/>boundary<sp/>face,<sp/>e.g.<sp/>an<sp/>inflow</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment">//<sp/>profile<sp/>read<sp/>from<sp/>a<sp/>nonuniform<sp/>OpenFOAM<sp/>patch<sp/>field.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="54" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a5a5c6e9eaaf40e1d070770c7f788ea1e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a5a5c6e9eaaf40e1d070770c7f788ea1e" kindref="member">setFixedValues</ref>(</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector,</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;sizeType,<sp/>sizeType&gt;<sp/>range,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref>&amp;<sp/>fixedValues</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[refGradient,<sp/>value,<sp/>valueFraction,<sp/>refValue]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refGrad(),</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().value(),</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().valueFraction(),</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refValue()</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fixedValuesView<sp/>=<sp/>fixedValues.<ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view</ref>();</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>start<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(range.first);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>patchValue<sp/>=<sp/>fixedValuesView[i<sp/>-<sp/>start];</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValue[i]<sp/>=<sp/>patchValue;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value[i]<sp/>=<sp/>patchValue;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFraction[i]<sp/>=<sp/>1.0;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>only<sp/>used<sp/>refValue</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGradient[i]<sp/>=<sp/>patchValue;<sp/></highlight><highlight class="comment">//<sp/>not<sp/>used</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;setFixedValuesVolume&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="86" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue" kindref="compound">FixedValue</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory</ref>&lt;ValueType&gt;::template<sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt;FixedValue&lt;ValueType&gt;&gt;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Base<sp/>=<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory&lt;ValueType&gt;::template</ref><sp/><ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register&lt;FixedValue&lt;ValueType&gt;</ref>&gt;;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Base::correctBoundaryCondition;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ab5c62ca19f89f2a843b2d71b5bce7313" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ab5c62ca19f89f2a843b2d71b5bce7313" kindref="member">FixedValue</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchID)</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(mesh,<sp/>dict,<sp/>patchID,<sp/>{.assignable<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/>.fixesValue<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">}),</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fixedValue_(</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">)<sp/>?<sp/>dict.get&lt;ValueType&gt;(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">)<sp/>:<sp/>ValueType<sp/>{}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>),</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fixedValues_(</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh.exec(),</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValues&quot;</highlight><highlight class="normal">)<sp/>?<sp/>dict.get&lt;std::vector&lt;ValueType&gt;&gt;(</highlight><highlight class="stringliteral">&quot;fixedValues&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>std::vector&lt;ValueType&gt;<sp/>{}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>hasUniform<sp/>=<sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>hasPerFace<sp/>=<sp/>dict.contains(</highlight><highlight class="stringliteral">&quot;fixedValues&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!hasUniform<sp/>&amp;&amp;<sp/>!hasPerFace)</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" kindref="member">NF_THROW</ref>(</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;fixedValue<sp/>boundary<sp/>condition<sp/>on<sp/>patch<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(patchID)</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>requires<sp/>either<sp/>a<sp/>uniform<sp/>&apos;fixedValue&apos;<sp/>or<sp/>a<sp/>per-face<sp/>&apos;fixedValues&apos;<sp/>entry&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Validate<sp/>on<sp/>the<sp/>key<sp/>being<sp/>present,<sp/>not<sp/>on<sp/>the<sp/>list<sp/>being<sp/>non-empty:<sp/>an<sp/>empty</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>&apos;fixedValues&apos;<sp/>on<sp/>a<sp/>non-empty<sp/>patch<sp/>is<sp/>malformed<sp/>per-face<sp/>data,<sp/>and<sp/>testing<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>size<sp/>alone<sp/>would<sp/>let<sp/>it<sp/>through<sp/>to<sp/>the<sp/>uniform<sp/>fallback<sp/>and<sp/>silently<sp/>apply<sp/>zero.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(hasPerFace<sp/>&amp;&amp;<sp/><ref refid="namespaceNeoN_1a36ddf31a207ee99bcbae033086b44b9c" kindref="member">toLocalIdx</ref>(fixedValues_.size())<sp/>!=<sp/>this-&gt;patchSize())</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" kindref="member">NF_THROW</ref>(</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&apos;fixedValues&apos;<sp/>holds<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(fixedValues_.size())<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>values<sp/>but<sp/>patch<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>std::to_string(patchID)<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>has<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(this-&gt;patchSize())<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>faces&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a4b9f9dfc246ffdf3568eb5bcb34cf8ec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a4b9f9dfc246ffdf3568eb5bcb34cf8ec" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector)<sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fixedValues_.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a5a5c6e9eaaf40e1d070770c7f788ea1e" kindref="member">detail::setFixedValues</ref>(domainVector,<sp/>this-&gt;range(),<sp/>fixedValues_);</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aad7bddb3932214b4d03d29f67c65c20f" kindref="member">detail::setFixedValue</ref>(domainVector,<sp/>this-&gt;range(),<sp/>fixedValue_);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1afef3ea3db480582fa54b4f55969f7c78" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1afef3ea3db480582fa54b4f55969f7c78" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;fixedValue&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af8e91a366657f22d0c6354c221af6994" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af8e91a366657f22d0c6354c221af6994" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1afef3ea3db480582fa54b4f55969f7c78" kindref="member">name</ref>();<sp/>}</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ae7b06ed504499c470bb4b22e60c19e96" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ae7b06ed504499c470bb4b22e60c19e96" kindref="member">doc</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Set<sp/>a<sp/>fixed<sp/>value<sp/>on<sp/>the<sp/>boundary&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af89a1abef69d223e968f4ebcfa49d6b0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af89a1abef69d223e968f4ebcfa49d6b0" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a06f07501b9dd47f398d8f1e8de8f4d4b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;VolumeBoundaryFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1a06f07501b9dd47f398d8f1e8de8f4d4b" kindref="member">clone</ref>()<sp/>const<sp/>final</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;FixedValue&gt;(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType<sp/>fixedValue_;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;ValueType&gt;</ref><sp/>fixedValues_;<sp/></highlight></codeline>
+<codeline lineno="155"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedValue.hpp"/>
   </compounddef>

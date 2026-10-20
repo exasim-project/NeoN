@@ -45,9 +45,9 @@
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00041}00041\ )}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00042}00042\ \{}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ a1\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1)\ /\ dt;}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a56a4ae9f82c769e4ce85e2d7804f2b42}{nInternalFaces}}();}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a2cc40de21a651f18026027a53f13ce24}{nBoundaryFaces}}();}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a05144346e4df36fcd70f0a1713bd0028}{nProcBoundaryFaces}}();}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_af23ef0b16d15934b7c1191328cb10116}{nInternalFaces}}();}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a9f69e61ca158dd244d5e088c803c580b}{nBoundaryFaces}}();}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a75d3a7dc77397def80404a58fba8ac02}{nProcBoundaryFaces}}();}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00047}00047\ }
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{comment}{//\ Internal\ faces.\ mesh.faceNormals()\ is\ OF-\/full\ but\ its\ leading\ nInternalFaces}}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{comment}{//\ entries\ coincide\ with\ the\ compressed\ internal-\/face\ Sf,\ so\ indexing\ by\ i\ is\ fine.}}
@@ -56,7 +56,7 @@
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00052}00052\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00053}00053\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ exec,}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\textcolor{keyword}{>}(nInternalFaces)\},}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ nInternalFaces\},}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ d\ =\ (SfV[i]\ \&\ uf0V[i]);}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ corr\ =\ flux0V[i]\ -\/\ d;}
@@ -85,7 +85,7 @@
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bFaceNormals\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}{faceNormals}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00082}00082\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ exec,}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\textcolor{keyword}{>}(nBoundaryFaces\ +\ nProcBoundaryFaces)\},}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ nBoundaryFaces\ +\ nProcBoundaryFaces\},}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ bfi)\ \{}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ d\ =\ (bFaceNormals[bfi]\ \&\ uf0BV[bfi]);}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ corr\ =\ flux0BV[bfi]\ -\/\ d;}
@@ -112,9 +112,9 @@
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00108}00108\ \{}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ a1\ =\ 2.0\ /\ dt;}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ a2\ =\ -\/0.5\ /\ dt;}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a56a4ae9f82c769e4ce85e2d7804f2b42}{nInternalFaces}}();}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a2cc40de21a651f18026027a53f13ce24}{nBoundaryFaces}}();}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00113}00113\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a05144346e4df36fcd70f0a1713bd0028}{nProcBoundaryFaces}}();}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_af23ef0b16d15934b7c1191328cb10116}{nInternalFaces}}();}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a9f69e61ca158dd244d5e088c803c580b}{nBoundaryFaces}}();}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00113}00113\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcBoundaryFaces\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a75d3a7dc77397def80404a58fba8ac02}{nProcBoundaryFaces}}();}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00114}00114\ }
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00115}00115\ \ \ \ \ \textcolor{comment}{//\ Internal\ faces}}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00116}00116\ \ \ \ \ \{}
@@ -128,7 +128,7 @@
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ exec,}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\textcolor{keyword}{>}(nInternalFaces)\},}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ nInternalFaces\},}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ d1\ =\ (SfV[i]\ \&\ uf0V[i]);}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ corr1\ =\ flux0V[i]\ -\/\ d1;}
@@ -158,7 +158,7 @@
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bFaceNormals\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}{faceNormals}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ exec,}
-\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\textcolor{keyword}{>}(nBoundaryFaces\ +\ nProcBoundaryFaces)\},}
+\DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}(0),\ nBoundaryFaces\ +\ nProcBoundaryFaces\},}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ bfi)\ \{}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ d1\ =\ (bFaceNormals[bfi]\ \&\ uf0BV[bfi]);}
 \DoxyCodeLine{\Hypertarget{ddtFluxCorr_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ corr1\ =\ flux0BV[bfi]\ -\/\ d1;}

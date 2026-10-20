@@ -236,6 +236,8 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="12">
         <label>NeoN/core/primitives/label.hpp</label>
@@ -326,6 +328,8 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="42">
         <label>NeoN/core/visibility.hpp</label>
@@ -346,7 +350,15 @@
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="45">
@@ -426,6 +438,8 @@
         </childnode>
         <childnode refid="54" relation="include">
         </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="58">
         <label>NeoN/linearAlgebra/meshIterationStrategies.hpp</label>
@@ -477,6 +491,8 @@
         <childnode refid="50" relation="include">
         </childnode>
         <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
       <node id="15">
@@ -1140,8 +1156,8 @@
 <codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>mi<sp/>=<sp/>bundle.<ref refid="classNeoN_1_1la_1_1LinearSystem_1aac856e2d50f6163ed84e1babaefc6443" kindref="member">faceToMatrixAddress</ref>;</highlight></codeline>
 <codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>bSp<sp/>=<sp/>bundle.boundarySparsity;</highlight></codeline>
 <codeline lineno="368"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>sp-&gt;exec();</highlight></codeline>
-<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nCells<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a0e2245854aad317731034ac549956117" kindref="member">nCells</ref>());</highlight></codeline>
-<codeline lineno="370"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nProcFaces<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a05144346e4df36fcd70f0a1713bd0028" kindref="member">nProcBoundaryFaces</ref>());</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nCells<sp/>=<sp/><ref refid="namespaceNeoN_1a36ddf31a207ee99bcbae033086b44b9c" kindref="member">toLocalIdx</ref>(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1ab10b7e2c515721710cd3f6d18c186ce7" kindref="member">nCells</ref>());</highlight></codeline>
+<codeline lineno="370"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nProcFaces<sp/>=<sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a75d3a7dc77397def80404a58fba8ac02" kindref="member">nProcBoundaryFaces</ref>();</highlight></codeline>
 <codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">IndexType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>BoundaryMatrixType::MatrixSparsityType::SparsityIndexType;</highlight></codeline>
 <codeline lineno="372"><highlight class="normal"></highlight></codeline>
 <codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Off-diagonal<sp/>/<sp/>proc-face<sp/>sparsity<sp/>stays<sp/>per-system<sp/>(comm-pattern-derived);<sp/>not<sp/>shared<sp/>in<sp/>v1.</highlight><highlight class="normal"></highlight></codeline>
@@ -1152,7 +1168,7 @@
 <codeline lineno="378"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>commPattern<sp/>=<sp/>computeCommunicationPattern(mesh);</highlight></codeline>
 <codeline lineno="379"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(nProcFaces<sp/>&gt;<sp/>0)</highlight></codeline>
 <codeline lineno="380"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="381"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>nBoundaryFaces<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a2cc40de21a651f18026027a53f13ce24" kindref="member">nBoundaryFaces</ref>());</highlight></codeline>
+<codeline lineno="381"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nBoundaryFaces<sp/>=<sp/><ref refid="namespaceNeoN_1a36ddf31a207ee99bcbae033086b44b9c" kindref="member">toLocalIdx</ref>(mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1a9f69e61ca158dd244d5e088c803c580b" kindref="member">nBoundaryFaces</ref>());</highlight></codeline>
 <codeline lineno="382"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>faceOwnersH<sp/>=<sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" kindref="member">boundaryMesh</ref>().<ref refid="classNeoN_1_1BoundaryMesh_1abee97709eb5b6dc8013626b811bf62a5" kindref="member">faceOwners</ref>().<ref refid="classNeoN_1_1Vector_1ad9d97488c7ae4f82eb2f07c6001ca7e9" kindref="member">copyToHost</ref>();</highlight></codeline>
 <codeline lineno="383"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>faceOwnersV<sp/>=<sp/>faceOwnersH.<ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view</ref>();</highlight></codeline>
 <codeline lineno="384"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;IndexType&gt;</ref><sp/>rowH(<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">SerialExecutor</ref><sp/>{},<sp/>nProcFaces,<sp/>0);</highlight></codeline>

@@ -122,6 +122,26 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>NeoN/helpers/exceptions.hpp</label>
+        <link refid="exceptions_8hpp"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="15">
         <label>Kokkos_Core.hpp</label>
@@ -144,20 +164,32 @@
       <node id="22">
         <label>limits</label>
       </node>
+      <node id="27">
+        <label>source_location</label>
+      </node>
       <node id="23">
         <label>span</label>
       </node>
       <node id="9">
         <label>sstream</label>
       </node>
+      <node id="25">
+        <label>stdexcept</label>
+      </node>
       <node id="2">
         <label>string</label>
+      </node>
+      <node id="28">
+        <label>string_view</label>
       </node>
       <node id="18">
         <label>type_traits</label>
       </node>
       <node id="3">
         <label>typeindex</label>
+      </node>
+      <node id="26">
+        <label>utility</label>
       </node>
       <node id="4">
         <label>vector</label>
@@ -209,7 +241,7 @@
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>There<sp/>is<sp/>also<sp/>an<sp/>MPI<sp/>environment<sp/>value<sp/>for<sp/>that,<sp/>but<sp/>somehow<sp/>it<sp/>doesn&apos;t<sp/>work<sp/>using<sp/>that</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Also<sp/>reserve<sp/>10<sp/>tags<sp/>for<sp/>other<sp/>uses</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>maxTagValue<sp/>=<sp/>32767<sp/>-<sp/>10;</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>std::size_t<sp/>tag<sp/>=<sp/>std::hash&lt;std::string&gt;<sp/>{}(str);</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a43f0805859cf059f7feeaf970df5c7b0" kindref="member">sizeType</ref><sp/>tag<sp/>=<sp/>std::hash&lt;std::string&gt;<sp/>{}(str);</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>tag<sp/>&amp;=<sp/>0x7FFFFFFF;<sp/></highlight><highlight class="comment">//<sp/>turn<sp/>&apos;int&apos;<sp/>signed<sp/>bit<sp/>to<sp/>0,<sp/>MPI<sp/>does<sp/>not<sp/>like<sp/>negative<sp/>tags.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(tag)<sp/>%<sp/>maxTagValue)<sp/>+<sp/>10;</highlight></codeline>
 <codeline lineno="38"><highlight class="normal">}</highlight></codeline>
