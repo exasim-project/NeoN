@@ -45,7 +45,7 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
             NEON_LAMBDA(const localIdx celli) {
                 sourceView[celli] += dtInver * (field[celli] - oldVector[celli]) * vol[celli];
             },
-            "ddtOpertator::explicitOperation"
+            "ddtOperator::explicitOperation"
         );
     }
     else
