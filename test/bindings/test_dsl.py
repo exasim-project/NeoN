@@ -154,6 +154,58 @@ def test_dsl_vector_operators(executor):
     assert res_eqn.size() == 4
 
 
+def test_dsl_ddt_rho_scalar_overloads(executor):
+    """imp.ddt(rho, phi) and exp.ddt(rho, phi) (scalar-scalar) construct correctly
+    through the Python bindings.
+
+    Both free functions already had C++-level coverage (test/finiteVolume/
+    cellCentred/operator/ddtOperator.cpp), but that bypasses nanobind entirely and
+    cannot catch registration, overload-resolution, or lifetime-policy regressions
+    in the bindings themselves -- which is what this test is for.
+    """
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10, 1.0)
+    rho = neon.ScalarVolumeField(exec, "rho", mesh)
+    phi = neon.ScalarVolumeField(exec, "phi", mesh)
+    U = neon.VectorVolumeField(exec, "U", mesh)
+
+    # Construction: imp.ddt(rho, phi), both scalar.
+    imp_op = imp.ddt(rho, phi)
+    assert isinstance(imp_op, neon.TemporalOperatorScalar)
+    assert imp_op.get_name() == "DdtOperator"
+
+    # Construction: exp.ddt(rho, phi), both scalar.
+    exp_op = exp.ddt(rho, phi)
+    assert isinstance(exp_op, neon.TemporalOperatorScalar)
+    assert exp_op.get_name() == "DdtOperator"
+
+    # The two new operators compose like any other TemporalOperatorScalar.
+    eqn = imp_op + exp_op
+    assert isinstance(eqn, neon.ExpressionScalar)
+    assert eqn.size() == 2
+
+    eqn = imp_op - exp_op
+    assert isinstance(eqn, neon.ExpressionScalar)
+    assert eqn.size() == 2
+
+    # Overload resolution: ddt(rho, U) (scalar-vector) is bound under the same
+    # Python name ("ddt") as the new scalar-scalar overload; it must still resolve
+    # to the vector operator rather than being shadowed by the new one.
+    imp_vec_op = imp.ddt(rho, U)
+    assert isinstance(imp_vec_op, neon.TemporalOperatorVector)
+
+    # Lifetime: nb::keep_alive<0, 1>()/<0, 2>() on both bindings are meant to keep
+    # rho and phi alive for as long as the operator built from them is. Dropping the
+    # local Python names and forcing a collection exercises that policy.
+    del rho, phi, U
+    import gc
+
+    gc.collect()
+    assert imp_op.get_name() == "DdtOperator"
+    assert exp_op.get_name() == "DdtOperator"
+    assert imp_vec_op.get_name() == "DdtOperator"
+
+
 def _cell_volumes(mesh):
     """The mesh cell volumes as a host NumPy array."""
     np = pytest.importorskip("numpy")
