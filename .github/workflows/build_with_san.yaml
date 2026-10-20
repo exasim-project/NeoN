@@ -7,7 +7,7 @@ on:
       - develop
       - main
   pull_request:
-    types: synchronize
+    types: [opened, synchronize, reopened, labeled]
   schedule:
     - cron: "0 9 * * *"
 
@@ -26,7 +26,10 @@ concurrency:
 
 jobs:
   build:
-    if: ${{ github.repository == 'exasim-project/NeoN' && contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'full-ci'))
     name: Build NeoN with sanitizer
     strategy:
       fail-fast: false
@@ -35,26 +38,20 @@ jobs:
           - CC: gcc
             CXX: g++
         preset: ["NeoN_ENABLE_SANITIZE_ADDRESS=ON",
-          "NeoN_ENABLE_SANITIZE_UB=ON",
-          "NeoN_ENABLE_SANITIZE_MEMORY=ON"
+          "NeoN_ENABLE_SANITIZE_UB=ON"
         ]
     runs-on: ubuntu-latest
     steps:
      - name: Checkout to repository
        uses: actions/checkout@v4
 
-     - name: Add clang repo
-       run: |
-         sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
-         wget https://apt.llvm.org/llvm-snapshot.gpg.key
-         sudo apt-key add llvm-snapshot.gpg.key
-
      - name: Set up cache
        uses: actions/cache@v4
        if: ${{!contains(github.event.pull_request.labels.*.name, 'Skip-cache')}}
        with:
          path: build
-         key: ubuntu_build_PR_${{ github.event.pull_request.number }}_${{matrix.compiler.CC}}_${{matrix.preset}}
+         key: san_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.preset}}_${{ github.sha }}
+         restore-keys: san_build_${{ github.event.pull_request.number || github.ref_name }}_${{matrix.preset}}_
 
      - name: Install dependencies
        run: |
@@ -85,4 +82,7 @@ jobs:
 
      - name: Execute unit tests NeoN
        run: |
-         LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/13/libasan.so ctest --preset develop
+         if [[ "${{matrix.preset}}" == *ADDRESS* ]]; then
+           export LD_PRELOAD="$(${{matrix.compiler.CC}} -print-file-name=libasan.so)"
+         fi
+         ctest --preset develop
