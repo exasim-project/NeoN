@@ -26,6 +26,13 @@ RUN apt-get update && \
     zlib1g-dev && \
     rm -rf /var/lib/apt/lists/*
 
+# intel-ocloc: Kokkos_ARCH_INTEL_PVC compiles ahead of time for PVC, which requires it
+RUN if [ "${GINKGO_BACKEND}" = "sycl" ]; then \
+    apt-get update && \
+    apt-get install -y --no-install-recommends intel-ocloc && \
+    rm -rf /var/lib/apt/lists/*; \
+    fi
+
 # scripts/catch2json.py, run by ci/lrz-gitlab/benchmark.sh
 RUN pip3 install --no-cache-dir --break-system-packages xmltodict
 
