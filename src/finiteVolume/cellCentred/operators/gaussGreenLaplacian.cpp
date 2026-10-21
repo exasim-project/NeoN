@@ -621,7 +621,7 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
         computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
         // computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
     }
-    // computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     // computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     // computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
 }

@@ -201,8 +201,7 @@ public:
             );
         }
         const auto operatorScaling = this->getCoefficient();
-        juliaEvalString_ = "Laplace{Float64}("+std::to_string(operatorScaling[0])+")";//, operatorScaling[0]);
-
+        juliaEvalString_ = "Laplace{Float64}(" + std::to_string(operatorScaling[0]) + ")";
     }
 
     std::string getName() const { return "LaplacianOperator"; }

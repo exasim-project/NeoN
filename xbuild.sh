@@ -25,7 +25,7 @@ module load openmpi
 # CPU Multithread
 # CC=clang CXX=clang++ 
 # time (
-cmake --preset develop \
+cmake --preset julia \
 		-DNeoN_WITH_GINKGO=OFF \
 		-DKokkos_ENABLE_ATOMICS_BYPASS=OFF \
 		-DNeoN_WITH_JULIA=ON \
@@ -68,4 +68,4 @@ cmake --preset develop \
 # 	    -DKokkos_ENABLE_THREADS=OFF \
 # 		-DNeoN_WITH_UMPIRE=OFF;
 # )
-cmake --build --preset develop --parallel 32
+cmake --build --preset julia --parallel 32

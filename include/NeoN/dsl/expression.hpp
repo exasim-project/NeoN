@@ -334,7 +334,7 @@ public:
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
-        // assembleTemporalOperator(ls, t, dt); // add temporal operators
+        assembleTemporalOperator(ls, t, dt); // add temporal operators
 
         // FIXME REMOVE AFTER THESIS
         // Post-assembly functors apply on the same-type form via operator(); the segregated
@@ -354,6 +354,55 @@ public:
         //     }
         // }
     }
+
+    /* @brief assemble into a given linear system (implicit operators only, no explicit sources)
+     *
+     * @param ps post-assembly functors applied to the system after assembly
+     */
+    template<typename AssemblyType = ValueType>
+    void assembleWithJulia(
+        scalar t,
+        scalar dt,
+        la::LinearSystem<AssemblyType, ValueType>& ls,
+        std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
+    ) const
+    {
+        if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+        {
+            if (!cellIter->getCellBasedData())
+            {
+                cellIter->setComputeCellBasedData(
+                    phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                );
+            }
+            computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
+        }
+        else
+        {
+            computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+            // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
+        }
+
+        // FIXME REMOVE AFTER THESIS
+        // Post-assembly functors apply on the same-type form via operator(); the segregated
+        // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
+        // if constexpr (std::is_same_v<AssemblyType, ValueType>)
+        // {
+        //     for (const auto* p : ps)
+        //     {
+        //         (*p)(ls);
+        //     }
+        // }
+        // else if constexpr (std::is_same_v<AssemblyType, scalar>)
+        // {
+        //     for (const auto* p : ps)
+        //     {
+        //         p->applyScalarMatrix(ls);
+        //     }
+        // }
+    }
+
+
 
     void addOperator(const SpatialOperator<ValueType>& oper) { spatialOperators_.push_back(oper); }
 
