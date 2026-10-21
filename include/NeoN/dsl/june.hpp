@@ -50,9 +50,10 @@ bool canAssemble(const Expression<ValueType, IndexType>& expr)
         if (op.getType() != Operator::Type::Implicit) continue;
         const auto name = op.getName();
         const auto jlOp = op.juliaOP();
-        // JuNe only defines the upwind and linear div schemes
+        // JuNe only defines the upwind, linearUpwind and linear div schemes
         const bool supportedDiv = name == "DivOperator"
                                && (jlOp.starts_with("Div{Float64, upwind{")
+                                   || jlOp.starts_with("Div{Float64, linearUpwind{")
                                    || jlOp.starts_with("Div{Float64, linear{"));
         if (name != "LaplacianOperator" && !supportedDiv) return false;
         hasSpatial = true;

@@ -180,7 +180,11 @@ public:
             std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
             tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
             auto scheme = tokens.firstAfterGauss();
-            juliaEvalString_ = "Div{Float64, " + scheme + "{Float64}}("+scheme+"{Float64}(), "+std::to_string(operatorScaling[0])+")";
+            // JuNe adds the bounded-convection diagonal term when the third argument is true
+            const auto& toks = tokens.tokens();
+            const bool bounded = !toks.empty() && toks[0].type() == typeid(std::string)
+                              && std::any_cast<const std::string&>(toks[0]) == "bounded";
+            juliaEvalString_ = "Div{Float64, " + scheme + "{Float64}}("+scheme+"{Float64}(), "+std::to_string(operatorScaling[0])+(bounded ? ", true" : "")+")";
         }
         else
         {
