@@ -22,6 +22,7 @@
 #include "boundary/energyBoundaryMapping.hpp"
 #include "boundary/volume/symmetry.hpp"
 #include "boundary/volume/slip.hpp"
+#include "boundary/volume/pressureInletOutletVelocity.hpp"
 #include "boundary/volume/inletOutlet.hpp"
 #include "boundary/volume/totalPressure.hpp"
 #include "boundary/volume/waveTransmissive.hpp"
