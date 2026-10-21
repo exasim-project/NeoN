@@ -371,11 +371,6 @@ void computeLaplacianIntImpl(
             // S_f points from owner to neighbour by construction.
             auto flux =
                 deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<AssemblyType>();
-            if (facei == 460041232){
-                std::cout << "nei: "<< neiCoeff << " own: " << ownCoeff << std::endl;
-                std::cout << "flux: "<< flux <<std::endl;
-                std::cout << deltaCoeffs[facei] << ", " << gammaV[facei] << ", " << magFaceArea[facei]<< std::endl;
-            }
             // triangular coefficients - neighbour -> lower, owner -> upper
             values[ma.lowerIdx(neiRow, facei)] += flux * neiCoeff;
             values[ma.upperIdx(ownRow, facei)] += flux * ownCoeff;
@@ -418,7 +413,6 @@ void computeGlobalFace(
     const auto bDeltaCoeffs = faceNormalGradient.deltaCoeffs().boundaryData().value().view();
 
 
-
     auto [refGradient, valueFraction, refValue] = views(
         phi.boundaryData().refGrad(),
         phi.boundaryData().valueFraction(),
@@ -433,7 +427,8 @@ void computeGlobalFace(
         exec,
         {0, nTotalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            if (facei < nInternalFaces) {
+            if (facei < nInternalFaces)
+            {
                 // row and column indices
                 auto ownRow = ownV[facei];
                 auto neiRow = neiV[facei];
@@ -443,10 +438,11 @@ void computeGlobalFace(
                 auto neiCoeff = coeff[neiRow];
 
                 // Laplacian face coefficient: δ_f · γ_f · |S_f|
-                // The Laplacian is symmetric — the same flux value enters both owner and neighbour rows
-                // with opposite signs (diffusion out of one cell = diffusion into the other).
+                // The Laplacian is symmetric — the same flux value enters both owner and neighbour
+                // rows with opposite signs (diffusion out of one cell = diffusion into the other).
                 // S_f points from owner to neighbour by construction.
-                auto flux = deltaCoeffs[facei]  * gammaV[facei] * magFaceArea[facei] * one<AssemblyType>();
+                auto flux =
+                    deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<AssemblyType>();
 
                 // triangular coefficients - neighbour -> lower, owner -> upper
                 values[ma.lowerIdx(neiRow, facei)] += flux * neiCoeff;
@@ -456,7 +452,8 @@ void computeGlobalFace(
                 Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux * ownCoeff);
                 Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], flux * neiCoeff);
             }
-            else {
+            else
+            {
                 auto bfi = facei - nInternalFaces;
 
                 auto ownRow = boundaryFaceOwners[bfi];
@@ -482,14 +479,14 @@ void computeGlobalFace(
                 //       + valFrac2 * (φ_C + refGradient/δ)  (Neumann part)
                 // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
                 // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
-                // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
-                auto valueRhs =
-                    flux * ownRowCoeff
-                    * (refValFrac * bDeltaCoeffs[bfi] * refValue[bfi] + refGradFrac * refGradient[bfi]);
+                // the Neumann gradient correction (refGradient/δ) enters directly as a known
+                // increment.
+                auto valueRhs = flux * ownRowCoeff
+                              * (refValFrac * bDeltaCoeffs[bfi] * refValue[bfi]
+                                 + refGradFrac * refGradient[bfi]);
                 Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
                 bRhs[bfi] += valueRhs;
             }
-
         },
         "computeLocalLaplacianCoefficients"
     );
@@ -621,8 +618,8 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
         // computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
     }
     computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    // computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    // computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
 }
 
 

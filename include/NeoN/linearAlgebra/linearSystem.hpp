@@ -402,7 +402,7 @@ private:
                     cur = std::max(cur, std::abs(lhsView[i][c] - rhsView[i][c]));
                 }
             }
-            
+
             if (cur > max)
             {
                 max = cur;
@@ -418,7 +418,8 @@ private:
             }
         }
         std::cout << name << " highest error: " << max << " at " << maxindex << std::endl;
-        std::cout << name << " neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex] <<std::endl;
+        std::cout << name << " neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex]
+                  << std::endl;
 
         std::cout << name << " total error: " << err << std::endl;
         std::cout << name << " total error per entry: " << err / lhsView.size() << std::endl;
@@ -555,7 +556,7 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     };
 
 #ifdef NF_WITH_MPI_SUPPORT
-    // ls.commPattern() = std::move(commPattern);
+    ls.commPattern() = std::move(commPattern);
 #endif
 
     return ls;

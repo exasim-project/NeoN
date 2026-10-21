@@ -53,10 +53,10 @@ bool canAssemble(const Expression<ValueType, IndexType>& expr)
         if (op.getType() != Operator::Type::Implicit) continue;
         const auto name = op.getName();
         const auto jlOp = op.juliaOP();
-        // JuNe only defines the upwind, linearUpwind and linear div schemes
+        // JuNe only defines the upwind and linear div schemes; its linearUpwind assembles the
+        // upwind implicit part without NeoN's explicit gradient correction of the rhs
         const bool supportedDiv = name == "DivOperator"
                                && (jlOp.starts_with("Div{Float64, upwind{")
-                                   || jlOp.starts_with("Div{Float64, linearUpwind{")
                                    || jlOp.starts_with("Div{Float64, linear{"));
         if (name != "LaplacianOperator" && !supportedDiv) return false;
         hasSpatial = true;
@@ -100,9 +100,9 @@ inline void checkJuliaException()
 {
     if (jl_exception_occurred())
     {
-        const char* p = jl_string_ptr(
-            jl_eval_string("sprint(showerror, ccall(:jl_exception_occurred, Any, ()))")
-        );
+        const char* p =
+            jl_string_ptr(jl_eval_string("sprint(showerror, ccall(:jl_exception_occurred, Any, ()))"
+            ));
         NF_ERROR_EXIT(std::string("JuNe assembly failed: ") + p);
     }
 }
@@ -139,7 +139,8 @@ void assemble(
 {
     namespace fvcc = NeoN::finiteVolume::cellCentred;
 
-    const auto* divPhi = detail::findConfig<fvcc::VolumeField<ValueType>>(expr, "DivOperator", "field");
+    const auto* divPhi =
+        detail::findConfig<fvcc::VolumeField<ValueType>>(expr, "DivOperator", "field");
     const auto* lapPhi =
         detail::findConfig<fvcc::VolumeField<ValueType>>(expr, "LaplacianOperator", "field");
     NF_ASSERT(divPhi || lapPhi, "JuNe assembly needs a div or laplacian operator");
@@ -172,8 +173,7 @@ void assemble(
 
     // the cached geometry-scheme coefficients: the mesh centres they are computed from are
     // released after the first geometry read
-    const auto& nonOrthDeltaCoeffs =
-        fvcc::GeometryScheme::readOrCreate(mesh)->nonOrthDeltaCoeffs();
+    const auto& nonOrthDeltaCoeffs = fvcc::GeometryScheme::readOrCreate(mesh)->nonOrthDeltaCoeffs();
     const auto ideltaCoeffs = nonOrthDeltaCoeffs.internalVector().juliaPtr();
     const auto bdeltaCoeffs = nonOrthDeltaCoeffs.boundaryData().value().juliaPtr();
 

@@ -287,9 +287,6 @@ void computeDivIntImp(
         mesh.boundaryMesh().faceOwners()
     );
     auto values = ls.matrix().values().view();
-    std::cout << "numints: " << nInternalFaces << std::endl;
-    std::cout << values[460041232] << std::endl;
-    std::cout << "length of values: " << values.size() << std::endl;
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -321,7 +318,6 @@ void computeDivIntImp(
         },
         "computeLocalGaussGreenDivCoefficients"
     );
-
 };
 
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
@@ -482,7 +478,8 @@ void computeGlobalFace(
         exec,
         {0, nTotalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            if (facei < nInternalFaces){
+            if (facei < nInternalFaces)
+            {
                 // row and column indices
                 auto ownRow = ownV[facei];
                 auto neiRow = neiV[facei];
@@ -509,7 +506,8 @@ void computeGlobalFace(
                 Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], ownFluxContrib * ownCoeff);
                 Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], neiFluxContrib * neiCoeff);
             }
-            else {
+            else
+            {
                 auto bfi = facei - nInternalFaces;
                 auto ownRow = bownV[bfi];
 
@@ -532,7 +530,8 @@ void computeGlobalFace(
                 //       + refGradFrac * (φ_C + refGradient/δ)  (Neumann part)
                 // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
                 // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
-                // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
+                // the Neumann gradient correction (refGradient/δ) enters directly as a known
+                // increment.
                 auto valueRhs =
                     (bweights[bfi] * bFaceFluxV[bfi] * ownCoeff * (refValFrac * refValue[bfi]))
                     + refGradFrac * refGradient[bfi] * (1 / deltaCoeffs[bfi]);
@@ -542,7 +541,6 @@ void computeGlobalFace(
         },
         "computeDivImpGlobalFaceBased"
     );
-
 };
 /* @brief adds the deferred gradient correction of a corrected scheme (e.g. linearUpwind) to the
 ** linear-system rhs, i.e. the discrete -operatorScaling * sum_f F_f corr_f per cell. This mirrors
@@ -643,21 +641,21 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
         // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
     }
     computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
-    // computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
 
-    // // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the
-    // // upwind weights above, the gradient correction is added explicitly to the rhs.
-    // if (surfaceInterpolation_.corrected())
-    // {
-    //     SurfaceField<FieldValueType> correction(
-    //         phi.exec(),
-    //         "divCorrection",
-    //         phi.mesh(),
-    //         createCalculatedBCs<SurfaceBoundary<FieldValueType>>(phi.mesh())
-    //     );
-    //     surfaceInterpolation_.correction(faceFlux, phi, correction);
-    //     addDivCorrectionToRhs(ls, faceFlux, correction, operatorScaling);
-    // }
+    // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the
+    // upwind weights above, the gradient correction is added explicitly to the rhs.
+    if (surfaceInterpolation_.corrected())
+    {
+        SurfaceField<FieldValueType> correction(
+            phi.exec(),
+            "divCorrection",
+            phi.mesh(),
+            createCalculatedBCs<SurfaceBoundary<FieldValueType>>(phi.mesh())
+        );
+        surfaceInterpolation_.correction(faceFlux, phi, correction);
+        addDivCorrectionToRhs(ls, faceFlux, correction, operatorScaling);
+    }
 }
 
 template class GaussGreenDiv<scalar>;
