@@ -4,6 +4,7 @@
 
 neon_unit_test(volFixedValue)
 neon_unit_test(volFixedGradient)
+neon_unit_test(volSineFixedValue)
 neon_unit_test(volSymmetry)
 neon_unit_test(volInletOutlet)
 neon_unit_test(volTotalPressure)
