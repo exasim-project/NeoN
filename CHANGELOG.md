@@ -10,6 +10,7 @@
 - Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
+- Expose `BoundaryContext` to Python: `correct_boundary_conditions(ctx)` on scalar and Vec3 volume fields, plus a `(mesh, dict, patch_id)` constructor for volume boundaries, so context-aware BCs (`inletOutlet`, `totalPressure`, ...) work from Python instead of silently using their no-context fallback [#641](https://github.com/exasim-project/NeoN/pull/641)
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)

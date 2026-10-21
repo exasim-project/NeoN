@@ -4,6 +4,7 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/variant.h>
 #include <nanobind/stl/vector.h>
 
 #include <stdexcept>
@@ -431,12 +432,28 @@ void registerVolumeField(nb::module_& m)
     nb::class_<fvcc::VolumeBoundary<NeoN::scalar>>(
         m, "ScalarVolumeBoundary", "Volume boundary for scalar fields"
     )
+        .def(
+            nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            "mesh"_a,
+            "dict"_a,
+            "patch_id"_a,
+            "Construct the BC named by dict[\"type\"] (e.g. \"inletOutlet\", "
+            "\"waveTransmissive\") for this patch"
+        )
         .def("patch_id", &fvcc::VolumeBoundary<NeoN::scalar>::patchID)
         .def("patch_size", &fvcc::VolumeBoundary<NeoN::scalar>::patchSize);
 
     nb::class_<fvcc::VolumeBoundary<NeoN::Vec3>>(
         m, "VectorVolumeBoundary", "Volume boundary for Vec3 fields"
     )
+        .def(
+            nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            "mesh"_a,
+            "dict"_a,
+            "patch_id"_a,
+            "Construct the BC named by dict[\"type\"] (e.g. \"inletOutlet\", "
+            "\"pressureInletOutletVelocity\") for this patch"
+        )
         .def("patch_id", &fvcc::VolumeBoundary<NeoN::Vec3>::patchID)
         .def("patch_size", &fvcc::VolumeBoundary<NeoN::Vec3>::patchSize);
 
@@ -540,6 +557,15 @@ void registerVolumeField(nb::module_& m)
                 &fvcc::VolumeField<NeoN::scalar>::correctBoundaryConditions
             ),
             "Apply boundary conditions"
+        )
+        .def(
+            "correct_boundary_conditions",
+            static_cast<void (fvcc::VolumeField<NeoN::scalar>::*)(const fvcc::BoundaryContext&)>(
+                &fvcc::VolumeField<NeoN::scalar>::correctBoundaryConditions
+            ),
+            "ctx"_a,
+            "Apply boundary conditions, consulting a BoundaryContext for flux-/time-dependent "
+            "BCs (e.g. inletOutlet, totalPressure, waveTransmissive)"
         )
         .def("has_database", &fvcc::VolumeField<NeoN::scalar>::hasDatabase)
         .def_rw("name", &fvcc::VolumeField<NeoN::scalar>::name)
@@ -675,6 +701,15 @@ void registerVolumeField(nb::module_& m)
                 &fvcc::VolumeField<NeoN::Vec3>::correctBoundaryConditions
             ),
             "Apply boundary conditions"
+        )
+        .def(
+            "correct_boundary_conditions",
+            static_cast<void (fvcc::VolumeField<NeoN::Vec3>::*)(const fvcc::BoundaryContext&)>(
+                &fvcc::VolumeField<NeoN::Vec3>::correctBoundaryConditions
+            ),
+            "ctx"_a,
+            "Apply boundary conditions, consulting a BoundaryContext for flux-/time-dependent "
+            "BCs (e.g. inletOutlet, pressureInletOutletVelocity)"
         )
         .def("has_database", &fvcc::VolumeField<NeoN::Vec3>::hasDatabase)
         .def_rw("name", &fvcc::VolumeField<NeoN::Vec3>::name)
