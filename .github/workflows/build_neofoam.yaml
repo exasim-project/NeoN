@@ -46,6 +46,23 @@ jobs:
           echo "Using NeoN branch: $NEON_BRANCH"
           echo "NEON_BRANCH=$NEON_BRANCH" >> $GITHUB_ENV
 
+          # NeoFOAM's own CPM fetch of NeoN (cmake/CxxThirdParty.cmake) hardcodes
+          # GITHUB_REPOSITORY exasim-project/NeoN, so a branch that only exists on a
+          # contributor's fork can never be resolved there. Guard the NeoN-side lookup the same
+          # way the NeoFOAM-side one below already does, falling back to 'develop' so a fork PR
+          # degrades to testing against NeoN's current develop instead of failing the clone.
+          NEON_REPO_URL="https://github.com/exasim-project/NeoN"
+
+          echo "Checking if branch '$NEON_BRANCH' exists upstream in NeoN..."
+
+          if git ls-remote --exit-code --heads "$NEON_REPO_URL" "refs/heads/${NEON_BRANCH}" >/dev/null 2>&1; then
+            echo "NeoN branch exists upstream: $NEON_BRANCH"
+            echo "NEON_VERSION=$NEON_BRANCH" >> $GITHUB_ENV
+          else
+            echo "NeoN branch '$NEON_BRANCH' does not exist upstream (fork-only branch). Falling back to 'develop' for the NeoFOAM build's NeoN pin."
+            echo "NEON_VERSION=develop" >> $GITHUB_ENV
+          fi
+
           # Define remote repo URL
           REPO_URL="https://github.com/exasim-project/NeoFOAM"
 
@@ -110,7 +127,7 @@ jobs:
             -DNeoN_BUILD_TESTS=OFF \
             -DNEOFOAM_BUILD_BENCHMARKS=OFF \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
-            -DNEOFOAM_NEON_VERSION=${{ env.NEON_BRANCH }}
+            -DNEOFOAM_NEON_VERSION=${{ env.NEON_VERSION }}
           cmake --build --preset develop
 
       - name: Execute unit tests NeoN
