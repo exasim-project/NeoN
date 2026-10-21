@@ -74,8 +74,8 @@
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{comment}{//-\/\ Create\ auxiliary\ rows\ for\ calculation\ purposes}}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_aa8bb18687be355a802575d548fd7f292}{initialize}}(\textcolor{keyword}{const}\ LinearSystem<scalar>\&\ sys)}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00072}00072\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ std::size\_t\ size\ =\ sys.matrix().values().size();}
-\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ std::size\_t\ nrows\ =\ sys.rhs().size();}
+\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ size\ =\ sys.matrix().values().size();}
+\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ nrows\ =\ sys.rhs().size();}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ PetscInt\ colIdx[size];}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ PetscInt\ rowIdx[size];}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ PetscInt\ rhsIdx[nrows];}
@@ -90,23 +90,23 @@
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ colIdxHost\ =\ hostLS.matrix().colIdxs().view();}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rhsHost\ =\ sys.rhs().copyToHost();}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00088}00088\ }
-\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ index\ =\ 0;\ index\ <\ nrows;\ ++index)}
+\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (sizeType\ index\ =\ 0;\ index\ <\ nrows;\ ++index)}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ rhsIdx[index]\ =\ \textcolor{keyword}{static\_cast<}PetscInt\textcolor{keyword}{>}(index);}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copy\ colidx}}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ (this\ should\ be\ done\ only\ once\ when\ the\ matrix}}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ topology\ changes}}
-\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ index\ =\ 0;\ index\ <\ size;\ ++index)}
+\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (sizeType\ index\ =\ 0;\ index\ <\ size;\ ++index)}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ colIdx[index]\ =\ \textcolor{keyword}{static\_cast<}PetscInt\textcolor{keyword}{>}(colIdxHost[index]);}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convert\ rowPtr\ to\ rowIdx}}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ (this\ should\ be\ done\ only\ once\ when\ the\ matrix}}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ topology\ changes}}
-\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ rowI\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ rowOffset\ =\ rowPtrHost[rowI\ +\ 1];}
-\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ index\ =\ 0;\ index\ <\ size;\ ++index)}
+\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ rowI\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ rowOffset\ =\ rowPtrHost[rowI\ +\ 1];}
+\DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (sizeType\ index\ =\ 0;\ index\ <\ size;\ ++index)}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ ==\ rowOffset)}
 \DoxyCodeLine{\Hypertarget{petscSolverContext_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \{}

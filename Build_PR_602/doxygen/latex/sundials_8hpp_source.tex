@@ -159,7 +159,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00214}00214\ }
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00215}00215\ \ \ \ \ \textcolor{keyword}{auto}\ size\ =\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(N\_VGetLength(y));}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00216}00216\ \ \ \ \ \textcolor{comment}{//\ Copy\ initial\ value\ from\ y\ to\ source.}}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00217}00217\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{NeoN::Vector<NeoN::scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{source}}\ =\ pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5}{explicitOperation}}(size)\ *\ -\/1.0;\ \textcolor{comment}{//\ compute\ spatial}}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00217}00217\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{NeoN::Vector<NeoN::scalar>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1exp_a1af72d0f302573a202dd802e69062214}{source}}\ =\ pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae5c2fec7fad4ac672d73e6f44ae7c4ab}{explicitOperation}}(size)\ *\ -\/1.0;\ \textcolor{comment}{//\ compute\ spatial}}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00218}00218\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(pdeExpre-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad7581ac19b360ac79225710d2a38005a}{exec}}());}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00219}00219\ \ \ \ \ NeoN::sundials::fieldToSunNVector(source,\ ydot);\ \textcolor{comment}{//\ assign\ rhs\ to\ ydot.}}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00220}00220\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
@@ -169,7 +169,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00224}00224\ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00225}00225\ }
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00233}00233\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Vector>}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00234}00234\ \textcolor{keywordtype}{void}\ initNVector(\textcolor{keywordtype}{size\_t}\ size,\ std::shared\_ptr<SUNContext>\ context,\ Vector\&\ vec)}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00234}00234\ \textcolor{keywordtype}{void}\ initNVector(sizeType\ size,\ std::shared\_ptr<SUNContext>\ context,\ Vector\&\ vec)}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00235}00235\ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00236}00236\ \ \ \ \ vec.initNVector(size,\ context);}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00237}00237\ \}}
@@ -203,7 +203,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00282}00282\ }
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00283}00283\ }
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00284}00284\ \ \ \ \ \textcolor{keyword}{using\ }KVector\ =\ ::sundials::kokkos::Vector<Kokkos::Serial>;}
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00285}00285\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(\textcolor{keywordtype}{size\_t}\ size,\ std::shared\_ptr<SUNContext>\ context)}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00285}00285\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(sizeType\ size,\ std::shared\_ptr<SUNContext>\ context)}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00286}00286\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00287}00287\ \ \ \ \ \ \ \ \ kvector\_\ =\ KVector(size,\ *context);}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00288}00288\ \ \ \ \ \ \ \ \ svector\_\ =\ kvector\_;}
@@ -233,7 +233,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00317}00317\ \ \ \ \ SKVectorHostDefault\&\ operator=(\textcolor{keyword}{const}\ SKVectorHostDefault\&\ other)\ =\ \textcolor{keyword}{delete};}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00318}00318\ \ \ \ \ SKVectorHostDefault\&\ operator=(SKVectorHostDefault\&\&\ other)\ =\ \textcolor{keyword}{delete};}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00319}00319\ }
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00320}00320\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(\textcolor{keywordtype}{size\_t}\ size,\ std::shared\_ptr<SUNContext>\ context)}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00320}00320\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(sizeType\ size,\ std::shared\_ptr<SUNContext>\ context)}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00321}00321\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00322}00322\ \ \ \ \ \ \ \ \ kvector\_\ =\ KVector(size,\ *context);}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00323}00323\ \ \ \ \ \ \ \ \ svector\_\ =\ kvector\_;}
@@ -263,7 +263,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00352}00352\ \ \ \ \ SKVectorDefault\&\ operator=(\textcolor{keyword}{const}\ SKVectorDefault\&\ other)\ =\ \textcolor{keyword}{delete};}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00353}00353\ \ \ \ \ SKVectorDefault\&\ operator=(SKVectorDefault\&\&\ other)\ =\ \textcolor{keyword}{delete};}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00354}00354\ }
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00355}00355\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(\textcolor{keywordtype}{size\_t}\ size,\ std::shared\_ptr<SUNContext>\ context)}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00355}00355\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(sizeType\ size,\ std::shared\_ptr<SUNContext>\ context)}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00356}00356\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00357}00357\ \ \ \ \ \ \ \ \ kvector\_\ =\ KVector(size,\ *context);}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00358}00358\ \ \ \ \ \ \ \ \ svector\_\ =\ kvector\_;}
@@ -325,7 +325,7 @@
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00444}00444\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00445}00445\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00446}00446\ }
-\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00452}00452\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(\textcolor{keywordtype}{size\_t}\ size,\ std::shared\_ptr<SUNContext>\ context)}
+\DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00452}00452\ \ \ \ \ \textcolor{keywordtype}{void}\ initNVector(sizeType\ size,\ std::shared\_ptr<SUNContext>\ context)}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00453}00453\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00454}00454\ \ \ \ \ \ \ \ \ std::visit(}
 \DoxyCodeLine{\Hypertarget{sundials_8hpp_source_l00455}00455\ \ \ \ \ \ \ \ \ \ \ \ \ [size,\ \&context](\textcolor{keyword}{auto}\&\ vec)\ \{\ detail::initNVector(size,\ context,\ vec);\ \},\ vector\_}

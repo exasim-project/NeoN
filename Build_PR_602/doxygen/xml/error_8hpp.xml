@@ -26,6 +26,7 @@
     <includedby refid="limitedLinear_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp</includedby>
     <includedby refid="cellLimitedGrad_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/cellLimitedGrad.hpp</includedby>
     <includedby refid="gradOperator_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</includedby>
+    <includedby refid="exceptions_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp</includedby>
     <includedby refid="diagonalSolver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</includedby>
     <incdepgraph>
       <node id="1">
@@ -153,6 +154,8 @@
         <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="107" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
@@ -427,6 +430,24 @@
         <childnode refid="89" relation="include">
         </childnode>
         <childnode refid="71" relation="include">
+        </childnode>
+      </node>
+      <node id="108">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/core/view.hpp</label>
+        <link refid="view_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="103" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="109" relation="include">
         </childnode>
       </node>
       <node id="90">
@@ -1057,6 +1078,26 @@
         <childnode refid="79" relation="include">
         </childnode>
       </node>
+      <node id="107">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp</label>
+        <link refid="exceptions_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="108" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
       <node id="43">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/cooSparsityPattern.hpp</label>
         <link refid="cooSparsityPattern_8hpp"/>
@@ -1159,6 +1200,14 @@
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="109">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp</label>
+        <link refid="sparsityView_8hpp"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
         </childnode>
       </node>
       <node id="34">
@@ -1365,7 +1414,7 @@
       <memberdef kind="define" id="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" prot="public" static="no">
         <name>NF_THROW</name>
         <param><defname>message</defname></param>
-        <initializer>    throw <ref refid="classNeoN_1_1NeoNException" kindref="compound">NeoN::NeoNException</ref>((std::stringstream() &lt;&lt; <ref refid="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" kindref="member">NF_ERROR_MESSAGE</ref>(std::string(message))).str())</initializer>
+        <initializer>    throw <ref refid="classNeoN_1_1NeoNException" kindref="compound">NeoN::NeoNException</ref>((std::stringstream() &lt;&lt; <ref refid="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" kindref="member">NF_ERROR_MESSAGE</ref>(message)).str())</initializer>
         <briefdescription>
 <para>Macro for throwing a NeoNException with the specified error message. </para>
         </briefdescription>
@@ -1735,7 +1784,7 @@
 <codeline lineno="91"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>NeoN::Logging::detail::logFatal((std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(message)).str())</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight></codeline>
 <codeline lineno="103" refid="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_THROW(message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="104"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>throw<sp/>NeoN::NeoNException((std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(std::string(message))).str())</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>throw<sp/>NeoN::NeoNException((std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(message)).str())</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight></codeline>
 <codeline lineno="118" refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ASSERT(condition,<sp/>message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="119"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>

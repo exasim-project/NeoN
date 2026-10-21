@@ -25,7 +25,7 @@ The following code block shows the implementation of a parallelFor for fields
         auto view = field.view();
         if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
         {
-            for (size_t i = 0; i < field.size(); i++)
+            for (NeoN::sizeType i = 0; i < field.size(); i++)
             {
                 view[i] = kernel(i);
             }

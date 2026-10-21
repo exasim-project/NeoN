@@ -164,7 +164,7 @@
 <codeline lineno="214"><highlight class="normal"></highlight></codeline>
 <codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>size<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(N_VGetLength(y));</highlight></codeline>
 <codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Copy<sp/>initial<sp/>value<sp/>from<sp/>y<sp/>to<sp/>source.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">NeoN::Vector&lt;NeoN::scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1exp_1a1af72d0f302573a202dd802e69062214" kindref="member">source</ref><sp/>=<sp/>pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1a95d3197b578e631ec1728c44babe02e5" kindref="member">explicitOperation</ref>(size)<sp/>*<sp/>-1.0;<sp/></highlight><highlight class="comment">//<sp/>compute<sp/>spatial</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">NeoN::Vector&lt;NeoN::scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1exp_1a1af72d0f302573a202dd802e69062214" kindref="member">source</ref><sp/>=<sp/>pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1ae5c2fec7fad4ac672d73e6f44ae7c4ab" kindref="member">explicitOperation</ref>(size)<sp/>*<sp/>-1.0;<sp/></highlight><highlight class="comment">//<sp/>compute<sp/>spatial</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a3457b41aba26d227a5cfa86d052abbfb" kindref="member">fence</ref>(pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1ad7581ac19b360ac79225710d2a38005a" kindref="member">exec</ref>());</highlight></codeline>
 <codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/>NeoN::sundials::fieldToSunNVector(source,<sp/>ydot);<sp/></highlight><highlight class="comment">//<sp/>assign<sp/>rhs<sp/>to<sp/>ydot.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
@@ -174,7 +174,7 @@
 <codeline lineno="224"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="225"><highlight class="normal"></highlight></codeline>
 <codeline lineno="233"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Vector&gt;</highlight></codeline>
-<codeline lineno="234"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context,<sp/>Vector&amp;<sp/>vec)</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(sizeType<sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context,<sp/>Vector&amp;<sp/>vec)</highlight></codeline>
 <codeline lineno="235"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/>vec.initNVector(size,<sp/>context);</highlight></codeline>
 <codeline lineno="237"><highlight class="normal">}</highlight></codeline>
@@ -208,7 +208,7 @@
 <codeline lineno="282"><highlight class="normal"></highlight></codeline>
 <codeline lineno="283"><highlight class="normal"></highlight></codeline>
 <codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">KVector<sp/>=<sp/>::sundials::kokkos::Vector&lt;Kokkos::Serial&gt;;</highlight></codeline>
-<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(sizeType<sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
 <codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kvector_<sp/>=<sp/>KVector(size,<sp/>*context);</highlight></codeline>
 <codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>svector_<sp/>=<sp/>kvector_;</highlight></codeline>
@@ -238,7 +238,7 @@
 <codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/>SKVectorHostDefault&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SKVectorHostDefault&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/>SKVectorHostDefault&amp;<sp/>operator=(SKVectorHostDefault&amp;&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="319"><highlight class="normal"></highlight></codeline>
-<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(sizeType<sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
 <codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kvector_<sp/>=<sp/>KVector(size,<sp/>*context);</highlight></codeline>
 <codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>svector_<sp/>=<sp/>kvector_;</highlight></codeline>
@@ -268,7 +268,7 @@
 <codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/>SKVectorDefault&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SKVectorDefault&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/>SKVectorDefault&amp;<sp/>operator=(SKVectorDefault&amp;&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="354"><highlight class="normal"></highlight></codeline>
-<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(sizeType<sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
 <codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kvector_<sp/>=<sp/>KVector(size,<sp/>*context);</highlight></codeline>
 <codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>svector_<sp/>=<sp/>kvector_;</highlight></codeline>
@@ -330,7 +330,7 @@
 <codeline lineno="444"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="445"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="446"><highlight class="normal"></highlight></codeline>
-<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
+<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>initNVector(sizeType<sp/>size,<sp/>std::shared_ptr&lt;SUNContext&gt;<sp/>context)</highlight></codeline>
 <codeline lineno="453"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::visit(</highlight></codeline>
 <codeline lineno="455"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[size,<sp/>&amp;context](</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>vec)<sp/>{<sp/>detail::initNVector(size,<sp/>context,<sp/>vec);<sp/>},<sp/>vector_</highlight></codeline>
