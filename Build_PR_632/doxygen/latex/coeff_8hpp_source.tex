@@ -42,59 +42,34 @@
 \DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00048}00048\ }
 \DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00049}00049\ }
 \DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00050}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff_ae389588468619d5ef449ab5d43da6bc6}{00050}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff_ae389588468619d5ef449ab5d43da6bc6}{operator*=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ rhs);}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00051}00051\ \textcolor{preprocessor}{\#ifdef\ NeoN\_WITH\_JULIA}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00051}00051\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00052}00052\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//\ jl\_array\_t*\ juliaPtr()\ const}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ \{}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ if\ (hasView\_)}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \{}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ if\ constexpr\ (std::is\_same\_v<scalar,\ float>)}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \{}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ jl\_value\_t*\ array\_type\ =\ jl\_apply\_array\_type((jl\_value\_t*)jl\_float32\_type,\ 1);}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ jl\_array\_t*\ julia\_ptr\ =\ jl\_ptr\_to\_array\_1d(array\_type,\ view\_.data,\ view\_.size(),}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ 0);\ return\ julia\_ptr;}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \}}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ else\ if\ constexpr\ (std::is\_same\_v<scalar,\ double>)}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \{}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ jl\_value\_t*\ array\_type\ =\ jl\_apply\_array\_type((jl\_value\_t*)jl\_float64\_type,\ 1);}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ jl\_array\_t*\ julia\_ptr\ =\ jl\_ptr\_to\_array\_1d(array\_type,\ view\_.data,\ view\_.size(),}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ 0);\ return\ julia\_ptr;}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \}}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \}}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ else}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \{}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ std::cerr\ <<\ "{}Coeff\ has\ no\ view\(\backslash\)n"{}}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \}}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{comment}{//\ \}}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00075}00075\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00076}00076\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00077}00077\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00078}00078\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ coeff\_;}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00080}00080\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ scalar>}}\ view\_;}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00081}00081\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasView\_;}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00083}00083\ \};}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00085}00085\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00086}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{00086}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00087}00087\ \{}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00088}00088\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ result\ =\ lhs;}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00089}00089\ \ \ \ \ result\ *=\ rhs;}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00091}00091\ \}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00092}00092\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00093}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail}{00093}}\ \textcolor{keyword}{namespace\ }detail}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00094}00094\ \{}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00095}00095\ \textcolor{comment}{/*\ @brief\ function\ to\ force\ evaluation\ to\ a\ field,\ the\ field\ will\ be\ resized\ to\ hold\ either\ a}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00096}00096\ \textcolor{comment}{\ *\ single\ value\ or\ the\ full\ field}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00097}00097\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00098}00098\ \textcolor{comment}{\ *\ @param\ field\ to\ store\ the\ result}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00099}00099\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00100}00100\ \textcolor{keywordtype}{void}\ toVector(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ coeff,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ rhs);}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00101}00101\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00102}00102\ \}\ \textcolor{comment}{//\ namespace\ detail}}
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00103}00103\ }
-\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00104}00104\ \}\ \textcolor{comment}{//\ namespace\ NeoN::dsl}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00053}00053\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ coeff\_;}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00055}00055\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ scalar>}}\ view\_;}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasView\_;}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00058}00058\ \};}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00061}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{00061}}\ [[nodiscard]]\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00062}00062\ \{}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00063}00063\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ result\ =\ lhs;}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00064}00064\ \ \ \ \ result\ *=\ rhs;}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00066}00066\ \}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00068}\mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail}{00068}}\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00069}00069\ \{}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00070}00070\ \textcolor{comment}{/*\ @brief\ function\ to\ force\ evaluation\ to\ a\ field,\ the\ field\ will\ be\ resized\ to\ hold\ either\ a}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00071}00071\ \textcolor{comment}{\ *\ single\ value\ or\ the\ full\ field}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00072}00072\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00073}00073\ \textcolor{comment}{\ *\ @param\ field\ to\ store\ the\ result}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00074}00074\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00075}00075\ \textcolor{keywordtype}{void}\ toVector(\mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ coeff,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ rhs);}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00077}00077\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{coeff_8hpp_source_l00079}00079\ \}\ \textcolor{comment}{//\ namespace\ NeoN::dsl}}
 
 \end{DoxyCode}
