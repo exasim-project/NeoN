@@ -4,6 +4,7 @@
 
 #include "mpiSerialization.hpp"
 
+#include <atomic>
 #include <thread>
 #include <vector>
 
@@ -12,7 +13,7 @@
 
 using NeoN::sizeType;
 
-void serializeIO(volatile bool* threadShutdown)
+void serializeIO(std::atomic<bool>* threadShutdown)
 {
     if (!IS_ROOT)
     {
@@ -28,13 +29,13 @@ void serializeIO(volatile bool* threadShutdown)
         );
     }
 
-    while (!*threadShutdown)
+    while (!threadShutdown->load())
     {
         // completed will be the index within req of a request that has finished. This is
         // equivalent to rank of the process who wants to print
         int completed = MPI_UNDEFINED;
         int flag;
-        while (completed == MPI_UNDEFINED && !*threadShutdown)
+        while (completed == MPI_UNDEFINED && !threadShutdown->load())
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
             MPI_Testany(
@@ -42,7 +43,7 @@ void serializeIO(volatile bool* threadShutdown)
             );
         }
 
-        if (*threadShutdown)
+        if (threadShutdown->load())
         {
             break;
         }

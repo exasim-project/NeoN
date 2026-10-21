@@ -137,3 +137,49 @@ jobs:
             fi
           done
           exit $fail
+
+  build-with-ginkgo:
+    # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging: Ubuntu 24.04, GCC 13,
+    # MPICH, Ginkgo in /opt/ginkgo on CMAKE_PREFIX_PATH, so find_package(Ginkgo) picks it up.
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/exasim-project/ginkgo-cpu:nightly
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: ["develop", "production"]
+    steps:
+      - name: Checkout to repository
+        uses: actions/checkout@v4
+
+      - name: Get versions
+        run: |
+          g++ --version
+          ninja --version
+          cmake --version
+          cat /opt/ginkgo/share/ginkgo-revision
+
+      - name: Build NeoN with Ginkgo
+        run: |
+          cmake --preset ${{matrix.preset}} \
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_WITH_GINKGO=ON \
+            -DMPIEXEC_MAX_NUMPROCS=3 \
+            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+          cmake --build --preset ${{matrix.preset}}
+          # fail if CPM fetched Ginkgo instead of using the one from the image
+          grep "^Ginkgo_DIR:PATH=/opt/ginkgo" build/${{matrix.preset}}/CMakeCache.txt
+
+      - name: Execute unit tests NeoN
+        run: ctest --preset ${{matrix.preset}} -E bench
