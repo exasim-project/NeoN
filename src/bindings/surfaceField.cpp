@@ -25,11 +25,13 @@ namespace NeoN::bindings
 namespace
 {
 using ScalarSurf = NeoN::finiteVolume::cellCentred::SurfaceField<NeoN::scalar>;
+using VectorSurf = NeoN::finiteVolume::cellCentred::SurfaceField<NeoN::Vec3>;
 
 // Same precondition as the VolumeField binary operators: element i must mean the same face in
 // both operands. Without this the underlying Vector ops abort the interpreter on an assert
 // (or, for `assign`, silently resize the target) instead of raising in Python.
-void requireCompatible(const ScalarSurf& a, const ScalarSurf& b, const char* op)
+template<typename FieldA, typename FieldB>
+void requireCompatible(const FieldA& a, const FieldB& b, const char* op)
 {
     if (&a.mesh() != &b.mesh())
     {
@@ -218,6 +220,16 @@ void registerSurfaceField(nb::module_& m)
             [](const fvcc::SurfaceField<NeoN::scalar>& a, NeoN::scalar s) { return s * a; },
             "scalar"_a,
             "Scale a scalar surface field by a constant"
+        )
+        .def(
+            "__mul__",
+            [](const fvcc::SurfaceField<NeoN::scalar>& s, const fvcc::SurfaceField<NeoN::Vec3>& v)
+            {
+                requireCompatible(s, v, "scalar field * Vec3 field");
+                return s * v;
+            },
+            "other"_a,
+            "Scale a Vec3 surface field face-by-face by this scalar surface field"
         );
 
     nb::class_<fvcc::SurfaceField<NeoN::Vec3>>(
@@ -296,7 +308,47 @@ void registerSurfaceField(nb::module_& m)
             "correct_boundary_conditions",
             &fvcc::SurfaceField<NeoN::Vec3>::correctBoundaryConditions
         )
-        .def_rw("name", &fvcc::SurfaceField<NeoN::Vec3>::name);
+        .def_rw("name", &fvcc::SurfaceField<NeoN::Vec3>::name)
+        .def(
+            "__mul__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& v, const fvcc::SurfaceField<NeoN::scalar>& s)
+            {
+                requireCompatible(v, s, "Vec3 field * scalar field");
+                return v * s;
+            },
+            "other"_a,
+            "Scale this Vec3 surface field face-by-face by a scalar surface field"
+        )
+        .def(
+            "__rmul__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& v, const fvcc::SurfaceField<NeoN::scalar>& s)
+            {
+                requireCompatible(v, s, "scalar field * Vec3 field");
+                return s * v;
+            },
+            "other"_a,
+            "Scale this Vec3 surface field face-by-face by a scalar surface field"
+        )
+        .def(
+            "__add__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& a, const fvcc::SurfaceField<NeoN::Vec3>& b)
+            {
+                requireCompatible(a, b, "Vec3 field + Vec3 field");
+                return a + b;
+            },
+            "other"_a,
+            "Element-wise addition of two Vec3 surface fields"
+        )
+        .def(
+            "__sub__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& a, const fvcc::SurfaceField<NeoN::Vec3>& b)
+            {
+                requireCompatible(a, b, "Vec3 field - Vec3 field");
+                return a - b;
+            },
+            "other"_a,
+            "Element-wise subtraction of two Vec3 surface fields"
+        );
 
     m.def(
         "create_calculated_surface_bcs_scalar",

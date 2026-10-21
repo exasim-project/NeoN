@@ -6,6 +6,8 @@
 
 #include <vector>
 #include "NeoN/core/database/database.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
 #include "NeoN/core/database/fieldDatabase.hpp"
@@ -205,6 +207,46 @@ inline SurfaceField<scalar> operator*(scalar s, const SurfaceField<scalar>& fld)
     SurfaceField<scalar> result(fld);
     result.internalVector() *= s;
     result.boundaryData().value() *= s;
+    return result;
+}
+
+inline void surfaceFieldScaleVec3ByScalar(Vector<Vec3>& out, const Vector<scalar>& coeff)
+{
+    auto [outV, coeffV] = views(out, coeff);
+    parallelFor(
+        out.exec(),
+        {0, out.size()},
+        NEON_LAMBDA(const localIdx i) { outV[i] = outV[i] * coeffV[i]; },
+        "surfaceField::scaleVec3ByScalar"
+    );
+}
+
+inline SurfaceField<Vec3> operator*(const SurfaceField<scalar>& s, const SurfaceField<Vec3>& v)
+{
+    SurfaceField<Vec3> result(v);
+    surfaceFieldScaleVec3ByScalar(result.internalVector(), s.internalVector());
+    surfaceFieldScaleVec3ByScalar(result.boundaryData().value(), s.boundaryData().value());
+    return result;
+}
+
+inline SurfaceField<Vec3> operator*(const SurfaceField<Vec3>& v, const SurfaceField<scalar>& s)
+{
+    return s * v;
+}
+
+inline SurfaceField<Vec3> operator+(const SurfaceField<Vec3>& lhs, const SurfaceField<Vec3>& rhs)
+{
+    SurfaceField<Vec3> result(lhs);
+    result.internalVector() += rhs.internalVector();
+    result.boundaryData().value() += rhs.boundaryData().value();
+    return result;
+}
+
+inline SurfaceField<Vec3> operator-(const SurfaceField<Vec3>& lhs, const SurfaceField<Vec3>& rhs)
+{
+    SurfaceField<Vec3> result(lhs);
+    result.internalVector() -= rhs.internalVector();
+    result.boundaryData().value() -= rhs.boundaryData().value();
     return result;
 }
 
