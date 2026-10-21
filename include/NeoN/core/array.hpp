@@ -13,7 +13,7 @@
 
 #include <variant>
 #include <vector>
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 #include <julia.h>
 #endif
 
@@ -43,7 +43,7 @@ class Array
 public:
 
     using ArrayValueType = ValueType;
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 
     /**
      * @brief Prepare pointer to pass to julia

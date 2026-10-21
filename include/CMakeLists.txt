@@ -78,7 +78,7 @@ if(${CMAKE_BUILD_TYPE} MATCHES Debug)
 endif()
 
 if(NeoN_WITH_JULIA)
-  target_compile_definitions(NeoN_public_api INTERFACE USE_JULIA=1)
+  target_compile_definitions(NeoN_public_api INTERFACE NeoN_WITH_JULIA=1)
 endif()
 if(NeoN_WITH_JULIA)
   #set(JULIA_DIR "/storage/home/lupeterm/.julia/juliaup/julia-1.11.9+0.x64.linux.gnu")

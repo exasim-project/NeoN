@@ -9,7 +9,7 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/view.hpp"
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 #include <julia.h>
 #endif
 #include "NeoN/helpers/exceptions.hpp"
@@ -44,7 +44,7 @@ class Vector
 public:
 
     using VectorValueType = ValueType;
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 
     /**
      * @brief Prepare pointer to pass to julia

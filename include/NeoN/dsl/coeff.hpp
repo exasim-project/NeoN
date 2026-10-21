@@ -6,7 +6,7 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 #include <julia.h>
 #endif
 namespace NeoN::dsl
@@ -48,7 +48,7 @@ public:
 
 
     Coeff& operator*=(const Coeff& rhs);
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 
     // jl_array_t* juliaPtr() const
     // {

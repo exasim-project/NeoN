@@ -5,7 +5,7 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
-// #ifdef USE_JULIA
+// #ifdef NeoN_WITH_JULIA
 // #include <julia.h>
 // #endif
 

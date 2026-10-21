@@ -7,7 +7,7 @@
 #include "NeoN/core/vector/vector.hpp"
 
 #include <type_traits>
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 #include <julia.h>
 #endif
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
@@ -147,7 +147,7 @@ public:
      * @brief Default destructor.
      */
     ~Matrix() = default;
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
     /**
      * @brief Prepare the pointer to hand to Julia.
      * @return Julia-friendly reference to the data.

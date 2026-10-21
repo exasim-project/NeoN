@@ -18,7 +18,7 @@
 
 #include <string>
 #include <iostream>
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 #include <julia.h>
 #endif
 #include <algorithm>
@@ -151,7 +151,7 @@ public:
     }
 
     ~LinearSystem() = default;
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 
     [[nodiscard]] jl_array_t* juliaPtr() { return matrix_.juliaPtr(); }
     [[nodiscard]] jl_array_t* RhsjuliaPtr() { return rhs_.juliaPtr(); }

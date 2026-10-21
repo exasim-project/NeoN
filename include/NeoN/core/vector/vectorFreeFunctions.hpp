@@ -8,7 +8,7 @@
 #include "NeoN/core/primitives/vec3.hpp"
 
 #include <type_traits>
-#ifdef USE_JULIA
+#ifdef NeoN_WITH_JULIA
 #include <julia.h>
 #endif
 

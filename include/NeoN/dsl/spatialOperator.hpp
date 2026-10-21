@@ -104,7 +104,7 @@ public:
 
     std::string getName() const { return model_->getName(); }
 
-// #ifdef USE_JULIA
+// #ifdef NeoN_WITH_JULIA
 
     std::string juliaOP() { return model_->juliaOP(); }
 
