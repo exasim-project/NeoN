@@ -8,15 +8,18 @@
 #include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/core/primitives/symmTensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #include "boundary/volume/empty.hpp"
 #include "boundary/volume/calculated.hpp"
 #include "boundary/volume/extrapolated.hpp"
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
+#include "boundary/volume/fixedFluxPressure.hpp"
 #include "boundary/volume/symmetry.hpp"
 #include "boundary/volume/slip.hpp"
 #include "boundary/volume/inletOutlet.hpp"
+#include "boundary/volume/totalPressure.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
@@ -34,9 +37,10 @@ template<typename BoundaryType>
 std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
-    bcs.reserve(static_cast<std::size_t>(mesh.nBoundaries()));
+    bcs.reserve(mesh.nBoundaries());
 
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    for (localIdx patchID = 0; patchID < nBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("calculated")}});
         bcs.emplace_back(mesh, patchDict, patchID);
@@ -48,7 +52,7 @@ template<typename BoundaryType>
 std::vector<BoundaryType> createCalculatedProcBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
-    bcs.reserve(static_cast<std::size_t>(mesh.nBoundaries()));
+    bcs.reserve(mesh.nBoundaries());
     // Distributed-aware 'calculated': physical patches get the calculated BC (the value is computed
     // by an operator), but processor (coupled) patches must carry the processor halo-exchange BC so
     // that a single correctBoundaryConditions() fills their tail with the NEIGHBOUR cell value
@@ -59,9 +63,10 @@ std::vector<BoundaryType> createCalculatedProcBCs(const UnstructuredMesh& mesh)
     // Processor (coupled) patches are the trailing patches of the boundary mesh;
     // nProcBoundaryPatches is 0 on a serial / non-distributed mesh, so this degenerates to
     // createCalculatedBCs there.
-    const auto nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
-    const auto firstProcPatch = mesh.nBoundaries() - nProcPatches;
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    const localIdx nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
+    const localIdx firstProcPatch = nBoundaries - nProcPatches;
+    for (localIdx patchID = 0; patchID < nBoundaries; patchID++)
     {
         const std::string type =
             (patchID >= firstProcPatch) ? std::string("processor") : std::string("calculated");
@@ -82,9 +87,10 @@ std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
     // An 'extrapolated' tail would instead hold the OWNER value, which silently degenerates
     // linear interpolation at proc faces to w*own+(1-w)*own=own (different on each rank) and so
     // makes the assembled pressure matrix non-symmetric. Only physical patches get 'extrapolated'.
-    const auto nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
-    const auto firstProcPatch = mesh.nBoundaries() - nProcPatches;
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
+    const localIdx nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
+    const localIdx firstProcPatch = nBoundaries - nProcPatches;
+    for (localIdx patchID = 0; patchID < nBoundaries; patchID++)
     {
         const std::string type =
             (patchID >= firstProcPatch) ? std::string("processor") : std::string("extrapolated");
@@ -112,6 +118,8 @@ template class fvcc::volumeBoundary::FixedValue<Vec3>;
 template class fvcc::volumeBoundary::FixedGradient<scalar>;
 template class fvcc::volumeBoundary::FixedGradient<Vec3>;
 
+template class fvcc::volumeBoundary::FixedFluxPressure<scalar>;
+
 template class fvcc::volumeBoundary::Calculated<scalar>;
 template class fvcc::volumeBoundary::Calculated<Vec3>;
 template class fvcc::volumeBoundary::Calculated<Tensor>;
@@ -131,6 +139,7 @@ template class fvcc::volumeBoundary::Slip<Vec3>;
 
 template class fvcc::volumeBoundary::InletOutlet<scalar>;
 template class fvcc::volumeBoundary::InletOutlet<Vec3>;
+template class fvcc::volumeBoundary::TotalPressure<scalar>;
 
 template class fvcc::SurfaceBoundaryFactory<scalar>;
 template class fvcc::SurfaceBoundaryFactory<Vec3>;

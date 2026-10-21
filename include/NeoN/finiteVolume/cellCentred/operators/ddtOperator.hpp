@@ -19,6 +19,7 @@ namespace NeoN::finiteVolume::cellCentred
 enum class DdtScheme
 {
     None,
+    SteadyState,
     BDF1,
     BDF2
 };
@@ -32,6 +33,15 @@ public:
     using VectorValueType = ValueType;
 
     DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field);
+
+    /* @brief Density-weighted temporal operator ddt(rho, field): the diagonal uses the
+     *        current density rho and the rhs uses oldTime(rho), giving the conservative
+     *        (rho_n*field - rho_o*field_o)/dt form (as opposed to the single-coefficient
+     *        rho_n/dt*(field - field_o)). rho must carry an old-time collection.
+     */
+    DdtOperator(
+        dsl::Operator::Type termType, VolumeField<scalar>& rho, VolumeField<ValueType>& field
+    );
 
     ~DdtOperator();
 
@@ -71,6 +81,9 @@ private:
     std::string juliaEvalString_;
 
     DdtScheme scheme_ {DdtScheme::BDF1};
+
+    // Non-null → density-weighted form ddt(rho, field). Null → stock single-coefficient form.
+    VolumeField<scalar>* rho_ {nullptr};
 };
 
 

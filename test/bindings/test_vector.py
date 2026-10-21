@@ -8,7 +8,9 @@ try:
 except:
     has_jax = False
 
+import numpy as np
 import neon
+
 
 def test_scalar_vector(executor):
     name, exec = executor
@@ -90,3 +92,53 @@ def test_jax_operations(executor):
     assert float(jnp.mean(arr)) == 3.0
     assert float(jnp.max(arr)) == 5.0
     assert float(jnp.min(arr)) == 1.0
+
+
+def test_tensor_vector(executor):
+    name, exec = executor
+
+    tv1 = neon.TensorVector(exec, 10)
+    assert tv1.size() == len(tv1) == 10
+
+    tv2 = neon.TensorVector(exec, 5, neon.Tensor(2.0))
+    assert tv2.size() == 5
+
+    tv3 = neon.TensorVector(
+        exec, [neon.Tensor(*[9 * i + k for k in range(9)]) for i in range(3)]
+    )
+    assert tv3.size() == 3
+
+
+def test_tensor_vector_numpy_layout():
+    """A Vector<Tensor> maps to an (n, 9) row major numpy view."""
+    exec = neon.SerialExecutor()
+
+    tensors = [neon.Tensor(*[9 * i + k for k in range(9)]) for i in range(4)]
+    tv = neon.TensorVector(exec, tensors)
+
+    arr = np.asarray(tv)
+    assert arr.shape == (4, 9)
+    assert arr.flags["C_CONTIGUOUS"]
+    for i in range(4):
+        assert list(arr[i]) == [float(9 * i + k) for k in range(9)]
+
+    # uniform value construction fills every entry with the same tensor
+    uniform = np.asarray(neon.TensorVector(exec, 3, neon.Tensor(1.0)))
+    assert uniform.shape == (3, 9)
+    for i in range(3):
+        assert list(uniform[i]) == [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+
+
+def test_tensor_vector_copy_to_host(executor):
+    name, exec = executor
+
+    tensors = [neon.Tensor(*[9 * i + k for k in range(9)]) for i in range(3)]
+    tv = neon.TensorVector(exec, tensors)
+
+    host = tv.copy_to_host()
+    assert host.size() == tv.size() == 3
+
+    arr = np.asarray(host)
+    assert arr.shape == (3, 9)
+    for i in range(3):
+        assert list(arr[i]) == [float(9 * i + k) for k in range(9)]

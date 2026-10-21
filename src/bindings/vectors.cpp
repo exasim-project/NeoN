@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <type_traits>
+
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/variant.h>
 #include <nanobind/stl/string.h>
@@ -9,6 +11,7 @@
 #include <nanobind/ndarray.h>
 
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
@@ -32,28 +35,37 @@ template<typename T>
 struct VectorTraits
 {
     using ComponentType = T;
-    static constexpr size_t components = 1;
+    static constexpr sizeType components = 1;
 };
 
 template<>
 struct VectorTraits<NeoN::Vec3>
 {
     using ComponentType = NeoN::scalar;
-    static constexpr size_t components = 3;
+    static constexpr sizeType components = 3;
 };
 
 template<>
 struct VectorTraits<NeoN::scalar>
 {
     using ComponentType = NeoN::scalar;
-    static constexpr size_t components = 1;
+    static constexpr sizeType components = 1;
 };
 
 template<>
 struct VectorTraits<NeoN::label>
 {
     using ComponentType = NeoN::label;
-    static constexpr size_t components = 1;
+    static constexpr sizeType components = 1;
+};
+
+// Tensor stores its 9 components as a contiguous scalar[9] (row major), so a
+// Vector<Tensor> maps to an (n, 9) numpy view exactly as Vec3 maps to (n, 3).
+template<>
+struct VectorTraits<NeoN::Tensor>
+{
+    using ComponentType = NeoN::scalar;
+    static constexpr sizeType components = 9;
 };
 
 
@@ -117,8 +129,8 @@ declare_vector(nb::module_& m, const std::string& name, const std::string& doc =
                     using Traits = VectorTraits<T>;
                     using ComponentType = typename Traits::ComponentType;
 
-                    std::vector<size_t> shape;
-                    shape.push_back(static_cast<size_t>(self.size()));
+                    std::vector<sizeType> shape;
+                    shape.push_back(self.size());
                     if constexpr (Traits::components > 1)
                     {
                         shape.push_back(Traits::components);
@@ -155,6 +167,18 @@ void registerVectors(nb::module_& m)
     // Vector<label> - for integer indices
     declare_vector<NeoN::label>(
         m, "LabelVector", "A vector of label (integer) values with executor support"
+    );
+
+    if constexpr (!std::is_same_v<NeoN::localIdx, NeoN::label>)
+    {
+        declare_vector<NeoN::localIdx>(
+            m, "LocalIdxVector", "A vector of localIdx values with executor support"
+        );
+    }
+
+    // Vector<Tensor> - for tensor fields, e.g. the velocity gradient grad(U)
+    declare_vector<NeoN::Tensor>(
+        m, "TensorVector", "A vector of Tensor values with executor support"
     );
 }
 

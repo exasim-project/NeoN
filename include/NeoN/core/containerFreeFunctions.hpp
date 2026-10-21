@@ -11,6 +11,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
 {
@@ -28,9 +29,8 @@ namespace detail
  * @returns A function that takes a source and an destination executor
  */
 template<typename ValueType>
-auto deepCopyVisitor(localIdx ssize, const ValueType* srcPtr, ValueType* dstPtr)
+auto deepCopyVisitor(sizeType size, const ValueType* srcPtr, ValueType* dstPtr)
 {
-    size_t size = static_cast<size_t>(ssize);
     return [size, srcPtr, dstPtr](const auto& srcExec, const auto& dstExec)
     {
         Kokkos::deep_copy(
@@ -85,7 +85,7 @@ void fill(
     NF_DEBUG_ASSERT(start <= end, "Range must be ordered in ascending fashion");
     if (end == 0)
     {
-        end = cont.size();
+        end = toLocalIdx(cont.size());
     }
     auto viewA = cont.view();
     parallelFor(

@@ -33,7 +33,7 @@ public:
     ~SerialExecutor();
 
     template<typename T>
-    T* alloc(size_t elements) const
+    T* alloc(sizeType elements) const
     {
         if (!allocContext_)
         {
@@ -43,7 +43,7 @@ public:
     }
 
     template<typename T>
-    T* realloc(void* ptr, size_t elements) const
+    T* realloc(void* ptr, sizeType elements) const
     {
         if (!allocContext_)
         {
@@ -71,7 +71,7 @@ public:
      * @tparam ValueType The value type the underlying memory holds
      * */
     template<typename ValueType>
-    decltype(auto) createKokkosView(ValueType* ptr, size_t size) const
+    decltype(auto) createKokkosView(ValueType* ptr, sizeType size) const
     {
         return Kokkos::View<ValueType*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(ptr, size);
     }

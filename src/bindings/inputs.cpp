@@ -45,26 +45,26 @@ void registerInputs(nb::module_& m)
         // Add typed get methods for common types
         .def(
             "get_int",
-            [](NeoN::TokenList& self, size_t idx) -> int { return self.get<int>(idx); },
+            [](NeoN::TokenList& self, sizeType idx) -> int { return self.get<int>(idx); },
             "idx"_a,
             "Get int value at index"
         )
         .def(
             "get_double",
-            [](NeoN::TokenList& self, size_t idx) -> double { return self.get<double>(idx); },
+            [](NeoN::TokenList& self, sizeType idx) -> double { return self.get<double>(idx); },
             "idx"_a,
             "Get double value at index"
         )
         .def(
             "get_string",
-            [](NeoN::TokenList& self, size_t idx) -> std::string
+            [](NeoN::TokenList& self, sizeType idx) -> std::string
             { return self.get<std::string>(idx); },
             "idx"_a,
             "Get string value at index"
         )
         .def(
             "get_bool",
-            [](NeoN::TokenList& self, size_t idx) -> bool { return self.get<bool>(idx); },
+            [](NeoN::TokenList& self, sizeType idx) -> bool { return self.get<bool>(idx); },
             "idx"_a,
             "Get bool value at index"
         )
@@ -173,6 +173,21 @@ void registerInputs(nb::module_& m)
             "key"_a,
             "value"_a,
             "Insert bool value"
+        )
+        .def(
+            "insert_token_list",
+            [](NeoN::Dictionary& self, const std::string& key, const NeoN::TokenList& value)
+            { self.insert(key, std::any(value)); },
+            "key"_a,
+            "value"_a,
+            "Insert a TokenList value (e.g. a discretisation scheme)"
+        )
+        .def(
+            "get_token_list",
+            [](NeoN::Dictionary& self, const std::string& key) -> NeoN::TokenList
+            { return self.get<NeoN::TokenList>(key); },
+            "key"_a,
+            "Get TokenList value for key (e.g. a discretisation scheme)"
         )
         .def(
             "__repr__",

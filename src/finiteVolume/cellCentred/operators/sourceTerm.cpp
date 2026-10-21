@@ -16,10 +16,11 @@ template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
     dsl::Operator::Type termType,
     const VolumeField<scalar>& coefficients,
-    const VolumeField<ValueType>& field
+    const VolumeField<ValueType>& field,
+    bool suSp
 )
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff {1.0}, field, termType),
-      spCoeff_(&coefficients) {};
+      spCoeff_(&coefficients), suSp_(suSp) {};
 
 template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
@@ -28,7 +29,7 @@ SourceTerm<ValueType>::SourceTerm(
     : dsl::OperatorMixin<VolumeField<ValueType>>(
         coefficients.exec(), dsl::Coeff {1.0}, coefficients, termType
     ),
-      spCoeff_(nullptr) {};
+      spCoeff_(nullptr), suSp_(false) {};
 
 template<typename ValueType>
 void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
@@ -70,13 +71,43 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) c
     {
         NF_ERROR_EXIT("Not implemented");
     }
-    // Sp implicit: diagonal += scaling * spCoeff * volume
     const auto operatorScaling = this->getCoefficient();
     const auto vol = spCoeff_->mesh().cellVolumes().view();
     const auto [coeff] = views(spCoeff_->internalVector());
     auto values = ls.matrix().values().view();
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
+    if (suSp_)
+    {
+        // SuSp: the positive part of the coefficient goes implicitly on the diagonal, the
+        // negative part explicitly to the rhs using the current field:
+        //   diag += V*max(c,0);  source -= V*min(c,0)*field
+        //
+        // The split is taken on the RAW coefficient and the expression scaling is applied
+        // to the result, so the assembled contribution stays linear in that scaling — the
+        // same property every other operator has. Splitting the already-scaled product
+        // instead would make a negative scaling swap the implicit and explicit branches
+        // rather than negate the split term, so `susp(c, phi) - susp(c, phi)` would not
+        // cancel (expression subtraction sets the scaling to -1, see dsl/expression.hpp).
+        auto rhs = ls.rhs().view();
+        const auto [fieldView] = views(this->field_.internalVector());
+        NeoN::parallelFor(
+            ls.exec(),
+            {0, coeff.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const scalar c = coeff[celli];
+                const scalar cPos = c > scalar(0) ? c : scalar(0);
+                const scalar cNeg = c < scalar(0) ? c : scalar(0);
+                const scalar scaling = operatorScaling[celli];
+                values[ma.diagIdx(celli)] += scaling * cPos * vol[celli] * one<ValueType>();
+                rhs[celli] += -scaling * cNeg * vol[celli] * fieldView[celli];
+            },
+            "SuSp::implicitOperation"
+        );
+        return;
+    }
+
+    // Sp implicit: diagonal += scaling * spCoeff * volume
     NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},

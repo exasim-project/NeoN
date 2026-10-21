@@ -49,6 +49,30 @@ TEST_CASE("Primitives")
             REQUIRE((a + 3 * a) == d);
             REQUIRE((a + 2 * a + a) == d);
         }
+
+        SECTION("cross product")
+        {
+            NeoN::Vec3 x(1.0, 0.0, 0.0);
+            NeoN::Vec3 y(0.0, 1.0, 0.0);
+            NeoN::Vec3 z(0.0, 0.0, 1.0);
+
+            // right-handed, and the named form agrees with the operator
+            REQUIRE((x ^ y) == z);
+            REQUIRE(NeoN::cross(x, y) == z);
+            REQUIRE((y ^ z) == x);
+            REQUIRE((z ^ x) == y);
+
+            // anticommutative, and parallel vectors give zero
+            REQUIRE((y ^ x) == NeoN::Vec3(0.0, 0.0, -1.0));
+            REQUIRE((x ^ x) == NeoN::zero<NeoN::Vec3>());
+
+            NeoN::Vec3 u(1.0, 2.0, 3.0);
+            NeoN::Vec3 v(4.0, 5.0, 6.0);
+            REQUIRE((u ^ v) == NeoN::Vec3(-3.0, 6.0, -3.0));
+            // orthogonal to both operands
+            REQUIRE(((u ^ v) & u) == 0.0);
+            REQUIRE(((u ^ v) & v) == 0.0);
+        }
     }
 
     SECTION("Vec3", "[Traits]")

@@ -12,7 +12,9 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include "executorGenerator.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
+using NeoN::toLocalIdx;
 
 /** @brief a shortcut for  std::initializer_list */
 template<typename T>
@@ -313,7 +315,7 @@ void randomizeVector(NeoN::Vector<VectorValueType>& a)
     auto b = a.copyToHost();
     auto bV = b.view();
 
-    for (int i = 0; i < b.size(); i++)
+    for (int i = 0; i < toLocalIdx(b.size()); i++)
     {
         const auto val = static_cast<NeoN::scalar>(rand()) / static_cast<NeoN::scalar>(RAND_MAX);
         bV[i] = NeoN::one<VectorValueType>() * val;

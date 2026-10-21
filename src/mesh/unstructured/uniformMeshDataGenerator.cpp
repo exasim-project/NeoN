@@ -15,11 +15,11 @@ std::vector<Vec3> generatePoints(const MeshParams& p)
     const scalar dy = p.dy();
     const scalar dz = p.dz();
     const localIdx nPts = (p.nx + 1) * (p.ny + 1) * (p.nz + 1);
-    std::vector<Vec3> pts(static_cast<size_t>(nPts));
+    std::vector<Vec3> pts(static_cast<sizeType>(nPts));
     for (localIdx k = 0; k <= p.nz; ++k)
         for (localIdx j = 0; j <= p.ny; ++j)
             for (localIdx i = 0; i <= p.nx; ++i)
-                pts[static_cast<size_t>(p.ptIdx(i, j, k))] = {
+                pts[static_cast<sizeType>(p.ptIdx(i, j, k))] = {
                     static_cast<scalar>(i) * dx,
                     static_cast<scalar>(j) * dy,
                     static_cast<scalar>(k) * dz
@@ -34,12 +34,12 @@ CellData generateCellData(const MeshParams& p)
     const scalar dz = p.dz();
     const localIdx nCells = p.nx * p.ny * p.nz;
     const scalar cellVol = dx * dy * dz;
-    std::vector<scalar> vols(static_cast<size_t>(nCells), cellVol);
-    std::vector<Vec3> centers(static_cast<size_t>(nCells));
+    std::vector<scalar> vols(static_cast<sizeType>(nCells), cellVol);
+    std::vector<Vec3> centers(static_cast<sizeType>(nCells));
     for (localIdx k = 0; k < p.nz; ++k)
         for (localIdx j = 0; j < p.ny; ++j)
             for (localIdx i = 0; i < p.nx; ++i)
-                centers[static_cast<size_t>(p.cellIdx(i, j, k))] = {
+                centers[static_cast<sizeType>(p.cellIdx(i, j, k))] = {
                     (static_cast<scalar>(i) + 0.5) * dx,
                     (static_cast<scalar>(j) + 0.5) * dy,
                     (static_cast<scalar>(k) + 0.5) * dz
@@ -50,11 +50,11 @@ CellData generateCellData(const MeshParams& p)
 FaceData
 generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const localIdx nFaces)
 {
-    std::vector<Vec3> fAreas(static_cast<size_t>(nInternalFaces));
-    std::vector<Vec3> fCenters(static_cast<size_t>(nInternalFaces));
-    std::vector<scalar> fMag(static_cast<size_t>(nInternalFaces));
-    std::vector<label> fOwner(static_cast<size_t>(nInternalFaces));
-    std::vector<label> fNeighbour(static_cast<size_t>(nInternalFaces));
+    std::vector<Vec3> fAreas(static_cast<sizeType>(nInternalFaces));
+    std::vector<Vec3> fCenters(static_cast<sizeType>(nInternalFaces));
+    std::vector<scalar> fMag(static_cast<sizeType>(nInternalFaces));
+    std::vector<label> fOwner(static_cast<sizeType>(nInternalFaces));
+    std::vector<label> fNeighbour(static_cast<sizeType>(nInternalFaces));
 
     localIdx faceId = 0;
 
@@ -68,7 +68,7 @@ generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const 
         for (localIdx j = 0; j < p.ny; ++j)
             for (localIdx i = 0; i < p.nx - 1; ++i)
             {
-                auto fi = static_cast<size_t>(faceId);
+                auto fi = static_cast<sizeType>(faceId);
                 fAreas[fi] = {xArea, 0.0, 0.0};
                 fCenters[fi] = {
                     static_cast<scalar>(i + 1) * dx,
@@ -87,7 +87,7 @@ generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const 
         for (localIdx j = 0; j < p.ny - 1; ++j)
             for (localIdx i = 0; i < p.nx; ++i)
             {
-                auto fi = static_cast<size_t>(faceId);
+                auto fi = static_cast<sizeType>(faceId);
                 fAreas[fi] = {0.0, yArea, 0.0};
                 fCenters[fi] = {
                     (static_cast<scalar>(i) + 0.5) * dx,
@@ -106,7 +106,7 @@ generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const 
         for (localIdx j = 0; j < p.ny; ++j)
             for (localIdx i = 0; i < p.nx; ++i)
             {
-                auto fi = static_cast<size_t>(faceId);
+                auto fi = static_cast<sizeType>(faceId);
                 fAreas[fi] = {0.0, 0.0, zArea};
                 fCenters[fi] = {
                     (static_cast<scalar>(i) + 0.5) * dx,
@@ -140,23 +140,23 @@ BoundaryMesh generateBoundaryData(
     FaceData& faces
 )
 {
-    std::vector<label> bndFaceOwners(static_cast<size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndFaceCenters(static_cast<size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndCellCenters(static_cast<size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndFaceNormals(static_cast<size_t>(nBoundaryFaces));
-    std::vector<scalar> bndFaceAreas(static_cast<size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndFaceUnitNormals(static_cast<size_t>(nBoundaryFaces));
-    std::vector<Vec3> bndDelta(static_cast<size_t>(nBoundaryFaces));
-    std::vector<scalar> bndWeights(static_cast<size_t>(nBoundaryFaces), 1.0);
-    std::vector<scalar> bndDeltaCoeffs(static_cast<size_t>(nBoundaryFaces));
+    std::vector<label> bndFaceOwners(static_cast<sizeType>(nBoundaryFaces));
+    std::vector<Vec3> bndFaceCenters(static_cast<sizeType>(nBoundaryFaces));
+    std::vector<Vec3> bndCellCenters(static_cast<sizeType>(nBoundaryFaces));
+    std::vector<Vec3> bndFaceNormals(static_cast<sizeType>(nBoundaryFaces));
+    std::vector<scalar> bndFaceAreas(static_cast<sizeType>(nBoundaryFaces));
+    std::vector<Vec3> bndFaceUnitNormals(static_cast<sizeType>(nBoundaryFaces));
+    std::vector<Vec3> bndDelta(static_cast<sizeType>(nBoundaryFaces));
+    std::vector<scalar> bndWeights(static_cast<sizeType>(nBoundaryFaces), 1.0);
+    std::vector<scalar> bndDeltaCoeffs(static_cast<sizeType>(nBoundaryFaces));
 
     localIdx faceId = nInternalFaces;
 
     auto addBndFace = [&](localIdx bndId, localIdx ci, Vec3 faceNormal, Vec3 faceCenter)
     {
-        auto sz = static_cast<size_t>(bndId);
-        auto fi = static_cast<size_t>(faceId);
-        auto ciSizeT = static_cast<size_t>(ci);
+        auto sz = static_cast<sizeType>(bndId);
+        auto fi = static_cast<sizeType>(faceId);
+        auto ciSizeT = static_cast<sizeType>(ci);
         auto ciLabel = static_cast<label>(ci);
         scalar magA = mag(faceNormal);
         Vec3 faceUnitNormal = faceNormal * (1.0 / magA);

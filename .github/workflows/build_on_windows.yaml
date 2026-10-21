@@ -22,8 +22,9 @@ env:
 jobs:
   windows_msvc:
     if: >
-      github.event_name != 'pull_request' ||
-      !contains(github.event.pull_request.labels.*.name, 'skip-build')
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
     name: msvc
     runs-on: [windows-latest]
     steps:

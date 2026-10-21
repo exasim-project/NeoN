@@ -10,6 +10,7 @@
 #include "NeoN/core/logging.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 #ifdef NN_WITH_KOKKOS
 #define NEON_LAMBDA KOKKOS_LAMBDA
@@ -37,14 +38,42 @@ template<typename ValueType>
 class Vector;
 
 
-// Concept to check if a callable is compatible with void(const size_t)
+// Concept to check if a callable is compatible with void(const NeoN::sizeType)
 template<typename Kernel>
-concept parallelForKernel = requires(Kernel t, size_t i) {
+concept parallelForKernel = requires(Kernel t, sizeType i) {
     {
         t(i)
     } -> std::same_as<void>;
 };
 
+
+namespace detail
+{
+/* @brief call f with the concrete executor held by exec
+ *
+ * Deliberately not std::visit: its dispatch table is a GNU_UNIQUE object the dynamic linker
+ * merges process-wide, so a table instantiated in another DSO can route a kernel built here into
+ * that DSO's copy of the code. For nvcc extended lambdas (NEON_LAMBDA) the call slot is TU-local,
+ * so the foreign copy calls 0x0 (exasim-project/NeoFOAM#410). Direct calls stay in the calling
+ * DSO when it is linked with -Bsymbolic-functions.
+ */
+template<typename F>
+void visitExecutor(const Executor& exec, F&& f)
+{
+    if (const auto* serial = std::get_if<SerialExecutor>(&exec))
+    {
+        f(*serial);
+    }
+    else if (const auto* cpu = std::get_if<CPUExecutor>(&exec))
+    {
+        f(*cpu);
+    }
+    else
+    {
+        f(std::get<GPUExecutor>(exec));
+    }
+}
+}
 
 /* @brief calls fence if a logger is set */
 template<typename ExecutorType>
@@ -60,7 +89,7 @@ void fenceIfLogger(const ExecutorType& exec)
 /* @brief execute parallelFor with concrete executor */
 template<typename ExecutorType, parallelForKernel Kernel>
 void parallelFor(
-    const ExecutorType&, std::pair<localIdx, localIdx> range, Kernel kernel, std::string name
+    const ExecutorType&, std::pair<localIdx, localIdx> range, const Kernel& kernel, std::string name
 )
 {
     auto [start, end] = range;
@@ -75,10 +104,14 @@ void parallelFor(
     else
     {
         using runOn = typename ExecutorType::exec;
+        // Pass `kernel` DIRECTLY to Kokkos (do not wrap it in another NEON_LAMBDA). The wrapper
+        // makes `kernel`'s type only ever HOST-copied (into the wrapper's closure) and never the
+        // type actually device-launched, so nvcc emits no — or, under -O3, a NULL — host copy
+        // trampoline (__nv_hdl_wrapper_t::do_copy) for it; the host-side copy then jumps to 0x0
+        // and SIGSEGVs. Launching `kernel` directly makes it the device-launched type, forcing
+        // nvcc to emit a correct trampoline. See neon-nvcc-extended-lambda-trampoline.
         Kokkos::parallel_for(
-            name,
-            Kokkos::RangePolicy<runOn>(start, end),
-            NEON_LAMBDA(const localIdx i) { kernel(i); }
+            name, Kokkos::RangePolicy<runOn, Kokkos::IndexType<localIdx>>(start, end), kernel
         );
     }
 }
@@ -89,16 +122,16 @@ template<parallelForKernel Kernel>
 void parallelFor(
     const NeoN::Executor& exec,
     std::pair<localIdx, localIdx> range,
-    Kernel kernel,
+    const Kernel& kernel,
     std::string name = "parallelFor"
 )
 {
-    std::visit([&](const auto& e) { parallelFor(e, range, kernel, name); }, exec);
+    detail::visitExecutor(exec, [&](const auto& e) { parallelFor(e, range, kernel, name); });
 }
 
-// Concept to check if a callable is compatible with ValueType(const size_t)
+// Concept to check if a callable is compatible with ValueType(const NeoN::sizeType)
 template<typename Kernel, typename ValueType>
-concept parallelForContainerKernel = requires(Kernel t, ValueType val, size_t i) {
+concept parallelForContainerKernel = requires(Kernel t, ValueType val, sizeType i) {
     {
         t(i)
     } -> std::same_as<ValueType>;
@@ -111,13 +144,17 @@ template<
     typename ValueType,
     parallelForContainerKernel<ValueType> Kernel>
 void parallelFor(
-    const Executor&, ContType<ValueType>& container, Kernel kernel, std::string name = "parallelFor"
+    const Executor&,
+    ContType<ValueType>& container,
+    const Kernel& kernel,
+    std::string name = "parallelFor"
 )
 {
     auto view = container.view();
+    const auto viewSize = toLocalIdx(view.size());
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
     {
-        for (localIdx i = 0; i < view.size(); i++)
+        for (localIdx i = 0; i < viewSize; i++)
         {
             view[i] = kernel(i);
         }
@@ -127,7 +164,7 @@ void parallelFor(
         using runOn = typename Executor::exec;
         Kokkos::parallel_for(
             name,
-            Kokkos::RangePolicy<runOn>(0, view.size()),
+            Kokkos::RangePolicy<runOn>(0, viewSize),
             NEON_LAMBDA(const localIdx i) { view[i] = kernel(i); }
         );
     }
@@ -138,16 +175,16 @@ template<
     class ContType,
     typename ValueType,
     parallelForContainerKernel<ValueType> Kernel>
-void parallelFor(ContType<ValueType>& cont, Kernel kernel, std::string name = "parallelFor")
+void parallelFor(ContType<ValueType>& cont, const Kernel& kernel, std::string name = "parallelFor")
 {
-    std::visit([&](const auto& e) { parallelFor(e, cont, kernel, name); }, cont.exec());
+    detail::visitExecutor(cont.exec(), [&](const auto& e) { parallelFor(e, cont, kernel, name); });
 }
 
 template<typename Executor, typename Kernel, typename T>
 void parallelReduce(
     [[maybe_unused]] const Executor& exec,
     std::pair<localIdx, localIdx> range,
-    Kernel kernel,
+    const Kernel& kernel,
     T& value
 )
 {
@@ -177,16 +214,16 @@ void parallelReduce(
 
 template<typename Kernel, typename T>
 void parallelReduce(
-    const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel, T& value
+    const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, const Kernel& kernel, T& value
 )
 {
-    std::visit([&](const auto& e) { parallelReduce(e, range, kernel, value); }, exec);
+    detail::visitExecutor(exec, [&](const auto& e) { parallelReduce(e, range, kernel, value); });
 }
 
 
 template<typename Executor, typename ValueType, typename Kernel, typename T>
 void parallelReduce(
-    [[maybe_unused]] const Executor& exec, Vector<ValueType>& field, Kernel kernel, T& value
+    [[maybe_unused]] const Executor& exec, Vector<ValueType>& field, const Kernel& kernel, T& value
 )
 {
     if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
@@ -214,14 +251,16 @@ void parallelReduce(
 }
 
 template<typename ValueType, typename Kernel, typename T>
-void parallelReduce(Vector<ValueType>& field, Kernel kernel, T& value)
+void parallelReduce(Vector<ValueType>& field, const Kernel& kernel, T& value)
 {
-    std::visit([&](const auto& e) { parallelReduce(e, field, kernel, value); }, field.exec());
+    detail::visitExecutor(
+        field.exec(), [&](const auto& e) { parallelReduce(e, field, kernel, value); }
+    );
 }
 
 template<typename Executor, typename Kernel>
 void parallelScan(
-    [[maybe_unused]] const Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel
+    [[maybe_unused]] const Executor& exec, std::pair<localIdx, localIdx> range, const Kernel& kernel
 )
 {
     auto [start, end] = range;
@@ -230,16 +269,18 @@ void parallelScan(
 }
 
 template<typename Kernel>
-void parallelScan(const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel)
+void parallelScan(
+    const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, const Kernel& kernel
+)
 {
-    std::visit([&](const auto& e) { parallelScan(e, range, kernel); }, exec);
+    detail::visitExecutor(exec, [&](const auto& e) { parallelScan(e, range, kernel); });
 }
 
 template<typename Executor, typename Kernel, typename ReturnType>
 void parallelScan(
     [[maybe_unused]] const Executor& exec,
     std::pair<localIdx, localIdx> range,
-    Kernel kernel,
+    const Kernel& kernel,
     ReturnType& returnValue
 )
 {
@@ -254,11 +295,13 @@ template<typename Kernel, typename ReturnType>
 void parallelScan(
     const NeoN::Executor& exec,
     std::pair<localIdx, localIdx> range,
-    Kernel kernel,
+    const Kernel& kernel,
     ReturnType& returnValue
 )
 {
-    std::visit([&](const auto& e) { parallelScan(e, range, kernel, returnValue); }, exec);
+    detail::visitExecutor(
+        exec, [&](const auto& e) { parallelScan(e, range, kernel, returnValue); }
+    );
 }
 
 } // namespace NeoN

@@ -5,3 +5,4 @@
 neon_unit_test(coeff)
 neon_unit_test(optimizer)
 neon_unit_test(relaxation)
+neon_unit_test(constraints)

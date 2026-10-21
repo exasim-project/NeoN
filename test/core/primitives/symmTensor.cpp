@@ -13,15 +13,16 @@ using NeoN::scalar;
 using NeoN::SymmTensor;
 using NeoN::Tensor;
 using NeoN::Vec3;
+using NeoN::sizeType;
 
 TEST_CASE("SymmTensor - Constructors")
 {
     SECTION("Default constructor zeros all components")
     {
         SymmTensor s;
-        for (size_t i = 0; i < 3; ++i)
+        for (sizeType i = 0; i < 3; ++i)
         {
-            for (size_t j = 0; j < 3; ++j)
+            for (sizeType j = 0; j < 3; ++j)
             {
                 REQUIRE(s(i, j) == 0.0);
             }
@@ -248,9 +249,9 @@ TEST_CASE("SymmTensor - Traits")
     SECTION("zero<SymmTensor>")
     {
         SymmTensor z = NeoN::zero<SymmTensor>();
-        for (size_t i = 0; i < 3; ++i)
+        for (sizeType i = 0; i < 3; ++i)
         {
-            for (size_t j = 0; j < 3; ++j)
+            for (sizeType j = 0; j < 3; ++j)
             {
                 REQUIRE(z(i, j) == 0.0);
             }

@@ -20,6 +20,7 @@
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 #endif
 
 namespace NeoN
@@ -83,7 +84,7 @@ public:
      * @param nBoundaryFaces - The total number of boundary faces
      * @param nBoundaryType - The total number of boundary patches
      */
-    BoundaryData(const Executor& exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)
+    BoundaryData(const Executor& exec, sizeType nBoundaryFaces, localIdx nBoundaryTypes)
         : exec_(exec), value_(exec, nBoundaryFaces, ValueType {}),
           refValue_(exec, nBoundaryFaces, ValueType {}),
           valueFraction_(exec, nBoundaryFaces, scalar(0)),
@@ -167,19 +168,19 @@ public:
      * @brief Get the number of boundaries.
      * @return The number of boundaries.
      */
-    localIdx nBoundaries() const { return nBoundaries_; }
+    sizeType nBoundaries() const { return nBoundaries_; }
 
     /**
      * @brief Get the number of boundary faces.
      * @return The number of boundary faces.
      */
-    localIdx nBoundaryFaces() const { return nBoundaryFaces_; }
+    sizeType nBoundaryFaces() const { return nBoundaryFaces_; }
 
     /**
      * @brief Get the number of boundary faces for this patch.
      * @return The number of boundary faces for this patch.
      */
-    localIdx nBoundaryFaces(localIdx patchId) const
+    sizeType nBoundaryFaces(localIdx patchId) const
     {
         return offset_.data()[patchId + 1] - offset_.data()[patchId];
     }
@@ -224,6 +225,9 @@ public:
     void communicate(std::pair<localIdx, localIdx> range, int neighborRank)
     {
         const auto [rangeStart, rangeEnd] = range;
+        validateInput(
+            rangeEnd > rangeStart, "range ending index must be larger than range starting index"
+        );
         const localIdx patchSize = rangeEnd - rangeStart;
 
         mpi::Environment mpiEnv;
@@ -270,10 +274,10 @@ public:
         else
         {
             auto valH = value_.copyToHost();
-            buf.sendBuf.resize(static_cast<std::size_t>(patchSize));
-            buf.recvBuf.resize(static_cast<std::size_t>(patchSize));
+            buf.sendBuf.resize(static_cast<sizeType>(patchSize));
+            buf.recvBuf.resize(static_cast<sizeType>(patchSize));
             for (localIdx k = 0; k < patchSize; k++)
-                buf.sendBuf[static_cast<std::size_t>(k)] = valH.view()[rangeStart + k];
+                buf.sendBuf[static_cast<sizeType>(k)] = valH.view()[rangeStart + k];
             mpi::isend<char>(
                 reinterpret_cast<const char*>(buf.sendBuf.data()),
                 byteCount,
@@ -334,15 +338,34 @@ public:
                 );
             }
         }
-        else
+        else if (std::holds_alternative<GPUExecutor>(exec_))
         {
+            // GPU executor but not GPU-aware MPI: data was staged through host buffers.
+            // Copy received host data back to the device in-place (via copy-assign, not
+            // move-assign) so that value_.data() stays the same pointer and any View
+            // obtained from value() before the exchange remains valid.
             auto valH = value_.copyToHost();
             for (const auto& buf : commBuffers_)
             {
                 for (localIdx k = 0; k < buf.patchSize; k++)
-                    valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<std::size_t>(k)];
+                    valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<sizeType>(k)];
             }
-            value_ = valH.copyToExecutor(exec_);
+            Vector<ValueType> backToDevice = valH.copyToExecutor(exec_);
+            value_ = backToDevice; // operator=(const Vector&): setContainer dispatches async kernel
+            // Fence before backToDevice goes out of scope: the setContainer kernel reads from
+            // backToDevice.data_; freeing it while the kernel runs is a GPU page fault.
+            fence(exec_);
+        }
+        else
+        {
+            // SerialExecutor or CPUExecutor: value_ lives in host-accessible memory;
+            // write received data directly without any intermediate allocation.
+            for (const auto& buf : commBuffers_)
+            {
+                ValueType* dst = value_.data() + buf.rangeStart;
+                for (localIdx k = 0; k < buf.patchSize; k++)
+                    dst[k] = buf.recvBuf[static_cast<sizeType>(k)];
+            }
         }
         requests_.clear();
         communicating_ = false;
@@ -388,8 +411,8 @@ private:
     Vector<ValueType> refGrad_; ///< The Vector storing the Neumann boundary values.
     Vector<int> boundaryTypes_; ///< The Vector storing the boundary types.
     Vector<localIdx> offset_;   ///< The Vector storing the offsets of each boundary.
-    localIdx nBoundaries_;      ///< The number of boundaries.
-    localIdx nBoundaryFaces_;   ///< The number of boundary faces.
+    sizeType nBoundaries_;      ///< The number of boundaries.
+    sizeType nBoundaryFaces_;   ///< The number of boundary faces.
 
 #ifdef NF_WITH_MPI_SUPPORT
     struct CommBuffer
@@ -398,7 +421,7 @@ private:
         std::vector<ValueType> recvBuf;                 // host staging, used when !gpuAwareMpi
         std::optional<Vector<ValueType>> deviceRecvBuf; // device buffer, used when gpuAwareMpi
         localIdx rangeStart;
-        localIdx patchSize;
+        sizeType patchSize;
     };
     mutable std::vector<MPI_Request>
         requests_; ///< Pending MPI requests (send+recv pairs per patch).

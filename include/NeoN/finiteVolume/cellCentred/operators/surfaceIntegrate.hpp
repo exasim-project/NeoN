@@ -18,9 +18,9 @@ template<typename ValueType>
 void surfaceIntegrate(
     const Executor& exec,
     localIdx nInternalFaces,
-    View<const int> neighbors,
-    View<const int> owners,
-    View<const int> faceOwners,
+    View<const label> internalFaceNeighbors,
+    View<const label> internalFaceOwners,
+    View<const label> boundaryFaceOwners,
     View<const ValueType> flux,
     View<const ValueType> bFlux,
     View<const scalar> v,

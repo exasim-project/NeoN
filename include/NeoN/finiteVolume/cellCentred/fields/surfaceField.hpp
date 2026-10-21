@@ -191,4 +191,21 @@ operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
     return result;
 }
 
+inline SurfaceField<scalar>
+operator-(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
+{
+    SurfaceField<scalar> result(lhs);
+    result.internalVector() -= rhs.internalVector();
+    result.boundaryData().value() -= rhs.boundaryData().value();
+    return result;
+}
+
+inline SurfaceField<scalar> operator*(scalar s, const SurfaceField<scalar>& fld)
+{
+    SurfaceField<scalar> result(fld);
+    result.internalVector() *= s;
+    result.boundaryData().value() *= s;
+    return result;
+}
+
 } // namespace NeoN

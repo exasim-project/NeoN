@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/vector/vector.hpp"
@@ -91,7 +92,7 @@ public:
      *
      * @return The size of the internal field
      */
-    localIdx size() const { return field_.internalVector().size(); }
+    sizeType size() const { return field_.internalVector().size(); }
 
     /**
      * @brief Returns a const reference to the boundary field.

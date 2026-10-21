@@ -19,7 +19,7 @@ namespace detail
 // from a __device__ function is not allowed
 template<typename ValueType>
 void setFixedValue(
-    Field<ValueType>& domainVector, std::pair<size_t, size_t> range, ValueType fixedValue
+    Field<ValueType>& domainVector, std::pair<sizeType, sizeType> range, ValueType fixedValue
 )
 {
     auto refValue = domainVector.boundaryData().refValue().view();

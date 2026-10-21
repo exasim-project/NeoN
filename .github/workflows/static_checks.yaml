@@ -14,11 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         ref: ${{env.BRANCH_NAME}}
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install \
+        sudo apt-get update
+        sudo apt-get install -y \
            pre-commit
         pip install identify --upgrade
         pre-commit install
@@ -26,7 +27,7 @@ jobs:
       id: pre-commit
       run: pre-commit run --all --color always --verbose
     - name: Commit pre-commit fixes
-      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure() && steps.pre-commit.conclusion == 'failure'}}
+      if: ${{!github.event.pull_request.head.repo.fork && contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure() && steps.pre-commit.conclusion == 'failure'}}
       run: |
          git config user.name github-actions
          git config user.email github-actions@github.com
@@ -53,8 +54,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install \
+        sudo apt-get update
+        sudo apt-get install -y \
            ninja-build \
            iwyu \
            clang-19 \
@@ -94,6 +95,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         ref: ${{env.BRANCH_NAME}}
 
     - name: Add clang repo
@@ -104,8 +106,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install \
+        sudo apt-get update
+        sudo apt-get install -y \
            clang-tidy-19 \
            libomp-19-dev \
            libopenmpi-dev \
@@ -147,6 +149,24 @@ jobs:
     #      git add .
     #      git commit -m 'fix format'
     #      git push origin "${{ github.BRANCH_NAME }}"
+  ci-script-tests:
+    name: CI script tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        ref: ${{env.BRANCH_NAME}}
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install dependencies
+      run: pip install pytest
+    # These exercise ci/check_wheel_rpath.py, the wheel relocatability gate. They
+    # need no build: the fixtures are shared libraries compiled on the fly, which
+    # also covers the ELF side that the macOS developer machines cannot reach.
+    - name: Run CI script tests
+      run: python -m pytest test/ci -vv
   changelog:
     if: ${{!contains(github.event.pull_request.labels.*.name, 'skip-changelog')}}
     name: Changelog check

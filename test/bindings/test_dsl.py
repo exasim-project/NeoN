@@ -152,3 +152,121 @@ def test_dsl_vector_operators(executor):
     res_eqn = eqn1 - eqn2
     assert isinstance(res_eqn, neon.ExpressionVector)
     assert res_eqn.size() == 4
+
+
+def _cell_volumes(mesh):
+    """The mesh cell volumes as a host NumPy array."""
+    np = pytest.importorskip("numpy")
+    return np.asarray(mesh.cell_volumes.copy_to_host())
+
+
+def test_dsl_susp_scalar_sign_split(executor):
+    """imp.susp assembles the SuSp sign split for a scalar field.
+
+    coeff >= 0 -> implicit: diagonal += coeff*V, rhs untouched.
+    coeff <  0 -> explicit: diagonal untouched, rhs -= coeff*V*phi (i.e. += |coeff|*V*phi).
+
+    Both branches share the same operator name and Python type, so only the assembled
+    system distinguishes them (and distinguishes imp.susp from imp.source).
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10, 1.0)
+    vol = _cell_volumes(mesh)
+
+    phi = neon.ScalarVolumeField(exec, "phi", mesh)
+    neon.fill(phi.internal_vector(), 10.0)
+    coeff = neon.ScalarVolumeField(exec, "coeff", mesh)
+
+    # Positive coefficient: behaves like imp.source (Sp).
+    neon.fill(coeff.internal_vector(), 2.0)
+    op = imp.susp(coeff, phi)
+    assert isinstance(op, neon.SpatialOperatorScalar)
+    values, rhs = neon.assemble_spatial(op + op, mesh)
+    # Two identical terms, so the total diagonal is 2 * (2 * V).
+    assert np.isclose(np.sum(values), 2.0 * np.sum(2.0 * vol))
+    assert np.allclose(rhs, 0.0)
+
+    # Negative coefficient: nothing implicit, everything on the rhs.
+    neon.fill(coeff.internal_vector(), -3.0)
+    values, rhs = neon.assemble_spatial(imp.susp(coeff, phi) + imp.susp(coeff, phi), mesh)
+    assert np.allclose(values, 0.0)
+    assert np.allclose(rhs, 2.0 * 3.0 * vol * 10.0)
+
+    # Contrast: imp.source is unconditionally implicit, so a negative coefficient lands
+    # on the diagonal instead. This is what an incorrectly bound imp.susp would silently do.
+    values, rhs = neon.assemble_spatial(imp.source(coeff, phi) + imp.source(coeff, phi), mesh)
+    assert np.isclose(np.sum(values), 2.0 * np.sum(-3.0 * vol))
+    assert np.allclose(rhs, 0.0)
+
+
+def test_dsl_susp_vector_sign_split(executor):
+    """imp.susp resolves and assembles for a Vec3 field (the <Vec3> overload)."""
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10, 1.0)
+    vol = _cell_volumes(mesh)
+
+    phi = neon.VectorVolumeField(exec, "U", mesh)
+    neon.fill(phi.internal_vector(), neon.Vec3(10.0, 20.0, 30.0))
+    coeff = neon.ScalarVolumeField(exec, "coeff", mesh)
+
+    neon.fill(coeff.internal_vector(), 2.0)
+    op = imp.susp(coeff, phi)
+    assert isinstance(op, neon.SpatialOperatorVector)
+    values, rhs = neon.assemble_spatial(op + op, mesh)
+    assert np.isclose(sum(v[0] for v in values), np.sum(2.0 * 2.0 * vol))
+    assert all(r[0] == 0.0 and r[1] == 0.0 and r[2] == 0.0 for r in rhs)
+
+    neon.fill(coeff.internal_vector(), -3.0)
+    values, rhs = neon.assemble_spatial(imp.susp(coeff, phi) + imp.susp(coeff, phi), mesh)
+    assert all(v[0] == 0.0 and v[1] == 0.0 and v[2] == 0.0 for v in values)
+    assert np.allclose([r[0] for r in rhs], 2.0 * 3.0 * vol * 10.0)
+    assert np.allclose([r[1] for r in rhs], 2.0 * 3.0 * vol * 20.0)
+    assert np.allclose([r[2] for r in rhs], 2.0 * 3.0 * vol * 30.0)
+
+
+def test_dsl_susp_scaling_is_linear(executor):
+    """The expression scaling acts on the split SuSp term, not on its coefficient.
+
+    Expression subtraction sets an operator's scaling to -1. If SuSp split the already
+    scaled product, a negative scaling would move a positive coefficient off the diagonal
+    and onto the rhs instead of negating the diagonal entry — so `susp - susp` would not
+    cancel and `2*susp - susp` would not equal `susp`.
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10, 1.0)
+    vol = _cell_volumes(mesh)
+
+    phi = neon.ScalarVolumeField(exec, "phi", mesh)
+    neon.fill(phi.internal_vector(), 10.0)
+    coeff = neon.ScalarVolumeField(exec, "coeff", mesh)
+
+    for c in (2.0, -3.0):
+        neon.fill(coeff.internal_vector(), c)
+
+        # susp - susp assembles nothing, for either sign of the coefficient.
+        values, rhs = neon.assemble_spatial(
+            imp.susp(coeff, phi) - imp.susp(coeff, phi), mesh
+        )
+        assert np.allclose(values, 0.0)
+        assert np.allclose(rhs, 0.0)
+
+        # 2*susp - susp is exactly susp.
+        scaled, scaled_rhs = neon.assemble_spatial(
+            2.0 * imp.susp(coeff, phi) - imp.susp(coeff, phi), mesh
+        )
+        plain, plain_rhs = neon.assemble_spatial(
+            imp.susp(coeff, phi) + 0.0 * imp.susp(coeff, phi), mesh
+        )
+        assert np.allclose(scaled, plain)
+        assert np.allclose(scaled_rhs, plain_rhs)
+
+        # And the single term still lands where the sign says it should.
+        if c > 0:
+            assert np.isclose(np.sum(plain), np.sum(c * vol))
+            assert np.allclose(plain_rhs, 0.0)
+        else:
+            assert np.allclose(plain, 0.0)
+            assert np.allclose(plain_rhs, -c * vol * 10.0)

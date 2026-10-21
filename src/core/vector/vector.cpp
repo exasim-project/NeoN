@@ -13,28 +13,25 @@ namespace NeoN
 {
 
 template<typename ValueType>
-Vector<ValueType>::Vector(const Executor& exec, localIdx size)
-    : size_(size), data_(nullptr), exec_(exec)
-{
-    void* ptr = nullptr;
-    std::visit(
-        [&ptr, size](const auto& concreteExec)
-        { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
-        exec_
-    );
-    data_ = static_cast<ValueType*>(ptr);
-}
+Vector<ValueType>::Vector(const Executor& exec, sizeType size)
+    // Delegate to the value ctor so a freshly allocated Vector is zero-initialized rather than
+    // holding uninitialized pool memory. The pool's alloc<>() does not clear memory, so without
+    // this a field read before its first write returns garbage (huge/NaN), which silently poisons
+    // any consumer (e.g. surface interpolation reading a not-yet-written boundary). Same zero
+    // (ValueType {}) that BoundaryData uses for its members.
+    : Vector(exec, size, ValueType {})
+{}
 
 template<typename ValueType>
 Vector<ValueType>::Vector(
-    const Executor& exec, const ValueType* in, localIdx size, Executor hostExec
+    const Executor& exec, const ValueType* in, sizeType size, Executor hostExec
 )
     : size_(size), data_(nullptr), exec_(exec)
 {
     void* ptr = nullptr;
     std::visit(
         [&ptr, size](const auto& concreteExec)
-        { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
+        { ptr = concreteExec.template alloc<ValueType>(size); },
         exec_
     );
     data_ = static_cast<ValueType*>(ptr);
@@ -42,14 +39,12 @@ Vector<ValueType>::Vector(
 }
 
 template<typename ValueType>
-Vector<ValueType>::Vector(const Executor& exec, localIdx size, ValueType value)
+Vector<ValueType>::Vector(const Executor& exec, sizeType size, ValueType value)
     : size_(size), data_(nullptr), exec_(exec)
 {
     void* ptr = nullptr;
     std::visit(
-        [&ptr, size](const auto& execu)
-        { ptr = execu.template alloc<ValueType>(static_cast<size_t>(size)); },
-        exec_
+        [&ptr, size](const auto& execu) { ptr = execu.template alloc<ValueType>(size); }, exec_
     );
     data_ = static_cast<ValueType*>(ptr);
     NeoN::fill(*this, value);
@@ -57,7 +52,7 @@ Vector<ValueType>::Vector(const Executor& exec, localIdx size, ValueType value)
 
 template<typename ValueType>
 Vector<ValueType>::Vector(const Executor& exec, std::vector<ValueType> in)
-    : Vector(exec, in.data(), static_cast<localIdx>(in.size()))
+    : Vector(exec, in.data(), in.size())
 {}
 
 template<typename ValueType>
@@ -81,7 +76,15 @@ Vector<ValueType>::Vector(Vector<ValueType>&& rhs) noexcept
 template<typename ValueType>
 Vector<ValueType>::~Vector()
 {
-    std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
+    // No fence before free: kernels touching data_ and the allocator free run on the same Kokkos
+    // execution-space stream, so the free is already ordered after any in-flight kernel on *this.
+    // A device-wide fence here would needlessly serialize every temporary-Vector destruction.
+    // Guard against nullptr: move-constructed-from Vectors have data_==nullptr.
+    // kokkos_free(nullptr) is implementation-defined (may throw); skip the call.
+    if (data_ != nullptr)
+    {
+        std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
+    }
     data_ = nullptr;
 }
 
@@ -126,6 +129,28 @@ void Vector<ValueType>::operator=(const Vector<ValueType>& rhs)
         this->resize(rhs.size());
     }
     setContainer(*this, rhs.view());
+}
+
+template<typename ValueType>
+Vector<ValueType>& Vector<ValueType>::operator=(Vector<ValueType>&& rhs) noexcept
+{
+    if (this != &rhs)
+    {
+        NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
+        // No fence before free: stream-ordered, same reasoning as the destructor.
+        if (data_ != nullptr)
+        {
+            std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
+        }
+
+        data_ = rhs.data_;
+        size_ = rhs.size_;
+        // exec_ is const — cannot be reassigned; both sides must share the same executor
+
+        rhs.data_ = nullptr;
+        rhs.size_ = 0;
+    }
+    return *this;
 }
 
 template<typename ValueType>
@@ -185,23 +210,22 @@ Vector<ValueType>& Vector<ValueType>::operator*=(const scalar rhs)
 }
 
 template<typename ValueType>
-void Vector<ValueType>::resize(const localIdx size)
+void Vector<ValueType>::resize(const sizeType size)
 {
     void* ptr = nullptr;
     if (!empty())
     {
+        // No fence before realloc: stream-ordered, same reasoning as the destructor.
         std::visit(
             [this, &ptr, size](const auto& exec)
-            { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
+            { ptr = exec.template realloc<ValueType>(this->data_, size); },
             exec_
         );
     }
     else
     {
         std::visit(
-            [&ptr, size](const auto& exec)
-            { ptr = exec.template alloc<ValueType>(static_cast<size_t>(size)); },
-            exec_
+            [&ptr, size](const auto& exec) { ptr = exec.template alloc<ValueType>(size); }, exec_
         );
     }
     data_ = static_cast<ValueType*>(ptr);

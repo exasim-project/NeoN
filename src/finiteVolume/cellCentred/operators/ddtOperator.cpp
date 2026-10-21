@@ -19,8 +19,19 @@ DdtOperator<ValueType>::DdtOperator(dsl::Operator::Type termType, VolumeField<Va
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType) {};
 
 template<typename ValueType>
+DdtOperator<ValueType>::DdtOperator(
+    dsl::Operator::Type termType, VolumeField<scalar>& rho, VolumeField<ValueType>& field
+)
+    : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff(1.0), field, termType),
+      rho_(&rho) {};
+
+template<typename ValueType>
 void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
 {
+    if (scheme_ == DdtScheme::SteadyState)
+    {
+        return;
+    }
     const scalar dtInver = 1.0 / dt;
     const auto vol = this->getVector().mesh().cellVolumes().view();
     auto [sourceView, field, oldVector] =
@@ -47,16 +58,34 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
 
     const scalar a0a1 = 1.0 / dt;
 
-    parallelFor(
-        ls.exec(),
-        {0, oldVector.size()},
-        NEON_LAMBDA(const localIdx celli) {
-            const auto commonCoef = operatorScaling[celli] * vol[celli];
-            values[ma.diagIdx(celli)] += commonCoef * a0a1 * one<ValueType>();
-            rhs[celli] += commonCoef * a0a1 * oldVector[celli];
-        },
-        "ddtOperator::implicitOperation<BDF1>"
-    );
+    if (rho_ == nullptr)
+    {
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += commonCoef * a0a1 * one<ValueType>();
+                rhs[celli] += commonCoef * a0a1 * oldVector[celli];
+            },
+            "ddtOperator::implicitOperation<BDF1>"
+        );
+    }
+    else
+    {
+        const auto rhoNew = rho_->internalVector().view();
+        const auto rhoOld = oldTime(*rho_).internalVector().view();
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0a1 * one<ValueType>();
+                rhs[celli] += rhoOld[celli] * commonCoef * a0a1 * oldVector[celli];
+            },
+            "ddtOperator::implicitOperation<BDF1,rho>"
+        );
+    }
 }
 
 template<typename ValueType>
@@ -75,17 +104,38 @@ void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar,
     const scalar a1 = 2.0 / dt;
     const scalar a2 = -0.5 / dt;
 
-    parallelFor(
-        ls.exec(),
-        {0, oldVector.size()},
-        NEON_LAMBDA(const localIdx celli) {
-            const auto commonCoef = operatorScaling[celli] * vol[celli];
-            values[ma.diagIdx(celli)] += commonCoef * a0 * one<ValueType>();
-            rhs[celli] +=
-                commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
-        },
-        "ddtOperator::implicitOperation<BDF2>"
-    );
+    if (rho_ == nullptr)
+    {
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += commonCoef * a0 * one<ValueType>();
+                rhs[celli] +=
+                    commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
+            },
+            "ddtOperator::implicitOperation<BDF2>"
+        );
+    }
+    else
+    {
+        const auto rhoNew = rho_->internalVector().view();
+        auto& rhoOldF = oldTime(*rho_);
+        const auto [rhoOld, rhoOldOld] =
+            views(rhoOldF.internalVector(), oldTime(rhoOldF).internalVector());
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0 * one<ValueType>();
+                rhs[celli] += rhoOld[celli] * commonCoef * a1 * oldVector[celli]
+                            + rhoOldOld[celli] * commonCoef * a2 * oldOldVector[celli];
+            },
+            "ddtOperator::implicitOperation<BDF2,rho>"
+        );
+    }
 }
 
 template<typename ValueType>
@@ -93,6 +143,10 @@ void DdtOperator<ValueType>::implicitOperation(
     la::LinearSystem<ValueType>& ls, scalar t, scalar dt
 ) const
 {
+    if (scheme_ == DdtScheme::SteadyState)
+    {
+        return;
+    }
     const int level = oldTimeLevel(this->field_);
 
     if (scheme_ == DdtScheme::BDF1)
@@ -122,17 +176,36 @@ void DdtOperator<ValueType>::bdf1KernelScalarMtx(
 
     const scalar a0a1 = 1.0 / dt;
 
-    parallelFor(
-        ls.exec(),
-        {0, oldVector.size()},
-        NEON_LAMBDA(const localIdx celli) {
-            const auto commonCoef = operatorScaling[celli] * vol[celli];
-            // scalar diagonal coefficient shared across all rhs components
-            values[ma.diagIdx(celli)] += commonCoef * a0a1;
-            rhs[celli] += commonCoef * a0a1 * oldVector[celli];
-        },
-        "ddtOperator::implicitOperationScalarMtx<BDF1>"
-    );
+    if (rho_ == nullptr)
+    {
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                // scalar diagonal coefficient shared across all rhs components
+                values[ma.diagIdx(celli)] += commonCoef * a0a1;
+                rhs[celli] += commonCoef * a0a1 * oldVector[celli];
+            },
+            "ddtOperator::implicitOperationScalarMtx<BDF1>"
+        );
+    }
+    else
+    {
+        const auto rhoNew = rho_->internalVector().view();
+        const auto rhoOld = oldTime(*rho_).internalVector().view();
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                // density-weighted: rho_n on the (scalar) diagonal, rho_o on the rhs
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0a1;
+                rhs[celli] += rhoOld[celli] * commonCoef * a0a1 * oldVector[celli];
+            },
+            "ddtOperator::implicitOperationScalarMtx<BDF1,rho>"
+        );
+    }
 }
 
 template<typename ValueType>
@@ -153,18 +226,39 @@ void DdtOperator<ValueType>::bdf2KernelScalarMtx(
     const scalar a1 = 2.0 / dt;
     const scalar a2 = -0.5 / dt;
 
-    parallelFor(
-        ls.exec(),
-        {0, oldVector.size()},
-        NEON_LAMBDA(const localIdx celli) {
-            const auto commonCoef = operatorScaling[celli] * vol[celli];
-            // scalar diagonal coefficient shared across all rhs components
-            values[ma.diagIdx(celli)] += commonCoef * a0;
-            rhs[celli] +=
-                commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
-        },
-        "ddtOperator::implicitOperationScalarMtx<BDF2>"
-    );
+    if (rho_ == nullptr)
+    {
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                // scalar diagonal coefficient shared across all rhs components
+                values[ma.diagIdx(celli)] += commonCoef * a0;
+                rhs[celli] +=
+                    commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
+            },
+            "ddtOperator::implicitOperationScalarMtx<BDF2>"
+        );
+    }
+    else
+    {
+        const auto rhoNew = rho_->internalVector().view();
+        auto& rhoOldF = oldTime(*rho_);
+        const auto [rhoOld, rhoOldOld] =
+            views(rhoOldF.internalVector(), oldTime(rhoOldF).internalVector());
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0;
+                rhs[celli] += rhoOld[celli] * commonCoef * a1 * oldVector[celli]
+                            + rhoOldOld[celli] * commonCoef * a2 * oldOldVector[celli];
+            },
+            "ddtOperator::implicitOperationScalarMtx<BDF2,rho>"
+        );
+    }
 }
 
 template<typename ValueType>
@@ -174,6 +268,10 @@ void DdtOperator<ValueType>::implicitOperation(
     la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
 ) const
 {
+    if (scheme_ == DdtScheme::SteadyState)
+    {
+        return;
+    }
     const int level = oldTimeLevel(this->field_);
 
     if (scheme_ == DdtScheme::BDF1)
@@ -222,7 +320,11 @@ void DdtOperator<ValueType>::read(const Input& input)
         schemeName = ddtSchemes.get<std::string>(fieldKey);
     }
 
-    // TODO (later: steadyState, CrankNicolson, etc.)
+    if (schemeName == "steadyState")
+    {
+        scheme_ = DdtScheme::SteadyState;
+        return;
+    }
     if (schemeName == "BDF1")
     {
         juliaEvalString_ =
@@ -240,7 +342,8 @@ void DdtOperator<ValueType>::read(const Input& input)
     }
 
     NF_ERROR_EXIT(fmt::format(
-        fmt::runtime("Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2."),
+        fmt::runtime("Unknown ddt scheme '{}' for field '{}'. Supported schemes are: steadyState, "
+                     "BDF1, BDF2."),
         schemeName,
         this->field_.name
     )); 

@@ -23,7 +23,7 @@ def test_scalar_imports():
 def test_rootvsmall():
     """Test ROOTVSMALL constant."""
     assert neon.ROOTVSMALL > 0
-    assert neon.ROOTVSMALL < 1e-10  # Should be very small
+    assert neon.ROOTVSMALL < 1e-10
 
 
 def test_double_precision_flag():
@@ -33,14 +33,12 @@ def test_double_precision_flag():
 
 def test_scalar_one():
     """Test scalar_one function."""
-    one = neon.scalar_one()
-    assert one == 1.0
+    assert neon.scalar_one() == 1.0
 
 
 def test_scalar_zero():
     """Test scalar_zero function."""
-    zero = neon.scalar_zero()
-    assert zero == 0.0
+    assert neon.scalar_zero() == 0.0
 
 
 def test_scalar_mag_positive():

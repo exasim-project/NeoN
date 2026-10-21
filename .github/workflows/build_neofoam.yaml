@@ -24,8 +24,9 @@ concurrency:
 jobs:
   build:
     if: >
-      github.event_name != 'pull_request' ||
-      !contains(github.event.pull_request.labels.*.name, 'skip-build')
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
     name: Build NeoFOAM
     strategy:
       fail-fast: false
@@ -66,13 +67,14 @@ jobs:
           ref: ${{ env.NEOFOAM_BRANCH }}
           fetch-depth: 1
 
-      # Optional NeoN checkout if needed
-      # - name: Checkout NeoN submodule
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: exasim-project/NeoN
-      #     path: NeoN
-      #     ref: '${{ env.NEON_BRANCH }}'
+      # Check out NeoN from the PR head repo, which may be a fork
+      - name: Checkout NeoN
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: NeoN
+          fetch-depth: 1
 
       - name: Set up OpenFOAM
         uses: gerlero/setup-openfoam@v1
@@ -109,7 +111,7 @@ jobs:
             -DNeoN_BUILD_TESTS=OFF \
             -DNEOFOAM_BUILD_BENCHMARKS=OFF \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
-            -DNEOFOAM_NEON_VERSION=${{ env.NEON_BRANCH }}
+            -DCPM_NeoN_SOURCE=${{ github.workspace }}/NeoN
           cmake --build --preset develop
 
       - name: Execute unit tests NeoN

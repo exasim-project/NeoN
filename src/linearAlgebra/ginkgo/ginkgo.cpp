@@ -7,6 +7,7 @@
 #include <array>
 #include <mutex>
 #include <sstream>
+#include <stdexcept>
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
@@ -71,10 +72,16 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         {
             auto token = std::any_cast<TokenList>(fn);
             std::stringstream s;
-            for (NeoN::size_t i = 0; i < token.size() - 1; i++)
+            if (token.empty())
             {
-                s << token.next<std::string>() << "/";
+                throw std::runtime_error("configFile token list is empty");
             }
+
+            for (sizeType i = 0; i + 1 < token.size(); ++i)
+            {
+                s << token.next<std::string>() << '/';
+            }
+
             s << token.next<std::string>();
             fn_str = s.str();
         }
@@ -209,7 +216,7 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
     static std::mutex cacheMutex;
     const std::lock_guard<std::mutex> guard {cacheMutex};
     auto& cache = gkoExecutorCache();
-    const std::size_t idx = exec.index();
+    const sizeType idx = exec.index();
     if (!cache[idx])
     {
         cache[idx] = createGkoExecutor(exec);
@@ -350,7 +357,9 @@ SolverStatsEntry solve_impl(
                 std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
             )
             / 1000.0;
-        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+        return {
+            static_cast<sizeType>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+        };
     }
 
     // copy of rhs to compute the initial residual inline
@@ -371,7 +380,7 @@ SolverStatsEntry solve_impl(
     solver->apply(b, x);
 
     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
-    auto numIter = label(logger->get_num_iterations());
+    auto numIter = static_cast<sizeType>(logger->get_num_iterations());
     exec->synchronize();
 
     auto endEval = std::chrono::steady_clock::now();
@@ -427,7 +436,7 @@ SolverStats solve_impl(
     mtx->apply(one, x, neg_one, resFinal);
     auto finalNorms = colNorms(resFinal);
 
-    auto numIter = label(logger->get_num_iterations());
+    auto numIter = static_cast<sizeType>(logger->get_num_iterations());
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -448,7 +457,11 @@ SolverStats GinkgoSolver::solve(
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx), l1Control)};
 }
 
@@ -497,7 +510,11 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     if (coupled_)
     {
         const auto gkoMtx = createGkoMtx(sys.matrix());
@@ -524,30 +541,37 @@ SolverStats GinkgoSolver::solve(
 // Solve one component of a scalar-matrix / Vec3-rhs system under an implicit transform BC
 // (slip/symmetry). The component's diagonal correction is temporarily subtracted from the shared
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
-// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The diag edits
-// use atomics because a corner cell may receive contributions from several boundary faces.
-template<unsigned int I>
+// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The loop is over
+// cells and each iteration writes its own (distinct) diagonal entry, so plain writes suffice.
+// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
+// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+template<
+    unsigned int I,
+    typename SystemType,
+    typename ExecType,
+    typename FactoryType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
 void solveImplicitTransformComponent(
-    const auto& sys,
+    const SystemType& sys,
     Vector<Vec3>& x,
-    const auto& exec,
+    const ExecType& exec,
     std::shared_ptr<const gko::Executor> gkoExec,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    const auto& factory,
+    const FactoryType& factory,
     SolverStats& stats,
     const L1ResidualControl* l1Control,
-    auto values,
-    const auto& ma,
-    auto diagC,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
     localIdx nrows
 )
 {
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
         "applyImplicitTransformDiag"
     );
     gkoExec->synchronize();
@@ -562,9 +586,7 @@ void solveImplicitTransformComponent(
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
         "restoreImplicitTransformDiag"
     );
     gkoExec->synchronize();
@@ -577,7 +599,11 @@ SolverStats GinkgoSolver::solve(
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
 
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
 
     // Implicit transform-BC path (slip/symmetry with "implicit"): the per-component diagonal
     // correction differs per column, so solve the three components segregated, reusing solve_impl
@@ -627,7 +653,10 @@ SolverStats GinkgoSolver::solve(
         SolverStats stats;
         for (int i = 0; i < 3; ++i)
             stats.entries.push_back(
-                {l1Res.numIter, l1Res.perColInitNorms[i], l1Res.perColFinalNorms[i], duration}
+                {static_cast<sizeType>(l1Res.numIter),
+                 l1Res.perColInitNorms[i],
+                 l1Res.perColFinalNorms[i],
+                 duration}
             );
         return stats;
     }
@@ -670,14 +699,16 @@ SolverStats GinkgoSolver::solve(
         solver->apply(b_col, x_col);
 
         scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
-        auto numIter = label(logger->get_num_iterations());
+        gko::size_type numIter = logger->get_num_iterations();
         gkoExec_->synchronize();
         auto duration = static_cast<scalar>(std::chrono::duration_cast<std::chrono::microseconds>(
                                                 std::chrono::steady_clock::now() - t0
                         )
                                                 .count())
                       / 1000.0;
-        stats.entries.push_back({numIter, initResNorm, finalResNorm, duration});
+        stats.entries.push_back(
+            {static_cast<sizeType>(numIter), initResNorm, finalResNorm, duration}
+        );
     }
     return stats;
 }

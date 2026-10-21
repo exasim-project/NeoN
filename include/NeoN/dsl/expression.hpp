@@ -141,6 +141,127 @@ private:
 };
 
 
+/**
+ * @class FixedValueConstraints
+ * @brief Post-assembly functor that pins a set of cells to prescribed values.
+ *
+ * This now performs OpenFOAM's FULL decouple (fvMatrix::setValuesFromList), not just a row wipe.
+ * For every constrained cell c:
+ *   A[c, j] = 0            for all j != c    (zero the off-diagonals of ROW c)
+ *   A[j, c] = 0            for all j != c    (zero the COLUMN c in every neighbour row j)
+ *   rhs[j] -= A[j, c]*value[c]               (relocate that coupling into the neighbour SOURCE)
+ *   rhs[c]  = A[c, c] * value[c]
+ * so the row reduces to A[c,c]*x_c = A[c,c]*value[c] => x_c = value[c] (independent of the
+ * relaxed/BC-augmented diagonal), and — crucially — the SpMV / residual no longer carries the
+ * huge in-matrix A[j,c]*value_c term (value_c is the viscous-sublayer wall omega, up to 1e12).
+ * Leaving that coefficient in the matrix (the previous row-only wipe) made A*x at neighbour cells
+ * a difference of ~1e18 magnitudes, which underflowed/NaN'd the L1 residual norm under FOAM_SIGFPE
+ * — OpenFOAM avoids it precisely by moving the term to the source. Mirrors upstream exactly.
+ *
+ * Proc-boundary caveat: a pinned cell's coupling to an off-rank ghost lives in offDiagonalMatrix,
+ * not the local CSR, so it is not decoupled here (the local CSR column cut is the dominant term).
+ *
+ * Pinning via both the row and column cut avoids large cancellation errors when
+ * pinned values are orders of magnitude larger than neighbouring unknowns.
+ * Off-rank coupling in offDiagonalMatrix is also zeroed for pinned rows.
+ *
+ * Restricted to scalar ValueType: the segregated vector-solve path dispatches
+ * through applyScalarMatrix(), which this class does not implement.
+ *
+ * mask[cell] != 0 marks a constrained cell; value[cell] holds its target.
+ * Both views are sized nCells and must outlive the functor.
+ */
+template<typename ValueType, typename IndexType = localIdx>
+class FixedValueConstraints : public PostAssemblyBase<ValueType, IndexType>
+{
+    static_assert(
+        std::is_same_v<ValueType, scalar>,
+        "FixedValueConstraints only supports scalar fields. "
+        "For non-scalar fields implement applyScalarMatrix()."
+    );
+
+public:
+
+    FixedValueConstraints(View<const scalar> mask, View<const ValueType> values, localIdx nCells)
+        : mask_(mask), values_(values), nCells_(nCells)
+    {}
+
+    void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
+    ) const override
+    {
+        auto lsView = ls.view();
+        const auto rowOffs = ls.matrix().sparsity()->rowOffs().view();
+        const auto colIdxs = ls.matrix().sparsity()->colIdxs().view();
+        auto matrixValues = lsView.matrix.values;
+        auto rhs = lsView.rhs;
+        auto mask = mask_;
+        auto vals = values_;
+        // Sweep EVERY row (not only the pinned ones): a pinned row drops its off-diagonals, while
+        // a NON-pinned row that couples into a pinned column relocates that term to its own source
+        // and zeros it (OpenFOAM's column cut). Parallelising over rows means each row owns its own
+        // rhs entry and its own off-diagonal slots, so no atomics are needed.
+        parallelFor(
+            ls.exec(),
+            {0, nCells_},
+            NEON_LAMBDA(const localIdx row) {
+                const bool rowPinned = mask[row] != scalar(0);
+                ValueType diagVal = zero<ValueType>();
+                for (auto o = rowOffs[row]; o < rowOffs[row + 1]; ++o)
+                {
+                    const auto col = colIdxs[o];
+                    if (col == row)
+                    {
+                        diagVal = matrixValues[o];
+                        continue;
+                    }
+                    if (rowPinned)
+                    {
+                        // pinned cell's own row: decouple it entirely
+                        matrixValues[o] = zero<ValueType>();
+                    }
+                    else if (mask[col] != scalar(0))
+                    {
+                        // neighbour row coupling INTO a pinned cell: move the term to this row's
+                        // source as a constant, then drop the coefficient (OF setValues column cut)
+                        rhs[row] -= matrixValues[o] * vals[col];
+                        matrixValues[o] = zero<ValueType>();
+                    }
+                }
+                if (rowPinned)
+                {
+                    // row now reads A[c,c]*x_c = A[c,c]*value[c] => x_c = value[c]
+                    rhs[row] = diagVal * vals[row];
+                }
+            },
+            "FixedValueConstraints"
+        );
+        // Zero offDiagonalMatrix entries for pinned rows so that proc-boundary
+        // couplings do not contribute to the residual of constrained cells.
+        auto& offDiag = ls.offDiagonalMatrix();
+        const localIdx nnz = offDiag.nNonZeros();
+        if (nnz > 0)
+        {
+            const auto offRowIdxs = offDiag.sparsity()->rowIdxs().view();
+            auto offValues = offDiag.values().view();
+            parallelFor(
+                ls.exec(),
+                {0, nnz},
+                NEON_LAMBDA(const localIdx i) {
+                    if (mask[offRowIdxs[i]] != scalar(0)) offValues[i] = zero<ValueType>();
+                },
+                "FixedValueConstraints::offDiag"
+            );
+        }
+    }
+
+private:
+
+    View<const scalar> mask_;
+    View<const ValueType> values_;
+    localIdx nCells_;
+};
+
+
 template<typename ValueType, typename IndexType = localIdx>
 class Expression
 {
@@ -210,7 +331,7 @@ public:
     }
 
     /* @brief perform all explicit operation and accumulate the result */
-    Vector<ValueType> explicitOperation(localIdx nCells) const
+    Vector<ValueType> explicitOperation(sizeType nCells) const
     {
         Vector<ValueType> source(exec_, nCells, zero<ValueType>());
         return explicitOperation(source);
@@ -277,7 +398,7 @@ public:
         la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
     ) const
     {
-        auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
+        auto expTmp = explicitOperation(mesh.nCells());
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
         parallelFor(
             ls.exec(),
@@ -355,6 +476,7 @@ public:
         // }
     }
 
+#if 0 // FIXME WIP: uses phi/faceFlux/weights which are not members of Expression
     /* @brief assemble into a given linear system (implicit operators only, no explicit sources)
      *
      * @param ps post-assembly functors applied to the system after assembly
@@ -401,6 +523,7 @@ public:
         //     }
         // }
     }
+#endif
 
 
 

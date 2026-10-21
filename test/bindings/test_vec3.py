@@ -59,6 +59,29 @@ def test_vec3_dot_and_magnitude():
     assert neon.dot(neon.Vec3(1, 0, 0), neon.Vec3(0, 1, 0)) == pytest.approx(0.0)
 
 
+def test_vec3_cross():
+    x = neon.Vec3(1.0, 0.0, 0.0)
+    y = neon.Vec3(0.0, 1.0, 0.0)
+    z = neon.Vec3(0.0, 0.0, 1.0)
+
+    # right-handed: x ^ y == z, and the method and free function agree
+    assert neon.cross(x, y) == z
+    assert x.cross(y) == z
+    assert neon.cross(y, z) == x
+    assert neon.cross(z, x) == y
+
+    # anticommutative, and a vector crossed with itself vanishes
+    assert neon.cross(y, x) == neon.Vec3(0.0, 0.0, -1.0)
+    assert neon.cross(x, x) == neon.Vec3(0.0, 0.0, 0.0)
+
+    v1 = neon.Vec3(1.0, 2.0, 3.0)
+    v2 = neon.Vec3(4.0, 5.0, 6.0)
+    assert neon.cross(v1, v2) == neon.Vec3(-3.0, 6.0, -3.0)
+    # the result is orthogonal to both operands
+    assert neon.dot(neon.cross(v1, v2), v1) == pytest.approx(0.0)
+    assert neon.dot(neon.cross(v1, v2), v2) == pytest.approx(0.0)
+
+
 def test_vec3_equality():
     v1 = neon.Vec3(3.0, 4.0, 0.0)
     v2 = neon.Vec3(3.0, 4.0, 0.0)

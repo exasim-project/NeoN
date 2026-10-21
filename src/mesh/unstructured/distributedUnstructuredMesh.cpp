@@ -6,6 +6,7 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
 {
@@ -90,7 +91,9 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     {
         auto h = v.copyToHost();
         auto hv = h.view();
-        for (localIdx i = 0; i < h.size(); ++i)
+        const auto hSize = toLocalIdx(h.size());
+
+        for (localIdx i = 0; i < hSize; ++i)
             hv[i][0] += xOffset;
         v = h.copyToExecutor(exec);
     };
@@ -102,7 +105,8 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     auto ownerCellCentersH = baseMesh.boundaryMesh().ownerCellCenters().copyToHost();
     {
         auto v = ownerCellCentersH.view();
-        for (localIdx i = 0; i < ownerCellCentersH.size(); ++i)
+        const auto ownerCellCentersHSize = toLocalIdx(ownerCellCentersH.size());
+        for (localIdx i = 0; i < ownerCellCentersHSize; ++i)
             v[i][0] += xOffset;
     }
     auto ownerCellCentersGlobal = ownerCellCentersH.copyToExecutor(exec);
@@ -236,7 +240,7 @@ UnstructuredMesh create2DUniformMeshPart(
     const auto bDelta = bDeltaH.view();
     const auto bDeltaCoeffs = bDeltaCoeffsH.view();
 
-    const auto nBoundaryFaces = static_cast<std::size_t>(4 * nFacesPerPatch);
+    const auto nBoundaryFaces = static_cast<sizeType>(4 * nFacesPerPatch);
     auto faceOwnersVec = std::vector<label>();
     auto faceCentersVec = std::vector<Vec3>();
     auto ownerCentersVec = std::vector<Vec3>();
@@ -383,7 +387,7 @@ UnstructuredMesh create2DUniformMeshPartX(
     const auto bDelta = bDeltaH.view();
     const auto bDeltaCoeffs = bDeltaCoeffsH.view();
 
-    const auto nBoundaryFaces = static_cast<std::size_t>(4 * nFacesPerPatch);
+    const auto nBoundaryFaces = static_cast<sizeType>(4 * nFacesPerPatch);
     auto faceOwnersVec = std::vector<label>();
     auto faceCentersVec = std::vector<Vec3>();
     auto ownerCentersVec = std::vector<Vec3>();
@@ -476,7 +480,7 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
         return {};
     }
 
-    auto sendCounts = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank() + 1), 0);
+    auto sendCounts = std::vector<int>(static_cast<sizeType>(mpiEnviron.sizeRank() + 1), 0);
 
     const auto& neighbourRanks = mesh.boundaryMesh().neighbourRank();
     const auto& offsets = mesh.boundaryMesh().offset();
@@ -492,14 +496,14 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     // with the second. allToAllV needs the TOTAL count per peer, so accumulate with +=.
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
-        const auto targetRank = static_cast<int>(neighbourRanks[static_cast<std::size_t>(i)]);
+        const auto targetRank = static_cast<int>(neighbourRanks[static_cast<sizeType>(i)]);
         const auto patchSize = static_cast<int>(
-            offsets[static_cast<std::size_t>(nInnerBoundaries + i + 1)]
-            - offsets[static_cast<std::size_t>(nInnerBoundaries + i)]
+            offsets[static_cast<sizeType>(nInnerBoundaries + i + 1)]
+            - offsets[static_cast<sizeType>(nInnerBoundaries + i)]
         );
-        patchSizes[static_cast<std::size_t>(i)] = patchSize;
-        sendCounts[static_cast<std::size_t>(targetRank)] += patchSize;
-        sendCounts[static_cast<std::size_t>(mpiEnviron.sizeRank())] += patchSize;
+        patchSizes[static_cast<sizeType>(i)] = patchSize;
+        sendCounts[static_cast<sizeType>(targetRank)] += patchSize;
+        sendCounts[static_cast<sizeType>(mpiEnviron.sizeRank())] += patchSize;
     }
 
     const auto globalOffset = mesh.globalOffset();
@@ -508,48 +512,46 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     // Send-displacement = prefix sum of per-rank send counts. This defines a contiguous block per
     // peer in the send buffer, so a peer that receives from two non-adjacent proc patches still
     // gets a single contiguous run (allToAllV cannot express a gapped per-peer region).
-    auto sdispl = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
-    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
+    auto sdispl = std::vector<int>(mpiEnviron.sizeRank(), 0);
+    const auto sizeRank = toLocalIdx(mpiEnviron.sizeRank());
+    for (int r = 1; r < sizeRank; ++r)
     {
-        sdispl[static_cast<std::size_t>(r)] =
-            sdispl[static_cast<std::size_t>(r - 1)] + sendCounts[static_cast<std::size_t>(r - 1)];
+        sdispl[static_cast<sizeType>(r)] =
+            sdispl[static_cast<sizeType>(r - 1)] + sendCounts[static_cast<sizeType>(r - 1)];
     }
 
     // Pack the send buffer GROUPED BY TARGET RANK, honouring sdispl. A per-rank write cursor lets
     // multiple proc patches to the same neighbour land contiguously (in proc-patch order) within
     // that rank's block.
     auto writeCursor = sdispl; // copy: running write position per rank
-    std::vector<int> sendBuffer(
-        static_cast<std::size_t>(sendCounts[static_cast<std::size_t>(mpiEnviron.sizeRank())])
-    );
+    std::vector<int> sendBuffer(static_cast<sizeType>(sendCounts[mpiEnviron.sizeRank()]));
     const auto faceCellsView = faceCellsH.view();
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
-        const auto targetRank =
-            static_cast<std::size_t>(neighbourRanks[static_cast<std::size_t>(i)]);
-        const localIdx patchStart = offsets[static_cast<std::size_t>(nInnerBoundaries + i)];
-        const int patchSize = patchSizes[static_cast<std::size_t>(i)];
+        const auto targetRank = static_cast<sizeType>(neighbourRanks[static_cast<sizeType>(i)]);
+        const localIdx patchStart = offsets[static_cast<sizeType>(nInnerBoundaries + i)];
+        const int patchSize = patchSizes[static_cast<sizeType>(i)];
         for (int k = 0; k < patchSize; ++k)
         {
             const auto globalCell = static_cast<int>(
                 faceCellsView[patchStart + static_cast<localIdx>(k)] + globalOffset
             );
-            sendBuffer[static_cast<std::size_t>(writeCursor[targetRank]++)] = globalCell;
+            sendBuffer[static_cast<sizeType>(writeCursor[targetRank]++)] = globalCell;
         }
     }
 
-    auto recvCounts = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
+    auto recvCounts = std::vector<int>(mpiEnviron.sizeRank(), 0);
     mpi::allToAll<int>(sendCounts.data(), 1, recvCounts.data(), 1, mpiEnviron.comm());
 
-    auto rdispl = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
-    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
+    auto rdispl = std::vector<int>(mpiEnviron.sizeRank(), 0);
+    for (int r = 1; r < sizeRank; ++r)
     {
-        rdispl[static_cast<std::size_t>(r)] =
-            rdispl[static_cast<std::size_t>(r - 1)] + recvCounts[static_cast<std::size_t>(r - 1)];
+        rdispl[static_cast<sizeType>(r)] =
+            rdispl[static_cast<sizeType>(r - 1)] + recvCounts[static_cast<sizeType>(r - 1)];
     }
     int totalRecv = rdispl.back() + recvCounts.back();
 
-    auto recvRankGrouped = std::vector<int>(static_cast<std::size_t>(totalRecv));
+    auto recvRankGrouped = std::vector<int>(static_cast<sizeType>(totalRecv));
 
     mpi::allToAllV<int>(
         sendBuffer.data(),
@@ -578,17 +580,17 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     // shared patch both ranks enumerate the faces in the same physical order (the standard
     // processor-patch ordering guarantee already relied upon elsewhere), so a contiguous run lines
     // up face-by-face.
-    auto recvIdx = std::vector<int>(static_cast<std::size_t>(totalRecv));
+    auto recvIdx = std::vector<int>(static_cast<sizeType>(totalRecv));
     auto readCursor = rdispl; // per-source-rank running read position into recvRankGrouped
     int writePos = 0;
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
-        const auto srcRank = static_cast<std::size_t>(neighbourRanks[static_cast<std::size_t>(i)]);
-        const int patchSize = patchSizes[static_cast<std::size_t>(i)];
+        const auto srcRank = static_cast<sizeType>(neighbourRanks[static_cast<sizeType>(i)]);
+        const int patchSize = patchSizes[static_cast<sizeType>(i)];
         for (int k = 0; k < patchSize; ++k)
         {
-            recvIdx[static_cast<std::size_t>(writePos++)] =
-                recvRankGrouped[static_cast<std::size_t>(readCursor[srcRank]++)];
+            recvIdx[static_cast<sizeType>(writePos++)] =
+                recvRankGrouped[static_cast<sizeType>(readCursor[srcRank]++)];
         }
     }
 

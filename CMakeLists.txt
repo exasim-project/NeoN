@@ -4,18 +4,41 @@
 
 cmake_minimum_required(VERSION 3.22.0)
 
+# Re-run configuration when the version source of truth changes, otherwise the CMake project version
+# and generated neon.__version__ would go stale.
+set_property(
+  DIRECTORY
+  APPEND
+  PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/pyproject.toml")
+
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/pyproject.toml" NeoN_PACKAGE_VERSION_LINE
+     REGEX "^version = \"[^\"]+\"")
+if(NOT NeoN_PACKAGE_VERSION_LINE)
+  message(FATAL_ERROR "Could not read project.version from pyproject.toml")
+endif()
+string(REGEX REPLACE "^version = \"([^\"]+)\".*" "\\1" NeoN_PACKAGE_VERSION
+                     "${NeoN_PACKAGE_VERSION_LINE}")
+string(REGEX MATCH "^[0-9]+(\\.[0-9]+)*" NeoN_CMAKE_VERSION "${NeoN_PACKAGE_VERSION}")
+if(NOT NeoN_CMAKE_VERSION)
+  message(FATAL_ERROR "Package version '${NeoN_PACKAGE_VERSION}' has no numeric CMake version")
+endif()
+
 project(
   NeoN
   LANGUAGES C CXX
-  VERSION 0.1.0
+  VERSION ${NeoN_CMAKE_VERSION}
   DESCRIPTION "A framework for CFD software")
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)
+# Use relocatable RPATHs so installed binaries/libraries find their siblings regardless of the
+# prefix passed to `cmake --install --prefix`, which is not known at configure time.
 if(APPLE)
   set(CMAKE_MACOSX_RPATH 1)
+  set(CMAKE_INSTALL_RPATH "@loader_path/../lib;@loader_path")
+else()
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN")
 endif()
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Add the cmake folder so the find_package command finds custom packages
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -46,6 +69,17 @@ option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
 option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
+# Link _neon against a shared libnanobind instead of the default static one. Only needed when the
+# bindings must exchange nanobind types with another extension module built against the same
+# libnanobind (e.g. pybFoam, so create_adapter_run_time accepts a Foam::Time). Off by default: a
+# shared runtime has to be installed alongside _neon, and wheel repair tools (auditwheel, delocate,
+# delvewheel) vendor it under a mangled SONAME, which defeats the sharing it exists for.
+option(NeoN_NANOBIND_SHARED "Link the python bindings against a shared libnanobind" OFF)
+# Take nanobind from the active Python environment instead of fetching NeoN_NANOBIND_VERSION via
+# CPM. Useful together with NeoN_NANOBIND_SHARED: pybFoam builds against that same copy, so both
+# modules share one libnanobind ABI by construction rather than by a version pin.
+option(NeoN_EXTERNAL_NANOBIND "Use the nanobind from the active Python environment" OFF)
+option(NeoN_INSTALL_CMAKE_PACKAGE "Install CMake package config files and exported targets" ON)
 
 # Third party dependencies
 option(NeoN_WITH_KOKKOS "Enable using Kokkos as platform portability layer." ON)
@@ -116,11 +150,47 @@ if(DEFINED SKBUILD)
   set(CMAKE_SKIP_BUILD_RPATH FALSE)
   set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-  # Set RPATH so _neon.so can find libNeoN.so at ../lib/
-  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+  # Set RPATH so _neon.so can find libNeoN.so at ../lib/. dyld does not expand $ORIGIN, so macOS
+  # needs @loader_path to express the same layout; without it the installed extension resolves
+  # libNeoN only because delocate rewrites the wheel.
+  if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
+  else()
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+  endif()
 endif()
 
 include(cmake/CxxThirdParty.cmake)
+
+# Umpire (and its bundled camp) are built and installed by their own BLT-based CMake, which sets
+# each target's INSTALL_RPATH to ${CMAKE_INSTALL_PREFIX}/lib. Under scikit-build that prefix is the
+# wheel-staging temp directory, which no longer exists after install, so at import time libumpire.so
+# cannot find its direct dependency libcamp.so ("libcamp.so: cannot open shared object file"). A
+# per-target override is the only thing that beats BLT's own RPATH — the global CMAKE_INSTALL_RPATH
+# set above does not reach these CPM targets (it does reach NeoN's own libraries). The
+# loader-relative entries keep the install relocatable and reach camp whether it sits beside umpire
+# or is installed to the package-root lib/. On macOS BLT also points CMAKE_INSTALL_NAME_DIR at that
+# same stale prefix, so overriding the RPATH alone would change nothing: the install name has to
+# become @rpath-relative before any RPATH entry is consulted.
+if(DEFINED SKBUILD)
+  if(APPLE)
+    set(_neon_cpm_dep_rpath "@loader_path;@loader_path/../lib;@loader_path/../../lib")
+  else()
+    set(_neon_cpm_dep_rpath "$ORIGIN;$ORIGIN/../lib;$ORIGIN/../../lib")
+  endif()
+  # umpire_device only exists for CUDA/HIP builds with UMPIRE_ENABLE_DEVICE_ALLOCATOR, and
+  # INSTALL_NAME_DIR is ignored on non-Apple platforms, so both are safe to set unconditionally.
+  foreach(_neon_cpm_dep umpire umpire_device camp)
+    if(TARGET ${_neon_cpm_dep})
+      set_target_properties(
+        ${_neon_cpm_dep}
+        PROPERTIES INSTALL_RPATH "${_neon_cpm_dep_rpath}"
+                   INSTALL_RPATH_USE_LINK_PATH FALSE
+                   INSTALL_NAME_DIR "@rpath")
+    endif()
+  endforeach()
+endif()
+
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/CompilerWarnings.cmake)
@@ -238,90 +308,93 @@ endif()
 
 include(cmake/banner.cmake)
 
-install(
-  TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
-  EXPORT NeoNTargets
-  INCLUDES
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-install(
-  EXPORT NeoNTargets
-  FILE NeoNTargets.cmake
-  NAMESPACE NeoN::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
-
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
-
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
-
-# install internal ginkgo version
-if(ginkgo_POPULATED)
+if(NeoN_INSTALL_CMAKE_PACKAGE)
   install(
-    TARGETS ginkgo
-    EXPORT GinkgoTargets
+    TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
+    EXPORT NeoNTargets
     INCLUDES
-    DESTINATION include)
-  install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
-endif()
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-if(nlohmann_json_POPULATED)
   install(
-    TARGETS nlohmann_json
-    EXPORT nlohmannTargets
-    INCLUDES
-    DESTINATION include)
-  install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
-endif()
+    EXPORT NeoNTargets
+    FILE NeoNTargets.cmake
+    NAMESPACE NeoN::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 
-# umpire installs its own targets when fetched via CPM
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
 
-# install internal cpptrace version
-if(cpptrace_POPULATED)
-  install(
-    TARGETS cpptrace
-    EXPORT CpptraceTargets
-    INCLUDES
-    DESTINATION include)
-  install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
-endif()
+  include(CMakePackageConfigHelpers)
+  configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 
-# install internal spdlog version TODO why does spdlog_POPULATED not work?
-if(spdlog_ADDED)
-  install(
-    TARGETS spdlog_header_only
-    EXPORT SpdlogTargets
-    INCLUDES
-    DESTINATION include)
-  if(fmt_ADDED)
-    install(TARGETS fmt-header-only EXPORT SpdlogTargets)
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+          DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+  # Ginkgo installs its own targets (including every enabled backend lib) and its own
+  # lib/cmake/Ginkgo/GinkgoTargets.cmake when fetched via CPM, so it must NOT be re-exported here: a
+  # second export of the same target to the same path is a hard "exported multiple times" error in
+  # install(EXPORT NeoNTargets). Same reasoning as umpire and cpptrace below.
+
+  # install internal kokkos version — when Kokkos is built as a shared library
+  # (BUILD_SHARED_LIBS=ON, as the python-bindings preset uses), libNeoN.so and any consumer dlopens
+  # libkokkoscore.so / libkokkoscontainers.so at runtime. Without this, the wheel ships libNeoN.so
+  # but not its kokkos runtime deps.
+  if(kokkos_POPULATED)
+    set(_kokkos_install_tgts)
+    foreach(_kokkos_tgt kokkoscore kokkoscontainers)
+      if(TARGET ${_kokkos_tgt})
+        get_target_property(_kokkos_type ${_kokkos_tgt} TYPE)
+        if(_kokkos_type STREQUAL "SHARED_LIBRARY")
+          list(APPEND _kokkos_install_tgts ${_kokkos_tgt})
+        endif()
+      endif()
+    endforeach()
+    if(_kokkos_install_tgts)
+      install(TARGETS ${_kokkos_install_tgts})
+    endif()
   endif()
-  install(
-    EXPORT SpdlogTargets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spdlog
-    NAMESPACE spdlog::)
-endif()
 
-if(fmt_ADDED)
-  install(TARGETS fmt-header-only EXPORT NeoNTargets)
-  install(DIRECTORY "${fmt_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
-endif()
+  # nlohmann_json likewise installs itself into share/cmake/nlohmann_json when fetched via CPM.
 
-# install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
-# sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
-# SundialsTargets NAMESPACE SUNDIALS::) endif()
+  # umpire installs its own targets when fetched via CPM
 
-if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
-  export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
-else()
-  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
+  # cpptrace installs its own targets when fetched via CPM. It cannot be added to a NeoN-owned
+  # export set anyway: the importable name cpptrace::cpptrace is an ALIAS, and the underlying target
+  # is called cpptrace-lib.
+
+  # install internal spdlog version
+  if(spdlog_ADDED)
+    install(
+      TARGETS spdlog_header_only
+      EXPORT SpdlogTargets
+      INCLUDES
+      DESTINATION include)
+    if(fmt_ADDED)
+      install(TARGETS fmt-header-only EXPORT SpdlogTargets)
+    endif()
+    install(
+      EXPORT SpdlogTargets
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spdlog
+      NAMESPACE spdlog::)
+  endif()
+
+  if(fmt_ADDED)
+    install(TARGETS fmt-header-only EXPORT NeoNTargets)
+    install(DIRECTORY "${fmt_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+  endif()
+
+  # install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
+  # sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
+  # SundialsTargets NAMESPACE SUNDIALS::) endif()
+
+  if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
+    export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
+  else()
+    message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
+  endif()
 endif()

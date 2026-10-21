@@ -11,6 +11,7 @@
 #include <petscmat.h>
 #include <petscksp.h>
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -87,7 +88,7 @@ public:
 
         NeoN::la::petscSolverContext::petscSolverContext<scalar> petsctx(exec_);
 
-        std::size_t nrows = sys.rhs().size();
+        sizeType nrows = sys.rhs().size();
 
         petsctx.initialize(sys);
 

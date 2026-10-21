@@ -277,7 +277,7 @@ SpatialOperator<ValueType> operator*(const Coeff& coeff, SpatialOperator<ValueTy
 }
 
 // template<typename CoeffFunction>
-//     requires std::invocable<CoeffFunction&, size_t>
+//     requires std::invocable<CoeffFunction&, sizeType>
 // SpatialOperator operator*([[maybe_unused]] CoeffFunction coeffFunc, const SpatialOperator& lhs)
 // {
 //     // TODO implement

@@ -21,6 +21,7 @@
 #include <unordered_map>
 
 #include "error.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
@@ -346,7 +347,7 @@ public:
 
     virtual ~RuntimeSelectionFactory() = default;
 
-    static std::size_t size() { return table().size(); }
+    static sizeType size() { return table().size(); }
 
     /**
      * @brief Returns the lookup table for runtime selection.
