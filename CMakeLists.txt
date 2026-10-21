@@ -92,6 +92,7 @@ option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
 option(NeoN_WITH_JULIA "Use Julia for Matrix Assembly" ON)
+option(NeoN_JULIA_ASSEMBLY "Route Expression::assemble through JuNe (needs NeoN_WITH_JULIA)" OFF)
 option(NeoN_WITH_MPI "Enable MPI" ON)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
