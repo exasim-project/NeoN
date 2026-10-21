@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: MIT
 
 #include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/variant.h>
 #include <nanobind/stl/vector.h>
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
 #include "bindings.hpp"
 
@@ -18,14 +21,71 @@ using namespace nb::literals;
 namespace NeoN::bindings
 {
 
-template<typename ValueType>
+template<typename ValueType, typename IndexType>
+void declare_matrix(nb::module_& m, const std::string& name)
+{
+    using Mat = la::Matrix<ValueType, la::CsrSparsityPattern<IndexType>>;
+
+    nb::class_<Mat>(m, name.c_str())
+        .def("exec", &Mat::exec, "Get the executor this matrix's data lives on")
+        .def("n_rows", &Mat::nRows, "Number of rows")
+        .def("n_non_zeros", &Mat::nNonZeros, "Number of non-zero values")
+        .def(
+            "values",
+            static_cast<Vector<ValueType>& (Mat::*)()>(&Mat::values),
+            nb::rv_policy::reference_internal,
+            "Non-zero values of the CSR matrix (zero-copy reference)"
+        )
+        .def(
+            "col_idxs",
+            [](Mat& self)
+            {
+                const auto& v = self.colIdxs();
+                const size_t size = static_cast<size_t>(v.size());
+                return nb::ndarray<const IndexType, nb::numpy, nb::c_contig>(v.data(), 1, &size);
+            },
+            nb::rv_policy::reference_internal,
+            "Column indices of the CSR matrix (read-only, zero-copy view). The sparsity "
+            "pattern is shared by every system assembled on the same mesh, so this is not "
+            "writable -- mutating it would corrupt every other system sharing it."
+        )
+        .def(
+            "row_offs",
+            [](Mat& self)
+            {
+                const auto& v = self.rowOffs();
+                const size_t size = static_cast<size_t>(v.size());
+                return nb::ndarray<const IndexType, nb::numpy, nb::c_contig>(v.data(), 1, &size);
+            },
+            nb::rv_policy::reference_internal,
+            "Row offsets of the CSR matrix (read-only, zero-copy view). The sparsity "
+            "pattern is shared by every system assembled on the same mesh, so this is not "
+            "writable -- mutating it would corrupt every other system sharing it."
+        );
+}
+
+template<typename MatrixValueType, typename RHSValueType = MatrixValueType>
 void declare_linear_system(nb::module_& m, const std::string& suffix)
 {
-    using LS = la::LinearSystem<ValueType>;
+    using LS = la::LinearSystem<MatrixValueType, RHSValueType>;
+    // SystemMatrixType isn't a re-exported nested type on LS; it defaults to this.
+    using Mat = la::CSRMatrix<MatrixValueType, localIdx>;
 
     nb::class_<LS>(m, ("LinearSystem" + suffix).c_str())
         .def("reset", &LS::reset)
-        .def("copy_to_host", &LS::copyToHost);
+        .def("copy_to_host", &LS::copyToHost)
+        .def(
+            "matrix",
+            static_cast<Mat& (LS::*)()>(&LS::matrix),
+            nb::rv_policy::reference_internal,
+            "Get the assembled CSR system matrix"
+        )
+        .def(
+            "rhs",
+            static_cast<Vector<RHSValueType>& (LS::*)()>(&LS::rhs),
+            nb::rv_policy::reference_internal,
+            "Get the rhs vector"
+        );
 }
 
 void registerLinearAlgebra(nb::module_& m)
@@ -46,9 +106,15 @@ void registerLinearAlgebra(nb::module_& m)
         .def_rw("final_residual", &la::SolverStatsEntry::finalResNorm)
         .def_rw("time", &la::SolverStatsEntry::solveTime);
 
+    declare_matrix<scalar, localIdx>(m, "CSRMatrix");
+    // LinearSystem<Vec3>::matrix() returns CSRMatrix<Vec3, localIdx> -- without this,
+    // ls.matrix() on a Vec3 system has no registered Python type to wrap it in and
+    // raises TypeError.
+    declare_matrix<Vec3, localIdx>(m, "CSRMatrixVector");
 
     declare_linear_system<scalar>(m, "Scalar");
     declare_linear_system<Vec3>(m, "Vector");
+    declare_linear_system<scalar, Vec3>(m, "ScalarMatrixVectorRhs");
 }
 
 } // namespace NeoN::bindings

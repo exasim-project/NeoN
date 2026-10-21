@@ -14,6 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         ref: ${{env.BRANCH_NAME}}
     - name: Install dependencies
       run: |
@@ -26,7 +27,7 @@ jobs:
       id: pre-commit
       run: pre-commit run --all --color always --verbose
     - name: Commit pre-commit fixes
-      if: ${{contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure() && steps.pre-commit.conclusion == 'failure'}}
+      if: ${{!github.event.pull_request.head.repo.fork && contains(github.event.pull_request.labels.*.name, 'auto-fix') && failure() && steps.pre-commit.conclusion == 'failure'}}
       run: |
          git config user.name github-actions
          git config user.email github-actions@github.com
@@ -94,6 +95,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         ref: ${{env.BRANCH_NAME}}
 
     - name: Add clang repo
@@ -153,6 +155,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         ref: ${{env.BRANCH_NAME}}
     - uses: actions/setup-python@v5
       with:
