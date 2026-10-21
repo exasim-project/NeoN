@@ -86,7 +86,7 @@ public:
             }
             else
             {
-                std::cout << "unknown type" << std::endl;
+                NF_THROW("Array::juliaPtr: no Julia array type for this value type");
             }
         }
     }

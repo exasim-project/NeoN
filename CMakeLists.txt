@@ -91,7 +91,7 @@ option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
-option(NeoN_WITH_JULIA "Use Julia for Matrix Assembly" ON)
+option(NeoN_WITH_JULIA "Use Julia for Matrix Assembly (see cmake/FindJulia.cmake, JULIA_DIR)" OFF)
 option(NeoN_JULIA_ASSEMBLY "Route Expression::assemble through JuNe (needs NeoN_WITH_JULIA)" OFF)
 option(NeoN_WITH_MPI "Enable MPI" ON)
 
@@ -335,6 +335,10 @@ if(NeoN_INSTALL_CMAKE_PACKAGE)
 
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+  if(NeoN_WITH_JULIA)
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindJulia.cmake"
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+  endif()
 
   # Ginkgo installs its own targets (including every enabled backend lib) and its own
   # lib/cmake/Ginkgo/GinkgoTargets.cmake when fetched via CPM, so it must NOT be re-exported here: a

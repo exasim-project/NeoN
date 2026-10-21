@@ -31,26 +31,6 @@ function(NeoN_unit_test TEST)
   add_executable(${NeoN_COMMAND} "${TEST}.cpp")
   install(TARGETS ${NeoN_COMMAND})
 
-  if(NeoN_WITH_JULIA)
-    execute_process(
-      COMMAND echo "Building test for julia"
-    )
-	  #set(JULIA_DIR "/storage/home/lupeterm/.julia/juliaup/julia-1.11.9+0.x64.linux.gnu")
-	  execute_process(
-	  	COMMAND julialauncher +1.11 -e "print(rsplit(Sys.BINDIR, '/', limit=2)[1])"
-	  	OUTPUT_VARIABLE JULIA_DIR
-	  	OUTPUT_STRIP_TRAILING_WHITESPACE
-	  )
-    execute_process(
-      COMMAND echo "JULIA_DIR: --------> '${JULIA_DIR}'"
-    )
-    target_include_directories(${NeoN_COMMAND} PRIVATE "${JULIA_DIR}/include/julia")
-    target_link_libraries(${NeoN_COMMAND} PRIVATE
-        "${JULIA_DIR}/lib/libjulia.so"
-    )
-    target_link_options(${NeoN_COMMAND} PRIVATE "-Wl,-rpath,${JULIA_DIR}/lib")
-  endif()
-
   if(NeoN_WITH_PETSC)
     target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES})
     target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES}

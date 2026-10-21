@@ -87,23 +87,9 @@ if(NeoN_JULIA_ASSEMBLY)
   target_compile_definitions(NeoN_public_api INTERFACE NeoN_JULIA_ASSEMBLY=1)
 endif()
 if(NeoN_WITH_JULIA)
-  #set(JULIA_DIR "/storage/home/lupeterm/.julia/juliaup/julia-1.11.9+0.x64.linux.gnu")
-  execute_process(
-     COMMAND julialauncher +1.11 -e "print(rsplit(Sys.BINDIR, '/', limit=2)[1])"
-     OUTPUT_VARIABLE JULIA_DIR
-     OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  execute_process(
-    COMMAND echo "JULIA_DIR: --------> '${JULIA_DIR}'"
-    )
-    target_include_directories(NeoN_public_api INTERFACE "${JULIA_DIR}/include/julia")
-    target_link_libraries(NeoN_public_api INTERFACE
-    "${JULIA_DIR}/lib/libjulia.so"
-    )
-    execute_process(
-      COMMAND echo "IN SRC:: JULIA_DIR: --------> '${JULIA_DIR}'"
-    )
-  target_link_options(NeoN_public_api INTERFACE "-Wl,-rpath,${JULIA_DIR}/lib")
+  find_package(Julia 1.11 REQUIRED)
+  message(STATUS "Julia ${Julia_VERSION} at ${Julia_PREFIX}")
+  target_link_libraries(NeoN_public_api INTERFACE Julia::Julia)
 endif()
 
 if(${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo)

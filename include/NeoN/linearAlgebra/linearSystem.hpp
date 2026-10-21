@@ -151,11 +151,6 @@ public:
     }
 
     ~LinearSystem() = default;
-#ifdef NeoN_WITH_JULIA
-
-    [[nodiscard]] jl_array_t* juliaPtr() { return matrix_.juliaPtr(); }
-    [[nodiscard]] jl_array_t* RhsjuliaPtr() { return rhs_.juliaPtr(); }
-#endif
 
     [[nodiscard]] SystemMatrixType& matrix() { return matrix_; }
 
@@ -178,10 +173,10 @@ public:
     [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
 
     /**
-     * @brief Compare the system matrix against another linear system's matrix.
+     * @brief Compare the system matrix and rhs against another linear system's.
      *
-     * Matrix dimensions and sparsity indices must match exactly. Stored matrix values are compared
-     * with an absolute tolerance.
+     * Matrix dimensions and sparsity indices must match exactly. Stored matrix values and rhs
+     * entries are compared component-wise with an absolute tolerance.
      */
     template<typename OtherRHSValueType, typename OtherBoundaryMatrixType>
     [[nodiscard]] bool matrixEquals(
@@ -193,6 +188,10 @@ public:
         scalar tolerance = static_cast<scalar>(1e-12)
     ) const
     {
+        static_assert(
+            std::is_same_v<OtherRHSValueType, RHSValueType>,
+            "matrixEquals compares the rhs, so both systems need the same rhs type"
+        );
         const auto lhsDim = matrix_.sparsity()->dimension();
         const auto rhsDim = other.matrix().sparsity()->dimension();
         if (lhsDim.rows != rhsDim.rows || lhsDim.cols != rhsDim.cols)
@@ -210,7 +209,11 @@ public:
             return false;
         }
 
-        return matrixValuesEqual(matrix_.values(), other.matrix().values(), tolerance);
+        // evaluate both so both error reports are printed
+        const bool matrixEqual =
+            valuesEqual("matrix", matrix_.values(), other.matrix().values(), tolerance);
+        const bool rhsEqual = valuesEqual("rhs", rhs_, other.rhs(), tolerance);
+        return matrixEqual && rhsEqual;
     }
 
     // Optional per-internal-face deferred flux correction — the OpenFOAM
@@ -364,9 +367,11 @@ private:
         return true;
     }
 
-    static bool matrixValuesEqual(
-        const Vector<MatrixValueType>& lhs,
-        const Vector<MatrixValueType>& rhs,
+    template<typename ValueType>
+    static bool valuesEqual(
+        const std::string& name,
+        const Vector<ValueType>& lhs,
+        const Vector<ValueType>& rhs,
         scalar tolerance
     )
     {
@@ -385,7 +390,18 @@ private:
         localIdx maxindex = 0;
         for (localIdx i = 0; i < lhsView.size(); ++i)
         {
-            const auto cur = abs(lhsView[i][0] - rhsView[i][0]);
+            scalar cur = 0.0;
+            if constexpr (std::is_same_v<ValueType, scalar>)
+            {
+                cur = std::abs(lhsView[i] - rhsView[i]);
+            }
+            else
+            {
+                for (int c = 0; c < 3; ++c)
+                {
+                    cur = std::max(cur, std::abs(lhsView[i][c] - rhsView[i][c]));
+                }
+            }
             
             if (cur > max)
             {
@@ -401,11 +417,11 @@ private:
                 // return false;
             }
         }
-        std::cout << "highest error: " << max << " at " << maxindex << std::endl;
-        std::cout << "neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex] <<std::endl;
+        std::cout << name << " highest error: " << max << " at " << maxindex << std::endl;
+        std::cout << name << " neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex] <<std::endl;
 
-        std::cout << "total error: " << err << std::endl;
-        std::cout << "total error per nnz: " << err / lhsView.size() << std::endl;
+        std::cout << name << " total error: " << err << std::endl;
+        std::cout << name << " total error per entry: " << err / lhsView.size() << std::endl;
         return ret;
     }
 

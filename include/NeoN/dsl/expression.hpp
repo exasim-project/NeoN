@@ -455,23 +455,22 @@ public:
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
 
-        // FIXME REMOVE AFTER THESIS
         // Post-assembly functors apply on the same-type form via operator(); the segregated
         // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
-        // if constexpr (std::is_same_v<AssemblyType, ValueType>)
-        // {
-        //     for (const auto* p : ps)
-        //     {
-        //         (*p)(ls);
-        //     }
-        // }
-        // else if constexpr (std::is_same_v<AssemblyType, scalar>)
-        // {
-        //     for (const auto* p : ps)
-        //     {
-        //         p->applyScalarMatrix(ls);
-        //     }
-        // }
+        if constexpr (std::is_same_v<AssemblyType, ValueType>)
+        {
+            for (const auto* p : ps)
+            {
+                (*p)(ls);
+            }
+        }
+        else if constexpr (std::is_same_v<AssemblyType, scalar>)
+        {
+            for (const auto* p : ps)
+            {
+                p->applyScalarMatrix(ls);
+            }
+        }
     }
 
     void addOperator(const SpatialOperator<ValueType>& oper) { spatialOperators_.push_back(oper); }
