@@ -4,6 +4,9 @@
 
 #pragma once
 
+// included by the generated umbrella header NeoN/NeoN.hpp regardless of the build options
+#ifdef NeoN_WITH_JULIA
+
 #include <string>
 #include <variant>
 
@@ -314,3 +317,5 @@ void warmup(const Expression<ValueType, IndexType>& expr)
 } // namespace june
 
 } // namespace NeoN::dsl
+
+#endif // NeoN_WITH_JULIA
