@@ -23,5 +23,5 @@ var searchData=
   ['meshparams_20',['MeshParams',['../structNeoN_1_1detail_1_1MeshParams.html',1,'NeoN::detail']]],
   ['message_21',['message',['../classNeoN_1_1Logging_1_1LogEvent.html#a7bd5e6f0b9b944ed00c1c29723124185',1,'NeoN::Logging::LogEvent']]],
   ['mpi_5flabel_5ft_22',['mpi_label_t',['../namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373',1,'NeoN']]],
-  ['mul_23',['mul',['../namespaceNeoN.html#a4145066f9fa2b70a67e58b7c55e61311',1,'NeoN::mul(Vector&lt; ValueType &gt; &amp;vect, const std::type_identity_t&lt; ValueType &gt; &amp;value)'],['../namespaceNeoN.html#ad40cca933186327fe83822e3911753ac',1,'NeoN::mul(Vector&lt; ValueType &gt; &amp;vect1, const Vector&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;vect2)']]]
+  ['mul_23',['mul',['../namespaceNeoN.html#a4c2ec1eca1c5dc5f7756d47e9baad38c',1,'NeoN::mul(Vector&lt; ValueType &gt; &amp;vect, const std::type_identity_t&lt; ValueType &gt; &amp;value)'],['../namespaceNeoN.html#a6ab1b2ea6d003b9225b4975421295b70',1,'NeoN::mul(Vector&lt; ValueType &gt; &amp;vect1, const Vector&lt; std::type_identity_t&lt; ValueType &gt; &gt; &amp;vect2)']]]
 ];

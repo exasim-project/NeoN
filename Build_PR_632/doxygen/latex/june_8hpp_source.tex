@@ -57,10 +57,10 @@
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (op.getType()\ !=\ Operator::Type::Implicit)\ \textcolor{keywordflow}{continue};}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ =\ op.getName();}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ jlOp\ =\ op.juliaOP();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ JuNe\ only\ defines\ the\ upwind,\ linearUpwind\ and\ linear\ div\ schemes}}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ supportedDiv\ =\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ ==\ \textcolor{stringliteral}{"{}DivOperator"{}}}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (jlOp.starts\_with(\textcolor{stringliteral}{"{}Div\{Float64,\ upwind\{"{}})}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ jlOp.starts\_with(\textcolor{stringliteral}{"{}Div\{Float64,\ linearUpwind\{"{}})}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ JuNe\ only\ defines\ the\ upwind\ and\ linear\ div\ schemes;\ its\ linearUpwind\ assembles\ the}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ upwind\ implicit\ part\ without\ NeoN's\ explicit\ gradient\ correction\ of\ the\ rhs}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ supportedDiv\ =\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ ==\ \textcolor{stringliteral}{"{}DivOperator"{}}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (jlOp.starts\_with(\textcolor{stringliteral}{"{}Div\{Float64,\ upwind\{"{}})}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ jlOp.starts\_with(\textcolor{stringliteral}{"{}Div\{Float64,\ linear\{"{}}));}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{stringliteral}{"{}LaplacianOperator"{}}\ \&\&\ !supportedDiv)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ hasSpatial\ =\ \textcolor{keyword}{true};}
@@ -104,9 +104,9 @@
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00100}00100\ \{}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{keywordflow}{if}\ (jl\_exception\_occurred())}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00102}00102\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ p\ =\ jl\_string\_ptr(}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ jl\_eval\_string(\textcolor{stringliteral}{"{}sprint(showerror,\ ccall(:jl\_exception\_occurred,\ Any,\ ()))"{}})}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ p\ =}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ jl\_string\_ptr(jl\_eval\_string(\textcolor{stringliteral}{"{}sprint(showerror,\ ccall(:jl\_exception\_occurred,\ Any,\ ()))"{}}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ ));}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(std::string(\textcolor{stringliteral}{"{}JuNe\ assembly\ failed:\ "{}})\ +\ p);}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00107}00107\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00108}00108\ \}}
@@ -143,41 +143,41 @@
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00139}00139\ \{}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00140}00140\ \ \ \ \ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}};}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00141}00141\ }
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00142}00142\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ divPhi\ =\ detail::findConfig<fvcc::VolumeField<ValueType>>(expr,\ \textcolor{stringliteral}{"{}DivOperator"{}},\ \textcolor{stringliteral}{"{}field"{}});}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00143}00143\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ lapPhi\ =}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ detail::findConfig<fvcc::VolumeField<ValueType>>(expr,\ \textcolor{stringliteral}{"{}LaplacianOperator"{}},\ \textcolor{stringliteral}{"{}field"{}});}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00145}00145\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(divPhi\ ||\ lapPhi,\ \textcolor{stringliteral}{"{}JuNe\ assembly\ needs\ a\ div\ or\ laplacian\ operator"{}});}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00146}00146\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ phi\ =\ divPhi\ ?\ *divPhi\ :\ *lapPhi;}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mesh\ =\ phi.mesh();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00148}00148\ }
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00149}00149\ \ \ \ \ \textcolor{comment}{//\ JuNe\ skips\ the\ inputs\ of\ operators\ that\ are\ not\ in\ the\ op\ string,\ so\ absent\ operators}}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00150}00150\ \ \ \ \ \textcolor{comment}{//\ get\ empty\ arrays}}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00151}00151\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ empty\ =\ Vector<scalar>(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}}(),\ 0);}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ emptyOld\ =\ Vector<ValueType>(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}}(),\ 0);}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00153}00153\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ faceFlux\ =}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ detail::findConfig<fvcc::SurfaceField<scalar>>(expr,\ \textcolor{stringliteral}{"{}DivOperator"{}},\ \textcolor{stringliteral}{"{}flux"{}});}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00155}00155\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ gamma\ =}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ detail::findConfig<fvcc::SurfaceField<scalar>>(expr,\ \textcolor{stringliteral}{"{}LaplacianOperator"{}},\ \textcolor{stringliteral}{"{}gamma"{}});}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00157}00157\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ fusedOPString\ =\ opString(expr);}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00158}00158\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ hasDdt\ =\ fusedOPString.starts\_with(\textcolor{stringliteral}{"{}Ddt\{"{}});}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00159}00159\ }
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ifaceFluxV\ =\ faceFlux\ ?\ faceFlux-\/>internalVector().juliaPtr()\ :\ empty.juliaPtr();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00161}00161\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bfaceFluxV\ =}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ faceFlux\ ?\ faceFlux-\/>boundaryData().value().juliaPtr()\ :\ empty.juliaPtr();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00163}00163\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iGamma\ =\ gamma\ ?\ gamma-\/>internalVector().juliaPtr()\ :\ empty.juliaPtr();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bGamma\ =\ gamma\ ?\ gamma-\/>boundaryData().value().juliaPtr()\ :\ empty.juliaPtr();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00165}00165\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ oldVector\ =}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ hasDdt\ ?\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{fvcc::oldTime}}(phi).internalVector().juliaPtr()\ :\ emptyOld.juliaPtr();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00167}00167\ }
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.nInternalFaces();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nTotalFaces\ =\ mesh.nTotalFaces();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00170}00170\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nCells\ =\ mesh.nCells();}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00171}00171\ \ \ \ \ \textcolor{keywordtype}{bool}\ useGPU\ =\ std::holds\_alternative<GPUExecutor>(mesh.exec());}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00172}00172\ }
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00173}00173\ \ \ \ \ \textcolor{comment}{//\ the\ cached\ geometry-\/scheme\ coefficients:\ the\ mesh\ centres\ they\ are\ computed\ from\ are}}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00174}00174\ \ \ \ \ \textcolor{comment}{//\ released\ after\ the\ first\ geometry\ read}}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00175}00175\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ nonOrthDeltaCoeffs\ =}
-\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ fvcc::GeometryScheme::readOrCreate(mesh)-\/>nonOrthDeltaCoeffs();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00142}00142\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ divPhi\ =}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ detail::findConfig<fvcc::VolumeField<ValueType>>(expr,\ \textcolor{stringliteral}{"{}DivOperator"{}},\ \textcolor{stringliteral}{"{}field"{}});}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00144}00144\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ lapPhi\ =}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ detail::findConfig<fvcc::VolumeField<ValueType>>(expr,\ \textcolor{stringliteral}{"{}LaplacianOperator"{}},\ \textcolor{stringliteral}{"{}field"{}});}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00146}00146\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(divPhi\ ||\ lapPhi,\ \textcolor{stringliteral}{"{}JuNe\ assembly\ needs\ a\ div\ or\ laplacian\ operator"{}});}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ phi\ =\ divPhi\ ?\ *divPhi\ :\ *lapPhi;}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00148}00148\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mesh\ =\ phi.mesh();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00149}00149\ }
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00150}00150\ \ \ \ \ \textcolor{comment}{//\ JuNe\ skips\ the\ inputs\ of\ operators\ that\ are\ not\ in\ the\ op\ string,\ so\ absent\ operators}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00151}00151\ \ \ \ \ \textcolor{comment}{//\ get\ empty\ arrays}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ empty\ =\ Vector<scalar>(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}}(),\ 0);}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00153}00153\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ emptyOld\ =\ Vector<ValueType>(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}}(),\ 0);}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00154}00154\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ faceFlux\ =}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ detail::findConfig<fvcc::SurfaceField<scalar>>(expr,\ \textcolor{stringliteral}{"{}DivOperator"{}},\ \textcolor{stringliteral}{"{}flux"{}});}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00156}00156\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ gamma\ =}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ detail::findConfig<fvcc::SurfaceField<scalar>>(expr,\ \textcolor{stringliteral}{"{}LaplacianOperator"{}},\ \textcolor{stringliteral}{"{}gamma"{}});}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00158}00158\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ fusedOPString\ =\ opString(expr);}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00159}00159\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ hasDdt\ =\ fusedOPString.starts\_with(\textcolor{stringliteral}{"{}Ddt\{"{}});}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00160}00160\ }
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00161}00161\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ifaceFluxV\ =\ faceFlux\ ?\ faceFlux-\/>internalVector().juliaPtr()\ :\ empty.juliaPtr();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00162}00162\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bfaceFluxV\ =}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ faceFlux\ ?\ faceFlux-\/>boundaryData().value().juliaPtr()\ :\ empty.juliaPtr();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iGamma\ =\ gamma\ ?\ gamma-\/>internalVector().juliaPtr()\ :\ empty.juliaPtr();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00165}00165\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bGamma\ =\ gamma\ ?\ gamma-\/>boundaryData().value().juliaPtr()\ :\ empty.juliaPtr();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00166}00166\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ oldVector\ =}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ hasDdt\ ?\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_af177c363435f0b7c6f48fb197a62df1c}{fvcc::oldTime}}(phi).internalVector().juliaPtr()\ :\ emptyOld.juliaPtr();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nInternalFaces\ =\ mesh.nInternalFaces();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00170}00170\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nTotalFaces\ =\ mesh.nTotalFaces();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00171}00171\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nCells\ =\ mesh.nCells();}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00172}00172\ \ \ \ \ \textcolor{keywordtype}{bool}\ useGPU\ =\ std::holds\_alternative<GPUExecutor>(mesh.exec());}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00174}00174\ \ \ \ \ \textcolor{comment}{//\ the\ cached\ geometry-\/scheme\ coefficients:\ the\ mesh\ centres\ they\ are\ computed\ from\ are}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00175}00175\ \ \ \ \ \textcolor{comment}{//\ released\ after\ the\ first\ geometry\ read}}
+\DoxyCodeLine{\Hypertarget{june_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ nonOrthDeltaCoeffs\ =\ fvcc::GeometryScheme::readOrCreate(mesh)-\/>nonOrthDeltaCoeffs();}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00177}00177\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ideltaCoeffs\ =\ nonOrthDeltaCoeffs.internalVector().juliaPtr();}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00178}00178\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bdeltaCoeffs\ =\ nonOrthDeltaCoeffs.boundaryData().value().juliaPtr();}
 \DoxyCodeLine{\Hypertarget{june_8hpp_source_l00179}00179\ }
