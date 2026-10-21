@@ -21,7 +21,7 @@ class Vector;
 
 template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
-    requires requires(ValueType a, scalar b) { a * b; };
+    requires requires(ValueType a, scalar b) { a* b; };
 
 namespace detail
 {
@@ -47,11 +47,11 @@ void sub(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 
 template<typename ValueType>
 void mul(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
-    requires requires(ValueType a, ValueType b) { a * b; };
+    requires requires(ValueType a, ValueType b) { a* b; };
 
 template<typename ValueType>
 void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
-    requires requires(ValueType a, ValueType b) { a * b; };
+    requires requires(ValueType a, ValueType b) { a* b; };
 
 /**
  * @brief Given a Vector of Vec3 this function extracts a single component

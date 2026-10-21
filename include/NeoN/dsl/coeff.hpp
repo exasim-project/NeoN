@@ -48,6 +48,7 @@ public:
 
 
     Coeff& operator*=(const Coeff& rhs);
+
 private:
 
     scalar coeff_;

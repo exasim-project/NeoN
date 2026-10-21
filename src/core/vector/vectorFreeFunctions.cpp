@@ -19,18 +19,21 @@ namespace NeoN
 
 template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
-    requires requires(ValueType a, scalar b) { a * b; }
+    requires requires(ValueType a, scalar b) { a* b; }
 {
     if constexpr (std::is_same_v<ValueType, Vec3> || std::is_same_v<ValueType, Tensor> || std::is_same_v<ValueType, SymmTensor>)
     {
         auto viewA = vect.view();
-        parallelFor(vect, NEON_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; });
+        parallelFor(
+            vect, NEON_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; }
+        );
     }
     else
     {
         auto viewA = vect.view();
         parallelFor(
-            vect, NEON_LAMBDA(const localIdx i)->ValueType {
+            vect,
+            NEON_LAMBDA(const localIdx i)->ValueType {
                 return viewA[i] * static_cast<ValueType>(value);
             }
         );
@@ -47,7 +50,9 @@ void fieldBinaryOp(
 )
 {
     auto view = vect.view();
-    parallelFor(vect, NEON_LAMBDA(const localIdx i) { return op(view[i], value); });
+    parallelFor(
+        vect, NEON_LAMBDA(const localIdx i) { return op(view[i], value); }
+    );
 }
 
 template<typename ValueType, typename BinaryOp>
@@ -58,7 +63,9 @@ void fieldBinaryOp(
     NeoN_ASSERT_EQUAL_LENGTH(vect1, vect2);
     auto viewA = vect1.view();
     auto viewB = vect2.view();
-    parallelFor(vect1, NEON_LAMBDA(const localIdx i) { return op(viewA[i], viewB[i]); });
+    parallelFor(
+        vect1, NEON_LAMBDA(const localIdx i) { return op(viewA[i], viewB[i]); }
+    );
 }
 
 }
@@ -66,7 +73,9 @@ void fieldBinaryOp(
 template<typename ValueType>
 void add(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
 {
-    detail::fieldBinaryOp(vect, value, NEON_LAMBDA(ValueType va, ValueType vb) { return va + vb; });
+    detail::fieldBinaryOp(
+        vect, value, NEON_LAMBDA(ValueType va, ValueType vb) { return va + vb; }
+    );
 }
 
 template<typename ValueType>
@@ -80,7 +89,9 @@ void add(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 template<typename ValueType>
 void sub(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
 {
-    detail::fieldBinaryOp(vect, value, NEON_LAMBDA(ValueType va, ValueType vb) { return va - vb; });
+    detail::fieldBinaryOp(
+        vect, value, NEON_LAMBDA(ValueType va, ValueType vb) { return va - vb; }
+    );
 }
 
 template<typename ValueType>
@@ -93,14 +104,16 @@ void sub(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>
 
 template<typename ValueType>
 void mul(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
-    requires requires(ValueType a, ValueType b) { a * b; }
+    requires requires(ValueType a, ValueType b) { a* b; }
 {
-    detail::fieldBinaryOp(vect, value, NEON_LAMBDA(ValueType va, ValueType vb) { return va * vb; });
+    detail::fieldBinaryOp(
+        vect, value, NEON_LAMBDA(ValueType va, ValueType vb) { return va * vb; }
+    );
 }
 
 template<typename ValueType>
 void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
-    requires requires(ValueType a, ValueType b) { a * b; }
+    requires requires(ValueType a, ValueType b) { a* b; }
 {
     detail::fieldBinaryOp(
         vect1, vect2, NEON_LAMBDA(ValueType va, ValueType vb) { return va * vb; }

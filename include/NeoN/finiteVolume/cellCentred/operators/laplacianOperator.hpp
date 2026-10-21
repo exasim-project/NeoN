@@ -143,7 +143,7 @@ public:
         : dsl::OperatorMixin<VolumeField<FieldValueType>>(
             phi.exec(), dsl::Coeff(1.0), phi, termType
         ),
-            gamma_(gamma), sameTypeStrategy_(nullptr), scalarMtxStrategy_(nullptr) {};
+          gamma_(gamma), sameTypeStrategy_(nullptr), scalarMtxStrategy_(nullptr) {};
 
 
     void explicitOperation(Vector<FieldValueType>& source) const

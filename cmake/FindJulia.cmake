@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Unlicense
 
 #[=======================================================================[.rst:
 FindJulia
@@ -43,7 +44,8 @@ set(_Julia_JULIA_DIR_LAST
     "${JULIA_DIR}"
     CACHE INTERNAL "JULIA_DIR of the last configure")
 
-set(_julia_hints "${JULIA_DIR}" "${Julia_ROOT}" "$ENV{Julia_ROOT}" "$ENV{JULIA_DIR}" "$ENV{JULIA_HOME}")
+set(_julia_hints "${JULIA_DIR}" "${Julia_ROOT}" "$ENV{Julia_ROOT}" "$ENV{JULIA_DIR}"
+                 "$ENV{JULIA_HOME}")
 list(FILTER _julia_hints EXCLUDE REGEX "^$")
 
 # an explicit prefix is searched exclusively; the fallbacks below also search the default paths
@@ -66,8 +68,7 @@ if(NOT _julia_hints)
         COMMAND "${Julia_EXECUTABLE}" --startup-file=no -e "print(Sys.BINDIR)"
         OUTPUT_VARIABLE _julia_sys_bindir
         RESULT_VARIABLE _julia_res
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET)
+        OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
       if(_julia_res EQUAL 0 AND _julia_sys_bindir)
         get_filename_component(_julia_prefix "${_julia_sys_bindir}" DIRECTORY)
         list(APPEND _julia_hints "${_julia_prefix}")
@@ -100,16 +101,14 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Julia
   REQUIRED_VARS Julia_LIBRARY Julia_INCLUDE_DIR
-  VERSION_VAR Julia_VERSION
-  REASON_FAILURE_MESSAGE "set JULIA_DIR to the Julia installation prefix")
+  VERSION_VAR Julia_VERSION REASON_FAILURE_MESSAGE "set JULIA_DIR to the Julia installation prefix")
 
 if(Julia_FOUND)
   get_filename_component(Julia_PREFIX "${Julia_INCLUDE_DIR}/../.." ABSOLUTE)
   if(NOT TARGET Julia::Julia)
     add_library(Julia::Julia UNKNOWN IMPORTED)
-    set_target_properties(
-      Julia::Julia PROPERTIES IMPORTED_LOCATION "${Julia_LIBRARY}"
-                              INTERFACE_INCLUDE_DIRECTORIES "${Julia_INCLUDE_DIR}")
+    set_property(TARGET Julia::Julia PROPERTY IMPORTED_LOCATION "${Julia_LIBRARY}")
+    set_property(TARGET Julia::Julia PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${Julia_INCLUDE_DIR}")
   endif()
 endif()
 

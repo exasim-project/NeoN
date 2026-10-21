@@ -13,6 +13,7 @@
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
+- Add experimental Julia matrix assembly (JuNe) behind `NeoN_WITH_JULIA` / `NeoN_JULIA_ASSEMBLY` with `FindJulia.cmake` [#632](https://github.com/exasim-project/NeoN/pull/632)
 
 ### Misc
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)

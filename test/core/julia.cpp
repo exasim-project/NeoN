@@ -1,6 +1,6 @@
-// // SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
-// //
-// // SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
+//
+// SPDX-License-Identifier: MIT
 
 // #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
 //                             // a custom main
@@ -18,17 +18,18 @@
 // //{
 // //    jl_init();
 // //    auto exec = GPUExecutor {};
-// //	jl_eval_string("include(\"../../../../init.jl\")");  // NeoN root directory relative to where this compiles to
+// //	jl_eval_string("include(\"../../../../init.jl\")");  // NeoN root directory relative to
+// where this compiles to
 // //    jl_eval_string(R"(
 // //      	function use_pointer(ptr::Ptr{Cvoid}, size::Int64)
 // //      		vec = unsafe_wrap(CuArray, reinterpret(CuPtr{Float64}, ptr),size)
-// //      		vec[1:3] = [1.0,2.0,3.0]    
+// //      		vec[1:3] = [1.0,2.0,3.0]
 // //      	end
 // //    )");
 // //	int64_t  N = 10;
 // //    auto input = Vector<double>(exec, N, 0.0);
-// //   
-// //    
+// //
+// //
 // //    auto ptrval = jl_box_voidpointer((void*)input.data());
 // //    auto boxed_size = jl_box_int64(N);
 // //	jl_value_t* args[2];
@@ -43,7 +44,7 @@
 // //       );
 // //
 // //       fprintf(stderr, "%s%s\n", "error: ", p);
-// //    }    
+// //    }
 // //	REQUIRE(!jl_exception_occurred());
 // //    auto cpu = CPUExecutor {};
 // //	auto cpuarr = input.copyToExecutor(cpu);
@@ -58,8 +59,8 @@
 // {
 //     jl_init();
 //     auto exec = GPUExecutor {};
-//     jl_eval_string("include(\"../../../../init.jl\")");  // NeoN root directory relative to where this compiles to
-//     jl_eval_string(R"(
+//     jl_eval_string("include(\"../../../../init.jl\")");  // NeoN root directory relative to where
+//     this compiles to jl_eval_string(R"(
 //         function use_pointer1(p::Ptr{Cvoid}, size::Int64)
 // 			ptr = reinterpret(CuPtr{Float64}, p)
 // 			arr = unsafe_wrap(CuArray, ptr, size; own=false)
@@ -75,7 +76,7 @@
 //     jl_value_t* args[2];
 //     args[0] = ptrval;
 //     args[1] = (jl_value_t*)boxed_size;
-    
+
 // 	jl_function_t* func = jl_get_function(jl_main_module, "use_pointer1");
 //     jl_call(func, args, 2);
 //     if (jl_exception_occurred())
@@ -217,9 +218,9 @@
 //         end
 
 //         function pass_div(tokens::Vector{String})
-//             divscheme = ifelse(tokens[2] == "linear", CentralDiffScheme{Float64},UpwindScheme{Float64}) 
-//             div = Div{Float64,divscheme}(divscheme(), 1.0) 
-//             return String(Symbol(div))
+//             divscheme = ifelse(tokens[2] == "linear",
+//             CentralDiffScheme{Float64},UpwindScheme{Float64}) div =
+//             Div{Float64,divscheme}(divscheme(), 1.0) return String(Symbol(div))
 //         end
 //     )");
 //     NeoN::TokenList input = NeoN::TokenList({std::string("Gauss"), std::string("linear")});
@@ -250,4 +251,3 @@
 //     JL_GC_POP(); // decrement reference
 //     jl_atexit_hook(0);
 // }
-

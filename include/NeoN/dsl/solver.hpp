@@ -50,9 +50,9 @@ la::SolverStats iterativeSolveImpl(
     auto expTmp = optExp.explicitOperation(solution.mesh().nCells());
     auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
     parallelFor(
-        solution.exec(), {0, rhs.size()}, NEON_LAMBDA(const localIdx i) {
-            rhs[i] -= expSource[i] * vol[i];
-        }
+        solution.exec(),
+        {0, rhs.size()},
+        NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);

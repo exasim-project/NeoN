@@ -56,12 +56,12 @@ function(NeoN_unit_test TEST)
     set_target_properties(
       ${NeoN_COMMAND}
       PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>
-                LIBRARY_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>
-                ARCHIVE_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>)
+                 LIBRARY_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>
+                 ARCHIVE_OUTPUT_DIRECTORY ${NeoN_WORKING_DIRECTORY}/$<0:>)
   else()
     # cmake-lint: disable=C0307
     set_target_properties(${NeoN_COMMAND} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                                    ${NeoN_WORKING_DIRECTORY})
+                                                     ${NeoN_WORKING_DIRECTORY})
   endif()
 
   if(NOT NeoN_MPI_SIZE)

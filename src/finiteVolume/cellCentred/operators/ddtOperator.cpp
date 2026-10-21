@@ -139,9 +139,8 @@ void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar,
 }
 
 template<typename ValueType>
-void DdtOperator<ValueType>::implicitOperation(
-    la::LinearSystem<ValueType>& ls, scalar t, scalar dt
-) const
+void DdtOperator<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt)
+    const
 {
     if (scheme_ == DdtScheme::SteadyState)
     {
@@ -346,7 +345,7 @@ void DdtOperator<ValueType>::read(const Input& input)
                      "BDF1, BDF2."),
         schemeName,
         this->field_.name
-    )); 
+    ));
 }
 
 // instantiate the template class

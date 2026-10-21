@@ -50,10 +50,12 @@ public:
      */
     jl_value_t* juliaPtr() const
     {
-        if (std::holds_alternative<GPUExecutor>(exec_)) {
-    		return jl_box_voidpointer((void*)data_);
+        if (std::holds_alternative<GPUExecutor>(exec_))
+        {
+            return jl_box_voidpointer((void*)data_);
         }
-        else {
+        else
+        {
             if constexpr (std::is_same_v<ArrayValueType, float>)
             {
                 jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);

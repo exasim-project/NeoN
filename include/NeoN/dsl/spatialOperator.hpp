@@ -71,8 +71,7 @@ public:
 
     template<IsSpatialOperator T>
     SpatialOperator(T cls) : model_(std::make_unique<OperatorModel<T>>(std::move(cls)))
-    {
-    }
+    {}
 
     SpatialOperator(const SpatialOperator& eqnOperator) : model_(eqnOperator.model_->clone()) {}
 
@@ -104,12 +103,12 @@ public:
 
     std::string getName() const { return model_->getName(); }
 
-// #ifdef NeoN_WITH_JULIA
+    // #ifdef NeoN_WITH_JULIA
 
     std::string juliaOP() { return model_->juliaOP(); }
 
     std::string juliaOP() const { return model_->juliaOP(); }
-// #endif
+    // #endif
     Coeff& getCoefficient() { return model_->getCoefficient(); }
 
     Coeff getCoefficient() const { return model_->getCoefficient(); }

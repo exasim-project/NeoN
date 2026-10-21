@@ -168,7 +168,6 @@ public:
     }
 
 
-
     void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->getVector().mesh();
@@ -184,7 +183,8 @@ public:
             const auto& toks = tokens.tokens();
             const bool bounded = !toks.empty() && toks[0].type() == typeid(std::string)
                               && std::any_cast<const std::string&>(toks[0]) == "bounded";
-            juliaEvalString_ = "Div{Float64, " + scheme + "{Float64}}("+scheme+"{Float64}(), "+std::to_string(operatorScaling[0])+(bounded ? ", true" : "")+")";
+            juliaEvalString_ = "Div{Float64, " + scheme + "{Float64}}(" + scheme + "{Float64}(), "
+                             + std::to_string(operatorScaling[0]) + (bounded ? ", true" : "") + ")";
         }
         else
         {
@@ -192,9 +192,11 @@ public:
             auto scheme = tokens.firstAfterGauss();
 
             // auto scheme = tokens.get<std::string>(tokens.size() - 1);
-            juliaEvalString_ = "Div{Float64, {" + scheme + "}{Float64}}({"+scheme+"}{Float64}(), "+std::to_string(operatorScaling[0])+")";
+            juliaEvalString_ = "Div{Float64, {" + scheme + "}{Float64}}({" + scheme
+                             + "}{Float64}(), " + std::to_string(operatorScaling[0]) + ")";
         }
-        sameTypeStrategy_ = DivOperatorFactory<FieldValueType, FieldValueType>::create(this->exec(), mesh, tokens);
+        sameTypeStrategy_ =
+            DivOperatorFactory<FieldValueType, FieldValueType>::create(this->exec(), mesh, tokens);
         if constexpr (!std::is_same_v<FieldValueType, scalar>)
         {
             tokens.reset();

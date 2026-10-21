@@ -49,12 +49,14 @@ public:
     /**
      * @brief Prepare pointer to pass to julia
      */
-	jl_value_t* juliaPtr() const
+    jl_value_t* juliaPtr() const
     {
-        if (std::holds_alternative<GPUExecutor>(exec_)) {
+        if (std::holds_alternative<GPUExecutor>(exec_))
+        {
             return jl_box_voidpointer((void*)data_);
         }
-        else {
+        else
+        {
             if constexpr (std::is_same_v<VectorValueType, float>)
             {
                 jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
@@ -272,7 +274,7 @@ public:
      *       C++ requires-expressions.
      */
     [[nodiscard]] Vector<ValueType> operator*(const Vector<ValueType>& rhs)
-        requires requires(ValueType a, ValueType b) { a * b; };
+        requires requires(ValueType a, ValueType b) { a* b; };
 
     /**
      * @brief Multiplies every element of the Vector by a scalar.
@@ -287,7 +289,7 @@ public:
      *       C++ requires-expressions.
      */
     [[nodiscard]] Vector<ValueType> operator*(const scalar rhs)
-        requires requires(ValueType a, scalar b) { a * b; };
+        requires requires(ValueType a, scalar b) { a* b; };
 
     /**
      * @brief Multiplies this Vector element-wise by another Vector.
