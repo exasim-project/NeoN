@@ -279,6 +279,13 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # Ginkgo shares NeoN's Umpire pool only in shared builds: it rejects Umpire in static builds,
+    # where each library would also carry its own Umpire ResourceManager.
+    if(NeoN_WITH_UMPIRE AND BUILD_SHARED_LIBS)
+      set(NeoN_GINKGO_WITH_UMPIRE ON)
+    else()
+      set(NeoN_GINKGO_WITH_UMPIRE OFF)
+    endif()
     cpmaddpackage(
       NAME
       Ginkgo
@@ -299,7 +306,8 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_MPI ${NeoN_WITH_MPI}"
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
-      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}"
+      "GINKGO_BUILD_UMPIRE ${NeoN_GINKGO_WITH_UMPIRE}")
 
     # Ginkgo's build_helpers.cmake forces its targets to ${PROJECT_BINARY_DIR}/lib, ignoring
     # CMAKE_LIBRARY_OUTPUT_DIRECTORY. Route them into our shared lib output dir so all CPM-built

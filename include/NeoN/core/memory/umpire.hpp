@@ -18,11 +18,9 @@ namespace NeoN
 #if NF_WITH_UMPIRE
 class UmpireMempoolHandler
 {
-private:
+public:
 
     static bool hasPool(MemorySpace memSpace);
-
-public:
 
     static void setupUmpirePool(MemorySpace memSpace, sizeType size);
 
