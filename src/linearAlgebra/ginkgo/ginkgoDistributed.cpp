@@ -127,7 +127,15 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     // views, so only the off-diagonal values are refreshed. Rebuilding the wrapper would redo
     // Ginkgo's Csr load-balancing (srow) analysis over the local block and the row-gatherer setup
     // (collectives) every solve. A reallocated value buffer misses the guard and rebuilds below.
-    if (distMtxCache && imapCache && nonLocalMtxCache && localValPtrCache == mtx.values().data())
+    // The caches are set on all ranks together, but the pointer check is rank-local and a rebuild
+    // is collective, so a miss on any rank makes every rank rebuild.
+    int cacheHit = 0;
+    if (distMtxCache && imapCache && nonLocalMtxCache)
+    {
+        cacheHit = localValPtrCache == mtx.values().data() ? 1 : 0;
+        comm.all_reduce(exec->get_master(), &cacheHit, 1, MPI_MIN);
+    }
+    if (cacheHit)
     {
         const auto bValV = bmtx.values().view();
         auto* cachedValsPtr = nonLocalMtxCache->get_values();

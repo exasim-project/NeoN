@@ -565,6 +565,14 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
         localValPtrCache = nullptr;
         REQUIRE(createMtx() != gkoMtx);
     }
+
+    SECTION("Changed value buffer on one rank rebuilds the wrapper on all ranks")
+    {
+        // The rebuild is collective: a cache hit on the other ranks must not leave rank 0 alone in
+        // the setup collectives.
+        if (mpiEnviron.rank() == 0) localValPtrCache = nullptr;
+        REQUIRE(createMtx() != gkoMtx);
+    }
 }
 
 // Distributed counterpart of the serial implicit transform-BC solver test: a scalar matrix with a
