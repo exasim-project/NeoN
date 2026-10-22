@@ -30,6 +30,14 @@ TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
     return fvcc::DdtOperator(dsl::Operator::Type::Explicit, phi);
 }
 
+// Density-weighted explicit temporal operator ddt(rho, phi), mirroring imp::ddt's
+// two-arg overload. rho must carry an old-time collection (see DdtOperator's ctor doc).
+template<typename ValueType>
+TemporalOperator<ValueType> ddt(fvcc::VolumeField<scalar>& rho, fvcc::VolumeField<ValueType>& phi)
+{
+    return fvcc::DdtOperator<ValueType>(dsl::Operator::Type::Explicit, rho, phi);
+}
+
 template<typename ValueType>
 SpatialOperator<ValueType>
 source(const fvcc::VolumeField<scalar>& coeff, const fvcc::VolumeField<ValueType>& phi)
