@@ -150,6 +150,13 @@ public:
     void copyToHost(Vector<ValueType>& result);
 
     /**
+     * @brief Make a copy of the Vector on the same executor.
+     *
+     * @return A copy of this Vector allocated on the same executor.
+     */
+    [[nodiscard]] Vector<ValueType> makeCopy() const;
+
+    /**
      * @brief Host-side element access is intentionally disabled.
      *
      * Vector data may reside in executor-specific memory, such as GPU memory.

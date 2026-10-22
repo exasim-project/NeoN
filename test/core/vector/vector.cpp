@@ -241,6 +241,20 @@ TEST_CASE("Vector Container Operations")
         REQUIRE(&(hostA.data()[0]) != &(hostB.data()[0]));
         REQUIRE(hostA.data()[1] == hostB.data()[1]);
     }
+
+    SECTION("Make a copy " + execName)
+    {
+        // Arrange
+        NeoN::Vector<NeoN::scalar> a(exec, {1.1, 2.2, 3.3});
+
+        // Act
+        auto b = a.makeCopy();
+
+        // Assert
+        REQUIRE(b.exec() == a.exec());
+        REQUIRE(&(b.data()[0]) != &(a.data()[0]));
+        REQUIRE_THAT(b, Equals(a, Approx {1e-12}));
+    }
 }
 
 TEST_CASE("Vector Operations")

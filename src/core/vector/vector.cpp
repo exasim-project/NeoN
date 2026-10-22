@@ -115,6 +115,17 @@ void Vector<ValueType>::copyToHost(Vector<ValueType>& result)
 }
 
 template<typename ValueType>
+[[nodiscard]] Vector<ValueType> Vector<ValueType>::makeCopy() const
+{
+    Executor dstExec = exec_;
+
+    Vector<ValueType> result(dstExec, size_);
+    std::visit(detail::deepCopyVisitor(size_, data_, result.data()), exec_, dstExec);
+
+    return result;
+}
+
+template<typename ValueType>
 void Vector<ValueType>::operator=(const ValueType& rhs)
 {
     fill(*this, rhs);
