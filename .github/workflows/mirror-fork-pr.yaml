@@ -50,8 +50,15 @@ jobs:
 
       # Pushes made with GITHUB_TOKEN don't trigger workflows, but workflow_dispatch does
       - name: Trigger LRZ pipeline
-        run: gh workflow run trigger-lrz-gitlab-ci.yaml --ref "$BRANCH"
+        id: trigger
+        run: |
+          RUN_URL=$(gh api --method POST \
+            "repos/${{ github.repository }}/actions/workflows/trigger-lrz-gitlab-ci.yaml/dispatches" \
+            -f ref="$BRANCH" -F return_run_details=true --jq .html_url)
+          echo "run_url=$RUN_URL" >> "$GITHUB_OUTPUT"
 
       - name: Comment
+        env:
+          RUN_URL: ${{ steps.trigger.outputs.run_url }}
         run: |
-          gh pr comment "$PR_NUMBER" --body "Mirrored \`${HEAD_SHA::7}\` to \`$BRANCH\` and triggered the LRZ pipeline. Re-apply \`ready-for-review\` to sync new commits."
+          gh pr comment "$PR_NUMBER" --body "Mirrored \`${HEAD_SHA::7}\` to \`$BRANCH\` and triggered the [LRZ pipeline]($RUN_URL). Re-apply \`ready-for-review\` to sync new commits."
