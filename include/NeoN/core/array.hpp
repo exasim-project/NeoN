@@ -202,6 +202,21 @@ public:
         result = copyToExecutor(SerialExecutor());
     }
 
+    /**
+     * @brief Make a copy of the Array on the same executor.
+     *
+     * @return A copy of this Array allocated on the same executor.
+     */
+    [[nodiscard]] Array<ValueType> makeCopy() const
+    {
+        Executor dstExec = exec_;
+
+        Array<ValueType> result(dstExec, size_);
+        std::visit(detail::deepCopyVisitor(size_, data_, result.data()), exec_, dstExec);
+
+        return result;
+    }
+
     // ensures no return of device address on host --> invalid memory access
     Array& operator[](const localIdx i) = delete;
 

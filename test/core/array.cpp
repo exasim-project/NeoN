@@ -143,4 +143,19 @@ TEST_CASE("Array Container Operations")
         REQUIRE(hostA1.data()[1] == hostA2.data()[1]);
         REQUIRE(hostA1.data()[2] == hostA2.data()[2]);
     }
+
+    SECTION("Make a copy " + execName)
+    {
+        // Arrange
+        NeoN::Array<NeoN::scalar> a(exec, {1.1, 2.2, 3.3});
+
+        // Act
+        auto b = a.makeCopy();
+
+        // Assert
+        REQUIRE(b.exec() == a.exec());
+        REQUIRE(b.size() == a.size());
+        REQUIRE(&(b.data()[0]) != &(a.data()[0]));
+        // REQUIRE_THAT(b, Equals(a, Approx {1e-12}));
+    }
 }
