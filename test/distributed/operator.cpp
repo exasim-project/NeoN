@@ -507,15 +507,23 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
     );
     std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>> imapCache;
     std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache;
-    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
-        gkoExec,
-        comm,
-        lsDst.matrix(),
-        lsDst.offDiagonalMatrix(),
-        commPattern,
-        imapCache,
-        nonLocalMtxCache
-    );
+    std::shared_ptr<const gko::LinOp> distMtxCache;
+    const scalar* localValPtrCache = nullptr;
+    auto createMtx = [&]()
+    {
+        return NeoN::la::ginkgo::createGkoMtxDist(
+            gkoExec,
+            comm,
+            lsDst.matrix(),
+            lsDst.offDiagonalMatrix(),
+            commPattern,
+            imapCache,
+            nonLocalMtxCache,
+            distMtxCache,
+            localValPtrCache
+        );
+    };
+    auto gkoMtx = createMtx();
 
     // The local CSR block must share memory with lsDst.matrix().values_
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, gko::int64>;
@@ -524,6 +532,39 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
     const auto* localCsr = gko::as<const gko::matrix::Csr<scalar, localIdx>>(localLinOp.get());
 
     REQUIRE(localCsr->get_const_values() == lsDst.matrix().values().data());
+
+    SECTION("Unchanged value buffer reuses the cached wrapper with refreshed off-diagonal values")
+    {
+        auto offDiagValues = lsDst.offDiagonalMatrix().values().view();
+        const auto nOffDiag = static_cast<localIdx>(offDiagValues.size());
+        parallelFor(
+            exec,
+            {0, nOffDiag},
+            NEON_LAMBDA(const localIdx i) { offDiagValues[i] *= 2.0; },
+            "scaleOffDiag"
+        );
+
+        REQUIRE(createMtx() == gkoMtx);
+
+        const auto* nonLocalCoo = gko::as<const gko::matrix::Coo<scalar, localIdx>>(
+            distMtxPtr->get_non_local_matrix().get()
+        );
+        auto cachedValues =
+            gko::make_const_array_view(gkoExec, nOffDiag, nonLocalCoo->get_const_values())
+                .copy_to_array();
+        cachedValues.set_executor(gkoExec->get_master());
+        auto expected = lsDst.offDiagonalMatrix().values().copyToHost();
+        for (localIdx i = 0; i < nOffDiag; ++i)
+        {
+            REQUIRE(cachedValues.get_const_data()[i] == expected.view()[i]);
+        }
+    }
+
+    SECTION("Changed value buffer rebuilds the wrapper")
+    {
+        localValPtrCache = nullptr;
+        REQUIRE(createMtx() != gkoMtx);
+    }
 }
 
 // Distributed counterpart of the serial implicit transform-BC solver test: a scalar matrix with a
