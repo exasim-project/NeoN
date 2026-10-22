@@ -15,6 +15,8 @@
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
 - Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4` or `{"type": "neon::MergedPgm", ...}`. It supports `generate_reuse`, which the Ginkgo solver now uses to reuse the multigrid setup across solves (`reuseSetup`, default on), and an OpenFOAM-style `scale_correction` of the coarse correction [#602](https://github.com/exasim-project/NeoN/pull/602)
 
+- With `UmpirePool`, Ginkgo allocates device memory from NeoN's Umpire pool, so both share one pool (shared builds only) [#634](https://github.com/exasim-project/NeoN/pull/634)
+
 ### Misc
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)
 - Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
