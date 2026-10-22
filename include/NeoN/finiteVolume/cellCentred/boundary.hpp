@@ -20,6 +20,7 @@
 #include "boundary/volume/slip.hpp"
 #include "boundary/volume/inletOutlet.hpp"
 #include "boundary/volume/totalPressure.hpp"
+#include "boundary/volume/pressureInletOutletVelocity.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
