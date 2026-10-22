@@ -294,6 +294,34 @@ public:
     [[nodiscard]] inline const ValueType* data() const { return data_; }
 
     /**
+     * @brief Returns a pointer to the first element of the Array.
+     *
+     * @return Pointer to the first element.
+     */
+    [[nodiscard]] ValueType* begin() { return data_; }
+
+    /**
+     * @brief Returns a const pointer to the first element of the Array.
+     *
+     * @return Const pointer to the first element.
+     */
+    [[nodiscard]] const ValueType* begin() const { return data_; }
+
+    /**
+     * @brief Returns a pointer one past the last element of the Array.
+     *
+     * @return Pointer one past the last element.
+     */
+    [[nodiscard]] ValueType* end() { return data_ + size(); }
+
+    /**
+     * @brief Returns a const pointer one past the last element of the Array.
+     *
+     * @return Const pointer one past the last element.
+     */
+    [[nodiscard]] const ValueType* end() const { return data_ + size(); }
+
+    /**
      * @brief Returns the executor associated with the Array.
      *
      * @return Reference to the Array's executor.
