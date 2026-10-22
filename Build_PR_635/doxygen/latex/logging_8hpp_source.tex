@@ -1,0 +1,221 @@
+\doxysection{logging.\+hpp}
+\hypertarget{logging_8hpp_source}{}\label{logging_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/logging.hpp}}
+\mbox{\hyperlink{logging_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <source\_location>}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <string\_view>}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <fmt/core.h>}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <fmt/chrono.h>}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00018}00018\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1Logging}{NeoN::Logging}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00022}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{00022}}\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00023}00023\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00024}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a52938d50d0854c5f4273115fdc0626f2}{00024}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a52938d50d0854c5f4273115fdc0626f2}{Trace}},}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214ae1dad33c8421f47bb2d28ab153071543}{00025}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214ae1dad33c8421f47bb2d28ab153071543}{Debug}},}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a207edd6969a7322a9f59a8c8eafb8670}{00026}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a207edd6969a7322a9f59a8c8eafb8670}{Info}},}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00027}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a651dd4171f68411da800f3302b84abc2}{00027}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a651dd4171f68411da800f3302b84abc2}{Warning}},}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00028}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a66902657569bc8a0384704af92dfb7f3}{00028}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a66902657569bc8a0384704af92dfb7f3}{Error}},}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00029}00029\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a5b191a1c471a255d90cb093aa9219e03}{Critical}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00030}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a5b191a1c471a255d90cb093aa9219e03}{00030}}\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00032}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}{00032}}\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}{Target}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00033}00033\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00034}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299a2404429e5c703d05b5551ce05100cd12}{00034}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299a2404429e5c703d05b5551ce05100cd12}{Console}},}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299a4ea6596d8006801e5878cfe907d8ff92}{File}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00036}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299a4ea6596d8006801e5878cfe907d8ff92}{00036}}\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00041}\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent}{00041}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent}{LogEvent}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00042}00042\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00044}00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a8313dff6d8edc6b6c5411c5ee7d2f3e1}{00046}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a8313dff6d8edc6b6c5411c5ee7d2f3e1}{LogEvent}}(std::source\_location\ locationIn,\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ levelIn,\ std::string\_view\ messageIn)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_acbcd09de99ef6864937f7367d73eafdc}{location}}(locationIn),\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_abc7fe8715a0dc371fb37f27e0e5a9a1e}{level}}(levelIn),\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a7bd5e6f0b9b944ed00c1c29723124185}{message}}(messageIn)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00048}00048\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_ae08d532e07e1a1403f395756b2d07a68}{creationTS}}\ =\ std::chrono::steady\_clock::now();}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00050}00050\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00052}\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_acbcd09de99ef6864937f7367d73eafdc}{00052}}\ \ \ \ \ std::source\_location\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_acbcd09de99ef6864937f7367d73eafdc}{location}};\ \textcolor{comment}{//\ where\ log\ message\ was\ created}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_abc7fe8715a0dc371fb37f27e0e5a9a1e}{00054}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_abc7fe8715a0dc371fb37f27e0e5a9a1e}{level}};\ \textcolor{comment}{//\ the\ level\ the\ event\ represents\ e.g.\ Trace,\ Debug,\ ...}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a7bd5e6f0b9b944ed00c1c29723124185}{00056}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a7bd5e6f0b9b944ed00c1c29723124185}{message}};\ \textcolor{comment}{//\ log\ message}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_ae08d532e07e1a1403f395756b2d07a68}{00058}}\ \ \ \ \ std::chrono::time\_point<std::chrono::steady\_clock>\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_ae08d532e07e1a1403f395756b2d07a68}{creationTS}};\ \textcolor{comment}{//\ store\ time\ of\ constructor\ call}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a3a0899a946f7bb72fcc475913291df6e}{00061}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a3a0899a946f7bb72fcc475913291df6e}{toJson}}(std::string\_view\ delim)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00062}00062\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ duration\ =\ std::chrono::duration\_cast<std::chrono::milliseconds>(}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ std::chrono::steady\_clock::now()\ -\/\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_ae08d532e07e1a1403f395756b2d07a68}{creationTS}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fmt::format(}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ fmt::runtime(}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\{\{\(\backslash\)n\(\backslash\)"{}message\(\backslash\)"{}:\ \(\backslash\)"{}\{\}\(\backslash\)"{},\(\backslash\)n\(\backslash\)"{}sourceLocation\(\backslash\)"{}:\ \(\backslash\)"{}\{\}:\{\}\(\backslash\)"{},\(\backslash\)n\(\backslash\)"{}timeStarted\(\backslash\)"{}:\ "{}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\(\backslash\)"{}\{\}\(\backslash\)"{},\(\backslash\)n\(\backslash\)"{}duration\(\backslash\)"{}:\ \(\backslash\)"{}\{:m\}ms\(\backslash\)"{}\(\backslash\)n\}\}\{\}"{}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_a7bd5e6f0b9b944ed00c1c29723124185}{message}},}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_acbcd09de99ef6864937f7367d73eafdc}{location}}.file\_name(),}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_acbcd09de99ef6864937f7367d73eafdc}{location}}.line(),}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent_ae08d532e07e1a1403f395756b2d07a68}{creationTS}}.time\_since\_epoch(),}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ duration,}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ delim}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00079}00079\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00080}00080\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00087}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5}{00087}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5}{setNeonDefaultPattern}}();}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00089}\mbox{\hyperlink{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}{00089}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}{logImpl}}(}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00090}00090\ \ \ \ \ std::string\ sv,\ [[maybe\_unused]]\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ level,\ [[maybe\_unused]]\ std::string\ logName\ =\ \textcolor{stringliteral}{"{}NeoN"{}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00091}00091\ );}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00093}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a99fdb43e89116eee5836bdb16d1fa283}{00093}}\ [[noreturn]]\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a99fdb43e89116eee5836bdb16d1fa283}{terminate}}();}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00095}00095\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00096}00096\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00107}\mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df}{00107}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df}{shouldLog}}(\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ level,\ std::string\ logName\ =\ \textcolor{stringliteral}{"{}NeoN"{}});}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00109}00109\ \textcolor{comment}{/*\ @brief\ Log\ a\ fatal\ message\ (rank-\/tagged)\ and\ terminate\ the\ program.}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00110}00110\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00111}00111\ \textcolor{comment}{\ *\ In\ MPI\ runs\ this\ aborts\ the\ communicator\ so\ peers\ do\ not\ deadlock\ on\ a}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00112}00112\ \textcolor{comment}{\ *\ collective.\ Used\ by\ NF\_ERROR\_EXIT\ /\ NF\_ASSERT\ (core/error.hpp)\ and\ error().}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00113}00113\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00114}00114\ [[noreturn]]\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{logFatal}}(\textcolor{keyword}{const}\ std::string\&\ message);}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00116}00116\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00119}00119\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00120}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}{00120}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}{info}}(std::string\ formatString,\ Args...\ args)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00121}00121\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df}{detail::shouldLog}}(\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a207edd6969a7322a9f59a8c8eafb8670}{Level::Info}}))\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00123}00123\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}{logImpl}}(fmt::format(fmt::runtime(formatString),\ args...),\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a207edd6969a7322a9f59a8c8eafb8670}{Level::Info}});}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00124}00124\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00127}00127\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00128}\mbox{\hyperlink{namespaceNeoN_1_1Logging_aabd4890e490f1dc968efe839e78ac235}{00128}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_aabd4890e490f1dc968efe839e78ac235}{warn}}(std::string\ formatString,\ Args...\ args)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00129}00129\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00130}00130\ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df}{detail::shouldLog}}(\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a651dd4171f68411da800f3302b84abc2}{Level::Warning}}))\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00131}00131\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}{logImpl}}(fmt::format(fmt::runtime(formatString),\ args...),\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214a651dd4171f68411da800f3302b84abc2}{Level::Warning}});}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00132}00132\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00135}00135\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00136}\mbox{\hyperlink{namespaceNeoN_1_1Logging_ae28b3319e1d8e1ac105229bfded869ec}{00136}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_ae28b3319e1d8e1ac105229bfded869ec}{debug}}(std::string\ formatString,\ Args...\ args)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00137}00137\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00138}00138\ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df}{detail::shouldLog}}(\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214ae1dad33c8421f47bb2d28ab153071543}{Level::Debug}}))\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00139}00139\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}{logImpl}}(fmt::format(fmt::runtime(formatString),\ args...),\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214ae1dad33c8421f47bb2d28ab153071543}{Level::Debug}});}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00140}00140\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00142}00142\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00143}00143\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00148}\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat}{00148}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat}{FatalFormat}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00149}00149\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00150}\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_ac0c9b58e3f9aecefa089a551162bff0a}{00150}}\ \ \ \ \ std::string\_view\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_ac0c9b58e3f9aecefa089a551162bff0a}{fmt}};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00151}\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a311f83917ddd734510d2088b63702f13}{00151}}\ \ \ \ \ std::source\_location\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a311f83917ddd734510d2088b63702f13}{loc}};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00152}\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a94d2ce66da41d3aa4a3e77262bef3b23}{00152}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a94d2ce66da41d3aa4a3e77262bef3b23}{FatalFormat}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ f,\ std::source\_location\ l\ =\ std::source\_location::current())}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_ac0c9b58e3f9aecefa089a551162bff0a}{fmt}}(f),\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a311f83917ddd734510d2088b63702f13}{loc}}(l)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00154}00154\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00155}\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_acf6887d12f6441065fc5ded34837019c}{00155}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_acf6887d12f6441065fc5ded34837019c}{FatalFormat}}(std::string\_view\ f,\ std::source\_location\ l\ =\ std::source\_location::current())}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_ac0c9b58e3f9aecefa089a551162bff0a}{fmt}}(f),\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a311f83917ddd734510d2088b63702f13}{loc}}(l)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00157}00157\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00158}\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a40f84c00e0c3eaac89a9ed7f472fae51}{00158}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a40f84c00e0c3eaac89a9ed7f472fae51}{FatalFormat}}(\textcolor{keyword}{const}\ std::string\&\ f,\ std::source\_location\ l\ =\ std::source\_location::current())}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_ac0c9b58e3f9aecefa089a551162bff0a}{fmt}}(f),\ \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a311f83917ddd734510d2088b63702f13}{loc}}(l)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00160}00160\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00161}00161\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00162}00162\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00165}00165\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00166}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a6062fe746358ab37c80f03caff1564c1}{00166}}\ [[noreturn]]\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a6062fe746358ab37c80f03caff1564c1}{error}}(\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat}{detail::FatalFormat}}\ fmtLoc,\ Args...\ args)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00167}00167\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keyword}{auto}\ message\ =\ fmt::format(fmt::runtime(fmtLoc.\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_ac0c9b58e3f9aecefa089a551162bff0a}{fmt}}),\ args...);}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00169}00169\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{detail::logFatal}}(fmt::format(\textcolor{stringliteral}{"{}\{\}:\{\}\ \{\}"{}},\ fmtLoc.\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a311f83917ddd734510d2088b63702f13}{loc}}.file\_name(),\ fmtLoc.\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat_a311f83917ddd734510d2088b63702f13}{loc}}.line(),\ message));}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00170}00170\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00174}\mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger}{00174}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger}{BaseLogger}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00175}00175\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00176}00176\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00177}00177\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}{Target}}\ target\_;}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00179}00179\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00181}\mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_a79a485ac9bc58ca197b386edfa720dca}{00181}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_a79a485ac9bc58ca197b386edfa720dca}{BaseLogger}}()\ :\ target\_(\mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}{Target}}::\mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299a2404429e5c703d05b5551ce05100cd12}{Console}})\ \{\};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00182}00182\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00183}\mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_ab812e0b40a44fb2fddecc469c66d145a}{00183}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_ab812e0b40a44fb2fddecc469c66d145a}{BaseLogger}}(\mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}{Target}}\ target)\ :\ target\_(target)\ \{\};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00184}00184\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00185}\mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_a81ed9a5b78f6781c923942babf3107e9}{00185}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_a81ed9a5b78f6781c923942babf3107e9}{\string~BaseLogger}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00186}00186\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00187}\mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_af4802af6ad562278b6293bad7e6b64cc}{00187}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_af4802af6ad562278b6293bad7e6b64cc}{log}}(std::string)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00188}00188\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00189}\mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_ad63f9a8a70b5b61a50ad1f5c8ab01695}{00189}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}{Target}}\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger_ad63f9a8a70b5b61a50ad1f5c8ab01695}{getTarget}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ target\_;\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00190}00190\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00191}00191\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00193}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3}{00193}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3}{log}}(std::shared\_ptr<BaseLogger>\ logger,\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent}{LogEvent}}\&\ event,\ std::string\_view\ delim\ =\ \textcolor{stringliteral}{"{},"{}})}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00194}00194\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00195}00195\ \ \ \ \ \textcolor{keywordflow}{if}\ (logger\ !=\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00196}00196\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ console\ output}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00198}00198\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ formattedMessage\ =}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ logger-\/>getTarget()\ ==\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299a2404429e5c703d05b5551ce05100cd12}{Target::Console}}\ ?\ \textcolor{keyword}{event}.message\ :\ \textcolor{keyword}{event}.toJson(delim);}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ logger-\/>log(formattedMessage);}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00202}00202\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00203}00203\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00204}00204\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00205}00205\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00208}\mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger}{00208}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger}{Logger}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger}{BaseLogger}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00209}00209\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00210}00210\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00211}00211\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00212}00212\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00213}\mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger_a1762b4140b7f3169e45032d910126840}{00213}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger_a1762b4140b7f3169e45032d910126840}{Logger}}(std::string\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}},\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ level,\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299}{Target}}\ target);}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00215}\mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger_ae2053e637c244a9a1825702e3e900c37}{00215}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger_ae2053e637c244a9a1825702e3e900c37}{\string~Logger}}();}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00216}00216\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00217}\mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger_a4c6ab731c451d0e95821f956e934a1a8}{00217}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1Logger_a4c6ab731c451d0e95821f956e934a1a8}{log}}(std::string\ sv)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00218}00218\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00219}00219\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00221}00221\ \ \ \ \ \textcolor{comment}{//\ name\ of\ the\ logger\ in\ the\ spdlog\ registry}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00222}00222\ \ \ \ \ std::string\ name\_;}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00223}00223\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00224}00224\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ level\_;}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00225}00225\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00226}00226\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00228}\mbox{\hyperlink{classNeoN_1_1Logging_1_1SupportsLoggingMixin}{00228}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1Logging_1_1SupportsLoggingMixin}{SupportsLoggingMixin}}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00229}00229\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00230}00230\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00231}00231\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00232}00232\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00233}00233\ \ \ \ \ std::shared\_ptr<BaseLogger>\ logger\_;}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00234}00234\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00235}00235\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00236}00236\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00237}\mbox{\hyperlink{classNeoN_1_1Logging_1_1SupportsLoggingMixin_a5c05a02dde4c15bb400c32a2361e84ce}{00237}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1SupportsLoggingMixin_a5c05a02dde4c15bb400c32a2361e84ce}{setLogger}}(\textcolor{keyword}{const}\ std::shared\_ptr<BaseLogger>\ logger);}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00238}00238\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00239}\mbox{\hyperlink{classNeoN_1_1Logging_1_1SupportsLoggingMixin_a5ca3bdb7a9ec27a52c318eccf5c508ed}{00239}}\ \ \ \ \ std::shared\_ptr<const\ BaseLogger>\ \mbox{\hyperlink{classNeoN_1_1Logging_1_1SupportsLoggingMixin_a5ca3bdb7a9ec27a52c318eccf5c508ed}{getLogger}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00240}00240\ \};}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00241}00241\ }
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00242}00242\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ CallClass>}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00243}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a02663648b70255c0e7ec3fad5271a862}{00243}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a02663648b70255c0e7ec3fad5271a862}{setLogger}}(CallClass\&\ cls,\ std::shared\_ptr<BaseLogger>\ logger)}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00244}00244\ \{}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00245}00245\ \ \ \ \ cls.setLogger(logger);}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00246}00246\ \}}
+\DoxyCodeLine{\Hypertarget{logging_8hpp_source_l00247}00247\ \}}
+
+\end{DoxyCode}
