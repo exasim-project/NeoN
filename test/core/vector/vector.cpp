@@ -252,6 +252,7 @@ TEST_CASE("Vector Container Operations")
 
         // Assert
         REQUIRE(b.exec() == a.exec());
+        REQUIRE(b.size() == a.size());
         REQUIRE(&(b.data()[0]) != &(a.data()[0]));
         REQUIRE_THAT(b, Equals(a, Approx {1e-12}));
     }
