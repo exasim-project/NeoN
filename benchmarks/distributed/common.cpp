@@ -397,6 +397,8 @@ void runDistributedMomentumBenchmark(
         std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
             imapCache0;
         std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache0;
+        std::shared_ptr<const gko::LinOp> distMtxCache0;
+        const NeoN::scalar* localValPtrCache0 = nullptr;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -411,7 +413,9 @@ void runDistributedMomentumBenchmark(
                         ls.offDiagonalMatrix(),
                         commPattern,
                         imapCache0,
-                        nonLocalMtxCache0
+                        nonLocalMtxCache0,
+                        distMtxCache0,
+                        localValPtrCache0
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -454,6 +458,9 @@ void runDistributedMomentumBenchmark(
             meter.measure(
                 [&]
                 {
+                    // Like the solver's Vec3 component path: the wrapper is not cached.
+                    std::shared_ptr<const gko::LinOp> uncachedDistMtx;
+                    const NeoN::scalar* uncachedLocalValPtr = nullptr;
                     auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
                         gkoExec,
                         comm,
@@ -461,7 +468,9 @@ void runDistributedMomentumBenchmark(
                         nonLocalMtx0,
                         commPattern,
                         imapCache1,
-                        nonLocalMtxCache1
+                        nonLocalMtxCache1,
+                        uncachedDistMtx,
+                        uncachedLocalValPtr
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -489,6 +498,8 @@ void runDistributedMomentumBenchmark(
         std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
             imapCache2;
         std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache2;
+        std::shared_ptr<const gko::LinOp> distMtxCache2;
+        const NeoN::scalar* localValPtrCache2 = nullptr;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -503,7 +514,9 @@ void runDistributedMomentumBenchmark(
                         ls.offDiagonalMatrix(),
                         commPattern,
                         imapCache2,
-                        nonLocalMtxCache2
+                        nonLocalMtxCache2,
+                        distMtxCache2,
+                        localValPtrCache2
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -533,6 +546,8 @@ void runDistributedMomentumBenchmark(
         std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
             imapCache3;
         std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache3;
+        std::shared_ptr<const gko::LinOp> distMtxCache3;
+        const NeoN::scalar* localValPtrCache3 = nullptr;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -547,7 +562,9 @@ void runDistributedMomentumBenchmark(
                         ls.offDiagonalMatrix(),
                         commPattern,
                         imapCache3,
-                        nonLocalMtxCache3
+                        nonLocalMtxCache3,
+                        distMtxCache3,
+                        localValPtrCache3
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
