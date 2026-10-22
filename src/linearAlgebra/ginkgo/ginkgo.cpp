@@ -12,6 +12,7 @@
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/memory/umpire.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
@@ -169,6 +170,31 @@ std::array<std::shared_ptr<gko::Executor>, 3>& gkoExecutorCache()
     return cache;
 }
 
+#if NF_WITH_UMPIRE && GKO_HAVE_UMPIRE
+// Device executor that allocates from NeoN's Umpire DEVICE_POOL, so NeoN and Ginkgo share one pool.
+// Umpire pools are not stream-ordered; this is safe because Ginkgo runs on the same Kokkos stream.
+std::shared_ptr<gko::Executor> createPooledGkoExecutor(Kokkos::DefaultExecutionSpace space)
+{
+#if defined(KOKKOS_ENABLE_CUDA)
+    return gko::CudaExecutor::create(
+        Kokkos::device_id(),
+        gko::ext::kokkos::create_default_host_executor(),
+        std::make_shared<gko::UmpireCudaAllocator>("DEVICE_POOL"),
+        space.cuda_stream()
+    );
+#elif defined(KOKKOS_ENABLE_HIP)
+    return gko::HipExecutor::create(
+        Kokkos::device_id(),
+        gko::ext::kokkos::create_default_host_executor(),
+        std::make_shared<gko::UmpireHipAllocator>("DEVICE_POOL"),
+        space.hip_stream()
+    );
+#else
+    return gko::ext::kokkos::create_executor(space);
+#endif
+}
+#endif
+
 std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
 {
     // Defer to Ginkgo's Kokkos extension instead of a hand-rolled #ifdef mapping. Each NeoN
@@ -181,6 +207,15 @@ std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
         {
             using ExecType = std::decay_t<decltype(concreteExec)>;
+#if NF_WITH_UMPIRE && GKO_HAVE_UMPIRE
+            if constexpr (std::is_same_v<ExecType, NeoN::GPUExecutor>)
+            {
+                if (NeoN::UmpireMempoolHandler::hasPool(NeoN::MemorySpace::GPU))
+                {
+                    return createPooledGkoExecutor(typename ExecType::exec {});
+                }
+            }
+#endif
             return gko::ext::kokkos::create_executor(typename ExecType::exec {});
         },
         exec
