@@ -13,6 +13,9 @@
 
 #include <variant>
 #include <vector>
+#ifdef NeoN_WITH_JULIA
+#include <julia.h>
+#endif
 
 namespace NeoN
 {
@@ -40,7 +43,56 @@ class Array
 public:
 
     using ArrayValueType = ValueType;
+#ifdef NeoN_WITH_JULIA
 
+    /**
+     * @brief Prepare pointer to pass to julia
+     */
+    jl_value_t* juliaPtr() const
+    {
+        if (std::holds_alternative<GPUExecutor>(exec_))
+        {
+            return jl_box_voidpointer((void*)data_);
+        }
+        else
+        {
+            if constexpr (std::is_same_v<ArrayValueType, float>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<ArrayValueType, double>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<ArrayValueType, label>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<ArrayValueType, localIdx>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<ArrayValueType, uint8_t>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint8_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else
+            {
+                NF_THROW("Array::juliaPtr: no Julia array type for this value type");
+            }
+        }
+    }
+#endif
     /**
      * @brief Creates an uninitialized Array with the given size on an executor.
      *

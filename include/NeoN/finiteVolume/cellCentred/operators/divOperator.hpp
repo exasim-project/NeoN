@@ -167,19 +167,33 @@ public:
         scalarMtxStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
+
     void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->getVector().mesh();
+        const auto operatorScaling = this->getCoefficient();
         NeoN::TokenList tokens;
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
             tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
+            auto scheme = tokens.firstAfterGauss();
+            // JuNe adds the bounded-convection diagonal term when the third argument is true
+            const auto& toks = tokens.tokens();
+            const bool bounded = !toks.empty() && toks[0].type() == typeid(std::string)
+                              && std::any_cast<const std::string&>(toks[0]) == "bounded";
+            juliaEvalString_ = "Div{Float64, " + scheme + "{Float64}}(" + scheme + "{Float64}(), "
+                             + std::to_string(operatorScaling[0]) + (bounded ? ", true" : "") + ")";
         }
         else
         {
             tokens = std::get<NeoN::TokenList>(input);
+            auto scheme = tokens.firstAfterGauss();
+
+            // auto scheme = tokens.get<std::string>(tokens.size() - 1);
+            juliaEvalString_ = "Div{Float64, {" + scheme + "}{Float64}}({" + scheme
+                             + "}{Float64}(), " + std::to_string(operatorScaling[0]) + ")";
         }
         sameTypeStrategy_ =
             DivOperatorFactory<FieldValueType, FieldValueType>::create(this->exec(), mesh, tokens);
@@ -192,6 +206,9 @@ public:
     }
 
     std::string getName() const { return "DivOperator"; }
+    std::string juliaOP() const { return juliaEvalString_; }
+    std::string juliaOP() { return juliaEvalString_; }
+
 
     // TODO make this private and let only friends use it
     Dictionary getConfig() const
@@ -209,6 +226,7 @@ private:
 
     const SurfaceField<NeoN::scalar>& faceFlux_;
 
+    std::string juliaEvalString_;
     std::unique_ptr<DivOperatorFactory<FieldValueType, FieldValueType>> sameTypeStrategy_;
     // Only initialized when FieldValueType != scalar; used to assemble into a
     // LinearSystem<scalar, FieldValueType> for segregated vector solves.

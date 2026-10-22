@@ -8,12 +8,16 @@
 #include "NeoN/core/primitives/vec3.hpp"
 
 #include <type_traits>
+#ifdef NeoN_WITH_JULIA
+#include <julia.h>
+#endif
 
 namespace NeoN
 {
 
 template<typename ValueType>
 class Vector;
+
 
 template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
