@@ -114,6 +114,41 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         }
     }
 
+    SECTION("explicit DdtOperator honours coefficient " + execName)
+    {
+        auto ddtOp = -1.0 * dsl::exp::ddt(phi);
+        auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
+        ddtOp.explicitOperation(source, 1.0, 0.5);
+
+        const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+        const auto [volV, vals] = views(vol, hostSource);
+
+        // => -(phi^{n + 1} - phi^{n})/dt*V => -(10 -- 1)/.5*V = -22V
+        for (auto ii = 0; ii < vals.size(); ++ii)
+        {
+            REQUIRE(vals[ii] == volV[0] * TestType(-22.0));
+        }
+    }
+
+    SECTION("explicit DdtOperator is assembled into rhs " + execName)
+    {
+        dsl::Expression<TestType> expr(exec);
+        expr.addOperator(-1.0 * dsl::exp::ddt(phi));
+
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+        expr.assemble(1.0, 0.5, ls, mesh);
+
+        const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto [volV, rhsV] = views(vol, lsHost.rhs());
+
+        // explicit terms move to the rhs with flipped sign, volume-scaled exactly once:
+        // rhs -= -(10 -- 1)/.5*V => +22V
+        for (auto ii = 0; ii < toLocalIdx(rhsV.size()); ++ii)
+        {
+            REQUIRE(rhsV[ii] == volV[0] * TestType(22.0));
+        }
+    }
+
     SECTION("implicit DdtOperator (Euler) " + execName)
     {
         NeoN::Dictionary fvSchemes;
