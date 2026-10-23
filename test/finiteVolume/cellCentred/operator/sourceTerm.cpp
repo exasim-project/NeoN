@@ -148,6 +148,67 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     }
 }
 
+TEST_CASE("SourceTerm segregated (scalar-matrix) assembly")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = createSingleCellMesh(exec);
+
+    auto coeffBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> coeff(exec, "coeff", mesh, coeffBCs);
+    fill(coeff.internalVector(), 2.0);
+    fill(coeff.boundaryData().value(), 0.0);
+    coeff.correctBoundaryConditions();
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    fvcc::VolumeField<Vec3> phi(exec, "sf", mesh, volumeBCs);
+    fill(phi.internalVector(), Vec3(10.0, -5.0, 1.0));
+    fill(phi.boundaryData().value(), zero<Vec3>());
+    phi.correctBoundaryConditions();
+
+    SECTION("implicit Sp" + execName)
+    {
+        fvcc::SourceTerm<Vec3> sTerm(Operator::Type::Implicit, coeff, phi);
+
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, Vec3>(mesh);
+        sTerm.implicitOperation(ls);
+        auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto& values = lsHost.matrix().values().view();
+        const auto& rhs = lsHost.rhs().view();
+
+        REQUIRE(values[0] == 2 * vol.view()[0]);
+        REQUIRE(rhs[0] == zero<Vec3>());
+    }
+
+    SECTION("implicit SuSp negative coefficient" + execName)
+    {
+        fill(coeff.internalVector(), -3.0);
+        fvcc::SourceTerm<Vec3> sTerm(Operator::Type::Implicit, coeff, phi, /*suSp=*/true);
+
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, Vec3>(mesh);
+        sTerm.implicitOperation(ls);
+        auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto& values = lsHost.matrix().values().view();
+        const auto& rhs = lsHost.rhs().view();
+
+        // rhs -= min(coeff,0)*vol*phi = 3*vol*phi
+        REQUIRE(values[0] == 0.0);
+        REQUIRE(rhs[0] == 3 * vol.view()[0] * Vec3(10.0, -5.0, 1.0));
+    }
+
+    SECTION("dispatched through an expression with scaling" + execName)
+    {
+        dsl::Expression<Vec3> eqn(exec);
+        eqn.addOperator(-1.0 * dsl::imp::source<Vec3>(coeff, phi));
+
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, Vec3>(mesh);
+        eqn.assembleSpatialOperator<scalar>(ls);
+        auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+
+        REQUIRE(lsHost.matrix().values().view()[0] == -2 * vol.view()[0]);
+    }
+}
+
 TEMPLATE_TEST_CASE("SourceTerm Su constructor", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
