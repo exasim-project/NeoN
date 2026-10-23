@@ -54,6 +54,7 @@ la::SolverStats iterativeSolveImpl(
         {0, rhs.size()},
         NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
     );
+    optExp.assembleExplicitTemporalSource(ls, t, dt);
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
