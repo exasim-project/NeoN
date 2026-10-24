@@ -108,7 +108,9 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
-    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache
+    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache,
+    std::shared_ptr<const gko::LinOp>& distMtxCache,
+    const scalar*& localValPtrCache
 )
 {
     // commPattern is currently unused here: all the connectivity information needed to build
@@ -118,6 +120,34 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
 
     using global_index_type = gko::int64;
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, global_index_type>;
+
+    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
+
+    // Fast path: the topology is fixed and the local value buffer is the one the cached wrapper
+    // views, so only the off-diagonal values are refreshed. Rebuilding the wrapper would redo
+    // Ginkgo's Csr load-balancing (srow) analysis over the local block and the row-gatherer setup
+    // (collectives) every solve. A reallocated value buffer misses the guard and rebuilds below.
+    // The caches are set on all ranks together, but the pointer check is rank-local and a rebuild
+    // is collective, so a miss on any rank makes every rank rebuild.
+    int cacheHit = 0;
+    if (distMtxCache && imapCache && nonLocalMtxCache)
+    {
+        cacheHit = localValPtrCache == mtx.values().data() ? 1 : 0;
+        comm.all_reduce(exec->get_master(), &cacheHit, 1, MPI_MIN);
+    }
+    if (cacheHit)
+    {
+        const auto bValV = bmtx.values().view();
+        auto* cachedValsPtr = nonLocalMtxCache->get_values();
+        parallelFor(
+            bmtx.exec(),
+            {0, static_cast<localIdx>(nNonLocalNnz)},
+            KOKKOS_LAMBDA(const localIdx i) { cachedValsPtr[i] = bValV[i]; },
+            "updateNonLocalValues"
+        );
+        fence(bmtx.exec());
+        return distMtxCache;
+    }
 
     // Local block: zero-copy CSR views over the existing NeoN storage. The local matrix is by far
     // the largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
@@ -143,11 +173,12 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             exec, matrixSize, std::move(vals), std::move(col), std::move(row)
         ));
 
-    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
-
     if (imapCache && nonLocalMtxCache)
     {
-        // Fast path: topology is fixed — only the off-diagonal values change each solve.
+        // The index map and off-diagonal structure are cached, but the wrapper cannot be reused: the
+        // local value buffer was reallocated, or the caller does not cache wrappers (the Vec3
+        // component path). Refresh the off-diagonal values and build a new wrapper around the
+        // current local values.
         const auto bValV = bmtx.values().view();
         auto* cachedValsPtr = nonLocalMtxCache->get_values();
         parallelFor(
@@ -157,9 +188,11 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             "updateNonLocalValues"
         );
         fence(bmtx.exec());
-        return gko::share(dist_mtx::create(
+        distMtxCache = gko::share(dist_mtx::create(
             exec, comm, *imapCache, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtxCache
         ));
+        localValPtrCache = mtx.values().data();
+        return distMtxCache;
     }
 
     // First call: build partition, index_map, column mapping, and non-local COO structure.
@@ -249,9 +282,11 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         )
                        ->clone());
 
-    return gko::share(dist_mtx::create(
+    distMtxCache = gko::share(dist_mtx::create(
         exec, comm, imap, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtxCache
     ));
+    localValPtrCache = mtx.values().data();
+    return distMtxCache;
 }
 
 SolverStatsEntry solve_impl_dist(
@@ -463,8 +498,20 @@ void solveComponentDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
-    auto gkoMtx =
-        createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern, imapCache, nonLocalMtxCache);
+    // The component values are a temporary copy, so the wrapper must not be cached: pass locals.
+    std::shared_ptr<const gko::LinOp> uncachedDistMtx;
+    const scalar* uncachedLocalValPtr = nullptr;
+    auto gkoMtx = createGkoMtxDist(
+        exec,
+        comm,
+        mtx,
+        nonLocalMtx,
+        commPattern,
+        imapCache,
+        nonLocalMtxCache,
+        uncachedDistMtx,
+        uncachedLocalValPtr
+    );
     auto solver = gko::share(generate(gkoMtx));
     stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
@@ -553,7 +600,9 @@ SolverStats GinkgoSolver::solveDist(
         sys.offDiagonalMatrix(),
         commPattern,
         cachedImap_,
-        cachedNonLocalMtx_
+        cachedNonLocalMtx_,
+        cachedDistMtx_,
+        cachedLocalValPtr_
     );
     auto solver = gko::share(generateSolver(gkoMtx));
     // When the configFile names the L1 criterion it is already built into the solver
@@ -605,7 +654,9 @@ SolverStats GinkgoSolver::solveDist(
         sys.offDiagonalMatrix(),
         commPattern,
         cachedImap_,
-        cachedNonLocalMtx_
+        cachedNonLocalMtx_,
+        cachedDistMtx_,
+        cachedLocalValPtr_
     );
 
     // Implicit transform-BC path: solve the three components segregated, applying each column's
@@ -678,7 +729,7 @@ SolverStats GinkgoSolver::solveDist(
 template std::
     shared_ptr<const gko::LinOp>
     createGkoMtxDist<
-        localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&);
+        localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
 
 }
 

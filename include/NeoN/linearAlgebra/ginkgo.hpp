@@ -45,7 +45,9 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
-    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache
+    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache,
+    std::shared_ptr<const gko::LinOp>& distMtxCache,
+    const scalar*& localValPtrCache
 );
 #endif // NF_WITH_MPI_SUPPORT
 
@@ -413,6 +415,11 @@ private:
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
         cachedImap_;
     mutable std::shared_ptr<gko::matrix::Coo<scalar, localIdx>> cachedNonLocalMtx_;
+    // Distributed-matrix wrapper and the local value buffer it views. While the buffer is unchanged
+    // (NeoN re-assembles in place), createGkoMtxDist returns the wrapper instead of rebuilding it,
+    // which would redo Ginkgo's Csr load-balancing analysis and the row-gatherer setup every solve.
+    mutable std::shared_ptr<const gko::LinOp> cachedDistMtx_;
+    mutable const scalar* cachedLocalValPtr_ = nullptr;
 #endif
 };
 
