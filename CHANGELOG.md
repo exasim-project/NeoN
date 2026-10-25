@@ -4,6 +4,7 @@
 - Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)
 - Add experimental support for cell based assembly strategies [#471](https://github.com/exasim-project/NeoN/pull/471),[#517](https://github.com/exasim-project/NeoN/pull/517), [#473](https://github.com/exasim-project/NeoN/pull/473)
 - Add experimental support for COO and CSR Matrices [#486](https://github.com/exasim-project/NeoN/pull/486)
+- Add `fixedEnergy` and `gradientEnergy` volume boundary conditions and `mapEnergyBoundaryFromTemperature`, which maps a temperature field's boundary data onto an energy field (`he = Cv*(T - Tref)`) for solvers that transport `he` [#640](https://github.com/exasim-project/NeoN/pull/640)
 - Add experimental umpire support [#455](https://github.com/exasim-project/NeoN/pull/455)
 - Add experimental MPI support [#519](https://github.com/exasim-project/NeoN/pull/519), [#520](https://github.com/exasim-project/NeoN/pull/520), [#512](https://github.com/exasim-project/NeoN/pull/512), [#525](https://github.com/exasim-project/NeoN/pull/525), [#531](https://github.com/exasim-project/NeoN/pull/531), [#522](https://github.com/exasim-project/NeoN/pull/522)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
