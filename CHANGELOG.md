@@ -1,5 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
+- Support BDF2 (`backward`) in the explicit `DdtOperator`, using the same start-up rule as the implicit path, so explicit and implicit temporal terms can be mixed stably [#708](https://github.com/exasim-project/NeoN/pull/708)
 ### Misc
 - Add an `osx-arm64` Open MPI flavour of the `neon-pde` conda package, built against conda-forge's Open MPI 5.0 as bundled by OpenFOAM for macOS
 - Skip the build-and-test jobs, on GitHub and LRZ, for PRs that only change documentation [#390](https://github.com/exasim-project/NeoN/issues/390)
