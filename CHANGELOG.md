@@ -7,6 +7,7 @@
 - Add experimental umpire support [#455](https://github.com/exasim-project/NeoN/pull/455)
 - Add experimental MPI support [#519](https://github.com/exasim-project/NeoN/pull/519), [#520](https://github.com/exasim-project/NeoN/pull/520), [#512](https://github.com/exasim-project/NeoN/pull/512), [#525](https://github.com/exasim-project/NeoN/pull/525), [#531](https://github.com/exasim-project/NeoN/pull/531), [#522](https://github.com/exasim-project/NeoN/pull/522)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
+- Support segregated (scalar-matrix) assembly in `SourceTerm`, so source terms can be used in scalar equations such as the energy equation [#639](https://github.com/exasim-project/NeoN/pull/639)
 - Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
