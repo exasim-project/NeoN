@@ -9,6 +9,7 @@
 - Add scalar-scalar `ddt(rho, phi)` overloads to the explicit DSL (`dsl::exp::ddt`) and to the Python `imp`/`exp` bindings, for density-weighted terms such as `ddt(rho, he)` and `ddt(psi, p)` [#618](https://github.com/exasim-project/NeoN/pull/618)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
 - Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
+- Add `mag_sqr` for Vec3 `VolumeField` to the Python bindings [#619](https://github.com/exasim-project/NeoN/pull/619)
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
