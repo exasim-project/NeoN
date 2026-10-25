@@ -30,6 +30,7 @@
 - Fix an intermittent segfault in the MPI unit tests: the IO serialization thread called MPI concurrently with the main thread even when the library only provided `MPI_THREAD_SINGLE` [#602](https://github.com/exasim-project/NeoN/pull/602)
 - Fix umpire/camp RPATH and macOS install names so wheels stay relocatable, and check relocatability on the unrepaired wheel in CI [#559](https://github.com/exasim-project/NeoN/pull/559)
 - Fix distributed processor-face correctness: multi-patch (scotch) halo exchange, ddtFluxCorr proc-face correction, processor BC on coupled patches, and row-sorted non-local COO for correct CUDA distributed apply [#528](https://github.com/exasim-project/NeoN/pull/528)
+- Fix explicit temporal operators (e.g. `exp.ddt(p)`, `exp.ddt(rho, K)`) being silently dropped when an `Expression` is assembled into the right-hand side, and make the non-density-weighted explicit `ddt` honor its coefficient [#638](https://github.com/exasim-project/NeoN/pull/638)
 
 # Version 0.2.0 (2025/12/03)
 ## Features
