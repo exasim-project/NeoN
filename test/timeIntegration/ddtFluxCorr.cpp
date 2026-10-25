@@ -226,4 +226,153 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
             }
         }
     }
+
+    SECTION(
+        "density-weighted ddtFluxCorr with non-trivial old-time values, BDF1 and BDF2 on "
+        + execName
+    )
+    {
+        // The identities above leave the boundary values of U^0 and rho^0 at zero (the
+        // helper creates the fields without boundary conditions), so they cannot tell a
+        // correctly weighted correction from an unweighted one, and they only run BDF1.
+        // Here every old-time field carries distinct, non-zero boundary values and the
+        // expected correction is computed independently on the host from the formulas:
+        //   BDF1: limiter(phi^0, corr^0) * (1/dt) * corr^0
+        //   BDF2: limiter(phi^0, corr^0) * (2/dt) * corr^0
+        //       + limiter(phi^00, corr^00) * (-1/(2 dt)) * corr^00
+        // with corr^k = phi^k - Sf & (rho_f^k * uf^k).
+        NeoN::Database db;
+        auto mesh = NeoN::createSingleCellMesh(exec);
+        fvcc::VectorCollection& fieldCollection =
+            fvcc::VectorCollection::instance(db, "fieldCollection");
+
+        auto& u = fieldCollection.registerVector<VolVector>(CreateVolumeVector<Vec3> {
+            .name = "U", .mesh = mesh, .value = Vec3 {0.0, 0.0, 0.0}, .timeIndex = 1
+        });
+        auto& u0 = fvcc::oldTime(u);
+        auto& u00 = fvcc::oldTime(u0); // two old-time levels: enables the BDF2 branch
+
+        auto& rho = fieldCollection.registerVector<VolScalar>(CreateVolumeVector<Scalar> {
+            .name = "rho", .mesh = mesh, .value = Scalar {0.0}, .timeIndex = 1
+        });
+        auto& rho0 = fvcc::oldTime(rho);
+        auto& rho00 = fvcc::oldTime(rho0);
+
+        auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<Scalar>>(mesh);
+        auto& flux = fieldCollection.registerVector<SurfScalar>(CreateSurfaceVector<Scalar> {
+            .name = "flux", .mesh = mesh, .bcs = &surfaceBCs, .value = 0.0, .timeIndex = 1
+        });
+        auto& flux0 = fvcc::oldTime(flux);
+        auto& flux00 = fvcc::oldTime(flux0);
+
+        // rho^0 != rho^00 and U^0 != U^00, so using the wrong level changes the result
+        const Vec3 uOld {2.0, 1.0, -0.5};
+        const Vec3 uOldOld {-1.0, 3.0, 0.5};
+        const Scalar rhoOld = 1.5;
+        const Scalar rhoOldOld = 0.5;
+        for (auto [field, value] : {std::pair<VolVector*, Vec3> {&u0, uOld}, {&u00, uOldOld}})
+        {
+            NeoN::fill(field->internalVector(), value);
+            NeoN::fill(field->boundaryData().value(), value);
+        }
+        for (auto [field, value] :
+             {std::pair<VolScalar*, Scalar> {&rho0, rhoOld}, {&rho00, rhoOldOld}})
+        {
+            NeoN::fill(field->internalVector(), value);
+            NeoN::fill(field->boundaryData().value(), value);
+        }
+
+        // rho_f^k * uf^k, as the overload builds it
+        fvcc::SurfaceInterpolation<Vec3> interpU(
+            exec, mesh, NeoN::TokenList({std::string("linear")})
+        );
+        fvcc::SurfaceInterpolation<Scalar> interpRho(
+            exec, mesh, NeoN::TokenList({std::string("linear")})
+        );
+        auto rhoUf0 = interpRho.interpolate(rho0) * interpU.interpolate(u0);
+        auto rhoUf00 = interpRho.interpolate(rho00) * interpU.interpolate(u00);
+
+        const auto nBndFaces = toLocalIdx(mesh.nBoundaryFaces());
+        const Scalar dt = 0.2;
+
+        // phi^0 = 1.1 * Sf & rhoUf^0 and phi^00 = 0.8 * Sf & rhoUf^00: a consistent flux
+        // perturbed by +10% / -20%, so every limiter lies strictly between 0 and 1
+        {
+            auto [flux0BV, flux00BV, sfV, rhoUf0BV, rhoUf00BV] = views(
+                flux0.boundaryData().value(),
+                flux00.boundaryData().value(),
+                mesh.boundaryMesh().faceNormals(),
+                rhoUf0.boundaryData().value(),
+                rhoUf00.boundaryData().value()
+            );
+            NeoN::parallelFor(
+                exec,
+                {0, nBndFaces},
+                NEON_LAMBDA(const NeoN::localIdx i) {
+                    flux0BV[i] = 1.1 * (sfV[i] & rhoUf0BV[i]);
+                    flux00BV[i] = 0.8 * (sfV[i] & rhoUf00BV[i]);
+                }
+            );
+        }
+        flux.boundaryData().value() = flux0.boundaryData().value();
+
+        auto [sfH, rhoUf0H, rhoUf00H] = copyToHosts(
+            mesh.boundaryMesh().faceNormals(),
+            rhoUf0.boundaryData().value(),
+            rhoUf00.boundaryData().value()
+        );
+        auto flux0H = flux0.boundaryData().value().copyToHost();
+        auto flux00H = flux00.boundaryData().value().copyToHost();
+
+        auto limiter = [](Scalar fluxValue, Scalar corr)
+        {
+            const Scalar ratio = NeoN::mag(corr) / (NeoN::mag(fluxValue) + 1.0e-30);
+            return 1.0 - Kokkos::min(ratio, Scalar(1));
+        };
+
+        std::vector<Scalar> expectedBDF1(static_cast<sizeType>(nBndFaces), 0.0);
+        std::vector<Scalar> expectedBDF2(static_cast<sizeType>(nBndFaces), 0.0);
+        for (NeoN::localIdx i = 0; i < nBndFaces; ++i)
+        {
+            const Scalar corr0 = flux0H.view()[i] - (sfH.view()[i] & rhoUf0H.view()[i]);
+            const Scalar corr00 = flux00H.view()[i] - (sfH.view()[i] & rhoUf00H.view()[i]);
+            const Scalar term0 = limiter(flux0H.view()[i], corr0) * corr0;
+            const Scalar term00 = limiter(flux00H.view()[i], corr00) * corr00;
+
+            expectedBDF1[static_cast<sizeType>(i)] = term0 / dt;
+            expectedBDF2[static_cast<sizeType>(i)] = 2.0 * term0 / dt - 0.5 * term00 / dt;
+
+            // the expectation must be non-trivial, and BDF2 must differ from BDF1
+            REQUIRE(NeoN::mag(expectedBDF1[static_cast<sizeType>(i)]) > 1e-3);
+            REQUIRE(
+                NeoN::mag(
+                    expectedBDF2[static_cast<sizeType>(i)] - expectedBDF1[static_cast<sizeType>(i)]
+                )
+                > 1e-3
+            );
+        }
+
+        for (const std::string schemeName : {"BDF1", "BDF2"})
+        {
+            NeoN::Dictionary fvSchemes;
+            NeoN::Dictionary ddtSchemes;
+            ddtSchemes.insert("ddt(U)", schemeName);
+            fvSchemes.insert("ddtSchemes", ddtSchemes);
+            fvcc::DdtOperator<Vec3> ddtOp(NeoN::dsl::Operator::Type::Implicit, u);
+            ddtOp.read(fvSchemes);
+
+            const auto& expected = schemeName == "BDF1" ? expectedBDF1 : expectedBDF2;
+            auto fluxCorr = fvcc::ddtFluxCorr(rho, u, flux, dt, ddtOp.scheme());
+            auto corrBH = fluxCorr.boundaryData().value().copyToHost();
+
+            for (NeoN::localIdx i = 0; i < nBndFaces; ++i)
+            {
+                INFO(schemeName << ", boundary face " << i);
+                REQUIRE(
+                    corrBH.view()[i]
+                    == Catch::Approx(expected[static_cast<sizeType>(i)]).margin(1e-12)
+                );
+            }
+        }
+    }
 }
