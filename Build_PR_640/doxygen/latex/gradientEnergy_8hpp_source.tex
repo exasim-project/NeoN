@@ -1,0 +1,72 @@
+\doxysection{gradient\+Energy.\+hpp}
+\hypertarget{gradientEnergy_8hpp_source}{}\label{gradientEnergy_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/gradientEnergy.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/gradientEnergy.hpp}}
+\mbox{\hyperlink{gradientEnergy_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fixedFluxPressure_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volume/fixedFluxPressure.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00011}00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00014}00014\ \textcolor{comment}{/*\ @brief\ Gradient-\/energy\ boundary\ condition.}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00015}00015\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00016}00016\ \textcolor{comment}{\ *\ Mirrors\ OpenFOAM's\ gradientEnergyFvPatchScalarField:\ the\ boundary\ GRADIENT\ (refGrad)\ is}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ set\ EXTERNALLY\ (by\ NeoN::finiteVolume::cellCentred::mapEnergyBoundaryFromTemperature,\ see}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ energyBoundaryMapping.hpp)\ every\ call\ from\ the\ current\ temperature\ boundary\ gradient}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ (chain-\/rule-\/mapped\ through\ Cv),\ so\ he's\ Neumann-\/type\ boundary\ (e.g.\ an\ adiabatic/}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ zero-\/heat-\/flux\ wall)\ tracks\ T's\ own\ gradient-\/type\ condition\ live.\ Reuses}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ detail::applyFixedFluxPressure\ -\/-\/\ the\ read-\/don't-\/overwrite\ "{}external\ push"{}\ mechanism\ it}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ implements\ is\ exactly\ what's\ needed\ here\ too,\ under\ a\ name\ that\ matches\ the\ physical}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ quantity\ (energy,\ not\ pressure)\ this\ boundary\ actually\ represents.}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00024}00024\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00025}00025\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy}{00026}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy}{GradientEnergy}}\ :}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<GradientEnergy<ValueType>>}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<GradientEnergy<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00031}00031\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_a3e0eccbc6fc34daf74852e14b4541480}{00035}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_a3e0eccbc6fc34daf74852e14b4541480}{GradientEnergy}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ \{\},\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{true},\ .fixesValue\ =\ \textcolor{keyword}{false}\}),\ mesh\_(mesh)}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00037}00037\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_ab6bd7749a241a2364ab9aca3746baf44}{00039}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_ab6bd7749a241a2364ab9aca3746baf44}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00040}00040\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a1f8fd5dc16cc7ec9df36dc2e8ba4a88e}{detail::applyFixedFluxPressure}}(domainVector,\ mesh\_,\ this-\/>range());}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00042}00042\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_ab7e4deaae9ca4397a1b2c33e9482dc58}{00044}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_ab7e4deaae9ca4397a1b2c33e9482dc58}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}gradientEnergy"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_a7ed7e64b3834b6455751f113b1db544d}{00046}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_a7ed7e64b3834b6455751f113b1db544d}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_ab7e4deaae9ca4397a1b2c33e9482dc58}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00048}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_ae8b5d2821b0ef4d7a3654bdb97f3a7e1}{00048}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_ae8b5d2821b0ef4d7a3654bdb97f3a7e1}{doc}}()}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00049}00049\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Gradient-\/energy\ boundary\ condition\ (externally\ updatable\ per-\/face\ refGrad,\ "{}}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}mirrors\ OpenFOAM's\ gradientEnergyFvPatchScalarField)."{}};}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00052}00052\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_a5b33cd69832483a8b652cdf01fbc8eb1}{00054}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_a5b33cd69832483a8b652cdf01fbc8eb1}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_acf5d478d34a73ee4a796e726d5ee84a8}{00056}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1GradientEnergy_acf5d478d34a73ee4a796e726d5ee84a8}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00057}00057\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<GradientEnergy>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00059}00059\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00061}00061\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00064}00064\ \};}
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{gradientEnergy_8hpp_source_l00066}00066\ \}}
+
+\end{DoxyCode}
