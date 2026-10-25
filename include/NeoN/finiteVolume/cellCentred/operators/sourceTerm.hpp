@@ -45,6 +45,10 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const;
 
+    // Segregated vector solve: one scalar matrix shared by all components.
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls) const
+        requires(!std::is_same_v<ValueType, scalar>);
+
     void read(const Input&) {}
 
     std::string getName() const { return "sourceTerm"; }
