@@ -10,6 +10,7 @@
 
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
@@ -46,6 +47,76 @@ void requireCompatible(const ScalarSurf& a, const ScalarSurf& b, const char* op)
             std::string(op) + ": operands must have matching internal and boundary sizes"
         );
     }
+}
+
+using ScalarVec = NeoN::Vector<NeoN::scalar>;
+
+void divVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
+{
+    auto [rv, bv] = NeoN::views(r, b);
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] / bv[i]; },
+        std::move(label)
+    );
+}
+
+void divVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar s, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] / s; },
+        std::move(label)
+    );
+}
+
+void rdivVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar s, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = s / rv[i]; },
+        std::move(label)
+    );
+}
+
+ScalarSurf seededLike(const ScalarSurf& proto)
+{
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
+    auto bcs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(proto.mesh());
+    ScalarSurf result(proto.exec(), "tmp", proto.mesh(), bcs);
+    result.internalVector() = proto.internalVector();
+    result.boundaryData().value() = proto.boundaryData().value();
+    return result;
+}
+
+ScalarSurf divFieldField(const ScalarSurf& a, const ScalarSurf& b)
+{
+    requireCompatible(a, b, "field / field");
+    ScalarSurf r = seededLike(a);
+    divVecVec(r.exec(), r.internalVector(), b.internalVector(), "surfFieldDiv");
+    divVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "surfFieldDiv::b");
+    return r;
+}
+
+ScalarSurf divFieldScalar(const ScalarSurf& a, NeoN::scalar s)
+{
+    ScalarSurf r = seededLike(a);
+    divVecScalar(r.exec(), r.internalVector(), s, "surfFieldDivScalar");
+    divVecScalar(r.exec(), r.boundaryData().value(), s, "surfFieldDivScalar::b");
+    return r;
+}
+
+ScalarSurf rdivScalarField(const ScalarSurf& a, NeoN::scalar s)
+{
+    ScalarSurf r = seededLike(a);
+    rdivVecScalar(r.exec(), r.internalVector(), s, "surfFieldRdivScalar");
+    rdivVecScalar(r.exec(), r.boundaryData().value(), s, "surfFieldRdivScalar::b");
+    return r;
 }
 }
 
@@ -206,6 +277,24 @@ void registerSurfaceField(nb::module_& m)
             },
             "other"_a,
             "Element-wise subtraction of two scalar surface fields"
+        )
+        .def(
+            "__truediv__",
+            &divFieldField,
+            "other"_a,
+            "Element-wise division of two scalar surface fields"
+        )
+        .def(
+            "__truediv__",
+            &divFieldScalar,
+            "scalar"_a,
+            "Divide a scalar surface field by a constant"
+        )
+        .def(
+            "__rtruediv__",
+            &rdivScalarField,
+            "scalar"_a,
+            "Divide a constant by a scalar surface field"
         )
         .def(
             "__mul__",
