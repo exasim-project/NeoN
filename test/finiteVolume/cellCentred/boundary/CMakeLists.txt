@@ -4,3 +4,5 @@
 
 add_subdirectory(volume)
 add_subdirectory(surface)
+
+neon_unit_test(energyBoundaryMapping)
