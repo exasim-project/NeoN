@@ -1,6 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
-- Add a density-weighted `ddtFluxCorr(rho, U, phi, dt, scheme)` overload for compressible mass fluxes [#711](https://github.com/exasim-project/NeoN/pull/711)
+- Add a density-weighted `ddtFluxCorr(rho, U, phi, dt, scheme)` overload for compressible mass fluxes, and make `ddtFluxCorr` follow OpenFOAM's `fvcDdtPhiCorr` for BDF2 (one coupling coefficient) and on boundary faces (zero for the density-weighted overload) [#711](https://github.com/exasim-project/NeoN/pull/711)
 - Support segregated (scalar-matrix) assembly in `SourceTerm`, so source terms can be used in scalar equations such as the energy equation [#710](https://github.com/exasim-project/NeoN/pull/710)
 - Support BDF2 (`backward`) in the explicit `DdtOperator`, using the same start-up rule as the implicit path, so explicit and implicit temporal terms can be mixed stably [#708](https://github.com/exasim-project/NeoN/pull/708)
 ### Misc
