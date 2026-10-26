@@ -13,6 +13,7 @@
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -199,9 +200,14 @@ public:
                 this->exec(), mesh, tokens
             );
         }
+        const auto operatorScaling = this->getCoefficient();
+        juliaEvalString_ = "Laplace{Float64}(" + std::to_string(operatorScaling[0]) + ")";
     }
 
     std::string getName() const { return "LaplacianOperator"; }
+
+    std::string juliaOP() const { return juliaEvalString_; }
+    std::string juliaOP() { return juliaEvalString_; }
 
     // TODO make this private and let only friends use it
     Dictionary getConfig() const
@@ -219,6 +225,7 @@ private:
 
     const SurfaceField<scalar>& gamma_;
 
+    std::string juliaEvalString_;
     std::unique_ptr<LaplacianOperatorFactory<FieldValueType, FieldValueType>> sameTypeStrategy_;
     // Only initialized when FieldValueType != scalar; used to assemble into a
     // LinearSystem<scalar, FieldValueType> for segregated vector solves.

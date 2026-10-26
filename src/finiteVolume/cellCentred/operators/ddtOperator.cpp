@@ -310,8 +310,12 @@ void DdtOperator<ValueType>::implicitOperation(
 template<typename ValueType>
 void DdtOperator<ValueType>::read(const Input& input)
 {
+    const auto operatorScaling = this->getCoefficient();
+
     if (!std::holds_alternative<NeoN::Dictionary>(input))
     {
+        juliaEvalString_ =
+            "Ddt{Float64, BDF1{Float64}}(BDF1(DELTAT), " + std::to_string(operatorScaling[0]) + ")";
         return;
     }
 
@@ -319,6 +323,8 @@ void DdtOperator<ValueType>::read(const Input& input)
 
     if (!dict.contains("ddtSchemes"))
     {
+        juliaEvalString_ =
+            "Ddt{Float64, BDF1{Float64}}(BDF1(DELTAT), " + std::to_string(operatorScaling[0]) + ")";
         return; // keep default BDF1
     }
 
@@ -340,12 +346,16 @@ void DdtOperator<ValueType>::read(const Input& input)
     }
     if (schemeName == "BDF1")
     {
+        juliaEvalString_ =
+            "Ddt{Float64, BDF1{Float64}}(BDF1(DELTAT), " + std::to_string(operatorScaling[0]) + ")";
         scheme_ = DdtScheme::BDF1;
         return;
     }
     // static timeIntegration::BDF2 bdf2Scheme;
     if (schemeName == "BDF2")
     {
+        juliaEvalString_ =
+            "Ddt{Float64, BDF2{Float64}}(BDF2(DELTAT), " + std::to_string(operatorScaling[0]) + ")";
         scheme_ = DdtScheme::BDF2;
         return;
     }
