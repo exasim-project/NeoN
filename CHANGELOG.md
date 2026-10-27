@@ -24,6 +24,7 @@
 - Support AssemblyType != ValueType for Vec3 fields [#536](https://github.com/exasim-project/NeoN/pull/536)
 - Bump Kokkos to 5.0.2 [#476](https://github.com/exasim-project/NeoN/pull/476)
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
+- Add the `limitedLinearV` surface interpolation scheme for vector fields, which limits the whole vector with one limiter along its face difference, as OpenFOAM does [#645](https://github.com/exasim-project/NeoN/pull/645)
 
 ## Fixes
 - Fix citation metadata and publish releases on Zenodo automatically [#610](https://github.com/exasim-project/NeoN/pull/610)
