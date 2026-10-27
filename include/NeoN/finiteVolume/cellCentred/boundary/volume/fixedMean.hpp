@@ -140,9 +140,6 @@ public:
         correctBoundaryCondition(domainVector);
     }
 
-    // context value that makes the patch keep the values of its last update
-    static constexpr const char* evaluateOnlyKey = "evaluateOnly";
-
     static std::string name() { return "fixedMean"; }
 
     std::string getName() const override { return name(); }
