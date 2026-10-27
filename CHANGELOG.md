@@ -14,6 +14,7 @@
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add `fixedMean` and `flowRateInletVelocity` volume boundary conditions [#643](https://github.com/exasim-project/NeoN/pull/643)
+- Let `fixedMean` keep its values for an evaluation that follows a solve (context value `evaluateOnly`), as OpenFOAM does [#646](https://github.com/exasim-project/NeoN/pull/646)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
 - Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4` or `{"type": "neon::MergedPgm", ...}`. It supports `generate_reuse`, which the Ginkgo solver now uses to reuse the multigrid setup across solves (`reuseSetup`, default on), and an OpenFOAM-style `scale_correction` of the coarse correction [#602](https://github.com/exasim-project/NeoN/pull/602)
 

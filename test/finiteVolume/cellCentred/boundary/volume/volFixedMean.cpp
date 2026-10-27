@@ -202,6 +202,34 @@ TEST_CASE("fixedMean_volume")
         REQUIRE(changed);
     }
 
+    SECTION("evaluateOnly keeps the values of the last update " + execName)
+    {
+        // OpenFOAM updates fixedMean when the matrix is built; the evaluation after the solve
+        // keeps those values although the cells have changed in between
+        const NeoN::scalar meanValue = 100000.0;
+        auto field = makeField([](NeoN::scalar c) { return 99000.0 + 500.0 * c; });
+        auto boundary = makeBoundary(meanValue);
+        boundary->correctBoundaryCondition(field);
+        auto before = field.boundaryData().value().copyToHost();
+
+        NeoN::fill(field.internalVector(), 101000.0);
+        fvcc::BoundaryContext frozen;
+        frozen.insertValue("evaluateOnly", 1.0);
+        boundary->correctBoundaryCondition(field, frozen);
+        auto kept = field.boundaryData().value().copyToHost();
+        for (auto i = patch0Range.first; i < patch0Range.second; ++i)
+            REQUIRE(kept.view()[i] == before.view()[i]);
+
+        // a context without the key, or with it at zero, recomputes from the new cells
+        fvcc::BoundaryContext open;
+        open.insertValue("evaluateOnly", 0.0);
+        boundary->correctBoundaryCondition(field, open);
+        auto after = field.boundaryData().value().copyToHost();
+        for (auto i = patch0Range.first; i < patch0Range.second; ++i)
+            REQUIRE(after.view()[i] == Catch::Approx(meanValue));
+        REQUIRE(after.view()[patch0Range.first] != Catch::Approx(before.view()[patch0Range.first]));
+    }
+
     SECTION("a missing meanValue is rejected " + execName)
     {
         NeoN::Dictionary dict;
