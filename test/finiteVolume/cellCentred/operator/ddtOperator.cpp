@@ -139,6 +139,42 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         }
     }
 
+    SECTION("the ddtSchemes default applies to a field without an entry of its own " + execName)
+    {
+        using fvcc::DdtScheme;
+
+        auto schemeRead = [&](const NeoN::Dictionary& ddtSchemes)
+        {
+            NeoN::Dictionary fvSchemes;
+            fvSchemes.insert("ddtSchemes", ddtSchemes);
+            auto ddtOp = dsl::exp::ddt(phi);
+            ddtOp.read(fvSchemes);
+            return ddtOp.ddtScheme();
+        };
+
+        // only a default entry
+        NeoN::Dictionary onlyDefault;
+        onlyDefault.insert("default", std::string("BDF2"));
+        REQUIRE(schemeRead(onlyDefault) == DdtScheme::BDF2);
+
+        // the entry of the field wins over the default
+        NeoN::Dictionary fieldAndDefault;
+        fieldAndDefault.insert("default", std::string("BDF2"));
+        fieldAndDefault.insert("ddt(phi)", std::string("BDF1"));
+        REQUIRE(schemeRead(fieldAndDefault) == DdtScheme::BDF1);
+
+        // the entry of another field does not apply to phi, the default does
+        NeoN::Dictionary otherField;
+        otherField.insert("default", std::string("steadyState"));
+        otherField.insert("ddt(psi)", std::string("BDF2"));
+        REQUIRE(schemeRead(otherField) == DdtScheme::SteadyState);
+
+        // without a ddtSchemes entry at all the scheme stays BDF1, as before
+        auto ddtOp = dsl::exp::ddt(phi);
+        ddtOp.read(NeoN::Dictionary {});
+        REQUIRE(ddtOp.ddtScheme() == DdtScheme::BDF1);
+    }
+
     SECTION("implicit DdtOperator backward (BDF2) " + execName)
     {
         // fvSchemes selecting backward
