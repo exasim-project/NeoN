@@ -1,5 +1,6 @@
 # Version 0.3.0 (unreleased)
 ## Features
+- Add `waveTransmissive` volume boundary condition (non-reflecting compressible outflow) and a scalar-value slot (`insertValue`/`value`/`hasValue`) in `BoundaryContext` [#626](https://github.com/exasim-project/NeoN/pull/626)
 - Add `slip` and `inletOutlet` volume boundary conditions [#565](https://github.com/exasim-project/NeoN/pull/565)
 - Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)
 - Add experimental support for cell based assembly strategies [#471](https://github.com/exasim-project/NeoN/pull/471),[#517](https://github.com/exasim-project/NeoN/pull/517), [#473](https://github.com/exasim-project/NeoN/pull/473)
