@@ -11,6 +11,7 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/fields/field.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/detail/patchSum.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
@@ -94,6 +95,13 @@ inline void setFixedMeanValue(
 // outlet where the mean, not the profile, is prescribed. See detail::setFixedMeanValue for the
 // exact formula.
 //
+// The values are refreshed from the adjacent cells on every call, which is OpenFOAM's
+// updateCoeffs(). OpenFOAM runs that once, when the matrix of the field is built; the evaluate()
+// that follows the solve keeps the values, so the pressure corrector sees the patch values
+// computed from the cells *before* the solve. A caller that reproduces this sets the context
+// value "evaluateOnly" to a positive number for such an evaluation: the patch keeps its values.
+// Without the key the patch always recomputes.
+//
 // Scalar fields only. meanValue is a plain scalar; OpenFOAM's Function1 form `meanValue constant X`
 // has to be flattened by the case reader.
 class FixedMean : public VolumeBoundaryFactory<NeoN::scalar>::template Register<FixedMean>
@@ -124,6 +132,16 @@ public:
     {
         detail::setFixedMeanValue(domainVector, mesh_, this->range(), meanValue_);
     }
+
+    virtual void
+    correctBoundaryCondition(Field<NeoN::scalar>& domainVector, const BoundaryContext& ctx) final
+    {
+        if (ctx.hasValue(evaluateOnlyKey) && ctx.value(evaluateOnlyKey) > NeoN::scalar(0)) return;
+        correctBoundaryCondition(domainVector);
+    }
+
+    // context value that makes the patch keep the values of its last update
+    static constexpr const char* evaluateOnlyKey = "evaluateOnly";
 
     static std::string name() { return "fixedMean"; }
 
