@@ -15,6 +15,11 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+/// BoundaryContext value that a solver sets (to a positive number) for an evaluation that follows
+/// a solve. Dirichlet patches that OpenFOAM refreshes only in updateCoeffs(), once when the matrix
+/// of the field is built (fixedMean, plenumPressure), then keep their values.
+inline constexpr const char* evaluateOnlyKey = "evaluateOnly";
+
 template<typename ValueType>
 class VolumeField;
 
