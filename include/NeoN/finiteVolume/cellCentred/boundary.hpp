@@ -13,6 +13,10 @@
 #include "boundary/volume/empty.hpp"
 #include "boundary/volume/calculated.hpp"
 #include "boundary/volume/extrapolated.hpp"
+#include "boundary/volume/fixedMean.hpp"
+#include "boundary/volume/flowRateInletVelocity.hpp"
+#include "boundary/volume/plenumPressure.hpp"
+#include "boundary/volume/pressureInletVelocity.hpp"
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
 #include "boundary/volume/fixedFluxPressure.hpp"
@@ -20,6 +24,7 @@
 #include "boundary/volume/slip.hpp"
 #include "boundary/volume/inletOutlet.hpp"
 #include "boundary/volume/totalPressure.hpp"
+#include "boundary/volume/waveTransmissive.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"

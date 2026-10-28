@@ -1,5 +1,6 @@
 # Version 0.3.0 (unreleased)
 ## Features
+- Add `waveTransmissive` volume boundary condition (non-reflecting compressible outflow) and a scalar-value slot (`insertValue`/`value`/`hasValue`) in `BoundaryContext` [#626](https://github.com/exasim-project/NeoN/pull/626)
 - Add `slip` and `inletOutlet` volume boundary conditions [#565](https://github.com/exasim-project/NeoN/pull/565)
 - Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)
 - Add experimental support for cell based assembly strategies [#471](https://github.com/exasim-project/NeoN/pull/471),[#517](https://github.com/exasim-project/NeoN/pull/517), [#473](https://github.com/exasim-project/NeoN/pull/473)
@@ -12,6 +13,8 @@
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
+- Add `fixedMean` and `flowRateInletVelocity` volume boundary conditions [#644](https://github.com/exasim-project/NeoN/pull/644)
+- Add the `plenumPressure` and `pressureInletVelocity` volume boundary conditions, and let `fixedMean` keep its values for an evaluation that follows a solve (context value `evaluateOnly`), as OpenFOAM does [#645](https://github.com/exasim-project/NeoN/pull/645)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
 - Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4` or `{"type": "neon::MergedPgm", ...}`. It supports `generate_reuse`, which the Ginkgo solver now uses to reuse the multigrid setup across solves (`reuseSetup`, default on), and an OpenFOAM-style `scale_correction` of the coarse correction [#602](https://github.com/exasim-project/NeoN/pull/602)
 

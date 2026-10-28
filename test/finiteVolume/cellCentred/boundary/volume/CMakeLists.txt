@@ -3,8 +3,13 @@
 # SPDX-License-Identifier: Unlicense
 
 neon_unit_test(volFixedValue)
+neon_unit_test(volFixedMean)
+neon_unit_test(volFlowRateInletVelocity)
 neon_unit_test(volFixedGradient)
 neon_unit_test(volSymmetry)
 neon_unit_test(volInletOutlet)
 neon_unit_test(volTotalPressure)
 neon_unit_test(volFixedFluxPressure)
+neon_unit_test(volWaveTransmissive)
+neon_unit_test(volPressureInletVelocity)
+neon_unit_test(volPlenumPressure)
