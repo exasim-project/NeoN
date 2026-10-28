@@ -1,5 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
+- Add the `limitedLinearV` surface interpolation scheme for vector fields, which limits the whole vector with one limiter along its face difference, as OpenFOAM does [#724](https://github.com/exasim-project/NeoN/pull/724)
 - Add `freestreamVelocity` and `freestreamPressure` volume boundary conditions and a `mixed` boundary attribute [#722](https://github.com/exasim-project/NeoN/pull/722)
 - Add the `plenumPressure` and `pressureInletVelocity` volume boundary conditions, and let `fixedMean` keep its values for an evaluation that follows a solve (context value `evaluateOnly`), as OpenFOAM does [#721](https://github.com/exasim-project/NeoN/pull/721)
 - Add `fixedMean` and `flowRateInletVelocity` volume boundary conditions [#720](https://github.com/exasim-project/NeoN/pull/720)
