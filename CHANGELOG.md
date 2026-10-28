@@ -24,7 +24,7 @@
 - Cache the Ginkgo distributed matrix across solves while the local value buffer is unchanged [#635](https://github.com/exasim-project/NeoN/pull/635)
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
 - Added backward ddtScheme and scheme selection mechanism [#419](https://github.com/exasim-project/NeoN/pull/419)
-- Use the `ddtSchemes` default entry in `DdtOperator::read` for a field without an entry of its own, as OpenFOAM does [#644](https://github.com/exasim-project/NeoN/pull/644)
+- Use the `ddtSchemes` default entry in `DdtOperator::read` for a field without an entry of its own, as OpenFOAM does [#646](https://github.com/exasim-project/NeoN/pull/646)
 - Support AssemblyType != ValueType for Vec3 fields [#536](https://github.com/exasim-project/NeoN/pull/536)
 - Bump Kokkos to 5.0.2 [#476](https://github.com/exasim-project/NeoN/pull/476)
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
