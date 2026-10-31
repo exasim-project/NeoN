@@ -65,7 +65,7 @@ build_and_benchmark() {
 
     # Use the Ginkgo of the image unless this branch requests a commit it lacks.
     local ginkgo_args
-    ginkgo_args="$(./ci/lrz-gitlab/ginkgo-cmake-args.sh)"
+    ginkgo_args="$(./ci/ginkgo-cmake-args.sh)"
 
     echo ">>> Configuring build"
     if [[ "$GPU_VENDOR" == "nvidia" ]]; then

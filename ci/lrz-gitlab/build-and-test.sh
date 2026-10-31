@@ -26,7 +26,7 @@ echo "=== MPI launcher: ${MPIEXEC} ==="
 [ -n "${MPIEXEC}" ] && { "${MPIEXEC}" --version | head -4 || true; }
 
 # Use the Ginkgo of the image unless cmake/Versions.cmake requests a commit it lacks.
-GINKGO_ARGS="$(./ci/lrz-gitlab/ginkgo-cmake-args.sh)"
+GINKGO_ARGS="$(./ci/ginkgo-cmake-args.sh)"
 
 echo "=== Tool versions ==="
 cmake --version
