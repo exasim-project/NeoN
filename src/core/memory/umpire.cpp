@@ -44,7 +44,11 @@ void UmpireMempoolHandler::setupUmpirePool(MemorySpace memSpace, sizeType size)
     case MemorySpace::GPU:
     {
         auto allocator = rm.getAllocator("DEVICE");
-        rm.makeAllocator<umpire::strategy::QuickPool>("DEVICE_POOL", allocator, size);
+        // 256-byte alignment matches cudaMalloc/hipMalloc; Ginkgo shares this pool (see
+        // createGkoExecutor) and expects device-allocator alignment, not Umpire's 16-byte default
+        rm.makeAllocator<umpire::strategy::QuickPool>(
+            "DEVICE_POOL", allocator, size, umpire::strategy::QuickPool::s_default_next_block_size, 256
+        );
         break;
     }
     case MemorySpace::CPU:
