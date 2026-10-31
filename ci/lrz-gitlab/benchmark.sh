@@ -63,16 +63,20 @@ build_and_benchmark() {
     git fetch origin "${branch}"
     git checkout "${branch}"
 
+    # Use the Ginkgo of the image unless this branch requests a commit it lacks.
+    local ginkgo_args
+    ginkgo_args="$(./ci/lrz-gitlab/ginkgo-cmake-args.sh)"
+
     echo ">>> Configuring build"
     if [[ "$GPU_VENDOR" == "nvidia" ]]; then
-        cmake --preset $PRESET -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+        cmake --preset $PRESET ${ginkgo_args} -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     elif [[ "$GPU_VENDOR" == "amd" ]]; then
         # Set up environment
         export CXX_COMPILER_PATH="$(which g++)"
         export CXX_SOURCE="${CXX_COMPILER_PATH%/*/*}"
         export CXX_LIBDIR="${CXX_SOURCE}/lib64"
         export LD_LIBRARY_PATH=${CXX_LIBDIR}:${LD_LIBRARY_PATH}
-        cmake --preset $PRESET \
+        cmake --preset $PRESET ${ginkgo_args} \
             -DCMAKE_PREFIX_PATH=/opt/rocm \
             -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang \
             -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ \
@@ -82,7 +86,7 @@ build_and_benchmark() {
             -DKokkos_ARCH_AMD_GFX90A=ON \
             -DNeoN_WITH_THREADS=OFF
     elif [[ "$GPU_VENDOR" == "intel" ]]; then
-        cmake --preset $PRESET \
+        cmake --preset $PRESET ${ginkgo_args} \
             -DCMAKE_CXX_COMPILER=icpx \
             -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
             -DKokkos_ENABLE_SYCL=ON \
@@ -90,7 +94,7 @@ build_and_benchmark() {
             -DNeoN_WITH_THREADS=OFF \
             -DCMAKE_BUILD_TYPE="release"
     else
-        cmake --preset $PRESET -DNeoN_WITH_THREADS=OFF
+        cmake --preset $PRESET ${ginkgo_args} -DNeoN_WITH_THREADS=OFF
     fi
 
     echo ">>> Building"
