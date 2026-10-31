@@ -171,15 +171,19 @@ jobs:
 
       - name: Build NeoN with Ginkgo
         run: |
-          cmake --preset ${{matrix.preset}} \
+          # use the Ginkgo of the image unless cmake/Versions.cmake requests a commit it lacks
+          GINKGO_ARGS="$(./ci/lrz-gitlab/ginkgo-cmake-args.sh)"
+          cmake --preset ${{matrix.preset}} ${GINKGO_ARGS} \
             -DNeoN_BUILD_TESTS=ON \
             -DNeoN_DEVEL_TOOLS=OFF \
             -DNeoN_WITH_GINKGO=ON \
             -DMPIEXEC_MAX_NUMPROCS=3 \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
           cmake --build --preset ${{matrix.preset}}
-          # fail if CPM fetched Ginkgo instead of using the one from the image
-          grep "^Ginkgo_DIR:PATH=/opt/ginkgo" build/${{matrix.preset}}/CMakeCache.txt
+          # fail if CPM fetched Ginkgo although the image provides the requested commit
+          if [ -z "${GINKGO_ARGS}" ]; then
+            grep "^Ginkgo_DIR:PATH=/opt/ginkgo" build/${{matrix.preset}}/CMakeCache.txt
+          fi
 
       - name: Execute unit tests NeoN
         run: ctest --preset ${{matrix.preset}} -E bench
