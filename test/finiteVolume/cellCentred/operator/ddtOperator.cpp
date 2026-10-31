@@ -114,6 +114,117 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
         }
     }
 
+    SECTION("explicit DdtOperator honours coefficient " + execName)
+    {
+        auto ddtOp = -1.0 * dsl::exp::ddt(phi);
+        auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
+        ddtOp.explicitOperation(source, 1.0, 0.5);
+
+        const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+        const auto [volV, vals] = views(vol, hostSource);
+
+        // => -(phi^{n + 1} - phi^{n})/dt*V => -(10 -- 1)/.5*V = -22V
+        for (auto ii = 0; ii < vals.size(); ++ii)
+        {
+            REQUIRE(vals[ii] == volV[0] * TestType(-22.0));
+        }
+    }
+
+    SECTION("explicit DdtOperator (BDF2) " + execName)
+    {
+        NeoN::Dictionary fvSchemes;
+        NeoN::Dictionary ddtSchemes;
+        ddtSchemes.insert("ddt(phi)", std::string("BDF2"));
+        fvSchemes.insert("ddtSchemes", ddtSchemes);
+
+        auto ddtOp = dsl::exp::ddt(phi);
+        ddtOp.read(fvSchemes);
+
+        SECTION("falls back to BDF1 without phi^{n-1}")
+        {
+            auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
+            ddtOp.explicitOperation(source, 1.0, 0.5);
+
+            const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+            const auto [volV, vals] = views(vol, hostSource);
+
+            // => (10 -- 1)/.5*V = 22V
+            for (auto ii = 0; ii < vals.size(); ++ii)
+            {
+                REQUIRE(vals[ii] == volV[0] * TestType(22.0));
+            }
+        }
+
+        SECTION("uses phi^{n-1} once available")
+        {
+            fill(oldTime(oldTime(phi)).internalVector(), 4.0 * one<TestType>());
+            auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
+            ddtOp.explicitOperation(source, 1.0, 0.5);
+
+            const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+            const auto [volV, vals] = views(vol, hostSource);
+
+            // => (1.5*10 - 2*(-1) + 0.5*4)/.5*V = 38V
+            for (auto ii = 0; ii < vals.size(); ++ii)
+            {
+                REQUIRE(vals[ii] == volV[0] * TestType(38.0));
+            }
+        }
+    }
+
+    SECTION("explicit DdtOperator density-weighted (BDF2) " + execName)
+    {
+        fvcc::VolumeField<NeoN::scalar>& rho =
+            fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+                CreateVector<NeoN::scalar> {.name = "rho", .mesh = mesh, .timeIndex = 1}
+            );
+
+        fill(rho.internalVector(), 2.0 * one<NeoN::scalar>());
+        fill(rho.boundaryData().value(), zero<NeoN::scalar>());
+        rho.correctBoundaryConditions();
+        fill(oldTime(rho).internalVector(), 1.0 * one<NeoN::scalar>());
+        fill(oldTime(oldTime(rho)).internalVector(), 3.0 * one<NeoN::scalar>());
+        fill(oldTime(oldTime(phi)).internalVector(), 4.0 * one<TestType>());
+
+        NeoN::Dictionary fvSchemes;
+        NeoN::Dictionary ddtSchemes;
+        ddtSchemes.insert("ddt(phi)", std::string("BDF2"));
+        fvSchemes.insert("ddtSchemes", ddtSchemes);
+
+        auto ddtOp = fvcc::DdtOperator<TestType>(Operator::Type::Explicit, rho, phi);
+        ddtOp.read(fvSchemes);
+        auto source = Vector<TestType>(exec, phi.size(), zero<TestType>());
+        ddtOp.explicitOperation(source, 1.0, 0.5);
+
+        const auto [vol, hostSource] = copyToHosts(mesh.cellVolumes(), source);
+        const auto [volV, vals] = views(vol, hostSource);
+
+        // => (1.5*2*10 - 2*1*(-1) + 0.5*3*4)/.5*V = 76V
+        for (auto ii = 0; ii < vals.size(); ++ii)
+        {
+            REQUIRE(vals[ii] == volV[0] * TestType(76.0));
+        }
+    }
+
+    SECTION("explicit DdtOperator is assembled into rhs " + execName)
+    {
+        dsl::Expression<TestType> expr(exec);
+        expr.addOperator(-1.0 * dsl::exp::ddt(phi));
+
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+        expr.assemble(1.0, 0.5, ls, mesh);
+
+        const auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto [volV, rhsV] = views(vol, lsHost.rhs());
+
+        // explicit terms move to the rhs with flipped sign, volume-scaled exactly once:
+        // rhs -= -(10 -- 1)/.5*V => +22V
+        for (auto ii = 0; ii < toLocalIdx(rhsV.size()); ++ii)
+        {
+            REQUIRE(rhsV[ii] == volV[0] * TestType(22.0));
+        }
+    }
+
     SECTION("implicit DdtOperator (Euler) " + execName)
     {
         NeoN::Dictionary fvSchemes;
