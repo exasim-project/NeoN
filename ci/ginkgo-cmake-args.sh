@@ -10,7 +10,7 @@
 # -DCMAKE_DISABLE_FIND_PACKAGE_Ginkgo=ON, so that CPM builds the requested commit. The
 # images record the commit they were built from in /opt/ginkgo/share/ginkgo-revision.
 #   ginkgo-cmake-args.sh [<NeoN source dir>]
-# Diagnostics go to stderr, use as: cmake ... $(./ci/lrz-gitlab/ginkgo-cmake-args.sh)
+# Diagnostics go to stderr, use as: cmake ... $(./ci/ginkgo-cmake-args.sh)
 
 set -euo pipefail
 

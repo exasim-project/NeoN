@@ -172,7 +172,7 @@ jobs:
       - name: Build NeoN with Ginkgo
         run: |
           # use the Ginkgo of the image unless cmake/Versions.cmake requests a commit it lacks
-          GINKGO_ARGS="$(./ci/lrz-gitlab/ginkgo-cmake-args.sh)"
+          GINKGO_ARGS="$(./ci/ginkgo-cmake-args.sh)"
           cmake --preset ${{matrix.preset}} ${GINKGO_ARGS} \
             -DNeoN_BUILD_TESTS=ON \
             -DNeoN_DEVEL_TOOLS=OFF \
