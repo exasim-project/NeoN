@@ -25,6 +25,9 @@ MPIEXEC="$(command -v mpiexec.mpich || command -v mpiexec || true)"
 echo "=== MPI launcher: ${MPIEXEC} ==="
 [ -n "${MPIEXEC}" ] && { "${MPIEXEC}" --version | head -4 || true; }
 
+# Use the Ginkgo of the image unless cmake/Versions.cmake requests a commit it lacks.
+GINKGO_ARGS="$(./ci/lrz-gitlab/ginkgo-cmake-args.sh)"
+
 echo "=== Tool versions ==="
 cmake --version
 g++ --version || clang++ --version
@@ -36,7 +39,7 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
 
     echo "=== Configuring, building, and testing NeoN on NVIDIA ==="
     export CUDA_VISIBLE_DEVICES=0
-    cmake --preset develop \
+    cmake --preset develop ${GINKGO_ARGS} \
         -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_CUDA_ARCHITECTURES=89 \
         -DNeoN_WITH_THREADS=OFF \
@@ -63,7 +66,7 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
     which mpirun
 
     echo "=== Configuring, building, and testing NeoN on AMD ==="
-    cmake --preset develop \
+    cmake --preset develop ${GINKGO_ARGS} \
         -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_PREFIX_PATH=/opt/rocm \
         -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang \
@@ -96,7 +99,7 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
     export ZE_FLAT_DEVICE_HIERARCHY=COMPOSITE
 
     echo "=== Configuring, building, and testing NeoN on Intel ==="
-    cmake --preset develop \
+    cmake --preset develop ${GINKGO_ARGS} \
         -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_CXX_COMPILER=icpx \
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
