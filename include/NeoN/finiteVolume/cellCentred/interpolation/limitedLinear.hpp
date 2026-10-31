@@ -16,15 +16,24 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-/* @brief blended central/upwind weights of the limitedLinear scheme.
+/* @brief blended central/upwind weights of the limitedLinear and limitedLinearV schemes.
  *
  * w_f = limiter * w_CD + (1 - limiter) * w_upwind, with the limiter built from the TVD ratio r of
  * the upwind-cell gradient to the face gradient: limiter = max(min(twoByk * r, 1), 0), where
  * twoByk = 2/k: k = 1 limits most strongly (fully bounded), smaller k relaxes the blend towards
  * central differencing.
+ *
+ * For a scalar field r is the ratio of the slopes along the cell-to-cell vector d,
+ *   gradf = phiN - phiP,  gradcf = d & grad(phi)_upwind.
+ * For a vector field (limitedLinearV, OpenFOAM's NVDVTVDV) the ratio is taken in the direction of
+ * the face difference, so a single limiter, and hence a single weight, serves all components:
+ *   gradfV = phiN - phiP,  gradf = gradfV & gradfV,  gradcf = gradfV & (d & grad(phi)_upwind).
+ *
+ * @tparam ValueType scalar or Vec3
  */
+template<typename ValueType>
 void computeLimitedLinearWeights(
-    const VolumeField<scalar>& src,
+    const VolumeField<ValueType>& src,
     const SurfaceField<scalar>& flux,
     const SurfaceField<scalar>& cdWeights,
     const SurfaceField<Vec3>& faceDeltaOwner,
@@ -36,23 +45,26 @@ void computeLimitedLinearWeights(
 
 /* @brief limitedLinear surface interpolation.
  *
- * Registered for scalar fields only. Limiting a vector field is conventionally done on
- * magSqr(phi), which needs a derived scalar field and its gradient; that variant is not
- * implemented here, so a Vec3 field must use another scheme.
+ * Registered as "limitedLinear" for scalar fields and, with VectorLimited, as "limitedLinearV" for
+ * Vec3 fields. limitedLinearV limits the whole vector with one limiter taken along the direction
+ * of the face difference (OpenFOAM's limitedLinearV); it is not the scalar limiter applied to each
+ * component and not the one on magSqr(phi). The vector variant always uses the Gauss-Green
+ * gradient of the field: the cell-limited marker is a scalar-field option.
  *
- * Spec: "limitedLinear <k> [cellLimited]". The optional trailing word selects the gradient the
- * TVD ratio is built from. That gradient is a property of the transported *field*, not of this
- * scheme -- a framework that keeps a per-field table of gradient schemes resolves it there and
- * states the outcome here, because this class has no field-to-scheme table to consult. Omitting
- * it keeps the unlimited Gauss-Green gradient, which reports a larger upwind-cell slope, hence a
- * larger TVD ratio and a limiter closer to pure central differencing.
+ * Spec: "limitedLinear <k> [cellLimited]" and "limitedLinearV <k>". The optional trailing word
+ * selects the gradient the TVD ratio is built from. That gradient is a property of the transported
+ * *field*, not of this scheme -- a framework that keeps a per-field table of gradient schemes
+ * resolves it there and states the outcome here, because this class has no field-to-scheme table to
+ * consult. Omitting it keeps the unlimited Gauss-Green gradient, which reports a larger upwind-cell
+ * slope, hence a larger TVD ratio and a limiter closer to pure central differencing.
  */
-template<typename ValueType>
+template<typename ValueType, bool VectorLimited = false>
 class LimitedLinear :
-    public SurfaceInterpolationFactory<ValueType>::template Register<LimitedLinear<ValueType>>
+    public SurfaceInterpolationFactory<ValueType>::template Register<
+        LimitedLinear<ValueType, VectorLimited>>
 {
-    using Base =
-        SurfaceInterpolationFactory<ValueType>::template Register<LimitedLinear<ValueType>>;
+    using Base = SurfaceInterpolationFactory<ValueType>::template Register<
+        LimitedLinear<ValueType, VectorLimited>>;
 
 public:
 
@@ -65,9 +77,13 @@ public:
         geometryScheme_->ensureFaceDeltas();
     };
 
-    static std::string name() { return "limitedLinear"; }
+    static std::string name() { return VectorLimited ? "limitedLinearV" : "limitedLinear"; }
 
-    static std::string doc() { return "limitedLinear interpolation (TVD limited blend)"; }
+    static std::string doc()
+    {
+        return VectorLimited ? "limitedLinearV interpolation (TVD limited blend of a vector)"
+                             : "limitedLinear interpolation (TVD limited blend)";
+    }
 
     static std::string schema() { return "none"; }
 
@@ -178,7 +194,11 @@ private:
             if (!tokens.peekIs<std::string>()) return false;
 
             const auto word = tokens.next<std::string>();
-            if (word == "cellLimited") return true;
+            if (word == "cellLimited")
+            {
+                rejectForVector();
+                return true;
+            }
             NF_THROW(
                 std::string("limitedLinear accepts only 'cellLimited' after its coefficient, got ")
                 + word
@@ -189,9 +209,23 @@ private:
         if (!dict.contains("limitedLinearGrad")) return false;
 
         const auto word = dict.get<std::string>("limitedLinearGrad");
-        if (word == "cellLimited") return true;
+        if (word == "cellLimited")
+        {
+            rejectForVector();
+            return true;
+        }
         if (word == "Gauss") return false;
         NF_THROW(std::string("limitedLinearGrad must be 'Gauss' or 'cellLimited', got ") + word);
+    }
+
+    // The cell-limited gradient is implemented for the scalar limiter only; a vector field that
+    // asks for it is a spec error rather than a silently unlimited gradient.
+    static void rejectForVector()
+    {
+        if constexpr (VectorLimited)
+        {
+            NF_THROW("limitedLinearV uses the Gauss gradient: 'cellLimited' is not supported");
+        }
     }
 
     const std::shared_ptr<GeometryScheme> geometryScheme_;
@@ -207,5 +241,7 @@ namespace NeoN
 namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::LimitedLinear<scalar>;
+// limitedLinearV: one limiter along the face difference of a vector, vector fields only.
+template class fvcc::LimitedLinear<Vec3, true>;
 
 }

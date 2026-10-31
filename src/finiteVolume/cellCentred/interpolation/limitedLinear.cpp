@@ -9,6 +9,8 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 
+#include <type_traits>
+
 namespace NeoN::finiteVolume::cellCentred
 {
 
@@ -44,6 +46,43 @@ NEON_INLINE_FUNCTION
 scalar limitedLinearLimiter(const scalar twoByk, const scalar gradf, const scalar gradcf)
 {
     return Kokkos::max(Kokkos::min(twoByk * tvdRatio(gradf, gradcf), scalar(1)), scalar(0));
+}
+
+/* @brief the two slopes the TVD ratio is built from, for a scalar field: the face difference and
+ * the upwind-cell gradient projected on the cell-to-cell vector d.
+ */
+NEON_INLINE_FUNCTION
+void faceSlopes(
+    const scalar phiP,
+    const scalar phiN,
+    const Vec3& gradUpwind,
+    const Vec3& d,
+    scalar& gradf,
+    scalar& gradcf
+)
+{
+    gradf = phiN - phiP;
+    gradcf = d & gradUpwind;
+}
+
+/* @brief the same slopes for a vector field, as OpenFOAM's NVDVTVDV: both are taken along the face
+ * difference, gradf = gradfV & gradfV and gradcf = gradfV & (d & grad(phi)). NeoN's tensor
+ * gradient is row-major, gradTensor(i, j) = d phi_i / d x_j, so `grad & d` is OpenFOAM's `d &
+ * grad`.
+ */
+NEON_INLINE_FUNCTION
+void faceSlopes(
+    const Vec3& phiP,
+    const Vec3& phiN,
+    const Tensor& gradUpwind,
+    const Vec3& d,
+    scalar& gradf,
+    scalar& gradcf
+)
+{
+    const Vec3 gradfV = phiN - phiP;
+    gradf = gradfV & gradfV;
+    gradcf = gradfV & (gradUpwind & d);
 }
 
 /* @brief owner-to-neighbour displacement C_nei - C_own of every processor face, cached per mesh.
@@ -143,8 +182,9 @@ limitedLinearLimitedGrad(const Executor& exec, const UnstructuredMesh& mesh)
 
 } // namespace
 
+template<typename ValueType>
 void computeLimitedLinearWeights(
-    const VolumeField<scalar>& src,
+    const VolumeField<ValueType>& src,
     const SurfaceField<scalar>& flux,
     const SurfaceField<scalar>& cdWeights,
     const SurfaceField<Vec3>& faceDeltaOwner,
@@ -157,14 +197,22 @@ void computeLimitedLinearWeights(
     const auto exec = weights.exec();
     const auto& mesh = weights.mesh();
 
+    // A scalar field has a Vec3 gradient, a vector field a Tensor gradient.
+    using GradType = std::conditional_t<std::is_same_v<ValueType, scalar>, Vec3, Tensor>;
+
     // Processor-aware calculated BCs so correctBoundaryConditions() fills the proc-face tail with
     // the NEIGHBOUR cell gradient, which the limiter needs when the neighbour is upwind.
-    VolumeField<Vec3> gradPhi(
-        exec, "limitedLinearGrad", mesh, createCalculatedProcBCs<VolumeBoundary<Vec3>>(mesh)
+    VolumeField<GradType> gradPhi(
+        exec, "limitedLinearGrad", mesh, createCalculatedProcBCs<VolumeBoundary<GradType>>(mesh)
     );
-    fill(gradPhi.internalVector(), zero<Vec3>());
-    fill(gradPhi.boundaryData().value(), zero<Vec3>());
-    if (cellLimitedGradient)
+    fill(gradPhi.internalVector(), zero<GradType>());
+    fill(gradPhi.boundaryData().value(), zero<GradType>());
+    if constexpr (std::is_same_v<ValueType, Vec3>)
+    {
+        if (cellLimitedGradient) NF_THROW("limitedLinearV has no cell-limited gradient");
+        GaussGreenGrad(exec, mesh).gradTensor(src, gradPhi);
+    }
+    else if (cellLimitedGradient)
     {
         // The limiter gradient follows the transported field's own gradient scheme; when that is
         // a cell-limited one the clipped slope yields a smaller TVD ratio, so the blend leans
@@ -200,8 +248,15 @@ void computeLimitedLinearWeights(
             const auto nei = neighS[facei];
             // d points owner -> neighbour: (Cf - C_own) - (Cf - C_nei).
             const Vec3 d = dOwnS[facei] - dNeiS[facei];
-            const scalar gradf = srcS[nei] - srcS[own];
-            const scalar gradcf = d & (fluxS[facei] > scalar(0) ? gradS[own] : gradS[nei]);
+            scalar gradf, gradcf;
+            faceSlopes(
+                srcS[own],
+                srcS[nei],
+                fluxS[facei] > scalar(0) ? gradS[own] : gradS[nei],
+                d,
+                gradf,
+                gradcf
+            );
             const scalar limiter = limitedLinearLimiter(twoByk, gradf, gradcf);
             const scalar upwindW = fluxS[facei] >= scalar(0) ? scalar(1) : scalar(0);
             wS[facei] = limiter * cdS[facei] + (scalar(1) - limiter) * upwindW;
@@ -244,9 +299,15 @@ void computeLimitedLinearWeights(
                 // upwind-cell selection and the local-cell weight must use that; the raw flux makes
                 // the non-owner rank pick the opposite upwind cell and write the opposite weight.
                 const scalar outwardFlux = bNormalSignV[bcfacei] * bFluxV[bcfacei];
-                const scalar gradf = bSrcV[bcfacei] - srcS[own];
-                const scalar gradcf =
-                    dProcV[procFacei] & (outwardFlux > scalar(0) ? gradS[own] : bGradV[bcfacei]);
+                scalar gradf, gradcf;
+                faceSlopes(
+                    srcS[own],
+                    bSrcV[bcfacei],
+                    outwardFlux > scalar(0) ? gradS[own] : bGradV[bcfacei],
+                    dProcV[procFacei],
+                    gradf,
+                    gradcf
+                );
                 const scalar limiter = limitedLinearLimiter(twoByk, gradf, gradcf);
                 const scalar upwindW = outwardFlux >= scalar(0) ? scalar(1) : scalar(0);
                 wB[bcfacei] = limiter * bCdV[bcfacei] + (scalar(1) - limiter) * upwindW;
@@ -255,5 +316,20 @@ void computeLimitedLinearWeights(
         );
     }
 }
+
+#define NF_DECLARE_LIMITED_LINEAR_WEIGHTS(TYPENAME)                                                \
+    template void computeLimitedLinearWeights<TYPENAME>(                                           \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        const SurfaceField<scalar>&,                                                               \
+        const SurfaceField<Vec3>&,                                                                 \
+        const SurfaceField<Vec3>&,                                                                 \
+        const scalar,                                                                              \
+        SurfaceField<scalar>&,                                                                     \
+        const bool                                                                                 \
+    )
+
+NF_DECLARE_LIMITED_LINEAR_WEIGHTS(scalar);
+NF_DECLARE_LIMITED_LINEAR_WEIGHTS(Vec3);
 
 } // namespace NeoN::finiteVolume::cellCentred
