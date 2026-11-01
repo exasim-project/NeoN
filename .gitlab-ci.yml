@@ -5,7 +5,7 @@
 # ============================================================
 #  GPU-specific images and runner configuration
 # ============================================================
-# Ginkgo develop with Umpire support (ginkgo-project/ginkgo#2125; ROCm still on nightly-20261009-2), built by
+# Ginkgo develop with Umpire support (ginkgo-project/ginkgo#2125), built by
 # exasim-project/ginkgo-packaging, with MPICH built from source (GPU-aware for CUDA and ROCm).
 # Pinned by digest: the runner caches SIF images by name, so a rebuilt tag would not be pulled again.
 .gpu-nvidia:
@@ -16,7 +16,7 @@
 
 .gpu-amd:
   tags: ["amd-gpus"]
-  image: ghcr.io/exasim-project/ginkgo-rocm:nightly-20261009-2
+  image: ghcr.io/exasim-project/ginkgo-rocm@sha256:477c622e52e4788ca169adfee9727c8d81b09dfb89b905cfcbdefa5e051444d2 # nightly-20261101
   variables:
     GPU_VENDOR: amd
 
