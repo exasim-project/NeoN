@@ -54,6 +54,19 @@ C++ dependencies like Kokkos are handled via [CPM](https://github.com/cpm-cmake/
 However, the cmake build process will prefer system wide installed C++ dependencies like Kokkos, cxxopts, etc.
 If you prefer to clone, configure and build dependencies your self consider setting `-DCPM_USE_LOCAL_PACKAGES = OFF`, see [CPM](https://github.com/cpm-cmake/CPM.cmake) for more details.
 
+### Additional dependencies
+
+Building the documentation requires
+
+* [Doxygen](https://www.doxygen.nl/)
+* Python packages listed in [`doc/requirements.txt`](doc/requirements.txt): `sphinx`, `sphinx-sitemap`, `furo`, `breathe`, `sphinxcontrib-mermaid`
+
+which can be installed via
+
+    pip install -r doc/requirements.txt
+
+The Python bindings require Python 3.9–3.13 and NumPy, see [Installing the Python bindings](#installing-the-python-bindings).
+
 ## Compilation
 
 [![workflows/Build on linux](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml?query=branch%3Amain)
@@ -199,5 +212,4 @@ Examples how to integrate NeoN into CFD frameworks and how to write applications
 
 An online documentation can be found [here](https://exasim-project.com/NeoN/latest), be cautious since this repository is currently evolving the documentation might not always reflect the latest stage.
 
-For building the documentation further dependencies like doxygen and sphinx are requirement.
-The list of requirements can be found [here](https://github.com/exasim-project/NeoN/actions/workflows/build_doc.yaml)
+For building the documentation further dependencies like doxygen and sphinx are required, see [Additional dependencies](#additional-dependencies).
