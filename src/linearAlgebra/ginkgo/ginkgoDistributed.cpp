@@ -175,8 +175,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
 
     if (imapCache && nonLocalMtxCache)
     {
-        // The index map and off-diagonal structure are cached, but the wrapper cannot be reused: the
-        // local value buffer was reallocated, or the caller does not cache wrappers (the Vec3
+        // The index map and off-diagonal structure are cached, but the wrapper cannot be reused:
+        // the local value buffer was reallocated, or the caller does not cache wrappers (the Vec3
         // component path). Refresh the off-diagonal values and build a new wrapper around the
         // current local values.
         const auto bValV = bmtx.values().view();
@@ -295,7 +295,7 @@ SolverStatsEntry solve_impl_dist(
     const Vector<scalar>& rhs,
     Vector<scalar>& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::shared_ptr<gko::LinOp> solver,
+    gko::LinOp* solver,
     const L1ResidualControl* l1Control = nullptr
 )
 {
@@ -316,7 +316,7 @@ SolverStatsEntry solve_impl_dist(
             mtx,
             std::dynamic_pointer_cast<const dist_vec>(b),
             std::dynamic_pointer_cast<dist_vec>(x),
-            solver.get(),
+            solver,
             *l1Control
         );
         exec->synchronize();
@@ -375,7 +375,7 @@ SolverStats solve_impl_dist(
     const Vector<Vec3>& rhs,
     Vector<Vec3>& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::shared_ptr<gko::LinOp> solver,
+    gko::LinOp* solver,
     const L1ResidualControl* l1Control = nullptr
 )
 {
@@ -396,7 +396,7 @@ SolverStats solve_impl_dist(
             mtx,
             std::dynamic_pointer_cast<const dist_vec>(b),
             std::dynamic_pointer_cast<dist_vec>(x),
-            solver.get(),
+            solver,
             *l1Control
         );
         exec->synchronize();
@@ -512,8 +512,9 @@ void solveComponentDist(
         uncachedDistMtx,
         uncachedLocalValPtr
     );
-    auto solver = gko::share(generate(gkoMtx));
-    stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
+    auto solver = generate(gkoMtx);
+    stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver.get(), l1Control)
+    );
     setComponent<I>(xcopy, x);
 }
 
@@ -577,8 +578,10 @@ void solveImplicitTransformComponentDist(
 
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
-    auto solver = gko::share(generate(gkoMtx));
-    stats.entries.push_back(solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
+    auto solver = generate(gkoMtx);
+    stats.entries.push_back(
+        solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, solver.get(), l1Control)
+    );
     setComponent<I>(xcopy, x);
 
     shiftImplicitTransformDiagDist<I>(exec, values, ma, diagC, nrows, 1.0);
@@ -604,12 +607,12 @@ SolverStats GinkgoSolver::solveDist(
         cachedDistMtx_,
         cachedLocalValPtr_
     );
-    auto solver = gko::share(generateSolver(gkoMtx));
+    auto solver = generateSolver(gkoMtx);
     // When the configFile names the L1 criterion it is already built into the solver
     // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
+    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver.get(), l1Control)};
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -722,8 +725,8 @@ SolverStats GinkgoSolver::solveDist(
     }
 
 
-    auto solver = gko::share(generateSolver(gkoMtx));
-    return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
+    auto solver = generateSolver(gkoMtx);
+    return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver.get(), l1Control);
 }
 
 template std::

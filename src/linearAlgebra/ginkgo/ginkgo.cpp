@@ -341,7 +341,7 @@ SolverStatsEntry solve_impl(
     const VectorType& rhs,
     VectorType& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::unique_ptr<gko::LinOp> solver,
+    gko::LinOp* solver,
     const L1ResidualControl* l1Control = nullptr
 )
 {
@@ -356,7 +356,7 @@ SolverStatsEntry solve_impl(
     // L1-scaled residual path: stop and report on the scaled residual.
     if (l1Control != nullptr)
     {
-        auto l1Res = solveWithL1Stop(exec, mtx, b, x, solver.get(), *l1Control);
+        auto l1Res = solveWithL1Stop(exec, mtx, b, x, solver, *l1Control);
         exec->synchronize();
         auto endEval = std::chrono::steady_clock::now();
         auto duration =
@@ -404,7 +404,7 @@ SolverStats solve_impl(
     const Vector<Vec3>& rhs,
     Vector<Vec3>& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::unique_ptr<gko::LinOp> solver
+    gko::LinOp* solver
 )
 {
     exec->synchronize();
@@ -459,18 +459,69 @@ SolverStats solve_impl(
 }
 
 
-std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const gko::LinOp> mtx
+#if NF_GKO_HAS_GENERATE_COMPONENTS
+namespace
+{
+
+// Move the workspace of op into ws and destroy op. A LinOp without a workspace of its own leaves
+// ws empty, so the next generate() starts without one.
+void extractWorkspace(std::unique_ptr<gko::LinOp>& op, std::unique_ptr<gko::Workspace>& ws)
+{
+    if (!op) return;
+    try
+    {
+        ws = gko::invalidate_and_extract_workspace(std::move(op));
+    }
+    catch (const gko::Error&)
+    {}
+    op.reset();
+}
+
+}
+#endif
+
+GinkgoSolver::GeneratedSolver::~GeneratedSolver()
+{
+#if NF_GKO_HAS_GENERATE_COMPONENTS
+    // the solver first, it references the preconditioner
+    extractWorkspace(solver_, owner_.workspace_);
+    extractWorkspace(precond_, owner_.precondWorkspace_);
+#endif
+}
+
+GinkgoSolver::GeneratedSolver GinkgoSolver::generateSolver(std::shared_ptr<const gko::LinOp> mtx
 ) const
 {
-    if (!reuseSetup_) return factory_->generate(mtx);
+    // Generate with factory, through generate_reuse() when given reuse data, and into the
+    // workspace ws kept from the previous solve, if any
+    auto generate = [&mtx](
+                        const gko::LinOpFactory& factory,
+                        gko::LinOpFactory::ReuseData* reuseData,
+                        [[maybe_unused]] Workspace& ws
+                    ) -> std::unique_ptr<gko::LinOp>
+    {
+#if NF_GKO_HAS_GENERATE_COMPONENTS
+        if (ws)
+        {
+            if (reuseData) return factory.generate_reuse(mtx, *reuseData, std::move(ws));
+            return factory.generate(mtx, std::move(ws));
+        }
+#endif
+        if (reuseData) return factory.generate_reuse(mtx, *reuseData);
+        return factory.generate(mtx);
+    };
+
+    if (!reuseSetup_)
+        return GeneratedSolver(*this, nullptr, generate(*factory_, nullptr, workspace_));
     const auto& reusable = precondFactory_ ? precondFactory_ : factory_;
+    auto& reusableWorkspace = precondFactory_ ? precondWorkspace_ : workspace_;
     auto generateReuse = [&]() -> std::unique_ptr<gko::LinOp>
     {
         if (reuseData_)
         {
             try
             {
-                return reusable->generate_reuse(mtx, *reuseData_);
+                return generate(*reusable, reuseData_.get(), reusableWorkspace);
             }
             catch (const gko::DimensionMismatch&)
             {}
@@ -479,12 +530,18 @@ std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const g
         }
         // first solve, or the matrix does not fit the recorded setup: record a new one
         reuseData_ = reusable->create_empty_reuse_data();
-        return reusable->generate_reuse(mtx, *reuseData_);
+        return generate(*reusable, reuseData_.get(), reusableWorkspace);
     };
-    if (!precondFactory_) return generateReuse();
-    auto solver = factory_->generate(mtx);
-    gko::as<gko::Preconditionable>(solver.get())->set_preconditioner(gko::share(generateReuse()));
-    return solver;
+    if (!precondFactory_) return GeneratedSolver(*this, nullptr, generateReuse());
+    auto precond = generateReuse();
+    auto solver = generate(*factory_, nullptr, workspace_);
+    // Non-owning: the GeneratedSolver keeps the preconditioner beyond the solver, so that its
+    // workspace can be extracted after the solve
+    gko::as<gko::Preconditionable>(solver.get())
+        ->set_preconditioner(
+            std::shared_ptr<const gko::LinOp>(precond.get(), [](const gko::LinOp*) {})
+        );
+    return GeneratedSolver(*this, std::move(precond), std::move(solver));
 }
 
 SolverStats GinkgoSolver::solve(
@@ -497,7 +554,7 @@ SolverStats GinkgoSolver::solve(
     // twice. The flag-only case (criterion not in the config) still attaches it here.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control)};
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx).get(), l1Control)};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -535,7 +592,8 @@ void solveComponent(
     auto sparsity = sys.matrix().sparsity();
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
     auto gkoMtx = createGkoMtx(mtx);
-    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
+    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, generate(gkoMtx).get(), l1Control)
+    );
     setComponent<I>(xcopy, x);
 }
 
@@ -555,7 +613,7 @@ SolverStats GinkgoSolver::solve(
         auto xCopy = unpackVecValues(x);
 
         auto stats =
-            solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, generateSolver(gkoMtx), l1Control);
+            solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, generateSolver(gkoMtx).get(), l1Control);
 
         packVecValues(xCopy, x);
         return {stats};
@@ -631,7 +689,9 @@ void solveImplicitTransformComponent(
 
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
-    stats.entries.push_back(solve_impl(gkoExec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
+    stats.entries.push_back(
+        solve_impl(gkoExec, rhs, xcopy, gkoMtx, generate(gkoMtx).get(), l1Control)
+    );
     setComponent<I>(xcopy, x);
 
     shiftImplicitTransformDiag<I>(exec, values, ma, diagC, nrows, 1.0);

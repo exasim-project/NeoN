@@ -22,6 +22,14 @@
 #include <ginkgo/core/matrix/row_gatherer.hpp>
 #include <ginkgo/core/solver/multigrid.hpp>
 
+// Ginkgo's public workspace (ginkgo-project/ginkgo#2127) generates LinOps from
+// gko::LinOpGenerateComponents instead of the system matrix; it has no version macro of its own.
+#if __has_include(<ginkgo/core/base/workspace.hpp>)
+#define NF_GKO_HAS_GENERATE_COMPONENTS 1
+#else
+#define NF_GKO_HAS_GENERATE_COMPONENTS 0
+#endif
+
 #ifdef NF_WITH_MPI_SUPPORT
 #include <ginkgo/core/distributed/base.hpp>
 #include <ginkgo/core/distributed/matrix.hpp>
@@ -341,6 +349,19 @@ protected:
 
     explicit MergedPgm(std::shared_ptr<const gko::Executor> exec) : gko::LinOp(std::move(exec)) {}
 
+#if NF_GKO_HAS_GENERATE_COMPONENTS
+    // Like gko::multigrid::Pgm, a level keeps no temporaries in a workspace (gko::solver::Multigrid
+    // generates its levels without a workspace node), so only the system matrix is used.
+    MergedPgm(const Factory* factory, gko::LinOpGenerateComponents components)
+        : MergedPgm(factory, std::move(components.system_matrix), nullptr)
+    {}
+
+    MergedPgm(
+        const Factory* factory, gko::LinOpGenerateComponents components, reuse_data_type& reuse_data
+    )
+        : MergedPgm(factory, std::move(components.system_matrix), &reuse_data)
+    {}
+#else
     MergedPgm(const Factory* factory, std::shared_ptr<const gko::LinOp> system_matrix)
         : MergedPgm(factory, std::move(system_matrix), nullptr)
     {}
@@ -352,6 +373,7 @@ protected:
     )
         : MergedPgm(factory, std::move(system_matrix), &reuse_data)
     {}
+#endif
 
     MergedPgm(
         const Factory* factory,

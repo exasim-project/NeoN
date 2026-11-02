@@ -22,6 +22,10 @@
 #include "NeoN/linearAlgebra/utilities.hpp"
 #include "NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" // MergedPgm mergeLevels-style coarsening
 
+#if NF_GKO_HAS_GENERATE_COMPONENTS
+#include <ginkgo/core/base/workspace.hpp>
+#endif
+
 
 namespace NeoN::la::ginkgo
 {
@@ -381,6 +385,48 @@ public:
 
 private:
 
+#if NF_GKO_HAS_GENERATE_COMPONENTS
+    using Workspace = std::unique_ptr<gko::Workspace>;
+#else
+    struct Workspace // Ginkgo without a public workspace
+    {
+    };
+#endif
+
+    /** @brief A solver returned by generateSolver(). When it goes out of scope, the Ginkgo
+     * workspaces (the temporaries) of the solver and of its separately generated preconditioner
+     * are handed back to the GinkgoSolver, so the next generateSolver() reuses them instead of
+     * allocating them again. */
+    class GeneratedSolver
+    {
+    public:
+
+        GeneratedSolver(
+            const GinkgoSolver& owner,
+            std::unique_ptr<gko::LinOp> precond,
+            std::unique_ptr<gko::LinOp> solver
+        )
+            : owner_ {owner}, precond_ {std::move(precond)}, solver_ {std::move(solver)}
+        {}
+
+        GeneratedSolver(const GeneratedSolver&) = delete;
+        GeneratedSolver& operator=(const GeneratedSolver&) = delete;
+
+        ~GeneratedSolver();
+
+        gko::LinOp* get() const { return solver_.get(); }
+
+        gko::LinOp* operator->() const { return solver_.get(); }
+
+    private:
+
+        const GinkgoSolver& owner_;
+        // the solver only references the preconditioner, so it is kept here and declared first,
+        // to be destroyed after the solver
+        std::unique_ptr<gko::LinOp> precond_;
+        std::unique_ptr<gko::LinOp> solver_;
+    };
+
     /** @brief Generate the solver for @p mtx, reusing the setup of the previous solves.
      *
      * With reuseSetup, the preconditioner (or the solver itself when the config has no separate
@@ -388,8 +434,11 @@ private:
      * across solves, so e.g. Pgm/MergedPgm keep their aggregates and only recompute the coarse
      * matrices. Factories without reuse support simply generate. A matrix that does not fit the
      * recorded setup (size, sparsity or distribution changed) starts a new one.
+     *
+     * With Ginkgo's public workspace, the solver is generated into the workspace of the previous
+     * solve (see GeneratedSolver), independent of reuseSetup.
      */
-    std::unique_ptr<gko::LinOp> generateSolver(std::shared_ptr<const gko::LinOp> mtx) const;
+    GeneratedSolver generateSolver(std::shared_ptr<const gko::LinOp> mtx) const;
 
     std::shared_ptr<const gko::Executor> gkoExec_;
     bool coupled_;
@@ -403,6 +452,10 @@ private:
     std::shared_ptr<const gko::LinOpFactory> precondFactory_;
     // Reuse data of precondFactory_, or of factory_ without one; null until the first solve.
     mutable std::unique_ptr<gko::LinOpFactory::ReuseData> reuseData_;
+    // Workspaces of factory_'s solver and of precondFactory_'s preconditioner, extracted after
+    // each solve; null until the first solve.
+    mutable Workspace workspace_;
+    mutable Workspace precondWorkspace_;
     // L1-scaled residual criterion registered into the config registry (l1Control_ set).
     std::shared_ptr<gko::stop::CriterionFactory> l1CritFactory_;
     // True when config_ names the L1 criterion, so it is built into factory_'s solver and
