@@ -15,6 +15,7 @@
 > [!IMPORTANT]
 > The NeoN project needs you!
 > If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
+> All participants are expected to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Requirements
 

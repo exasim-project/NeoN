@@ -16,6 +16,8 @@ authors:
     affiliation: 1
   - name: Hendrik Hetmann
     affiliation: 2
+  - name: Andrei Maftei
+    affiliation: 1
   - name: Bevan Jones
     affiliation: 3
   - name: Gregor Weiss
@@ -30,9 +32,6 @@ authors:
   - name: Gregor Olenik
     orcid: 0000-0002-0128-3933
     affiliation: 1
-  - name: Hartwig Anzt
-    orcid: 0000-0003-2177-952X
-    affiliation: "1, 6"
 
 affiliations:
  - name: Technical University of Munich, Germany
@@ -45,8 +44,6 @@ affiliations:
    index: 4
  - name: Karlsruhe Institute of Technology, Germany
    index: 5
- - name: Innovative Computing Laboratory, University of Tennessee, United States
-   index: 6
 
 date: 28th April, 2026.
 
@@ -92,9 +89,11 @@ In addition, strong scaling experiments using the OpenMP backend on up to 32 CPU
 NeoN has documented use in the EXASIM research project [@exasim-report], where it is presented as an approach for GPU-based assembly of finite-volume operators on heterogeneous CPU/GPU systems. This demonstrates its use in active CFD research workflows.
 
 # AI Usage Disclosure
-The manuscript was prepared by the authors and refined with AI assistance (GPT-5.4) to enhance clarity, conciseness, and grammatical correctness. The authors did not intentionally use generative AI tools in software development. As NeoN is an open-source project with multiple contributors, the authors cannot ascertain whether any contributed code was AI-assisted. Nevertheless, all code described in this paper was reviewed by human maintainers. The authors have carefully verified all technical content and take full responsibility for the manuscript and the software it describes.
+NeoN's architecture, core abstractions, and numerical foundations were developed prior to the introduction of AI coding assistants into the project workflow. Recently, contributors, including some of the authors, have used GitHub Copilot and Anthropic's Claude models for selected tasks such as automated review fixes, CI and packaging scripts, individual features with tests, and performance refactoring; these commits are marked with co-author trailers. Additionally, OpenAI's GPT-5.4 has been used to enhance the clarity, conciseness, and grammatical accuracy of the manuscript. All AI-assisted contributions were reviewed and approved by human maintainers, who remained responsible for the software's design, correctness, and scientific accuracy. The authors take full responsibility for both the software and the manuscript.
 
 # Acknowledgements
+The authors thank Prof. Hartwig Anzt (Chair of Computational Mathematics, Technical University of Munich) for his leadership in establishing NeoN as part of the EXASIM initiative and for his continued scientific guidance and supervision.
+
 Parts of this work were supported by the German Federal Ministry of Education and Research (grant number 16ME0676K).
 
 # References

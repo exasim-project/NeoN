@@ -3,6 +3,8 @@ Contributing
 
 Contributions are highly welcome. Here is some information getting you started.
 
+All participants are expected to follow the `NeoN Code of Conduct <https://github.com/exasim-project/NeoN/blob/main/CODE_OF_CONDUCT.md>`_.
+
 NeoN Code Style Guide
 """"""""""""""""""""""""
 
