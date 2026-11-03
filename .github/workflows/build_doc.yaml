@@ -33,6 +33,13 @@ jobs:
     - name: Build docs
       run: |
         sphinx-build -b html ./doc ./docs_build/
+        # Furo renders a red ERROR banner over any `.. contents::` block
+        # unless the escape-hatch class is set; sphinx does not warn about it
+        if grep -roE 'class="contents( [^"]*)?"' docs_build --include='*.html' \
+            | grep -v this-will-duplicate-information-and-it-is-still-useful-here; then
+          echo "::error::Remove '.. contents::' directives, Furo shows a TOC in the sidebar"
+          exit 1
+        fi
         cp -r doc/_build/ docs_build/doxygen
         cd docs_build
         ls doxygen
