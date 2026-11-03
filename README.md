@@ -39,7 +39,7 @@ NeoN has the following requirements
 
 *  _cmake > 3.22_
 *  _gcc >= 13_ or  _clang >= 19_
-*  _Kokkos 5.0.2_
+*  _Kokkos 5.2.2_
 
 For GPU support
 * NVIDIA: CUDA _12+_
