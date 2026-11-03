@@ -34,7 +34,13 @@ Its modular architecture enables performance-portable execution and solver backe
 
 ## Quickstart
 
-The quickest way to try NeoN is the prebuilt CPU package from PyPI (Python 3.9–3.13):
+To build the C++ library from source you need CMake ≥ 3.22, [Ninja](https://ninja-build.org/), a C++20 compiler (_gcc >= 13_ or _clang >= 19_) and, optionally, MPI (disable with `-DNeoN_WITH_MPI=OFF`). Kokkos, Ginkgo and other C++ dependencies are fetched automatically.
+
+    git clone https://github.com/exasim-project/NeoN.git && cd NeoN
+    cmake --preset production -DNeoN_WITH_MPI=OFF
+    cmake --build --preset production
+
+Alternatively, try NeoN from Python via the prebuilt CPU package from PyPI (Python 3.9–3.13):
 
     pip install neon_pde
 
@@ -47,12 +53,6 @@ print(neon.__version__, v.size())
 del v, executor
 neon.finalize()
 ```
-
-To build the C++ library from source you need CMake ≥ 3.22, [Ninja](https://ninja-build.org/), a C++20 compiler (_gcc >= 13_ or _clang >= 19_) and, optionally, MPI (disable with `-DNeoN_WITH_MPI=OFF`). Kokkos, Ginkgo and other C++ dependencies are fetched automatically.
-
-    git clone https://github.com/exasim-project/NeoN.git && cd NeoN
-    cmake --preset production -DNeoN_WITH_MPI=OFF
-    cmake --build --preset production
 
 [![workflows/Build on linux](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml?query=branch%3Amain)
 [![workflows/Build on OSX](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml?query=branch%3Amain)
