@@ -175,8 +175,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
 
     if (imapCache && nonLocalMtxCache)
     {
-        // The index map and off-diagonal structure are cached, but the wrapper cannot be reused: the
-        // local value buffer was reallocated, or the caller does not cache wrappers (the Vec3
+        // The index map and off-diagonal structure are cached, but the wrapper cannot be reused:
+        // the local value buffer was reallocated, or the caller does not cache wrappers (the Vec3
         // component path). Refresh the off-diagonal values and build a new wrapper around the
         // current local values.
         const auto bValV = bmtx.values().view();
