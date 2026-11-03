@@ -15,6 +15,10 @@ By combining finite-volume abstractions with modern C++ and performance-portable
 
 Its modular architecture enables performance-portable execution and solver backends, currently using [Kokkos](https://github.com/kokkos/kokkos) and [Ginkgo](https://github.com/ginkgo-project/ginkgo) while remaining flexible to adopt alternative technologies as the framework evolves.
 
+> [!IMPORTANT]
+> The NeoN project needs you!
+> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
+
 ## Key Features
 
 - Execution on
@@ -27,10 +31,6 @@ Its modular architecture enables performance-portable execution and solver backe
 - Unified GPU execution model for NVIDIA, AMD, and Intel GPUs
 
 ---
-
-> [!IMPORTANT]
-> The NeoN project needs you!
-> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
 
 ## Quickstart
 
