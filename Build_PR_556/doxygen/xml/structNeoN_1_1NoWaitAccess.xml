@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structNeoN_1_1NoWaitAccess" kind="struct" language="C++" prot="public">
+    <compoundname>NeoN::NoWaitAccess</compoundname>
+    <includes refid="boundaryData_8hpp" local="no">boundaryData.hpp</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structNeoN_1_1NoWaitAccess_1a0514f326b93ffc870cc49dfdf6c03de5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+        <definition>static Vector&lt; ValueType &gt; &amp; NeoN::NoWaitAccess::value</definition>
+        <argsstring>(BoundaryData&lt; ValueType &gt; &amp;in)</argsstring>
+        <name>value</name>
+        <qualifiedname>NeoN::NoWaitAccess::value</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp" line="422" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp" bodystart="422" bodyend="425"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Passkey granting non-draining access to <ref refid="classNeoN_1_1BoundaryData" kindref="compound">BoundaryData</ref>&apos;s value storage. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>BoundaryData::valueNoWait() is private because skipping waitAll() leaves in-flight processor-halo exchanges pending and is easy to misuse. Callers that legitimately need it (the processor boundary condition seeding owner values before posting its exchange) go through this struct, so every bypass site is greppable via <ref refid="structNeoN_1_1NoWaitAccess" kindref="compound">NoWaitAccess</ref>. </para>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp" line="419" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp" bodystart="420" bodyend="426"/>
+    <listofallmembers>
+      <member refid="structNeoN_1_1NoWaitAccess_1a0514f326b93ffc870cc49dfdf6c03de5" prot="public" virt="non-virtual"><scope>NeoN::NoWaitAccess</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

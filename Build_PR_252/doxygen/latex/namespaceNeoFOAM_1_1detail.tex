@@ -1,0 +1,55 @@
+\doxysection{Neo\+FOAM\+::detail Namespace Reference}
+\hypertarget{namespaceNeoFOAM_1_1detail}{}\label{namespaceNeoFOAM_1_1detail}\index{NeoFOAM::detail@{NeoFOAM::detail}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\auto \mbox{\hyperlink{namespaceNeoFOAM_1_1detail_ad89bb3ff118f7955349e608dbde77526}{deep\+Copy\+Visitor}} (\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} size, const Value\+Type \texorpdfstring{$\ast$}{*}src\+Ptr, Value\+Type \texorpdfstring{$\ast$}{*}dst\+Ptr)
+\begin{DoxyCompactList}\small\item\em A helper function to simplify the common pattern of copying between and to executor. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type , typename Binary\+Op $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_1_1detail_a56ee4648092e5f74747d3ae550b0857b}{field\+Binary\+Op}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&a, const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&b, Binary\+Op op)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoFOAM_1_1detail_ad89bb3ff118f7955349e608dbde77526}\label{namespaceNeoFOAM_1_1detail_ad89bb3ff118f7955349e608dbde77526} 
+\index{NeoFOAM::detail@{NeoFOAM::detail}!deepCopyVisitor@{deepCopyVisitor}}
+\index{deepCopyVisitor@{deepCopyVisitor}!NeoFOAM::detail@{NeoFOAM::detail}}
+\doxysubsubsection{\texorpdfstring{deepCopyVisitor()}{deepCopyVisitor()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+auto Neo\+FOAM\+::detail\+::deep\+Copy\+Visitor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}}]{size,  }\item[{const Value\+Type \texorpdfstring{$\ast$}{*}}]{src\+Ptr,  }\item[{Value\+Type \texorpdfstring{$\ast$}{*}}]{dst\+Ptr }\end{DoxyParamCaption})}
+
+
+
+A helper function to simplify the common pattern of copying between and to executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size} & The number of elements to copy. \\
+\hline
+{\em src\+Ptr} & Pointer to the original block of memory. \\
+\hline
+{\em dst\+Ptr} & Pointer to the target block of memory. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The type of the underlying elements. \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+A function that takes a source and an destination executor 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{field_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{field_8hpp_source}{field.\+hpp}}.
+
+\Hypertarget{namespaceNeoFOAM_1_1detail_a56ee4648092e5f74747d3ae550b0857b}\label{namespaceNeoFOAM_1_1detail_a56ee4648092e5f74747d3ae550b0857b} 
+\index{NeoFOAM::detail@{NeoFOAM::detail}!fieldBinaryOp@{fieldBinaryOp}}
+\index{fieldBinaryOp@{fieldBinaryOp}!NeoFOAM::detail@{NeoFOAM::detail}}
+\doxysubsubsection{\texorpdfstring{fieldBinaryOp()}{fieldBinaryOp()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Binary\+Op $>$ \\
+void Neo\+FOAM\+::detail\+::field\+Binary\+Op (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{a,  }\item[{const \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{b,  }\item[{Binary\+Op}]{op }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{fieldFreeFunctions_8hpp_source_l00105}{105}} of file \mbox{\hyperlink{fieldFreeFunctions_8hpp_source}{field\+Free\+Functions.\+hpp}}.
+

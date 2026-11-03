@@ -1,0 +1,880 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="MPI Architecture" href="../mpi_architecture.html"><link rel="prev" title="Matrix Addressing" href="matrixAddressing.html">
+        <link rel="canonical" href="https://exasim-project.com/NeoN/linearAlgebra/operatorAssembly.html">
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.12.19 -->
+        <title>Operator Assembly - NeoN documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=acfd86a5" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6a4ff913" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">NeoN  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">NeoN  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to NeoN!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_bindings.html">Python bindings (<code class="docutils literal notranslate"><span class="pre">neon_pde</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../basics/index.html">Basics</a><input aria-label="Toggle navigation of Basics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../basics/executor.html">Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../basics/fields.html">Vectors</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../basics/algorithms.html">Parallel Algorithms</a><input aria-label="Toggle navigation of Parallel Algorithms" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/fill.html"><code class="docutils literal notranslate"><span class="pre">fill</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basics/freeFunctions/map.html"><code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../basics/registerclass.html">Derived class discovery at compile time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../basics/macros.html">Macro Definitions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dsl/index.html">Domain Specific Language (DSL)</a><input aria-label="Toggle navigation of Domain Specific Language (DSL)" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dsl/equation.html">Expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dsl/operator.html">Operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dsl/relaxation.html">Under-Relaxation</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../timeIntegration/index.html">Time Integration</a><input aria-label="Toggle navigation of Time Integration" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../timeIntegration/forwardEuler.html">Forward Euler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../timeIntegration/rungeKutta.html">Runge Kutta</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../finiteVolume/cellCentred/index.html">FiniteVolume</a><input aria-label="Toggle navigation of FiniteVolume" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../finiteVolume/cellCentred/boundaryConditions.html">Boundary Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../finiteVolume/cellCentred/case_study.html">Case Study: The Gauss Green Div Kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datastructures/index.html">Datastructures</a><input aria-label="Toggle navigation of Datastructures" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datastructures/unstructuredMesh.html">UnstructuredMesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datastructures/dictionary.html">Dictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datastructures/database.html">Database</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Linear Algebra</a><input aria-label="Toggle navigation of Linear Algebra" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="matrixAddressing.html">Matrix Addressing</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Operator Assembly</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mpi_architecture.html">MPI Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous Integration</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/linearAlgebra/operatorAssembly.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="operator-assembly">
+<h1>Operator Assembly<a class="headerlink" href="#operator-assembly" title="Link to this heading">¶</a></h1>
+<p>This page documents how the finite-volume operators <code class="docutils literal notranslate"><span class="pre">gaussGreenGrad</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gaussGreenDiv</span></code>, and <code class="docutils literal notranslate"><span class="pre">gaussGreenLaplacian</span></code> assemble contributions into
+field vectors and linear systems.  It is a companion to
+<a class="reference internal" href="matrixAddressing.html"><span class="doc">Matrix Addressing</span></a> which explains the CSR/COO indexing used throughout.</p>
+<p>Source files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src/finiteVolume/cellCentred/operators/gaussGreenGrad.cpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/finiteVolume/cellCentred/operators/gaussGreenDiv.cpp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp</span></code></p></li>
+</ul>
+<section id="conventions">
+<h2>Conventions<a class="headerlink" href="#conventions" title="Link to this heading">¶</a></h2>
+<dl>
+<dt>Face orientation</dt><dd><p>The face-area vector <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from the <strong>owner</strong> cell
+to the <strong>neighbour</strong> cell.  By construction, <code class="docutils literal notranslate"><span class="pre">owner[f]</span> <span class="pre">&lt;</span> <span class="pre">neighbour[f]</span></code>
+for all internal faces.</p>
+<p>Therefore <span class="math notranslate nohighlight">\(F_f &gt; 0\)</span> means flux <strong>leaves</strong> the owner cell and
+<strong>enters</strong> the neighbour cell.  This sign convention is only valid because
+<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour.</p>
+</dd>
+<dt>Interpolation weight</dt><dd><p><code class="docutils literal notranslate"><span class="pre">weightsV[f]</span></code> (alias <code class="docutils literal notranslate"><span class="pre">w</span></code>) is the weight for the <strong>owner</strong> cell, so the
+face-centred value is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\varphi_f = w \, \varphi_\text{own} + (1-w) \, \varphi_\text{nei}.\]</div>
+</div>
+<p>Weights are produced by <code class="docutils literal notranslate"><span class="pre">SurfaceInterpolation::weight()</span></code>; for linear
+interpolation this is the geometric inverse-distance weight biased toward
+the owner.</p>
+</dd>
+<dt>Matrix entry naming</dt><dd><p>Following the LDU convention (see <a class="reference internal" href="matrixAddressing.html"><span class="doc">Matrix Addressing</span></a>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">upperIdx(own,</span> <span class="pre">f)</span></code> = <code class="docutils literal notranslate"><span class="pre">rowOffs[own]</span> <span class="pre">+</span> <span class="pre">ownerOffset[f]</span></code> → position of
+<span class="math notranslate nohighlight">\(A[\text{own},\text{nei}]\)</span> (<strong>upper</strong>-triangular, own &lt; nei).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lowerIdx(nei,</span> <span class="pre">f)</span></code> = <code class="docutils literal notranslate"><span class="pre">rowOffs[nei]</span> <span class="pre">+</span> <span class="pre">neighbourOffset[f]</span></code> → position of
+<span class="math notranslate nohighlight">\(A[\text{nei},\text{own}]\)</span> (<strong>lower</strong>-triangular, nei &gt; own).</p></li>
+</ul>
+<p>Operator kernels use the direct offset form for performance:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// A[own, nei] — upper triangular</span>
+<span class="n">values</span><span class="p">[</span><span class="n">rowOwnStart</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ownOffs</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="p">...</span>
+<span class="c1">// values[matIt-&gt;upperIdx(own, facei)] ...   // equivalent via matrixIterator</span>
+
+<span class="c1">// A[nei, own] — lower triangular</span>
+<span class="n">values</span><span class="p">[</span><span class="n">rowNeiStart</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">neiOffs</span><span class="p">[</span><span class="n">facei</span><span class="p">]]</span><span class="w"> </span><span class="p">...</span>
+<span class="c1">// values[matIt-&gt;lowerIdx(nei, facei)] ...   // equivalent via matrixIterator</span>
+</pre></div>
+</div>
+</dd>
+<dt>Assembly calling order</dt><dd><p>For implicit operators: internal faces → physical boundary faces.
+The physical boundary loop runs over <code class="docutils literal notranslate"><span class="pre">facei</span> <span class="pre">∈</span> <span class="pre">[nInternalFaces,</span> <span class="pre">sGamma.size())</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="gaussgreengrad-explicit-only">
+<h2>gaussGreenGrad — Explicit Only<a class="headerlink" href="#gaussgreengrad-explicit-only" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GaussGreenGrad</span></code> provides only an explicit (field-to-field) gradient.
+There is no implicit (matrix-assembling) overload; calling
+<code class="docutils literal notranslate"><span class="pre">dsl::solve</span></code> with a grad term will raise an error at runtime.</p>
+<section id="algorithm">
+<h3>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Interpolate <code class="docutils literal notranslate"><span class="pre">phi</span></code> to faces: <code class="docutils literal notranslate"><span class="pre">phif</span> <span class="pre">=</span> <span class="pre">surfInterp.interpolate(phi)</span></code>.</p></li>
+<li><p>Loop over internal faces <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">∈</span> <span class="pre">[0,</span> <span class="pre">nInternalFaces)</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Vec3</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceAreaS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">    </span><span class="c1">// S_f * φ_f (S_f points owner→nei by construction)</span>
+<span class="n">grad</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">    </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">              </span><span class="c1">// +S_f * φ_f (S_f is outward from owner)</span>
+<span class="n">grad</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">             </span><span class="c1">// −S_f * φ_f (S_f is inward to neighbour)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Loop over boundary faces <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">∈</span> <span class="pre">[nInternalFaces,</span> <span class="pre">phif.size())</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Vec3</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceAreaS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="n">grad</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                      </span><span class="c1">// +S_f * φ_f (S_f outward from owner; no neighbour)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Normalise: <code class="docutils literal notranslate"><span class="pre">grad[celli]</span> <span class="pre">*=</span> <span class="pre">operatorScaling[celli]</span> <span class="pre">/</span> <span class="pre">vol[celli]</span></code>.</p></li>
+</ol>
+<p>The result is the standard Green–Gauss gradient:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[(\nabla \varphi)_C \approx \frac{1}{V_C} \sum_f \mathbf{S}_f \, \varphi_f.\]</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">S_f</span></code> points from owner to neighbour, so it is the outward area vector for the owner and
+the inward area vector for the neighbour.  The subtract for the neighbour follows directly.</p>
+</section>
+</section>
+<section id="gaussgreendiv-explicit">
+<h2>gaussGreenDiv — Explicit<a class="headerlink" href="#gaussgreendiv-explicit" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">computeDivExp</span></code> interpolates <code class="docutils literal notranslate"><span class="pre">phi</span></code> to faces and calls the shared
+<code class="docutils literal notranslate"><span class="pre">computeDiv</span></code> helper.  The result is the <strong>positive</strong> mathematical divergence
+<span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Consistent sign convention.</strong>
+Both the explicit <code class="docutils literal notranslate"><span class="pre">computeDiv</span></code> and the implicit <code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assemble
+<span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span> — the positive divergence operator — matching
+OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">fvm::div</span></code> convention.  The DSL equation form mirrors OpenFOAM:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">dsl</span><span class="o">::</span><span class="n">solve</span><span class="p">(</span><span class="n">ddt</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">div</span><span class="p">(</span><span class="n">faceFlux</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">laplacian</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span>
+</pre></div>
+</div>
+</div>
+<section id="internal-faces">
+<h3>Internal faces<a class="headerlink" href="#internal-faces" title="Link to this heading">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceFlux</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">    </span><span class="c1">// F_f * φ_f</span>
+<span class="n">div</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">     </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                  </span><span class="c1">// F_f is outward from owner (S_f points owner→nei)</span>
+<span class="n">div</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                  </span><span class="c1">// F_f is inward to neighbour → subtract</span>
+</pre></div>
+</div>
+<p>Sign rationale:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">F_f</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> means flux leaves the owner cell (S_f points from owner to neighbour by construction).</p></li>
+<li><p>The <strong>divergence</strong> at owner is the net outward flux: a positive outward <span class="math notranslate nohighlight">\(F_f\)</span> gives a
+<em>positive</em> divergence contribution at the owner cell. This is why <code class="docutils literal notranslate"><span class="pre">div[own]</span> <span class="pre">+=</span> <span class="pre">flux</span></code> is correct
+— it does not contradict the fact that the owner is losing <span class="math notranslate nohighlight">\(\varphi\)</span>.  The conservation
+equation uses <span class="math notranslate nohighlight">\(\partial\varphi/\partial t = -\nabla\cdot(F\varphi)\)</span>, where the sign flip
+is applied externally (or in the implicit operator).</p></li>
+<li><p>For the neighbour, <span class="math notranslate nohighlight">\(F_f\)</span> is inward (S_f points away from neighbour), so the outward flux
+from the neighbour’s perspective is <span class="math notranslate nohighlight">\(-F_f\)</span>, hence <code class="docutils literal notranslate"><span class="pre">div[nei]</span> <span class="pre">-=</span> <span class="pre">flux</span></code>.</p></li>
+</ul>
+</section>
+<section id="boundary-faces">
+<h3>Boundary faces<a class="headerlink" href="#boundary-faces" title="Link to this heading">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceFlux</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">phif</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="n">div</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">           </span><span class="c1">// F_f outward from owner (no neighbour on this rank)</span>
+</pre></div>
+</div>
+<p>After both loops: <code class="docutils literal notranslate"><span class="pre">div[celli]</span> <span class="pre">*=</span> <span class="pre">operatorScaling[celli]</span> <span class="pre">/</span> <span class="pre">vol[celli]</span></code>.</p>
+</section>
+</section>
+<section id="gaussgreendiv-implicit">
+<h2>gaussGreenDiv — Implicit<a class="headerlink" href="#gaussgreendiv-implicit" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">computeDivImp</span></code> assembles <span class="math notranslate nohighlight">\(+\nabla \cdot (F\varphi)\)</span> into a <code class="docutils literal notranslate"><span class="pre">LinearSystem</span></code>,
+identical in sign to <code class="docutils literal notranslate"><span class="pre">computeDivExp</span></code> and to OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">fvm::div</span></code>.</p>
+<section id="divergence-convention">
+<h3>Divergence convention<a class="headerlink" href="#divergence-convention" title="Link to this heading">¶</a></h3>
+<p>With <span class="math notranslate nohighlight">\(F_f &gt; 0\)</span> meaning flux from owner P to neighbour N
+(valid because <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour):</p>
+<ul class="simple">
+<li><p><strong>Owner row</strong> P: total contribution <span class="math notranslate nohighlight">\(\mathbf{+F_f}\)</span>
+(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is outward from P → positive divergence at P).</p></li>
+<li><p><strong>Neighbour row</strong> N: total contribution <span class="math notranslate nohighlight">\(\mathbf{-F_f}\)</span>
+(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is inward to N from this face → negative contribution at N).</p></li>
+</ul>
+<p>Global verification: <span class="math notranslate nohighlight">\(+F_f - F_f = 0\)</span> per face ✓</p>
+</section>
+<section id="id1">
+<h3>Internal faces<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>The face-interpolated transported quantity is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\varphi_f = w \, \varphi_\text{own} + (1-w) \, \varphi_\text{nei}\]</div>
+</div>
+<p>The face flux <span class="math notranslate nohighlight">\(F_f \varphi_f\)</span> decomposes linearly into owner and neighbour contributions:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[F_f \, \varphi_f
+  = w \, F_f \, \varphi_\text{own}
+  + (1-w) F_f \, \varphi_\text{nei}\]</div>
+</div>
+<p>In the code the variables <code class="docutils literal notranslate"><span class="pre">ownFluxContrib</span></code> and <code class="docutils literal notranslate"><span class="pre">neiFluxContrib</span></code> carry a
+<strong>pre-applied minus sign</strong> so that uniform <code class="docutils literal notranslate"><span class="pre">+=</span></code>/<code class="docutils literal notranslate"><span class="pre">-=</span></code> patterns in the assembly
+loops still produce the correct positive divergence:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ownFluxContrib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">F_f</span><span class="w">           </span><span class="c1">// note: NEGATIVE; code uses this in += and atomic_sub</span>
+<span class="n">neiFluxContrib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">F_f</span><span class="w">       </span><span class="c1">// note: NEGATIVE; code uses this in -= and atomic_add</span>
+</pre></div>
+</div>
+<div class="table-wrapper colwidths-given docutils container" id="id6">
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-text">Implicit divergence — internal face entries</span><a class="headerlink" href="#id6" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 30.0%" />
+<col style="width: 22.0%" />
+<col style="width: 26.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Matrix entry</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Sign note</p></th>
+<th class="head"><p>Code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>A[nei, own]  (lower tri.)</p></td>
+<td><p><span class="math notranslate nohighlight">\(-w \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
+<td><p>own value → negative contribution to nei’s divergence (inward face for N)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">neiOffs[f]]</span> <span class="pre">+=</span> <span class="pre">ownFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingNei</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>diag[own]</p></td>
+<td><p><span class="math notranslate nohighlight">\(+w \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
+<td><p>own value → positive contribution to P’s divergence (outward face for P)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOwn],</span> <span class="pre">ownFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingOwn)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>A[own, nei]  (upper tri.)</p></td>
+<td><p><span class="math notranslate nohighlight">\(+(1-w) \cdot F_f \cdot \text{scalingOwn}\)</span></p></td>
+<td><p>nei value → positive contribution to P’s divergence</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">values[rowOwnStart</span> <span class="pre">+</span> <span class="pre">ownOffs[f]]</span> <span class="pre">-=</span> <span class="pre">neiFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingOwn</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>diag[nei]</p></td>
+<td><p><span class="math notranslate nohighlight">\(-(1-w) \cdot F_f \cdot \text{scalingNei}\)</span></p></td>
+<td><p>nei value → negative contribution to N’s divergence (inward face for N)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_add(&amp;values[diagNei],</span> <span class="pre">neiFluxContrib</span> <span class="pre">*</span> <span class="pre">scalingNei)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Row-sum verification per face:</p>
+<ul class="simple">
+<li><p>Owner row: <span class="math notranslate nohighlight">\(+w F_f + (1-w) F_f = +F_f\)</span> ✓</p></li>
+<li><p>Neighbour row: <span class="math notranslate nohighlight">\(-w F_f - (1-w) F_f = -F_f\)</span> ✓</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The diagonal is <strong>assembled explicitly</strong> — there is no separate <code class="docutils literal notranslate"><span class="pre">negSumDiag</span></code>
+pass.  Each face contributes <span class="math notranslate nohighlight">\(+w F_f\)</span> to the owner diagonal and
+<span class="math notranslate nohighlight">\(-(1-w) F_f\)</span> to the neighbour diagonal, so the full sums converge to
+<span class="math notranslate nohighlight">\(+F_f\)</span> and <span class="math notranslate nohighlight">\(-F_f\)</span> respectively.</p>
+</div>
+</section>
+<section id="physical-boundary">
+<h3>Physical boundary<a class="headerlink" href="#physical-boundary" title="Link to this heading">¶</a></h3>
+<p>The boundary loop runs over faces <code class="docutils literal notranslate"><span class="pre">facei</span> <span class="pre">∈</span> <span class="pre">[nInternalFaces,</span> <span class="pre">faceFluxV.size())</span></code>.</p>
+<p>Boundary weight: <code class="docutils literal notranslate"><span class="pre">flux</span> <span class="pre">=</span> <span class="pre">bweights[bcfacei]</span> <span class="pre">*</span> <span class="pre">faceFlux[facei]</span></code>,
+where <code class="docutils literal notranslate"><span class="pre">bweights</span></code> is the boundary interpolation weight for the owner cell.</p>
+<p>Mixed-BC decomposition uses <code class="docutils literal notranslate"><span class="pre">valueFraction[bcfacei]</span></code> (<span class="math notranslate nohighlight">\(f_D\)</span>):</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f_D = 1\)</span> → pure Dirichlet (<code class="docutils literal notranslate"><span class="pre">fixedValue</span></code>): boundary value
+<span class="math notranslate nohighlight">\(\varphi_b = \text{refValue}\)</span> is fully prescribed, no
+implicit diagonal coupling.</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_D = 0\)</span> → pure Neumann: gradient is prescribed
+(<span class="math notranslate nohighlight">\(\nabla_n \varphi = \text{refGradient}\)</span>), full diagonal
+coupling.</p></li>
+</ul>
+<div class="table-wrapper colwidths-given docutils container" id="id7">
+<table class="docutils align-default" id="id7">
+<caption><span class="caption-text">Implicit divergence — physical BC entries</span><a class="headerlink" href="#id7" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 40.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Contribution</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>diag[own]</p></td>
+<td><p><span class="math notranslate nohighlight">\(+\text{flux} \cdot \text{scalingOwn} \cdot (1-f_D)\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_add(&amp;values[diagOffs[own]],</span> <span class="pre">valueMat)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>rhs[own]</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\text{flux} \cdot \text{scalingOwn} \cdot (f_D \cdot \text{refValue} + (1-f_D) \cdot \text{refGrad} / \delta)\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;rhs[own],</span> <span class="pre">valueRhs)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\delta\)</span> is <code class="docutils literal notranslate"><span class="pre">deltaCoeffs[bcfacei]</span></code> = inverse distance from
+cell centre to boundary face centre.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The diagonal term uses the <strong>Neumann fraction</strong> <span class="math notranslate nohighlight">\((1-f_D)\)</span>.  For
+pure Dirichlet the diagonal is unchanged and the full contribution is
+in the RHS; for pure Neumann the diagonal receives the flux and the
+RHS receives the gradient source.</p>
+</div>
+</section>
+</section>
+<section id="gaussgreenlaplacian-explicit">
+<h2>gaussGreenLaplacian — Explicit<a class="headerlink" href="#gaussgreenlaplacian-explicit" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">computeLaplacianExp</span></code> delegates face-normal gradients to a
+<code class="docutils literal notranslate"><span class="pre">FaceNormalGradient</span></code> helper and accumulates the <strong>positive</strong> Laplacian
+<span class="math notranslate nohighlight">\(+\nabla \cdot (\gamma \nabla \varphi)\)</span>.</p>
+<section id="id2">
+<h3>Internal faces<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fnGrad[f]</span></code> is computed by <code class="docutils literal notranslate"><span class="pre">FaceNormalGradient</span></code> as:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>fnGrad[f] = nonOrthDeltaCoeffs[f] * (phi[nei] − phi[own])
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">fnGrad</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> when <span class="math notranslate nohighlight">\(\varphi_N &gt; \varphi_P\)</span> (gradient points outward from owner, i.e.
+S_f direction).  In this case, diffusion brings <span class="math notranslate nohighlight">\(\varphi\)</span> <em>into</em> the owner cell and
+<em>out of</em> the neighbour cell, which is the correct physical interpretation (diffusion flows
+from high to low concentration).</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fnGrad</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w">   </span><span class="c1">// |S_f| * (∂φ/∂n)_f   (outward from owner)</span>
+<span class="n">laplacian</span><span class="p">[</span><span class="n">owner</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w">     </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">             </span><span class="c1">// fnGrad&gt;0: φ_N&gt;φ_P, owner gains φ → positive</span>
+<span class="n">laplacian</span><span class="p">[</span><span class="n">neighbour</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">             </span><span class="c1">// neighbour loses φ → negative</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>Boundary faces<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ValueType</span><span class="w"> </span><span class="n">flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">faceArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fnGrad</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="n">laplacian</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span><span class="w">                      </span><span class="c1">// S_f outward from owner; no neighbour on this rank</span>
+</pre></div>
+</div>
+<p>After both loops: <code class="docutils literal notranslate"><span class="pre">laplacian[celli]</span> <span class="pre">*=</span> <span class="pre">operatorScaling[celli]</span> <span class="pre">/</span> <span class="pre">vol[celli]</span></code>.</p>
+</section>
+</section>
+<section id="gaussgreenlaplacian-implicit">
+<h2>gaussGreenLaplacian — Implicit<a class="headerlink" href="#gaussgreenlaplacian-implicit" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">computeLaplacianIntImpl</span></code> assembles the internal contributions of the diffusion operator
+<span class="math notranslate nohighlight">\(+\nabla \cdot (\gamma \nabla \varphi)\)</span> into the linear system.</p>
+<section id="id4">
+<h3>Internal faces<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<p>Face diffusion coefficient: <code class="docutils literal notranslate"><span class="pre">flux</span> <span class="pre">=</span> <span class="pre">deltaCoeffs[facei]</span> <span class="pre">*</span> <span class="pre">sGamma[facei]</span> <span class="pre">*</span> <span class="pre">magFaceArea[facei]</span></code>,
+i.e. <span class="math notranslate nohighlight">\(\delta_f \cdot \gamma_f \cdot |S_f|\)</span>.</p>
+<p>The Laplacian is symmetric — the same <code class="docutils literal notranslate"><span class="pre">flux</span></code> value enters both the owner and neighbour rows
+with appropriate signs.  <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour, so
+diffusion out of one cell equals diffusion into the other.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id8">
+<table class="docutils align-default" id="id8">
+<caption><span class="caption-text">Implicit Laplacian — internal face entries</span><a class="headerlink" href="#id8" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 30.0%" />
+<col style="width: 22.0%" />
+<col style="width: 23.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Matrix entry</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Sign note</p></th>
+<th class="head"><p>Code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>A[nei, own]  (lower tri.)</p></td>
+<td><p><span class="math notranslate nohighlight">\(+\text{flux} \cdot \text{scalingNei}\)</span></p></td>
+<td><p>enters neighbour → positive</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">values[rowNeiStart</span> <span class="pre">+</span> <span class="pre">neiOffs[facei]]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>diag[own]</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\text{flux} \cdot \text{scalingOwn}\)</span></p></td>
+<td><p>leaves owner → negative</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOffs[own]],</span> <span class="pre">flux)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>A[own, nei]  (upper tri.)</p></td>
+<td><p><span class="math notranslate nohighlight">\(+\text{flux} \cdot \text{scalingOwn}\)</span></p></td>
+<td><p>enters owner → positive</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">values[rowOwnStart</span> <span class="pre">+</span> <span class="pre">ownOffs[facei]]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>diag[nei]</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\text{flux} \cdot \text{scalingNei}\)</span></p></td>
+<td><p>leaves neighbour → negative</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOffs[nei]],</span> <span class="pre">flux)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The assembled matrix is symmetric and positive definite for
+positive <span class="math notranslate nohighlight">\(\gamma\)</span> and consistent <code class="docutils literal notranslate"><span class="pre">operatorScaling</span></code>, representing
+<span class="math notranslate nohighlight">\(-\nabla \cdot (\gamma \nabla \varphi)\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Matches OpenFOAM.</strong>  OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">gaussLaplacianScheme</span></code> sets
+<code class="docutils literal notranslate"><span class="pre">upper()</span> <span class="pre">=</span> <span class="pre">deltaCoeffs</span> <span class="pre">*</span> <span class="pre">gammaMagSf</span></code> (positive) and calls
+<code class="docutils literal notranslate"><span class="pre">negSumDiag()</span></code> (diagonal = −sum of off-diagonals), yielding the
+same structure.</p>
+</div>
+</section>
+<section id="id5">
+<h3>Physical boundary<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<p>The boundary loop covers <code class="docutils literal notranslate"><span class="pre">facei</span> <span class="pre">∈</span> <span class="pre">[nInternalFaces,</span> <span class="pre">sGamma.size())</span></code>.</p>
+<p>Face diffusion coefficient (no <code class="docutils literal notranslate"><span class="pre">deltaCoeffs</span></code> here, unlike internal faces):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>flux = sGamma[facei] * magFaceArea[facei]     // γ · |S_f|
+</pre></div>
+</div>
+<p>Mixed-BC decomposition with <code class="docutils literal notranslate"><span class="pre">valueFraction</span></code> (<span class="math notranslate nohighlight">\(f_D\)</span>):</p>
+<div class="table-wrapper colwidths-given docutils container" id="id9">
+<table class="docutils align-default" id="id9">
+<caption><span class="caption-text">Implicit Laplacian — physical BC entries</span><a class="headerlink" href="#id9" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 45.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Contribution</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>diag[own]</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\text{flux} \cdot \text{scalingOwn} \cdot f_D \cdot \delta_f\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;values[diagOffs[own]],</span> <span class="pre">valueMat)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>rhs[own]</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\text{flux} \cdot \text{scalingOwn} \cdot (f_D \cdot \delta_f \cdot \text{refValue} + (1-f_D) \cdot \text{refGradient})\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atomic_sub(&amp;rhs[own],</span> <span class="pre">valueRhs)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\delta_f\)</span> = <code class="docutils literal notranslate"><span class="pre">deltaCoeffs[facei]</span></code> (all-faces array index,
+consistent throughout the boundary kernel).</p>
+<p>The diagonal term uses the <strong>Dirichlet fraction</strong> <span class="math notranslate nohighlight">\(f_D\)</span>:</p>
+<ul class="simple">
+<li><p>Pure Dirichlet (<span class="math notranslate nohighlight">\(f_D = 1\)</span>): <code class="docutils literal notranslate"><span class="pre">diag[own]</span> <span class="pre">-=</span> <span class="pre">flux</span> <span class="pre">*</span> <span class="pre">δ</span></code>,
+providing full implicit coupling to <span class="math notranslate nohighlight">\(\varphi_C\)</span>.</p></li>
+<li><p>Pure Neumann (<span class="math notranslate nohighlight">\(f_D = 0\)</span>): no diagonal change; gradient source
+enters via the RHS only.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The boundary <code class="docutils literal notranslate"><span class="pre">flux</span> <span class="pre">=</span> <span class="pre">γ</span> <span class="pre">·</span> <span class="pre">|S_f|</span></code> lacks the <code class="docutils literal notranslate"><span class="pre">deltaCoeffs</span></code> factor
+present in the internal face flux (<code class="docutils literal notranslate"><span class="pre">δ</span> <span class="pre">·</span> <span class="pre">γ</span> <span class="pre">·</span> <span class="pre">|S_f|</span></code>).  The
+<code class="docutils literal notranslate"><span class="pre">deltaCoeffs</span></code> factor is applied explicitly in <code class="docutils literal notranslate"><span class="pre">valueMat</span></code> and
+<code class="docutils literal notranslate"><span class="pre">valueRhs</span></code> instead, so the total implicit coupling is still
+<code class="docutils literal notranslate"><span class="pre">δ</span> <span class="pre">·</span> <span class="pre">γ</span> <span class="pre">·</span> <span class="pre">|S_f|</span> <span class="pre">·</span> <span class="pre">f_D</span></code>.  This differs from the internal face
+assembly where <code class="docutils literal notranslate"><span class="pre">flux</span></code> already absorbs <code class="docutils literal notranslate"><span class="pre">δ</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="vector-fields-shared-scalar-matrix-vs-per-component-diagonal">
+<h2>Vector fields: shared scalar matrix vs. per-component diagonal<a class="headerlink" href="#vector-fields-shared-scalar-matrix-vs-per-component-diagonal" title="Link to this heading">¶</a></h2>
+<p>A vector field (<code class="docutils literal notranslate"><span class="pre">Vec3</span></code>) is <strong>not</strong> assembled as three independent scalar
+systems, nor as a block matrix. Instead NeoN builds a <strong>single scalar sparsity
+pattern and matrix</strong> whose entries are shared by all three components, and solves</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[A\,\mathbf{x} = \mathbf{b}, \qquad
+\mathbf{x}, \mathbf{b} \in \mathbb{R}^{N \times 3}\]</div>
+</div>
+<p>as one <strong>multi-RHS</strong> solve: the same scalar operator <span class="math notranslate nohighlight">\(A\)</span> is applied to the
+<span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span>, and <span class="math notranslate nohighlight">\(z\)</span> columns simultaneously (Ginkgo treats the
+right-hand side as an <span class="math notranslate nohighlight">\(N \times 3\)</span> dense block). This is the common case —
+the diffusion/convection operators of the momentum equation are identical for each
+component, so one matrix and one Krylov solve serve all three. It halves memory
+versus three matrix copies and amortises the preconditioner setup across components.</p>
+<p>The assumption this relies on is that <strong>the operator is the same for every
+component</strong>. That holds as long as every diagonal and off-diagonal entry is a
+scalar that does not depend on the component index. A term whose coefficient is
+<strong>direction dependent</strong> — i.e. differs between the <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span>, and
+<span class="math notranslate nohighlight">\(z\)</span> rows of the same cell — breaks it, because a single shared scalar
+diagonal cannot store three different values.</p>
+<dl>
+<dt>The escape hatch: <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">LinearSystem</span></code> carries an <em>optional</em> secondary store,
+<code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> (a <code class="docutils literal notranslate"><span class="pre">Vector&lt;RHSValueType&gt;</span></code>, i.e. one <code class="docutils literal notranslate"><span class="pre">Vec3</span></code> per cell,
+allocated lazily via <code class="docutils literal notranslate"><span class="pre">ensureDiagCmpt()</span></code>). It holds a <strong>per-component
+correction to the diagonal only</strong>. An operator that needs a
+direction-dependent diagonal accumulates the three component weights there
+instead of into the shared scalar matrix.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> is populated the multi-RHS solve is no longer valid, so the
+solver backend (see <code class="docutils literal notranslate"><span class="pre">src/linearAlgebra/ginkgo/ginkgo.cpp</span></code>) falls back to
+<strong>three segregated scalar solves</strong> — one per component. For column
+<span class="math notranslate nohighlight">\(c\)</span> it temporarily subtracts <code class="docutils literal notranslate"><span class="pre">diagCmpt[·][c]</span></code> from the shared scalar
+diagonal <em>in place</em> (no matrix copy), runs the scalar solve, then restores the
+diagonal. The off-diagonals — still identical across components — are reused
+untouched.</p>
+</dd>
+</dl>
+<p>This is the mechanism behind the <em>implicit</em> slip/symmetry normal damping
+(<span class="xref std std-ref">fvcc_BC</span>): the damping coefficient
+<span class="math notranslate nohighlight">\(\gamma\,|S|\,\Delta\,|n_c|\)</span> carries a per-component <span class="math notranslate nohighlight">\(|n_c|\)</span> factor, so
+it is routed through <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> rather than the shared diagonal. Any future
+operator with a genuinely anisotropic (per-component) diagonal contribution should
+use the same <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> path; a per-component <em>off-diagonal</em> coupling, by
+contrast, would require a true block matrix and is not supported by this scheme.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id10">
+<table class="docutils align-default" id="id10">
+<caption><span class="caption-text">Trade-offs</span><a class="headerlink" href="#id10" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Shared scalar matrix (default)</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> per-component diagonal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Solve</p></td>
+<td><p>one multi-RHS (<span class="math notranslate nohighlight">\(N \times 3\)</span>) solve</p></td>
+<td><p>three segregated scalar solves</p></td>
+</tr>
+<tr class="row-odd"><td><p>Matrix storage</p></td>
+<td><p>one scalar matrix</p></td>
+<td><p>one scalar matrix + one <code class="docutils literal notranslate"><span class="pre">Vec3</span></code>/cell</p></td>
+</tr>
+<tr class="row-even"><td><p>Requires</p></td>
+<td><p>component-independent operator</p></td>
+<td><p>direction-dependent <strong>diagonal</strong> only</p></td>
+</tr>
+<tr class="row-odd"><td><p>Not supported</p></td>
+<td><p>direction-dependent entries</p></td>
+<td><p>per-component <strong>off-diagonal</strong> coupling (needs block matrix)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../mpi_architecture.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">MPI Architecture</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="matrixAddressing.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Matrix Addressing</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, NeoN authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Operator Assembly</a><ul>
+<li><a class="reference internal" href="#conventions">Conventions</a></li>
+<li><a class="reference internal" href="#gaussgreengrad-explicit-only">gaussGreenGrad — Explicit Only</a><ul>
+<li><a class="reference internal" href="#algorithm">Algorithm</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gaussgreendiv-explicit">gaussGreenDiv — Explicit</a><ul>
+<li><a class="reference internal" href="#internal-faces">Internal faces</a></li>
+<li><a class="reference internal" href="#boundary-faces">Boundary faces</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gaussgreendiv-implicit">gaussGreenDiv — Implicit</a><ul>
+<li><a class="reference internal" href="#divergence-convention">Divergence convention</a></li>
+<li><a class="reference internal" href="#id1">Internal faces</a></li>
+<li><a class="reference internal" href="#physical-boundary">Physical boundary</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gaussgreenlaplacian-explicit">gaussGreenLaplacian — Explicit</a><ul>
+<li><a class="reference internal" href="#id2">Internal faces</a></li>
+<li><a class="reference internal" href="#id3">Boundary faces</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gaussgreenlaplacian-implicit">gaussGreenLaplacian — Implicit</a><ul>
+<li><a class="reference internal" href="#id4">Internal faces</a></li>
+<li><a class="reference internal" href="#id5">Physical boundary</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vector-fields-shared-scalar-matrix-vs-per-component-diagonal">Vector fields: shared scalar matrix vs. per-component diagonal</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

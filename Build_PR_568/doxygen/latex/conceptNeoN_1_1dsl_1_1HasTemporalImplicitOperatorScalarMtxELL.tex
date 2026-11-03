@@ -1,0 +1,31 @@
+\doxysection{NeoN\+::dsl\+::Has\+Temporal\+Implicit\+Operator\+Scalar\+Mtx\+ELL Concept Reference}
+\hypertarget{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperatorScalarMtxELL}{}\label{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperatorScalarMtxELL}\index{NeoN::dsl::HasTemporalImplicitOperatorScalarMtxELL@{NeoN::dsl::HasTemporalImplicitOperatorScalarMtxELL}}
+
+
+{\ttfamily \#include $<$temporal\+Operator.\+hpp$>$}
+
+\doxysubsection{Concept definition}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperatorScalarMtxELL}{NeoN::dsl::HasTemporalImplicitOperatorScalarMtxELL}}\ =\ \ \textcolor{keyword}{requires}(T\ t)\ \{}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ t.implicitOperation(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem}}<}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ T::VectorValueType,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{la::ELLMatrix<scalar,\ localIdx>}}>\&>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<NeoN::scalar>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<NeoN::scalar>()}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\ \ \ \ \}\ -\/>\ std::same\_as<void>;}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{temporalOperator_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{temporalOperator_8hpp_source}{temporal\+Operator.\+hpp}}.
+

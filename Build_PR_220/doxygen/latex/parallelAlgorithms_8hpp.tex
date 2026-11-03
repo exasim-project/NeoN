@@ -1,0 +1,44 @@
+\doxysection{/home/runner/work/\+Neo\+FOAM/\+Neo\+FOAM/include/\+Neo\+FOAM/core/parallel\+Algorithms.hpp File Reference}
+\hypertarget{parallelAlgorithms_8hpp}{}\label{parallelAlgorithms_8hpp}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/parallelAlgorithms.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/core/parallelAlgorithms.hpp}}
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include "{}Neo\+FOAM/core/executor/executor.\+hpp"{}}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoFOAM}{Neo\+FOAM}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Concepts}
+\begin{DoxyCompactItemize}
+\item 
+concept \mbox{\hyperlink{conceptNeoFOAM_1_1parallelForKernel}{Neo\+FOAM\+::parallel\+For\+Kernel}}
+\item 
+concept \mbox{\hyperlink{conceptNeoFOAM_1_1parallelForFieldKernel}{Neo\+FOAM\+::parallel\+For\+Field\+Kernel}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} , parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a79afdaeec93fc7fcd0d3ff1951cf45be}{Neo\+FOAM\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel)
+\item 
+{\footnotesize template$<$parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a7958ee996f48991cc3013b06fee9deff}{Neo\+FOAM\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Neo\+FOAM\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel)
+\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} , typename Value\+Type , parallel\+For\+Field\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_aa6ae56d4de9602bcac8ad14a6631abf5}{Neo\+FOAM\+::parallel\+For}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} \&exec, \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&field, Kernel kernel)
+\item 
+{\footnotesize template$<$typename Value\+Type , parallel\+For\+Field\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_aa6593b8c44b02d9aa59c46cb2f4346c4}{Neo\+FOAM\+::parallel\+For}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&field, Kernel kernel)
+\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a64951263f8419915d4717c4bc76005b9}{Neo\+FOAM\+::parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel, T \&value)
+\item 
+{\footnotesize template$<$typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_ac54afd3ca9f48982f18b894908855416}{Neo\+FOAM\+::parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Neo\+FOAM\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel, T \&value)
+\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} , typename Value\+Type , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a2275939b92597c0b9cf802eea67e1da5}{Neo\+FOAM\+::parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} \&exec, \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&field, Kernel kernel, T \&value)
+\item 
+{\footnotesize template$<$typename Value\+Type , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_ae3937be91de80536a70f2e020edbdab7}{Neo\+FOAM\+::parallel\+Reduce}} (\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field}}$<$ Value\+Type $>$ \&field, Kernel kernel, T \&value)
+\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} , typename Kernel $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_ac261f9695ee3ef30f1aba6e5c44e67bd}{Neo\+FOAM\+::parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel)
+\item 
+{\footnotesize template$<$typename Kernel $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a5b8d6853fc05246a8ed89db7d88badee}{Neo\+FOAM\+::parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Neo\+FOAM\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel)
+\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} , typename Kernel , typename Return\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_afbfeb99db57b54fe06c59babef5e118c}{Neo\+FOAM\+::parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel, Return\+Type \&return\+Value)
+\item 
+{\footnotesize template$<$typename Kernel , typename Return\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoFOAM_a1fbe805af7f4710f16ec7fbf18b87741}{Neo\+FOAM\+::parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Neo\+FOAM\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoFOAM_aa8ea339f1c9a4f2232da876ead30a82c}{size\+\_\+t}} $>$ range, Kernel kernel, Return\+Type \&return\+Value)
+\end{DoxyCompactItemize}

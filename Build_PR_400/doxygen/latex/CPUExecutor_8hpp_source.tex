@@ -1,0 +1,59 @@
+\doxysection{CPUExecutor.\+hpp}
+\hypertarget{CPUExecutor_8hpp_source}{}\label{CPUExecutor_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp}}
+\mbox{\hyperlink{CPUExecutor_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}\ \textcolor{comment}{//\ IWYU\ pragma:\ keep}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00009}00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00010}00010\ \{}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00019}\mbox{\hyperlink{classNeoN_1_1CPUExecutor}{00019}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1CPUExecutor}{CPUExecutor}}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00021}00021\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00023}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad27d6bca464690d7239bbac64c8eda85}{00023}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad27d6bca464690d7239bbac64c8eda85}{exec}}\ =\ Kokkos::DefaultHostExecutionSpace;}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00025}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_a6877549842d855dc98f628b93e98b7d1}{00025}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_a6877549842d855dc98f628b93e98b7d1}{CPUExecutor}}();}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_aa6533b93eed68e0d81d28c72755a0d69}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_aa6533b93eed68e0d81d28c72755a0d69}{\string~CPUExecutor}}();}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad046e5b1e58b2160850fb579afddea5b}{00029}}\ \ \ \ \ T*\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad046e5b1e58b2160850fb579afddea5b}{alloc}}(\textcolor{keywordtype}{size\_t}\ size)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00030}00030\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}T*\textcolor{keyword}{>}(Kokkos::kokkos\_malloc<exec>(\textcolor{stringliteral}{"{}Vector"{}},\ size\ *\ \textcolor{keyword}{sizeof}(T)));}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00032}00032\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_aab79adc0091fd0aa245bb45971b0ee48}{00035}}\ \ \ \ \ T*\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_aab79adc0091fd0aa245bb45971b0ee48}{realloc}}(\textcolor{keywordtype}{void}*\ ptr,\ \textcolor{keywordtype}{size\_t}\ newSize)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00036}00036\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}T*\textcolor{keyword}{>}(Kokkos::kokkos\_realloc<exec>(ptr,\ newSize\ *\ \textcolor{keyword}{sizeof}(T)));}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00038}00038\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_af9449358bae9318681beb6fb9ee91391}{00040}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_af9449358bae9318681beb6fb9ee91391}{alloc}}(\textcolor{keywordtype}{size\_t}\ size)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ Kokkos::kokkos\_malloc<exec>(\textcolor{stringliteral}{"{}Vector"{}},\ size);\ \}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00042}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_afc4a24d464bf4d48f27d40a688d8411d}{00042}}\ \ \ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_afc4a24d464bf4d48f27d40a688d8411d}{realloc}}(\textcolor{keywordtype}{void}*\ ptr,\ \textcolor{keywordtype}{size\_t}\ newSize)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00043}00043\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::kokkos\_realloc<exec>(ptr,\ newSize);}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00045}00045\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_a5232ea309a5b0c1bc39b12fb1a791093}{00055}}\ \ \ \ \ \textcolor{keyword}{decltype}(\textcolor{keyword}{auto})\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_a5232ea309a5b0c1bc39b12fb1a791093}{createKokkosView}}(ValueType*\ ptr,\ \textcolor{keywordtype}{size\_t}\ size)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00056}00056\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Kokkos::View<ValueType*,\ Kokkos::HostSpace,\ Kokkos::MemoryUnmanaged>(ptr,\ size);}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00058}00058\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_af6160d830ceda8c68786c82637bcf131}{00060}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_af6160d830ceda8c68786c82637bcf131}{free}}(\textcolor{keywordtype}{void}*\ ptr)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ Kokkos::kokkos\_free<exec>(ptr);\ \};}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad9d9cf933b83b89bbab498b34215442d}{00062}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad9d9cf933b83b89bbab498b34215442d}{name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}CPUExecutor"{}};\ \};}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1CPUExecutor_a45988fe8dd99e92612b1c4c97dd2384b}{00064}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad27d6bca464690d7239bbac64c8eda85}{exec}}\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_a45988fe8dd99e92612b1c4c97dd2384b}{underlyingExec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1CPUExecutor_ad27d6bca464690d7239bbac64c8eda85}{exec}}\ \{\};\ \}}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00065}00065\ \};}
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{CPUExecutor_8hpp_source_l00067}00067\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}

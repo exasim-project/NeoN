@@ -1,0 +1,25 @@
+\doxysection{NeoN\+::dsl\+::Has\+Implicit\+Operator Concept Reference}
+\hypertarget{conceptNeoN_1_1dsl_1_1HasImplicitOperator}{}\label{conceptNeoN_1_1dsl_1_1HasImplicitOperator}\index{NeoN::dsl::HasImplicitOperator@{NeoN::dsl::HasImplicitOperator}}
+
+
+{\ttfamily \#include $<$spatial\+Operator.\+hpp$>$}
+
+\doxysubsection{Concept definition}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasImplicitOperator}{NeoN::dsl::HasImplicitOperator}}\ =\ \ \textcolor{keyword}{requires}(T\ \textcolor{keyword}{const}\ t)\ \{}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ t.implicitOperation(std::declval<la::LinearSystem<typename\ T::VectorValueType,\ localIdx>\&>()}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\ \ \ \ \}\ -\/>\ std::same\_as<void>;\ }
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00029}{29}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+

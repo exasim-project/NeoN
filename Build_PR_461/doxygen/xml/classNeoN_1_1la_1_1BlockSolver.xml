@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1la_1_1BlockSolver" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::la::BlockSolver</compoundname>
+    <includes refid="blockSolver_8hpp" local="no">blockSolver.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1BlockSolver_1a59ac07c5b0620eb2f18b2e59307f747d" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+        <definition>Executor NeoN::la::BlockSolver::exec_</definition>
+        <argsstring></argsstring>
+        <name>exec_</name>
+        <qualifiedname>NeoN::la::BlockSolver::exec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" line="51" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1BlockSolver_1a4306e187f0aa1d765d984c34a6c44612" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref></type>
+        <definition>Dictionary NeoN::la::BlockSolver::solverDict_</definition>
+        <argsstring></argsstring>
+        <name>solverDict_</name>
+        <qualifiedname>NeoN::la::BlockSolver::solverDict_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" line="52" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockSolver_1a1366067d7adde1b1c72e6ec54d1ea7de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::BlockSolver::BlockSolver</definition>
+        <argsstring>(const Executor &amp;exec, const Dictionary &amp;solverDict)</argsstring>
+        <name>BlockSolver</name>
+        <qualifiedname>NeoN::la::BlockSolver::BlockSolver</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
+          <declname>solverDict</declname>
+        </param>
+        <briefdescription>
+<para>Construct from executor and solver configuration dictionary. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>exec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The executor (serial, CPU, or GPU). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>solverDict</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> with solver backend, type, and criteria. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" line="34" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockSolver_1a7badf0d4cacff004c55e594457d076a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">SolverStats</ref></type>
+        <definition>SolverStats NeoN::la::BlockSolver::solve</definition>
+        <argsstring>(const BlockMatrix &amp;matrix, const BlockVector &amp;rhs, BlockVector &amp;solution) const</argsstring>
+        <name>solve</name>
+        <qualifiedname>NeoN::la::BlockSolver::solve</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1la_1_1BlockMatrix" kindref="compound">BlockMatrix</ref> &amp;</type>
+          <declname>matrix</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1la_1_1BlockVector" kindref="compound">BlockVector</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1BlockVector" kindref="compound">BlockVector</ref> &amp;</type>
+          <declname>solution</declname>
+        </param>
+        <briefdescription>
+<para>Solve the block linear system A * solution = rhs with zero-copy Ginkgo views. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The solution vector serves as the initial guess on input.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>matrix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The block-structured sparse matrix (values already in monolithic CSR order). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rhs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The block right-hand side vector. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>solution</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The block solution vector (input: initial guess, output: solution). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">SolverStats</ref> Convergence statistics from the solve. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" line="47" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classNeoN_1_1la_1_1Solver" kindref="compound">Solver</ref> for block-coupled linear systems that calls Ginkgo directly with zero-copy views. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Unlike the free function la::solve() which deep-copies through <ref refid="namespaceNeoN_1_1la_1ac19cc6fa4f17dd75962891309709bca8" kindref="member">toCSR()</ref> and <ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>, <ref refid="classNeoN_1_1la_1_1BlockSolver" kindref="compound">BlockSolver</ref> wraps BlockMatrix/BlockVector data directly into Ginkgo arrays and matrices without any intermediate copies. </para>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" line="24" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockSolver.hpp" bodystart="25" bodyend="53"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1la_1_1BlockSolver_1a1366067d7adde1b1c72e6ec54d1ea7de" prot="public" virt="non-virtual"><scope>NeoN::la::BlockSolver</scope><name>BlockSolver</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockSolver_1a59ac07c5b0620eb2f18b2e59307f747d" prot="private" virt="non-virtual"><scope>NeoN::la::BlockSolver</scope><name>exec_</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockSolver_1a7badf0d4cacff004c55e594457d076a5" prot="public" virt="non-virtual"><scope>NeoN::la::BlockSolver</scope><name>solve</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockSolver_1a4306e187f0aa1d765d984c34a6c44612" prot="private" virt="non-virtual"><scope>NeoN::la::BlockSolver</scope><name>solverDict_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

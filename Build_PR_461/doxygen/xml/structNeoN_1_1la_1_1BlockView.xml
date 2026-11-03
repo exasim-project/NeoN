@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structNeoN_1_1la_1_1BlockView" kind="struct" language="C++" prot="public">
+    <compoundname>NeoN::la::BlockView</compoundname>
+    <includes refid="blockMatrixView_8hpp" local="no">blockMatrixView.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structNeoN_1_1la_1_1BlockView_1adbbda3d3c6d2f6f1d61c73e52f3e80dd" prot="public" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
+        <definition>View&lt;scalar&gt; NeoN::la::BlockView::values</definition>
+        <argsstring></argsstring>
+        <name>values</name>
+        <qualifiedname>NeoN::la::BlockView::values</qualifiedname>
+        <briefdescription>
+<para>Column-major data, size = nBlocks * nBlocks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" line="27" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structNeoN_1_1la_1_1BlockView_1ac2c92b31eb4a20cb8886d7070fec2100" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::la::BlockView::nBlocks</definition>
+        <argsstring></argsstring>
+        <name>nBlocks</name>
+        <qualifiedname>NeoN::la::BlockView::nBlocks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" line="28" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structNeoN_1_1la_1_1BlockView_1aa1ff3bf3bba6caecd6346843ab95dbdc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &amp;</type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar &amp; NeoN::la::BlockView::operator()</definition>
+        <argsstring>(localIdx i, localIdx j) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>NeoN::la::BlockView::operator()</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+<para>2D access into the coupling matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Row (field component row). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>j</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Column (field component column). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Reference to the coupling value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" line="37" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="structNeoN_1_1la_1_1BlockView_1af606ae5e2658f0bac0544176d5425fa0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &amp;</type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar &amp; NeoN::la::BlockView::operator[]</definition>
+        <argsstring>(localIdx offset) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>NeoN::la::BlockView::operator[]</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>offset</declname>
+        </param>
+        <briefdescription>
+<para>Flat offset access. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" line="43" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" bodystart="43" bodyend="43"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Device-safe view into an nBlocks x nBlocks dense coupling matrix. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Represents the coupling between field components at a single CSR position (cell pair). Stored in column-major order: operator()(i, j) accesses values[i + j * nBlocks]. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::la::BlockView</label>
+        <link refid="structNeoN_1_1la_1_1BlockView"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN::View&lt; scalar &gt;</label>
+        <link refid="classNeoN_1_1View"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::span&lt; scalar &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" line="25" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrixView.hpp" bodystart="26" bodyend="44"/>
+    <listofallmembers>
+      <member refid="structNeoN_1_1la_1_1BlockView_1ac2c92b31eb4a20cb8886d7070fec2100" prot="public" virt="non-virtual"><scope>NeoN::la::BlockView</scope><name>nBlocks</name></member>
+      <member refid="structNeoN_1_1la_1_1BlockView_1aa1ff3bf3bba6caecd6346843ab95dbdc" prot="public" virt="non-virtual"><scope>NeoN::la::BlockView</scope><name>operator()</name></member>
+      <member refid="structNeoN_1_1la_1_1BlockView_1af606ae5e2658f0bac0544176d5425fa0" prot="public" virt="non-virtual"><scope>NeoN::la::BlockView</scope><name>operator[]</name></member>
+      <member refid="structNeoN_1_1la_1_1BlockView_1adbbda3d3c6d2f6f1d61c73e52f3e80dd" prot="public" virt="non-virtual"><scope>NeoN::la::BlockView</scope><name>values</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

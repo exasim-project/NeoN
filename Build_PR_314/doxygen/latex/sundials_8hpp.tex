@@ -1,0 +1,62 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/time\+Integration/sundials.hpp File Reference}
+\hypertarget{sundials_8hpp}{}\label{sundials_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/sundials.hpp}}
+{\ttfamily \#include $<$concepts$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$sundials/sundials\+\_\+nvector.\+h$>$}\newline
+{\ttfamily \#include $<$sundials/sundials\+\_\+core.\+hpp$>$}\newline
+{\ttfamily \#include $<$nvector/nvector\+\_\+serial.\+h$>$}\newline
+{\ttfamily \#include $<$nvector/nvector\+\_\+kokkos.\+hpp$>$}\newline
+{\ttfamily \#include $<$arkode/arkode\+\_\+arkstep.\+h$>$}\newline
+{\ttfamily \#include $<$arkode/arkode\+\_\+erkstep.\+h$>$}\newline
+{\ttfamily \#include "{}Neo\+N/core/error.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/fields/field.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorSerial}{Neo\+N\+::sundials\+::\+SKVector\+Serial$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em Serial executor SUNDIALS Kokkos vector wrapper. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorHostDefault}{Neo\+N\+::sundials\+::\+SKVector\+Host\+Default$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em Host default executor SUNDIALS Kokkos vector wrapper. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVectorDefault}{Neo\+N\+::sundials\+::\+SKVector\+Default$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em Default executor SUNDIALS Kokkos vector wrapper. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1sundials_1_1SKVector}{Neo\+N\+::sundials\+::\+SKVector$<$ Value\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em Unified interface for SUNDIALS Kokkos vector management. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1sundials}{Neo\+N\+::sundials}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail}{Neo\+N\+::sundials\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+ARKODE\+\_\+\+ERKTable\+ID \mbox{\hyperlink{namespaceNeoN_1_1sundials_a68a91418f8a8d589cfaccb8141c272dd}{Neo\+N\+::sundials\+::string\+To\+ERKTable}} (const std\+::string \&key)
+\begin{DoxyCompactList}\small\item\em Maps dictionary keywords to SUNDIALS RKButcher tableau identifiers. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_aeb4f42580c2e37db7197299d3644f459}{Neo\+N\+::sundials\+::field\+To\+Sun\+NVector\+Impl}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
+\begin{DoxyCompactList}\small\item\em Converts \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Vector}{Vector} data to SUNDIALS N\+\_\+\+Vector format. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_aebaf5a75822a0239066fdbacc105af1c}{Neo\+N\+::sundials\+::field\+To\+Sun\+NVector}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field, N\+\_\+\+Vector \&vector)
+\begin{DoxyCompactList}\small\item\em Dispatcher for field to N\+\_\+\+Vector conversion based on executor type. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename SKVector\+Type , typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_a901ada90162f5694cb57621353053d5c}{Neo\+N\+::sundials\+::sun\+NVector\+To\+Vector\+Impl}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field)
+\begin{DoxyCompactList}\small\item\em Converts SUNDIALS N\+\_\+\+Vector data back to \doxylink{namespaceNeoN}{NeoN} \doxylink{classNeoN_1_1Vector}{Vector} format. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_aaabadce9081c9f8f4d8c231fdc7fd0c9}{Neo\+N\+::sundials\+::sun\+NVector\+To\+Vector}} (const N\+\_\+\+Vector \&vector, \mbox{\hyperlink{classNeoN_1_1Vector}{Neo\+N\+::\+Vector}}$<$ Value\+Type $>$ \&field)
+\begin{DoxyCompactList}\small\item\em Dispatcher for N\+\_\+\+Vector to field conversion based on executor type. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Solution\+Vector\+Type $>$ }\\int \mbox{\hyperlink{namespaceNeoN_1_1sundials_a0950f80132f6aced171dd2a47c8ae5b8}{Neo\+N\+::sundials\+::explicit\+RKSolve}} (sunrealtype t, N\+\_\+\+Vector y, N\+\_\+\+Vector ydot, void \texorpdfstring{$\ast$}{*}user\+Data)
+\begin{DoxyCompactList}\small\item\em Performs a single explicit Runge-\/\+Kutta stage evaluation. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail_a52acc68c0e3f68ab978ecd84d90a33e8}{Neo\+N\+::sundials\+::detail\+::init\+NVector}} (\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} size, std\+::shared\+\_\+ptr$<$ SUNContext $>$ context, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+\begin{DoxyCompactList}\small\item\em Initializes a vector wrapper with specified size and context. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ }\\const N\+\_\+\+Vector \& \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail_a0a28e9139d1ccea532882e167a02ff6b}{Neo\+N\+::sundials\+::detail\+::sun\+NVector}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+\begin{DoxyCompactList}\small\item\em Provides const access to underlying N\+\_\+\+Vector. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} $>$ }\\N\+\_\+\+Vector \& \mbox{\hyperlink{namespaceNeoN_1_1sundials_1_1detail_a48ef81013e482acd9a9591aa01ad3903}{Neo\+N\+::sundials\+::detail\+::sun\+NVector}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}} \&vec)
+\begin{DoxyCompactList}\small\item\em Provides mutable access to underlying N\+\_\+\+Vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+auto \mbox{\hyperlink{namespaceNeoN_1_1sundials_a3cba60c69c27f51e31d139dde5107d4a}{Neo\+N\+::sundials\+::\+SUN\+\_\+\+CONTEXT\+\_\+\+DELETER}}
+\begin{DoxyCompactList}\small\item\em Custom deleter for SUNContext shared pointers. \end{DoxyCompactList}\item 
+auto \mbox{\hyperlink{namespaceNeoN_1_1sundials_aca60627e32ac174ed4f8fac998408423}{Neo\+N\+::sundials\+::\+SUN\+\_\+\+ARK\+\_\+\+DELETER}}
+\begin{DoxyCompactList}\small\item\em Custom deleter for explicit type RK solvers (ERK, ARK, etc) for the unique pointers. \end{DoxyCompactList}\end{DoxyCompactItemize}

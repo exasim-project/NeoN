@@ -1,0 +1,353 @@
+\doxysection{NeoN\+::Collection\+Mixin\texorpdfstring{$<$}{<} Document\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1CollectionMixin}{}\label{classNeoN_1_1CollectionMixin}\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+
+
+A mixin class for collection of documents in a database to simplify the implementation of common operations.  
+
+
+
+
+{\ttfamily \#include $<$collection.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin_a5c533ffeda2bfb3b0dd6140a9b33933b}{Collection\+Mixin}} (\mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}} \&\mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}}, std\+::string \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af}{name}})
+\begin{DoxyCompactList}\small\item\em Constructs a \doxylink{classNeoN_1_1CollectionMixin}{Collection\+Mixin} with the given database and collection name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin_abaa1804d768e094625d6253d972e0dfb}{Collection\+Mixin}} (const \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \&)=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_ab48c00584d4b9374460a65e25ecc211c}{operator=}} (const \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \&)=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin_a7c8d6846fe92a5dd9319e877a45c0d97}{Collection\+Mixin}} (\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \&\&)=default
+\item 
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a019cd00d1007114c97e6c76757822b7a}{operator=}} (\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \&\&)=delete
+\item 
+\mbox{\hyperlink{classNeoN_1_1Document}{Document}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_af3c8806d121577d87af64f7e8bc90270}{doc}} (const std\+::string \&id)
+\begin{DoxyCompactList}\small\item\em Retrieves a document by its ID. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Document}{Document}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a40da7d5e6f9121c4892bc3a7f7feb574}{doc}} (const std\+::string \&id) const
+\begin{DoxyCompactList}\small\item\em Retrieves a document by its ID (const version). \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a5d4b588b1edf7fba73f8a2ef77c0cdc1}{find}} (const std\+::function$<$ bool(const \mbox{\hyperlink{classNeoN_1_1Document}{Document}} \&)$>$ \&predicate) const
+\begin{DoxyCompactList}\small\item\em Finds documents that match a given predicate. \end{DoxyCompactList}\item 
+std\+::size\+\_\+t \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a68e559c60897ba6c5edf6c90ce56bc59}{size}} () const
+\begin{DoxyCompactList}\small\item\em Gets the number of documents in the collection. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}{db}} () const
+\begin{DoxyCompactList}\small\item\em Gets a const reference to the database. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a382c73d467ed7c093f47f4158ef41956}{db}} ()
+\begin{DoxyCompactList}\small\item\em Gets a reference to the database. \end{DoxyCompactList}\item 
+const std\+::string \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af}{name}} () const
+\begin{DoxyCompactList}\small\item\em Gets the name of the collection. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a996d80b8f25ae166443b99cae12c3497}{type}} () const
+\begin{DoxyCompactList}\small\item\em Gets the type name of the documents in the collection. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_aee4265b72483f00cc9057213b6e930dc}{sorted\+Keys}} () const
+\begin{DoxyCompactList}\small\item\em Gets the sorted keys of the documents in the collection. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, Document\+Type $>$ \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a999afc07d7b24436f26ee1865dbcd6a0}{docs\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The map of document IDs to documents. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin_aa737ea2c96d46037f80d4524f0d843da}{db\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The reference to the database. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classNeoN_1_1CollectionMixin_a019b4a98e1b7c10e7657bf5922a0ca3c}{name\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The name of the collection. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Document\+Type$>$\newline
+class Neo\+N\+::\+Collection\+Mixin$<$ Document\+Type $>$}
+A mixin class for collection of documents in a database to simplify the implementation of common operations. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Document\+Type} & The type of documents stored in the collection. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00215}{215}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1CollectionMixin_a5c533ffeda2bfb3b0dd6140a9b33933b}\label{classNeoN_1_1CollectionMixin_a5c533ffeda2bfb3b0dd6140a9b33933b} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!CollectionMixin@{CollectionMixin}}
+\index{CollectionMixin@{CollectionMixin}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{CollectionMixin()}{CollectionMixin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::\+Collection\+Mixin (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}} \&}]{db,  }\item[{std\+::string}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a \doxylink{classNeoN_1_1CollectionMixin}{Collection\+Mixin} with the given database and collection name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db} & The database reference. \\
+\hline
+{\em name} & The name of the collection. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00226}{226}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_abaa1804d768e094625d6253d972e0dfb}\label{classNeoN_1_1CollectionMixin_abaa1804d768e094625d6253d972e0dfb} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!CollectionMixin@{CollectionMixin}}
+\index{CollectionMixin@{CollectionMixin}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{CollectionMixin()}{CollectionMixin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::\+Collection\+Mixin (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}}$<$ Document\+Type $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+@biref A \doxylink{classNeoN_1_1CollectionMixin}{Collection\+Mixin} is not copyable, only moveable. \Hypertarget{classNeoN_1_1CollectionMixin_a7c8d6846fe92a5dd9319e877a45c0d97}\label{classNeoN_1_1CollectionMixin_a7c8d6846fe92a5dd9319e877a45c0d97} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!CollectionMixin@{CollectionMixin}}
+\index{CollectionMixin@{CollectionMixin}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{CollectionMixin()}{CollectionMixin()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::\+Collection\+Mixin (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}}$<$ Document\+Type $>$ \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+@biref A \doxylink{classNeoN_1_1CollectionMixin}{Collection\+Mixin} is moveable, but not copyable. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1CollectionMixin_a382c73d467ed7c093f47f4158ef41956}\label{classNeoN_1_1CollectionMixin_a382c73d467ed7c093f47f4158ef41956} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!db@{db}}
+\index{db@{db}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{db()}{db()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::db (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets a reference to the database. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{classNeoN_1_1Database}{Neo\+N\+::\+Database}\& A reference to the database. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00302}{302}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13}\label{classNeoN_1_1CollectionMixin_a817c2dc43ae8feac71fc686fb2ba7b13} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!db@{db}}
+\index{db@{db}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{db()}{db()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::db (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets a const reference to the database. 
+
+\begin{DoxyReturn}{Returns}
+const \doxylink{classNeoN_1_1Database}{Neo\+N\+::\+Database}\& A const reference to the database. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00295}{295}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_af3c8806d121577d87af64f7e8bc90270}\label{classNeoN_1_1CollectionMixin_af3c8806d121577d87af64f7e8bc90270} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!doc@{doc}}
+\index{doc@{doc}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{doc()}{doc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Document}{Document}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::doc (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieves a document by its ID. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The ID of the document. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classNeoN_1_1Document}{Document}\& A reference to the document. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00254}{254}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a40da7d5e6f9121c4892bc3a7f7feb574}\label{classNeoN_1_1CollectionMixin_a40da7d5e6f9121c4892bc3a7f7feb574} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!doc@{doc}}
+\index{doc@{doc}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{doc()}{doc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Document}{Document}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::doc (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{id }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieves a document by its ID (const version). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The ID of the document. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+const \doxylink{classNeoN_1_1Document}{Document}\& A const reference to the document. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00262}{262}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a5d4b588b1edf7fba73f8a2ef77c0cdc1}\label{classNeoN_1_1CollectionMixin_a5d4b588b1edf7fba73f8a2ef77c0cdc1} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!find@{find}}
+\index{find@{find}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{find()}{find()}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::find (\begin{DoxyParamCaption}\item[{const std\+::function$<$ bool(const \mbox{\hyperlink{classNeoN_1_1Document}{Document}} \&)$>$ \&}]{predicate }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Finds documents that match a given predicate. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em predicate} & A function that takes a const reference to a \doxylink{classNeoN_1_1Document}{Document} and returns a bool. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::string$>$ A vector of document IDs that match the predicate. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00270}{270}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af}\label{classNeoN_1_1CollectionMixin_a3e11a5752aceb65be85c9b015ccc59af} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!name@{name}}
+\index{name@{name}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+const std\+::string \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the name of the collection. 
+
+\begin{DoxyReturn}{Returns}
+const std\+::string\& A const reference to the collection name. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00309}{309}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a019cd00d1007114c97e6c76757822b7a}\label{classNeoN_1_1CollectionMixin_a019cd00d1007114c97e6c76757822b7a} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}}$<$ Document\+Type $>$ \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+@biref A \doxylink{classNeoN_1_1CollectionMixin}{Collection\+Mixin} is not move-\/assign-\/able. \Hypertarget{classNeoN_1_1CollectionMixin_ab48c00584d4b9374460a65e25ecc211c}\label{classNeoN_1_1CollectionMixin_ab48c00584d4b9374460a65e25ecc211c} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}} \& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}}$<$ Document\+Type $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+@biref A \doxylink{classNeoN_1_1CollectionMixin}{Collection\+Mixin} is not copyable, only moveable. \Hypertarget{classNeoN_1_1CollectionMixin_a68e559c60897ba6c5edf6c90ce56bc59}\label{classNeoN_1_1CollectionMixin_a68e559c60897ba6c5edf6c90ce56bc59} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!size@{size}}
+\index{size@{size}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+std\+::size\+\_\+t \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the number of documents in the collection. 
+
+\begin{DoxyReturn}{Returns}
+std\+::size\+\_\+t The number of documents. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00288}{288}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_aee4265b72483f00cc9057213b6e930dc}\label{classNeoN_1_1CollectionMixin_aee4265b72483f00cc9057213b6e930dc} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!sortedKeys@{sortedKeys}}
+\index{sortedKeys@{sortedKeys}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{sortedKeys()}{sortedKeys()}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::sorted\+Keys (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the sorted keys of the documents in the collection. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::string$>$ A vector of sorted document keys. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00323}{323}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a996d80b8f25ae166443b99cae12c3497}\label{classNeoN_1_1CollectionMixin_a996d80b8f25ae166443b99cae12c3497} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!type@{type}}
+\index{type@{type}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{type()}{type()}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+std\+::string \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the type name of the documents in the collection. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string The type name of the documents. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00316}{316}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classNeoN_1_1CollectionMixin_aa737ea2c96d46037f80d4524f0d843da}\label{classNeoN_1_1CollectionMixin_aa737ea2c96d46037f80d4524f0d843da} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!db\_@{db\_}}
+\index{db\_@{db\_}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{db\_}{db\_}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Database}{Neo\+N\+::\+Database}}\& \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::db\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The reference to the database. 
+
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00337}{337}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a999afc07d7b24436f26ee1865dbcd6a0}\label{classNeoN_1_1CollectionMixin_a999afc07d7b24436f26ee1865dbcd6a0} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!docs\_@{docs\_}}
+\index{docs\_@{docs\_}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{docs\_}{docs\_}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+std\+::unordered\+\_\+map$<$std\+::string, Document\+Type$>$ \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::docs\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The map of document IDs to documents. 
+
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00336}{336}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1CollectionMixin_a019b4a98e1b7c10e7657bf5922a0ca3c}\label{classNeoN_1_1CollectionMixin_a019b4a98e1b7c10e7657bf5922a0ca3c} 
+\index{NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}!name\_@{name\_}}
+\index{name\_@{name\_}!NeoN::CollectionMixin$<$ DocumentType $>$@{NeoN::CollectionMixin$<$ DocumentType $>$}}
+\doxysubsubsection{\texorpdfstring{name\_}{name\_}}
+{\footnotesize\ttfamily template$<$typename Document\+Type $>$ \\
+std\+::string \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Neo\+N\+::\+Collection\+Mixin}}$<$ Document\+Type $>$\+::name\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The name of the collection. 
+
+
+
+Definition at line \mbox{\hyperlink{collection_8hpp_source_l00338}{338}} of file \mbox{\hyperlink{collection_8hpp_source}{collection.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/database/\mbox{\hyperlink{collection_8hpp}{collection.\+hpp}}\end{DoxyCompactItemize}

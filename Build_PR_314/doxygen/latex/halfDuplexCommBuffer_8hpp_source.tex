@@ -1,0 +1,163 @@
+\doxysection{half\+Duplex\+Comm\+Buffer.\+hpp}
+\hypertarget{halfDuplexCommBuffer_8hpp_source}{}\label{halfDuplexCommBuffer_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/mpi/halfDuplexCommBuffer.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/mpi/halfDuplexCommBuffer.hpp}}
+\mbox{\hyperlink{halfDuplexCommBuffer_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <typeindex>}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operators_8hpp}{NeoN/core/mpi/operators.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{view_8hpp}{NeoN/core/view.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00014}00014\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00015}00015\ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }mpi}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00028}00028\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ bufferHash(\textcolor{keyword}{const}\ std::string\&\ str)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00029}00029\ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ There\ is\ also\ an\ MPI\ environment\ value\ for\ that,\ but\ somehow\ it\ doesn't\ work\ using\ that}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ Also\ reserve\ 10\ tags\ for\ other\ uses}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ maxTagValue\ =\ 32767\ -\/\ 10;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00033}00033\ \ \ \ \ std::size\_t\ tag\ =\ std::hash<std::string>\ \{\}(str);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00034}00034\ \ \ \ \ tag\ \&=\ 0x7FFFFFFF;\ \textcolor{comment}{//\ turn\ 'int'\ signed\ bit\ to\ 0,\ MPI\ does\ not\ like\ negative\ tags.}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00035}00035\ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(tag)\ \%\ maxTagValue)\ +\ 10;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00036}00036\ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00048}00048\ \textcolor{keyword}{class\ }HalfDuplexCommBuffer}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00049}00049\ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00051}00051\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00056}00056\ \ \ \ \ HalfDuplexCommBuffer()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00061}00061\ \ \ \ \ \string~HalfDuplexCommBuffer()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00069}00069\ \ \ \ \ HalfDuplexCommBuffer(MPIEnvironment\ mpiEnviron,\ std::vector<size\_t>\ rankCommSize)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ :\ mpiEnviron\_(mpiEnviron)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00071}00071\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ setCommRankSize<char>(rankCommSize);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00073}00073\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ setMPIEnvironment(MPIEnvironment\ mpiEnviron)\ \{\ mpiEnviron\_\ =\ mpiEnviron;\ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ isCommInit()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ tag\_\ !=\ -\/1;\ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{keywordtype}{void}\ setCommRankSize(std::vector<size\_t>\ rankCommSize)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00097}00097\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ !isCommInit(),\ \textcolor{stringliteral}{"{}Communication\ buffer\ was\ initialised\ by\ name:\ "{}}\ <<\ commName\_\ <<\ \textcolor{stringliteral}{"{}."{}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ rankCommSize.size()\ ==\ mpiEnviron\_.sizeRank(),}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Rank\ size\ mismatch.\ "{}}\ <<\ rankCommSize.size()\ <<\ \textcolor{stringliteral}{"{}\ vs.\ "{}}\ <<\ mpiEnviron\_.sizeRank()}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ typeSize\_\ =\ \textcolor{keyword}{sizeof}(valueType);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ rankOffset\_.resize(rankCommSize.size()\ +\ 1);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ request\_.resize(rankCommSize.size(),\ MPI\_REQUEST\_NULL);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ updateDataSize([\&](\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)\ \{\ \textcolor{keywordflow}{return}\ rankCommSize[rank];\ \},\ \textcolor{keyword}{sizeof}(valueType));}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00109}00109\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keywordtype}{void}\ initComm(std::string\ commName)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00119}00119\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ !isCommInit(),\ \textcolor{stringliteral}{"{}Communication\ buffer\ was\ initialised\ by\ name:\ "{}}\ <<\ commName\_\ <<\ \textcolor{stringliteral}{"{}."{}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ setType<valueType>();}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ commName\_\ =\ commName;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ tag\_\ =\ bufferHash(commName);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00126}00126\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00133}00133\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ std::string\&\ getCommName()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ commName\_;\ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00134}00134\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00139}00139\ \ \ \ \ \textcolor{keywordtype}{bool}\ isComplete();}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00144}00144\ \ \ \ \ \textcolor{keywordtype}{void}\ send();}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00150}00150\ \ \ \ \ \textcolor{keywordtype}{void}\ receive();}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00155}00155\ \ \ \ \ \textcolor{keywordtype}{void}\ waitComplete();}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00156}00156\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{keywordtype}{void}\ finaliseComm();}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00161}00161\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00170}00170\ \ \ \ \ View<valueType>\ get(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00171}00171\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(isCommInit(),\ \textcolor{stringliteral}{"{}Communication\ buffer\ is\ not\ initialised."{}});}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(typeSize\_\ ==\ \textcolor{keyword}{sizeof}(valueType),\ \textcolor{stringliteral}{"{}Data\ type\ (size)\ mismatch."{}});}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00174}00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ View<valueType>(}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}valueType*\textcolor{keyword}{>}(rankBuffer\_.data()\ +\ rankOffset\_[rank]),}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ (rankOffset\_[rank\ +\ 1]\ -\/\ rankOffset\_[rank])\ /\ \textcolor{keyword}{sizeof}(valueType)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00178}00178\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00187}00187\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00188}00188\ \ \ \ \ View<const\ valueType>\ get(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00189}00189\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(isCommInit(),\ \textcolor{stringliteral}{"{}Communication\ buffer\ is\ not\ initialised."{}});}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(typeSize\_\ ==\ \textcolor{keyword}{sizeof}(valueType),\ \textcolor{stringliteral}{"{}Data\ type\ (size)\ mismatch."{}});}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00192}00192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ View<const\ valueType>(}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }valueType*\textcolor{keyword}{>}(rankBuffer\_.data()\ +\ rankOffset\_[rank]),}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ (rankOffset\_[rank\ +\ 1]\ -\/\ rankOffset\_[rank])\ /\ \textcolor{keyword}{sizeof}(valueType)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00196}00196\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00197}00197\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00198}00198\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00200}00200\ \ \ \ \ \textcolor{keywordtype}{int}\ tag\_\ \{-\/1\};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*<\ The\ tag\ for\ the\ communication.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00201}00201\ \ \ \ \ std::string\ commName\_\ \{\textcolor{stringliteral}{"{}unassigned"{}}\};\ \textcolor{comment}{/*<\ The\ name\ of\ the\ communication.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00202}00202\ \ \ \ \ std::size\_t\ typeSize\_\ \{\textcolor{keyword}{sizeof}(char)\};\ \textcolor{comment}{/*<\ The\ data\ type\ currently\ stored\ in\ the\ buffer.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00203}00203\ \ \ \ \ MPIEnvironment\ mpiEnviron\_;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*<\ The\ MPI\ environment.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00204}00204\ \ \ \ \ std::vector<MPI\_Request>\ request\_;\ \ \ \ \textcolor{comment}{/*<\ The\ MPI\ request\ for\ communication\ with\ each\ rank.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00205}00205\ \ \ \ \ std::vector<char>\ rankBuffer\_;\ \ \ \ \ \ \ \ \textcolor{comment}{/*<\ The\ buffer\ data\ for\ all\ ranks.\ Never\ shrinks.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00206}00206\ \ \ \ \ std::vector<std::size\_t>}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00207}00207\ \ \ \ \ \ \ \ \ rankOffset\_;\ \textcolor{comment}{/*<\ The\ offset\ (in\ bytes)\ for\ a\ rank\ data\ in\ the\ buffer.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00208}00208\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00212}00212\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00213}00213\ \ \ \ \ \textcolor{keywordtype}{void}\ setType()}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00214}00214\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00215}00215\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ !isCommInit(),\ \textcolor{stringliteral}{"{}Communication\ buffer\ was\ initialised\ by\ name:\ "{}}\ <<\ commName\_\ <<\ \textcolor{stringliteral}{"{}."{}}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00217}00217\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00218}00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (0\ ==\ (typeSize\_\ -\/\ \textcolor{keyword}{sizeof}(valueType)))\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00219}00219\ \ \ \ \ \ \ \ \ updateDataSize(}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ [rankOffset\ =\ rankOffset\_,\ typeSize\ =\ typeSize\_](\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rank)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{keywordflow}{return}\ (rankOffset[rank\ +\ 1]\ -\/\ rankOffset[rank])\ /\ typeSize;\ \},}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{sizeof}(valueType)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00223}00223\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00224}00224\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00225}00225\ \ \ \ \ \ \ \ \ typeSize\_\ =\ \textcolor{keyword}{sizeof}(valueType);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00226}00226\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00227}00227\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00235}00235\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ func>}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00236}00236\ \ \ \ \ \textcolor{keywordtype}{void}\ updateDataSize(func\ rankSize,\ std::size\_t\ newSize)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00237}00237\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00238}00238\ \ \ \ \ \ \ \ \ std::size\_t\ dataSize\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ rank\ =\ 0;\ rank\ <\ mpiEnviron\_.sizeRank();\ ++rank)}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00240}00240\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ rankOffset\_[rank]\ =\ dataSize;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ dataSize\ +=\ rankSize(rank)\ *\ newSize;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00243}00243\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00244}00244\ \ \ \ \ \ \ \ \ rankOffset\_.back()\ =\ dataSize;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00245}00245\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rankBuffer\_.size()\ <\ dataSize)\ rankBuffer\_.resize(dataSize);\ \textcolor{comment}{//\ we\ never\ size\ down.}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00246}00246\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00247}00247\ \};}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00248}00248\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00249}00249\ \}\ \textcolor{comment}{//\ namespace\ mpi}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00250}00250\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00251}00251\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00252}00252\ }
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00253}00253\ \}}
+
+\end{DoxyCode}

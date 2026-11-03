@@ -1,0 +1,51 @@
+\doxysection{gauss\+Green\+Div.\+hpp}
+\hypertarget{gaussGreenDiv_8hpp_source}{}\label{gaussGreenDiv_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp}}
+\mbox{\hyperlink{gaussGreenDiv_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoFOAM/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoFOAM/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructured_8hpp}{NeoFOAM/mesh/unstructured.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{divOperator_8hpp}{NeoFOAM/finiteVolume/cellCentred/operators/divOperator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred}{NeoFOAM::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00015}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv}{00015}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv}{GaussGreenDiv}}\ :\ \textcolor{keyword}{public}\ DivOperatorFactory::Register<GaussGreenDiv>}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00017}00017\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00019}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a1167b398dcef217bc6be224f507c039e}{00019}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a1167b398dcef217bc6be224f507c039e}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Gauss"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00021}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a8a9f35473f20118b8fe794b6f3e24b9e}{00021}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a8a9f35473f20118b8fe794b6f3e24b9e}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Gauss-\/Green\ Divergence"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00023}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a82130b63d727ded6adbcfbeaffbfefb5}{00023}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a82130b63d727ded6adbcfbeaffbfefb5}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00025}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a39bcedf16619c1eacc116e4bb873e10c}{00025}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a39bcedf16619c1eacc116e4bb873e10c}{GaussGreenDiv}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_a161184af07a233e2513b53451edc6b39}{Input}}\&\ inputs);}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00028}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_ae775e73e728817eac2cbd03f4e71c4b9}{00028}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_ae775e73e728817eac2cbd03f4e71c4b9}{div}}(\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ divPhi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00029}00029\ \ \ \ \ )\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00032}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a61b4bdc584c736abfa6e225f3e44c030}{00032}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a61b4bdc584c736abfa6e225f3e44c030}{div}}(\mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<scalar>}}\&\ divPhi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00033}00033\ \ \ \ \ )\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00036}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a0ae98ee7d2c45cd2b1f787894a975f60}{00036}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a0ae98ee7d2c45cd2b1f787894a975f60}{div}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00038}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a36a4626e0519544e273a6d24fda3644d}{00038}}\ \ \ \ \ std::unique\_ptr<DivOperatorFactory>\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_a36a4626e0519544e273a6d24fda3644d}{clone}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00040}00040\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00042}00042\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{SurfaceInterpolation}}\ surfaceInterpolation\_;}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00043}00043\ \};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00045}00045\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+
+\end{DoxyCode}

@@ -1,0 +1,422 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="mergedPgm_8hpp" kind="file" language="C++">
+    <compoundname>mergedPgm.hpp</compoundname>
+    <includes local="no">algorithm</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">numeric</includes>
+    <includes local="no">vector</includes>
+    <includes local="no">ginkgo/ginkgo.hpp</includes>
+    <includes local="no">ginkgo/core/multigrid/pgm.hpp</includes>
+    <includes local="no">ginkgo/core/multigrid/multigrid_level.hpp</includes>
+    <includes local="no">ginkgo/core/matrix/csr.hpp</includes>
+    <includes local="no">ginkgo/core/matrix/row_gatherer.hpp</includes>
+    <includes local="no">ginkgo/core/solver/multigrid.hpp</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp</label>
+        <link refid="mergedPgm_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>algorithm</label>
+      </node>
+      <node id="9">
+        <label>ginkgo/core/matrix/csr.hpp</label>
+      </node>
+      <node id="10">
+        <label>ginkgo/core/matrix/row_gatherer.hpp</label>
+      </node>
+      <node id="8">
+        <label>ginkgo/core/multigrid/multigrid_level.hpp</label>
+      </node>
+      <node id="7">
+        <label>ginkgo/core/multigrid/pgm.hpp</label>
+      </node>
+      <node id="11">
+        <label>ginkgo/core/solver/multigrid.hpp</label>
+      </node>
+      <node id="6">
+        <label>ginkgo/ginkgo.hpp</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="4">
+        <label>numeric</label>
+      </node>
+      <node id="5">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" prot="public">NeoN::la::ginkgo::MergedPgm</innerclass>
+    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1la">NeoN::la</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1la_1_1ginkgo">NeoN::la::ginkgo</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;algorithm&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;numeric&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/ginkgo.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/core/multigrid/pgm.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/core/multigrid/multigrid_level.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/core/matrix/csr.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/core/matrix/row_gatherer.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/core/solver/multigrid.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/core/distributed/base.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/core/distributed/matrix.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="namespaceNeoN_1_1la_1_1ginkgo" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1la_1_1ginkgo" kindref="compound">NeoN::la::ginkgo</ref></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType<sp/>=<sp/>gko::default_precision,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType<sp/>=<sp/>gko::</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">32&gt;</highlight></codeline>
+<codeline lineno="47" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref><sp/>:</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>gko::EnableLinOp&lt;MergedPgm&lt;ValueType,<sp/>IndexType&gt;&gt;,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>gko::multigrid::EnableMultigridLevel&lt;ValueType&gt;,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>gko::UpdateMatrixValue</highlight></codeline>
+<codeline lineno="51"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">gko::EnableLinOp&lt;<ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref>&gt;;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">gko::EnablePolymorphicObject&lt;<ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref>,<sp/>gko::LinOp&gt;;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a398778c4711b05dcdb19811e5d321de8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a398778c4711b05dcdb19811e5d321de8" kindref="member">value_type</ref><sp/>=<sp/>ValueType;</highlight></codeline>
+<codeline lineno="58" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a1ae65fa49d08fa8caf1f589f718753ed" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a1ae65fa49d08fa8caf1f589f718753ed" kindref="member">index_type</ref><sp/>=<sp/>IndexType;</highlight></codeline>
+<codeline lineno="59" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a485d82bc33b99b245f7b14e9a3fa3e2e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a485d82bc33b99b245f7b14e9a3fa3e2e" kindref="member">csr</ref><sp/>=<sp/>gko::matrix::Csr&lt;ValueType,<sp/>IndexType&gt;;</highlight></codeline>
+<codeline lineno="60" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a0c990feae69c88a08662946752668b8d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a0c990feae69c88a08662946752668b8d" kindref="member">pgm</ref><sp/>=<sp/>gko::multigrid::Pgm&lt;ValueType,<sp/>IndexType&gt;;</highlight></codeline>
+<codeline lineno="61" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a55976f70b427d2ecbc434d73e67982d1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a55976f70b427d2ecbc434d73e67982d1" kindref="member">row_gatherer</ref><sp/>=<sp/>gko::matrix::RowGatherer&lt;IndexType&gt;;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NeoN<sp/>always<sp/>builds<sp/>its<sp/>distributed<sp/>system<sp/>matrix<sp/>with<sp/>a<sp/>64-bit<sp/>global<sp/>index<sp/>type</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(@see<sp/>createGkoMtxDist<sp/>in<sp/>ginkgoDistributed.cpp);<sp/>Pgm<sp/>keeps<sp/>the<sp/>same<sp/>global<sp/>index<sp/>type<sp/>for</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>every<sp/>coarser<sp/>level,<sp/>so<sp/>all<sp/>distributed<sp/>operators<sp/>seen<sp/>here<sp/>are<sp/>Matrix&lt;Value,<sp/>Index,<sp/>int64&gt;.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>dist_mtx<sp/>=<sp/>gko::experimental::distributed::Matrix&lt;ValueType,<sp/>IndexType,<sp/>gko::int64&gt;;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a2dc3d15e79c5b0470693986e114f12d3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a2dc3d15e79c5b0470693986e114f12d3" kindref="member">get_system_matrix</ref>()<sp/>const<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>system_matrix_;<sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a5f924df26ae649d6b8ff019f441f9d5a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a5f924df26ae649d6b8ff019f441f9d5a" kindref="member">GKO_CREATE_FACTORY_PARAMETERS</ref>(parameters,<sp/><ref refid="classFactory" kindref="compound">Factory</ref>)</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(merge_levels,<sp/>2u);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(max_iterations,<sp/>15u);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(max_unassigned_ratio,<sp/>0.05);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(deterministic,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(skip_sorting,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="81" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1adb880f5a1dc85513794d68b51db6f268" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1adb880f5a1dc85513794d68b51db6f268" kindref="member">GKO_ENABLE_LIN_OP_FACTORY</ref>(<ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref>,<sp/>parameters,<sp/><ref refid="classFactory" kindref="compound">Factory</ref>);</highlight></codeline>
+<codeline lineno="82" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ab23af32eae6c4d2aefcb854d88bfe23f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ab23af32eae6c4d2aefcb854d88bfe23f" kindref="member">GKO_ENABLE_BUILD_METHOD</ref>(<ref refid="classFactory" kindref="compound">Factory</ref>);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1afe621e5c57aae2919d4a0443ea541eab" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1afe621e5c57aae2919d4a0443ea541eab" kindref="member">update_matrix_value</ref>(std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>new_matrix)</highlight><highlight class="keyword"><sp/>override</highlight></codeline>
+<codeline lineno="85"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>system_matrix_<sp/>=<sp/>new_matrix;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Value-only<sp/>refresh<sp/>with<sp/>FROZEN<sp/>structure,<sp/>cuSPARSE-free.<sp/>The<sp/>merged<sp/>prolongation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(prolong_/restrict_)<sp/>is<sp/>structural<sp/>and<sp/>stays<sp/>fixed;<sp/>only<sp/>the<sp/>coarse<sp/>operator&apos;s<sp/>values</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>change.<sp/>Rather<sp/>than<sp/>recompute<sp/>A_merged<sp/>=<sp/>R<sp/>A<sp/>P<sp/>by<sp/>SpGEMM<sp/>(cuSPARSE<sp/>SpGEMM<sp/>aborts<sp/>with</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>CUSPARSE_STATUS_INSUFFICIENT_RESOURCES<sp/>on<sp/>these<sp/>large<sp/>injection<sp/>operands),<sp/>walk<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>retained<sp/>Pgm<sp/>chain:<sp/>each<sp/>Pgm::update_matrix_value<sp/>scatters<sp/>the<sp/>new<sp/>fine<sp/>values<sp/>into<sp/>its</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>frozen<sp/>coarse<sp/>structure<sp/>(no<sp/>SpGEMM)<sp/>and<sp/>refreshes<sp/>get_coarse_op()<sp/>in<sp/>place;<sp/>that<sp/>refreshed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coarse<sp/>feeds<sp/>the<sp/>next<sp/>level&apos;s<sp/>fine<sp/>op.<sp/>After<sp/>the<sp/>last<sp/>level,<sp/>get_coarse_op()<sp/>is<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>refreshed<sp/>A_merged.<sp/>This<sp/>keeps<sp/>the<sp/>cached-solver<sp/>(update_matrix_value)<sp/>reuse<sp/>engaged.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isDist<sp/>=<sp/>is_distributed(new_matrix);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>local<sp/>path<sp/>converts<sp/>to<sp/>Csr;<sp/>distributed<sp/>path<sp/>feeds<sp/>the<sp/>distributed<sp/>op<sp/>through<sp/>unchanged</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(Pgm::update_matrix_value<sp/>has<sp/>its<sp/>own<sp/>distributed<sp/>branch).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>fineOp<sp/>=<sp/>isDist<sp/>?<sp/>new_matrix<sp/>:<sp/>as_csr(new_matrix);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>lvl<sp/>:<sp/>levels_)</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::as&lt;gko::UpdateMatrixValue&gt;(lvl.get())-&gt;update_matrix_value(fineOp);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fineOp<sp/>=<sp/>gko::as&lt;gko::multigrid::MultigridLevel&gt;(lvl.get())-&gt;get_coarse_op();</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>coarse<sp/>=</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::as&lt;gko::multigrid::MultigridLevel&gt;(levels_.back().get())-&gt;get_coarse_op();</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!isDist)<sp/>coarse<sp/>=<sp/>as_csr(coarse);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;set_multigrid_level(prolong_,<sp/>coarse,<sp/>restrict_);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a19cb3e14ec4680b51bb9b159d6a5a365" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a19cb3e14ec4680b51bb9b159d6a5a365" kindref="member">apply_impl</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>b,<sp/>gko::LinOp*<sp/>x)</highlight><highlight class="keyword"><sp/>const<sp/>override</highlight></codeline>
+<codeline lineno="113"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;get_composition()-&gt;apply(b,<sp/>x);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="116" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1af1efb91f3155217da21fec7328f7d8da" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1af1efb91f3155217da21fec7328f7d8da" kindref="member">apply_impl</ref>(</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>alpha,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>b,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>beta,<sp/>gko::LinOp*<sp/>x</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>const<sp/>override</highlight></codeline>
+<codeline lineno="119"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;get_composition()-&gt;apply(alpha,<sp/>b,<sp/>beta,<sp/>x);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a452c78e1fae9d24f107f5268487234b7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a452c78e1fae9d24f107f5268487234b7" kindref="member">MergedPgm</ref>(std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec)</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>gko::EnableLinOp&lt;<ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref>&gt;(std::move(exec))</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a62427c6fc52f46e186ab1fc4fbb8e0a1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a62427c6fc52f46e186ab1fc4fbb8e0a1" kindref="member">MergedPgm</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classFactory" kindref="compound">Factory</ref>*<sp/>factory,<sp/>gko::LinOpGenerateComponents<sp/>components)</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>gko::EnableLinOp&lt;<ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref>&gt;(</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>factory-&gt;get_executor(),<sp/>components.system_matrix-&gt;get_size()</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>),</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::multigrid::EnableMultigridLevel&lt;ValueType&gt;(components.system_matrix),</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>parameters_<sp/>{factory-&gt;get_parameters()},<sp/>system_matrix_<sp/>{components.system_matrix}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GKO_ASSERT(parameters_.merge_levels<sp/>&gt;=<sp/>1u);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(system_matrix_-&gt;get_size()[0]<sp/>!=<sp/>0)</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(is_distributed(system_matrix_))</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac9df5453aea89a1dbc17847780963f7f" kindref="member">generateDistributed</ref>();</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a6c828b2bad6d6c2d6c093bc86f40ab5e" kindref="member">generateLocal</ref>();</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>----<sp/>localized<sp/>/<sp/>Schwarz<sp/>path:<sp/>fine<sp/>op<sp/>is<sp/>a<sp/>plain<sp/>Csr<sp/>on<sp/>this<sp/>rank<sp/>-----------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a6c828b2bad6d6c2d6c093bc86f40ab5e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a6c828b2bad6d6c2d6c093bc86f40ab5e" kindref="member">generateLocal</ref>()</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>this-&gt;get_executor();</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="classA" kindref="compound">A</ref><sp/>=<sp/>as_csr(system_matrix_);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fineRows<sp/>=<sp/><ref refid="classA" kindref="compound">A</ref>-&gt;get_size()[0];</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Run<sp/>Pgm<sp/>`merge_levels`<sp/>times,<sp/>composing<sp/>the<sp/>per-level<sp/>aggregations<sp/>BY<sp/>INDEX.<sp/>Each<sp/>inner</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pgm<sp/>coarsens<sp/>`coarse`<sp/>and<sp/>yields<sp/>a<sp/>piecewise-constant<sp/>prolong<sp/>(a<sp/>RowGatherer:<sp/>fine<sp/>row<sp/>-&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>aggregate)<sp/>plus<sp/>the<sp/>next<sp/>coarse<sp/>operator.<sp/>Because<sp/>the<sp/>prolongs<sp/>are<sp/>injections,<sp/>the<sp/>merged</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>prolongation<sp/>is<sp/>the<sp/>injection<sp/>of<sp/>the<sp/>composed<sp/>aggregate<sp/>map<sp/>`mergedAgg[i]<sp/>=</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>aggThis[mergedAgg[i]]`</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>--<sp/>no<sp/>Csr*Csr<sp/>SpGEMM<sp/>(cuSPARSE<sp/>aborts<sp/>with<sp/>INSUFFICIENT_RESOURCES<sp/>on<sp/>large<sp/>operands).<sp/>The</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pgm<sp/>levels<sp/>are<sp/>retained<sp/>so<sp/>update_matrix_value<sp/>can<sp/>refresh<sp/>the<sp/>coarse<sp/>values<sp/>in<sp/>place.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>levels_.clear();</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>csr&gt;<sp/>coarse<sp/>=<sp/><ref refid="classA" kindref="compound">A</ref>;</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;IndexType&gt;<sp/>mergedAgg;<sp/></highlight><highlight class="comment">//<sp/>fine<sp/>row<sp/>-&gt;<sp/>current<sp/>coarse<sp/>index<sp/>(host)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::size_type<sp/>coarseRows<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>parameters_.merge_levels;<sp/>++i)</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>level<sp/>=<sp/>makePgm()-&gt;generate(coarse);</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>aggThis<sp/>=<sp/>gather_agg(level.get());<sp/></highlight><highlight class="comment">//<sp/>host,<sp/>length<sp/>coarse-&gt;rows,<sp/>in<sp/>[0,<sp/>coarseRows)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>coarseRows<sp/>=<sp/>level-&gt;get_prolong_op()-&gt;get_size()[1];</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>composeAgg(mergedAgg,<sp/>aggThis,<sp/>fineRows,<sp/>i);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>coarse<sp/>=<sp/>as_csr(level-&gt;get_coarse_op());</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>levels_.push_back(gko::share(std::move(level)));</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>pCsr<sp/>=<sp/>make_injection(mergedAgg,<sp/>fineRows,<sp/>coarseRows);<sp/></highlight><highlight class="comment">//<sp/>Csr,<sp/>fine<sp/>x<sp/>coarse</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>prolong_<sp/>=<sp/>pCsr;</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>restrict_<sp/>=<sp/>gko::share(gko::as&lt;csr&gt;(pCsr-&gt;transpose()));<sp/></highlight><highlight class="comment">//<sp/>Csr,<sp/>coarse<sp/>x<sp/>fine</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coarse<sp/>==<sp/>P_merged^T<sp/>A<sp/>P_merged<sp/>already<sp/>(last<sp/>Pgm<sp/>level&apos;s<sp/>coarse<sp/>op);<sp/>use<sp/>it<sp/>directly.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;set_multigrid_level(prolong_,<sp/>coarse,<sp/>restrict_);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>----<sp/>global<sp/>path:<sp/>fine<sp/>op<sp/>is<sp/>a<sp/>distributed::Matrix<sp/>---------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac9df5453aea89a1dbc17847780963f7f" kindref="member">generateDistributed</ref>()</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>this-&gt;get_executor();</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>distFine<sp/>=<sp/>gko::as&lt;const<sp/>dist_mtx&gt;(system_matrix_);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>comm<sp/>=<sp/>gko::as&lt;const<sp/>gko::experimental::distributed::DistributedBase&gt;(system_matrix_)</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-&gt;get_communicator();</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fineGlobalRows<sp/>=<sp/>system_matrix_-&gt;get_size()[0];</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>prolong<sp/>composition<sp/>is<sp/>rank-local<sp/>because<sp/>the<sp/>distributed<sp/>Pgm<sp/>prolong<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>block-diagonal;<sp/>all<sp/>sizes<sp/>below<sp/>are<sp/>LOCAL<sp/>(this<sp/>rank&apos;s<sp/>diag<sp/>block).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>localFineRows<sp/>=<sp/>distFine-&gt;get_diag_matrix()-&gt;get_size()[0];</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>levels_.clear();</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>coarse<sp/>=<sp/>system_matrix_;<sp/></highlight><highlight class="comment">//<sp/>stays<sp/>distributed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;IndexType&gt;<sp/>mergedAgg;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>LOCAL<sp/>fine<sp/>row<sp/>-&gt;<sp/>LOCAL<sp/>coarse<sp/>idx</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::size_type<sp/>localCoarseRows<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>parameters_.merge_levels;<sp/>++i)</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>level<sp/>=<sp/>makePgm()-&gt;generate(coarse);<sp/></highlight><highlight class="comment">//<sp/>distributed<sp/>Pgm<sp/>level</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Aggregation<sp/>lives<sp/>in<sp/>the<sp/>block-diagonal<sp/>prolong&apos;s<sp/>DIAG<sp/>block<sp/>(a<sp/>RowGatherer).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>prolongDiag<sp/>=<sp/>gko::as&lt;const<sp/>dist_mtx&gt;(level-&gt;get_prolong_op())-&gt;get_diag_matrix();</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>aggThis<sp/>=<sp/>agg_from_rowgatherer(prolongDiag.get());<sp/></highlight><highlight class="comment">//<sp/>host,<sp/>length<sp/>=<sp/>local<sp/>fine<sp/>rows</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>local<sp/>coarse<sp/>rows<sp/>==<sp/>this<sp/>level&apos;s<sp/>coarse<sp/>DIAG<sp/>block<sp/>rows</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>localCoarseRows<sp/>=</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::as&lt;const<sp/>dist_mtx&gt;(level-&gt;get_coarse_op())-&gt;get_diag_matrix()-&gt;get_size()[0];</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>composeAgg(mergedAgg,<sp/>aggThis,<sp/>localFineRows,<sp/>i);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>coarse<sp/>=<sp/>level-&gt;get_coarse_op();<sp/></highlight><highlight class="comment">//<sp/>distributed<sp/>coarse<sp/>op<sp/>-&gt;<sp/>next<sp/>Pgm<sp/>fine<sp/>op</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>levels_.push_back(gko::share(std::move(level)));</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>coarseGlobalRows<sp/>=<sp/>coarse-&gt;get_size()[0];</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Build<sp/>the<sp/>merged<sp/>local<sp/>injection<sp/>Csr,<sp/>then<sp/>re-wrap<sp/>prolong/restrict<sp/>as<sp/>block-diagonal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>distributed<sp/>matrices<sp/>(diag<sp/>block<sp/>only,<sp/>empty<sp/>off-diagonal)<sp/>--<sp/>mirrors<sp/>pgm.cpp&apos;s</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>distributed_setup,<sp/>which<sp/>builds<sp/>prolong/restrict<sp/>from<sp/>the<sp/>local<sp/>block<sp/>alone.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;csr&gt;<sp/>pLocal<sp/>=<sp/>make_injection(mergedAgg,<sp/>localFineRows,<sp/>localCoarseRows);</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;gko::LinOp&gt;<sp/>rLocal<sp/>=<sp/>gko::share(gko::as&lt;csr&gt;(pLocal-&gt;transpose()));</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>prolong_<sp/>=<sp/>gko::share(</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist_mtx::create(exec,<sp/>comm,<sp/>gko::dim&lt;2&gt;<sp/>{fineGlobalRows,<sp/>coarseGlobalRows},<sp/>pLocal)</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>restrict_<sp/>=<sp/>gko::share(</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist_mtx::create(exec,<sp/>comm,<sp/>gko::dim&lt;2&gt;<sp/>{coarseGlobalRows,<sp/>fineGlobalRows},<sp/>rLocal)</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coarse<sp/>==<sp/>the<sp/>last<sp/>inner<sp/>Pgm&apos;s<sp/>distributed<sp/>coarse<sp/>op<sp/>==<sp/>A_merged;<sp/>use<sp/>it<sp/>directly.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;set_multigrid_level(prolong_,<sp/>coarse,<sp/>restrict_);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="230" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac9df5453aea89a1dbc17847780963f7f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac9df5453aea89a1dbc17847780963f7f" kindref="member">generateDistributed</ref>()<sp/>{<sp/>GKO_NOT_IMPLEMENTED;<sp/>}</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_distributed(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;&amp;<sp/>op)</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::dynamic_pointer_cast&lt;const<sp/>gko::experimental::distributed::DistributedBase&gt;(op)</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(op);</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"></highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;typename<sp/>pgm::Factory&gt;<sp/>makePgm()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="247"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pgm::build()</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.with_max_iterations(parameters_.max_iterations)</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.with_max_unassigned_ratio(parameters_.max_unassigned_ratio)</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.with_deterministic(parameters_.deterministic)</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.with_skip_sorting(parameters_.skip_sorting)</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.on(this-&gt;get_executor());</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>mergedAgg[k]<sp/>&lt;-<sp/>aggThis[mergedAgg[k]]<sp/>(or<sp/>aggThis<sp/>directly<sp/>on<sp/>the<sp/>first<sp/>level).<sp/>Identical<sp/>for</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>local<sp/>and<sp/>distributed<sp/>paths<sp/>--<sp/>the<sp/>distributed<sp/>prolong<sp/>is<sp/>block-diagonal<sp/>so<sp/>its<sp/>diag-block</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>aggregation<sp/>composes<sp/>rank-locally,<sp/>exactly<sp/>like<sp/>a<sp/>local<sp/>Csr<sp/>aggregation.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>composeAgg(</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;IndexType&gt;&amp;<sp/>mergedAgg,</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::array&lt;IndexType&gt;&amp;<sp/>aggThis,</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::size_type<sp/>fineRows,</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>i</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i<sp/>==<sp/>0)</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mergedAgg.assign(aggThis.get_const_data(),<sp/>aggThis.get_const_data()<sp/>+<sp/>fineRows);</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(gko::size_type<sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/>fineRows;<sp/>++k)</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mergedAgg[k]<sp/>=<sp/>aggThis.get_const_data()[mergedAgg[k]];</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"></highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;const<sp/>csr&gt;<sp/>as_csr(std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>op)</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>c<sp/>=<sp/>std::dynamic_pointer_cast&lt;const<sp/>csr&gt;(op))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>op-&gt;get_executor();</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>out<sp/>=<sp/>csr::create(exec);</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::as&lt;const<sp/>gko::ConvertibleTo&lt;csr&gt;&gt;(op.get())-&gt;convert_to(out);</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::move(out);</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pull<sp/>a<sp/>RowGatherer&apos;s<sp/>per-row<sp/>aggregate<sp/>map<sp/>(fine<sp/>row<sp/>i<sp/>-&gt;<sp/>its<sp/>aggregate)<sp/>to<sp/>the<sp/>host.<sp/>Length<sp/>==</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>gatherer&apos;s<sp/>row<sp/>count;<sp/>values<sp/>in<sp/>[0,<sp/>coarseRows).<sp/>One<sp/>entry<sp/>per<sp/>row.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/>gko::array&lt;IndexType&gt;<sp/>agg_from_rowgatherer(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>rgOp)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="291"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>this-&gt;get_executor();</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>host<sp/>=<sp/>exec-&gt;get_master();</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rg<sp/>=<sp/>gko::as&lt;const<sp/>row_gatherer&gt;(rgOp);</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fineRows<sp/>=<sp/>rg-&gt;get_size()[0];</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::array&lt;IndexType&gt;<sp/>agg(host,<sp/>fineRows);</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>host-&gt;copy_from(exec,<sp/>fineRows,<sp/>rg-&gt;get_const_row_idxs(),<sp/>agg.get_data());</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>agg;</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Localized-path<sp/>convenience:<sp/>the<sp/>level&apos;s<sp/>prolong<sp/>IS<sp/>a<sp/>RowGatherer.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/>gko::array&lt;IndexType&gt;<sp/>gather_agg(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::multigrid::MultigridLevel*<sp/>level)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="303"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>agg_from_rowgatherer(level-&gt;get_prolong_op().get());</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Build<sp/>the<sp/>merged<sp/>injection<sp/>Csr<sp/>P<sp/>(P[i,<sp/>mergedAgg[i]]<sp/>=<sp/>1)<sp/>from<sp/>the<sp/>composed<sp/>aggregate<sp/>map<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>host,<sp/>then<sp/>clone<sp/>to<sp/>the<sp/>device<sp/>executor.<sp/>row_ptrs<sp/>=<sp/>iota<sp/>(one<sp/>entry<sp/>per<sp/>row);<sp/>values<sp/>=</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ones.<sp/>One<sp/>entry<sp/>per<sp/>row<sp/>=&gt;<sp/>naturally<sp/>sorted.<sp/>Returned<sp/>non-const<sp/>so<sp/>it<sp/>can<sp/>serve<sp/>as<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(mutable)<sp/>diag<sp/>block<sp/>of<sp/>a<sp/>distributed::Matrix.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;csr&gt;<sp/>make_injection(</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;IndexType&gt;&amp;<sp/>mergedAgg,<sp/>gko::size_type<sp/>fineRows,<sp/>gko::size_type<sp/>coarseRows</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="314"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>this-&gt;get_executor();</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>host<sp/>=<sp/>exec-&gt;get_master();</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::array&lt;IndexType&gt;<sp/>cols(host,<sp/>fineRows);</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::copy(mergedAgg.begin(),<sp/>mergedAgg.end(),<sp/>cols.get_data());</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::array&lt;IndexType&gt;<sp/>rowPtrs(host,<sp/>fineRows<sp/>+<sp/>1);</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::iota(rowPtrs.get_data(),<sp/>rowPtrs.get_data()<sp/>+<sp/>fineRows<sp/>+<sp/>1,<sp/>IndexType<sp/>{0});</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::array&lt;ValueType&gt;<sp/>vals(host,<sp/>fineRows);</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::fill_n(vals.get_data(),<sp/>fineRows,<sp/>gko::one&lt;ValueType&gt;());</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>pHost<sp/>=<sp/>csr::create(</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>host,</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::dim&lt;2&gt;<sp/>{fineRows,<sp/>coarseRows},</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::move(vals),</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::move(cols),</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::move(rowPtrs)</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>gko::share(gko::clone(exec,<sp/>pHost));</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NB:<sp/>`parameters_`<sp/>is<sp/>provided<sp/>by<sp/>GKO_ENABLE_LIN_OP_FACTORY;<sp/>do<sp/>not<sp/>redeclare<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>system_matrix_;</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Merged<sp/>prolong/restrict:<sp/>a<sp/>Csr<sp/>in<sp/>the<sp/>local<sp/>path,<sp/>a<sp/>block-diagonal<sp/>distributed::Matrix<sp/>in<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>global<sp/>path.<sp/>Structural<sp/>(composed<sp/>once);<sp/>reused<sp/>across<sp/>update_matrix_value<sp/>refreshes.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>prolong_;</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>restrict_;</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Retained<sp/>inner<sp/>Pgm<sp/>chain<sp/>(each<sp/>a<sp/>MultigridLevel<sp/>+<sp/>UpdateMatrixValue):<sp/>lets</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>update_matrix_value<sp/>refresh<sp/>the<sp/>merged<sp/>coarse<sp/>operator&apos;s<sp/>values<sp/>in<sp/>place<sp/>with<sp/>frozen</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>aggregation,<sp/>cuSPARSE-free.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;std::shared_ptr&lt;gko::LinOp&gt;&gt;<sp/>levels_;</highlight></codeline>
+<codeline lineno="344"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"></highlight></codeline>
+<codeline lineno="351"><highlight class="normal"></highlight><highlight class="comment">//<sp/>NB:<sp/>return<sp/>the<sp/>CONCRETE<sp/>factory<sp/>type,<sp/>not<sp/>the<sp/>abstract<sp/>gko::LinOpFactory.<sp/>gko::config::registry</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="352"><highlight class="normal"></highlight><highlight class="comment">//<sp/>keys<sp/>entries<sp/>by<sp/>base_type&lt;T&gt;::type,<sp/>which<sp/>is<sp/>defined<sp/>for<sp/>concrete<sp/>factories<sp/>(-&gt;<sp/>LinOpFactory)<sp/>but</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="353"><highlight class="normal"></highlight><highlight class="comment">//<sp/>not<sp/>for<sp/>the<sp/>abstract<sp/>base<sp/>—<sp/>emplacing<sp/>a<sp/>shared_ptr&lt;const<sp/>LinOpFactory&gt;<sp/>fails<sp/>to<sp/>compile.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="354"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType<sp/>=<sp/>gko::default_precision,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexType<sp/>=<sp/>gko::</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">32&gt;</highlight></codeline>
+<codeline lineno="355" refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a64b101dd2f38ac647f784222a3c7c613" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;typename<sp/>MergedPgm&lt;ValueType,<sp/>IndexType&gt;::Factory&gt;<sp/><ref refid="namespaceNeoN_1_1la_1_1ginkgo_1afad371afc3d24ac030272d333a20f4a1" kindref="member">makeMergedPgmFactory</ref>(</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>mergeLevels,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>deterministic<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="357"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="358"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm&lt;ValueType, IndexType&gt;::build</ref>()</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.with_merge_levels(mergeLevels)</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.with_deterministic(deterministic)</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.on(std::move(exec));</highlight></codeline>
+<codeline lineno="363"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"></highlight></codeline>
+<codeline lineno="365"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::la::ginkgo</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp"/>
+  </compounddef>
+</doxygen>

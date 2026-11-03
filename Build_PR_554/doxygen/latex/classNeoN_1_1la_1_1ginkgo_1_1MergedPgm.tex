@@ -1,0 +1,291 @@
+\doxysection{NeoN\+::la\+::ginkgo\+::Merged\+Pgm\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+
+
+{\ttfamily merge\+Levels}-\/style coarsening\+: Pgm run {\ttfamily merge\+\_\+levels} times, prolongations composed BY INDEX into one merged multigrid level.  
+
+
+
+
+{\ttfamily \#include $<$merged\+Pgm.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::la\+::ginkgo\+::Merged\+Pgm\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=0.888889cm]{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a398778c4711b05dcdb19811e5d321de8}{value\+\_\+type}} = Value\+Type
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a1ae65fa49d08fa8caf1f589f718753ed}{index\+\_\+type}} = Index\+Type
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a485d82bc33b99b245f7b14e9a3fa3e2e}{csr}} = gko\+::matrix\+::\+Csr$<$ Value\+Type, Index\+Type $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a0c990feae69c88a08662946752668b8d}{pgm}} = gko\+::multigrid\+::\+Pgm$<$ Value\+Type, Index\+Type $>$
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a55976f70b427d2ecbc434d73e67982d1}{row\+\_\+gatherer}} = gko\+::matrix\+::\+Row\+Gatherer$<$ Index\+Type $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::shared\+\_\+ptr$<$ const gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a2dc3d15e79c5b0470693986e114f12d3}{get\+\_\+system\+\_\+matrix}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a5f924df26ae649d6b8ff019f441f9d5a}{GKO\+\_\+\+CREATE\+\_\+\+FACTORY\+\_\+\+PARAMETERS}} (parameters, \mbox{\hyperlink{classFactory}{Factory}})
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_adb880f5a1dc85513794d68b51db6f268}{GKO\+\_\+\+ENABLE\+\_\+\+LIN\+\_\+\+OP\+\_\+\+FACTORY}} (\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Merged\+Pgm}}, parameters, \mbox{\hyperlink{classFactory}{Factory}})
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_ab23af32eae6c4d2aefcb854d88bfe23f}{GKO\+\_\+\+ENABLE\+\_\+\+BUILD\+\_\+\+METHOD}} (\mbox{\hyperlink{classFactory}{Factory}})
+\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_afe621e5c57aae2919d4a0443ea541eab}{update\+\_\+matrix\+\_\+value}} (std\+::shared\+\_\+ptr$<$ const gko\+::\+Lin\+Op $>$ new\+\_\+matrix) override
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a19cb3e14ec4680b51bb9b159d6a5a365}{apply\+\_\+impl}} (const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}b, gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}x) const override
+\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_af1efb91f3155217da21fec7328f7d8da}{apply\+\_\+impl}} (const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}alpha, const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}b, const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}beta, gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}x) const override
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a452c78e1fae9d24f107f5268487234b7}{Merged\+Pgm}} (std\+::shared\+\_\+ptr$<$ const gko\+::\+Executor $>$ exec)
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a62427c6fc52f46e186ab1fc4fbb8e0a1}{Merged\+Pgm}} (const \mbox{\hyperlink{classFactory}{Factory}} \texorpdfstring{$\ast$}{*}factory, gko\+::\+Lin\+Op\+Generate\+Components components)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a6c828b2bad6d6c2d6c093bc86f40ab5e}{generate\+Local}} ()
+\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_ac9df5453aea89a1dbc17847780963f7f}{generate\+Distributed}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a64b101dd2f38ac647f784222a3c7c613}{gko\+::\+Enable\+Lin\+Op$<$ Merged\+Pgm $>$}}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a8b5386153e7092050a7245c633eb8ce5}{gko\+::\+Enable\+Polymorphic\+Object$<$ Merged\+Pgm, gko\+::\+Lin\+Op $>$}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type = gko\+::default\+\_\+precision, typename Index\+Type = gko\+::int32$>$\newline
+class Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm$<$ Value\+Type, Index\+Type $>$}
+{\ttfamily merge\+Levels}-\/style coarsening\+: Pgm run {\ttfamily merge\+\_\+levels} times, prolongations composed BY INDEX into one merged multigrid level. 
+
+merge\+\_\+levels == 1 reproduces plain Pgm (single coarsening step). merge\+\_\+levels == k builds a level that jumps k Pgm steps at once; the coarsest grid is unchanged, only the number of intermediate levels drops (\texorpdfstring{$\sim$}{\string~}depth/k).
+
+Two paths, selected at generate() time by the runtime type of the fine operator\+:
+\begin{DoxyItemize}
+\item {\bfseries{local}} (localized/\+Schwarz MG, each rank owns a plain Csr)\+: compose the per-\/level Row\+Gatherer injections into a single injection Csr; the last inner Pgm\textquotesingle{}s coarse op is A\+\_\+merged.
+\item {\bfseries{distributed}} (global MG, fine op is a gko\+::experimental\+::distributed\+::\+Matrix)\+: the distributed Pgm prolong/restrict are block-\/diagonal across ranks (empty off-\/diagonal block; only the coarse op carries cross-\/rank coupling -- see Ginkgo pgm.\+cpp distributed\+\_\+setup). So the composition is rank-\/local\+: compose each prolong\textquotesingle{}s DIAG-\/block Row\+Gatherer exactly as in the local path, then re-\/wrap the merged local injection as a block-\/diagonal distributed\+::\+Matrix. A\+\_\+merged is the last inner Pgm\textquotesingle{}s distributed coarse op (already carries the correct off-\/diagonal coupling + coarse index map), used directly. 
+\end{DoxyItemize}
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a485d82bc33b99b245f7b14e9a3fa3e2e}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a485d82bc33b99b245f7b14e9a3fa3e2e} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!csr@{csr}}
+\index{csr@{csr}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{csr}{csr}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::csr =  gko\+::matrix\+::\+Csr$<$Value\+Type, Index\+Type$>$}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00059}{59}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a1ae65fa49d08fa8caf1f589f718753ed}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a1ae65fa49d08fa8caf1f589f718753ed} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!index\_type@{index\_type}}
+\index{index\_type@{index\_type}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{index\_type}{index\_type}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::index\+\_\+type =  Index\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a0c990feae69c88a08662946752668b8d}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a0c990feae69c88a08662946752668b8d} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!pgm@{pgm}}
+\index{pgm@{pgm}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{pgm}{pgm}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::pgm =  gko\+::multigrid\+::\+Pgm$<$Value\+Type, Index\+Type$>$}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a55976f70b427d2ecbc434d73e67982d1}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a55976f70b427d2ecbc434d73e67982d1} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!row\_gatherer@{row\_gatherer}}
+\index{row\_gatherer@{row\_gatherer}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{row\_gatherer}{row\_gatherer}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::row\+\_\+gatherer =  gko\+::matrix\+::\+Row\+Gatherer$<$Index\+Type$>$}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a398778c4711b05dcdb19811e5d321de8}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a398778c4711b05dcdb19811e5d321de8} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!value\_type@{value\_type}}
+\index{value\_type@{value\_type}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{value\_type}{value\_type}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::value\+\_\+type =  Value\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a452c78e1fae9d24f107f5268487234b7}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a452c78e1fae9d24f107f5268487234b7} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!MergedPgm@{MergedPgm}}
+\index{MergedPgm@{MergedPgm}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{MergedPgm()}{MergedPgm()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::\+Merged\+Pgm (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ const gko\+::\+Executor $>$}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}, {\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00123}{123}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a62427c6fc52f46e186ab1fc4fbb8e0a1}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a62427c6fc52f46e186ab1fc4fbb8e0a1} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!MergedPgm@{MergedPgm}}
+\index{MergedPgm@{MergedPgm}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{MergedPgm()}{MergedPgm()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::\+Merged\+Pgm (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classFactory}{Factory}} \texorpdfstring{$\ast$}{*}}]{factory,  }\item[{gko\+::\+Lin\+Op\+Generate\+Components}]{components }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00127}{127}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_af1efb91f3155217da21fec7328f7d8da}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_af1efb91f3155217da21fec7328f7d8da} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!apply\_impl@{apply\_impl}}
+\index{apply\_impl@{apply\_impl}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{apply\_impl()}{apply\_impl()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::apply\+\_\+impl (\begin{DoxyParamCaption}\item[{const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}}]{alpha,  }\item[{const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}}]{b,  }\item[{const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}}]{beta,  }\item[{gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}}]{x }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00116}{116}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a19cb3e14ec4680b51bb9b159d6a5a365}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a19cb3e14ec4680b51bb9b159d6a5a365} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!apply\_impl@{apply\_impl}}
+\index{apply\_impl@{apply\_impl}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{apply\_impl()}{apply\_impl()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::apply\+\_\+impl (\begin{DoxyParamCaption}\item[{const gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}}]{b,  }\item[{gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}}]{x }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00112}{112}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_ac9df5453aea89a1dbc17847780963f7f}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_ac9df5453aea89a1dbc17847780963f7f} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!generateDistributed@{generateDistributed}}
+\index{generateDistributed@{generateDistributed}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{generateDistributed()}{generateDistributed()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::generate\+Distributed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00230}{230}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a6c828b2bad6d6c2d6c093bc86f40ab5e}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a6c828b2bad6d6c2d6c093bc86f40ab5e} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!generateLocal@{generateLocal}}
+\index{generateLocal@{generateLocal}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{generateLocal()}{generateLocal()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::generate\+Local (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00149}{149}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a2dc3d15e79c5b0470693986e114f12d3}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a2dc3d15e79c5b0470693986e114f12d3} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!get\_system\_matrix@{get\_system\_matrix}}
+\index{get\_system\_matrix@{get\_system\_matrix}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{get\_system\_matrix()}{get\_system\_matrix()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+std\+::shared\+\_\+ptr$<$ const gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::get\+\_\+system\+\_\+matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00069}{69}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a5f924df26ae649d6b8ff019f441f9d5a}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a5f924df26ae649d6b8ff019f441f9d5a} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!GKO\_CREATE\_FACTORY\_PARAMETERS@{GKO\_CREATE\_FACTORY\_PARAMETERS}}
+\index{GKO\_CREATE\_FACTORY\_PARAMETERS@{GKO\_CREATE\_FACTORY\_PARAMETERS}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{GKO\_CREATE\_FACTORY\_PARAMETERS()}{GKO\_CREATE\_FACTORY\_PARAMETERS()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::\+GKO\+\_\+\+CREATE\+\_\+\+FACTORY\+\_\+\+PARAMETERS (\begin{DoxyParamCaption}\item[{parameters}]{,  }\item[{\mbox{\hyperlink{classFactory}{Factory}}}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Number of Pgm coarsening steps merged into one level (Open\+FOAM {\ttfamily merge\+Levels}).
+
+Forwarded to each inner Pgm (see gko\+::multigrid\+::\+Pgm).
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_ab23af32eae6c4d2aefcb854d88bfe23f}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_ab23af32eae6c4d2aefcb854d88bfe23f} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!GKO\_ENABLE\_BUILD\_METHOD@{GKO\_ENABLE\_BUILD\_METHOD}}
+\index{GKO\_ENABLE\_BUILD\_METHOD@{GKO\_ENABLE\_BUILD\_METHOD}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{GKO\_ENABLE\_BUILD\_METHOD()}{GKO\_ENABLE\_BUILD\_METHOD()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::\+GKO\+\_\+\+ENABLE\+\_\+\+BUILD\+\_\+\+METHOD (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classFactory}{Factory}}}]{ }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_adb880f5a1dc85513794d68b51db6f268}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_adb880f5a1dc85513794d68b51db6f268} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!GKO\_ENABLE\_LIN\_OP\_FACTORY@{GKO\_ENABLE\_LIN\_OP\_FACTORY}}
+\index{GKO\_ENABLE\_LIN\_OP\_FACTORY@{GKO\_ENABLE\_LIN\_OP\_FACTORY}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{GKO\_ENABLE\_LIN\_OP\_FACTORY()}{GKO\_ENABLE\_LIN\_OP\_FACTORY()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::\+GKO\+\_\+\+ENABLE\+\_\+\+LIN\+\_\+\+OP\+\_\+\+FACTORY (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$}]{,  }\item[{parameters}]{,  }\item[{\mbox{\hyperlink{classFactory}{Factory}}}]{ }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_afe621e5c57aae2919d4a0443ea541eab}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_afe621e5c57aae2919d4a0443ea541eab} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!update\_matrix\_value@{update\_matrix\_value}}
+\index{update\_matrix\_value@{update\_matrix\_value}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{update\_matrix\_value()}{update\_matrix\_value()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\+::update\+\_\+matrix\+\_\+value (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ const gko\+::\+Lin\+Op $>$}]{new\+\_\+matrix }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+
+
+\doxysubsection{Friends And Related Symbol Documentation}
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a64b101dd2f38ac647f784222a3c7c613}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a64b101dd2f38ac647f784222a3c7c613} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!gko::EnableLinOp$<$ MergedPgm $>$@{gko::EnableLinOp$<$ MergedPgm $>$}}
+\index{gko::EnableLinOp$<$ MergedPgm $>$@{gko::EnableLinOp$<$ MergedPgm $>$}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{gko::EnableLinOp$<$ MergedPgm $>$}{gko::EnableLinOp< MergedPgm >}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+friend class gko\+::\+Enable\+Lin\+Op$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Merged\+Pgm}} $>$\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00355}{355}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a8b5386153e7092050a7245c633eb8ce5}\label{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_a8b5386153e7092050a7245c633eb8ce5} 
+\index{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}!gko::EnablePolymorphicObject$<$ MergedPgm, gko::LinOp $>$@{gko::EnablePolymorphicObject$<$ MergedPgm, gko::LinOp $>$}}
+\index{gko::EnablePolymorphicObject$<$ MergedPgm, gko::LinOp $>$@{gko::EnablePolymorphicObject$<$ MergedPgm, gko::LinOp $>$}!NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$@{NeoN::la::ginkgo::MergedPgm$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{gko::EnablePolymorphicObject$<$ MergedPgm, gko::LinOp $>$}{gko::EnablePolymorphicObject< MergedPgm, gko::LinOp >}}
+{\footnotesize\ttfamily template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ \\
+friend class gko\+::\+Enable\+Polymorphic\+Object$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Merged\+Pgm}}, gko\+::\+Lin\+Op $>$\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Definition at line \mbox{\hyperlink{mergedPgm_8hpp_source_l00355}{355}} of file \mbox{\hyperlink{mergedPgm_8hpp_source}{merged\+Pgm.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/ginkgo/\mbox{\hyperlink{mergedPgm_8hpp}{merged\+Pgm.\+hpp}}\end{DoxyCompactItemize}

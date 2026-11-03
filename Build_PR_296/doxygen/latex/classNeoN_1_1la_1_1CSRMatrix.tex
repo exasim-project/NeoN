@@ -1,0 +1,360 @@
+\doxysection{NeoN\+::la\+::CSRMatrix\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1la_1_1CSRMatrix}{}\label{classNeoN_1_1la_1_1CSRMatrix}\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+
+
+Sparse matrix class with compact storage by row (CSR) format.  
+
+
+
+
+{\ttfamily \#include $<$CSRMatrix.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_aacaf65f8819ee497642d9359a94ed618}{CSRMatrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a85db9eda92d62581a034a716afd6bd78}{values}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a419a3f1700a690b2545f0c5aecdaf653}{col\+Idxs}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&row\+Offs)
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a9772de5e5073176acfa70896964af84b}{CSRMatrix}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a5963e5160ed6e2dc1e032ca55e7a1fd2}{exec}})
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_afd83705fad7e5f93ebfcc7103d52222b}{\texorpdfstring{$\sim$}{\string~}\+CSRMatrix}} ()=default
+\begin{DoxyCompactList}\small\item\em Default destructor. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a5963e5160ed6e2dc1e032ca55e7a1fd2}{exec}} () const
+\begin{DoxyCompactList}\small\item\em Get the executor associated with this matrix. \end{DoxyCompactList}\item 
+Index\+Type \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a704a9ddc7be0401fc304137facef2135}{n\+Rows}} () const
+\begin{DoxyCompactList}\small\item\em Get the number of rows in the matrix. \end{DoxyCompactList}\item 
+Index\+Type \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a2cdecd7ad4f5ca4d876122f7716b4db2}{n\+Non\+Zeros}} () const
+\begin{DoxyCompactList}\small\item\em Get the number of non-\/zero values in the matrix. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a85db9eda92d62581a034a716afd6bd78}{values}} ()
+\begin{DoxyCompactList}\small\item\em Get a span to the values array. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a419a3f1700a690b2545f0c5aecdaf653}{col\+Idxs}} ()
+\begin{DoxyCompactList}\small\item\em Get a span to the column indices array. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a72569a368542d352acb3264a3d360536}{row\+Ptrs}} ()
+\begin{DoxyCompactList}\small\item\em Get a span to the row pointers array. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a37dc0ca5898502e30bffb3b69ca75a9b}{values}} () const
+\begin{DoxyCompactList}\small\item\em Get a const span to the values array. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a6ddef904b6b19b74d1f796a06e057131}{col\+Idxs}} () const
+\begin{DoxyCompactList}\small\item\em Get a const span to the column indices array. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a2e4eafae36e3f6f6fc2ebbf139f20655}{row\+Ptrs}} () const
+\begin{DoxyCompactList}\small\item\em Get a const span to the row pointers array. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_af1509d705d3c8e261ad36f4ce9fbb5ab}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
+\begin{DoxyCompactList}\small\item\em Copy the matrix to another executor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a951a3e8899f686f3f0cdb5769d9abb78}{copy\+To\+Host}} () const
+\begin{DoxyCompactList}\small\item\em Copy the matrix to the host. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_af21bff84292853f1e860cb5f98fb1984}{view}} ()
+\begin{DoxyCompactList}\small\item\em Get a view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}}$<$ const Value\+Type, const Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix_a664ee60d2662445f2bb91f7267c5e36d}{view}} () const
+\begin{DoxyCompactList}\small\item\em Get a const view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, typename Index\+Type$>$\newline
+class Neo\+N\+::la\+::\+CSRMatrix$<$ Value\+Type, Index\+Type $>$}
+Sparse matrix class with compact storage by row (CSR) format. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & The value type of the non-\/zero entries. \\
+\hline
+{\em Index\+Type} & The index type of the rows and columns. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_aacaf65f8819ee497642d9359a94ed618}\label{classNeoN_1_1la_1_1CSRMatrix_aacaf65f8819ee497642d9359a94ed618} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!CSRMatrix@{CSRMatrix}}
+\index{CSRMatrix@{CSRMatrix}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{CSRMatrix()}{CSRMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::\+CSRMatrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{values,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&}]{col\+Idxs,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&}]{row\+Offs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for \doxylink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em values} & The non-\/zero values of the matrix. \\
+\hline
+{\em col\+Idxs} & The column indices for each non-\/zero value. \\
+\hline
+{\em row\+Offs} & The starting index in values/col\+Idxs for each row. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00094}{94}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a9772de5e5073176acfa70896964af84b}\label{classNeoN_1_1la_1_1CSRMatrix_a9772de5e5073176acfa70896964af84b} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!CSRMatrix@{CSRMatrix}}
+\index{CSRMatrix@{CSRMatrix}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{CSRMatrix()}{CSRMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::\+CSRMatrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{exec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00105}{105}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_afd83705fad7e5f93ebfcc7103d52222b}\label{classNeoN_1_1la_1_1CSRMatrix_afd83705fad7e5f93ebfcc7103d52222b} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!````~CSRMatrix@{\texorpdfstring{$\sim$}{\string~}CSRMatrix}}
+\index{````~CSRMatrix@{\texorpdfstring{$\sim$}{\string~}CSRMatrix}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}CSRMatrix()}{\string~CSRMatrix()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Default destructor. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a419a3f1700a690b2545f0c5aecdaf653}\label{classNeoN_1_1la_1_1CSRMatrix_a419a3f1700a690b2545f0c5aecdaf653} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!colIdxs@{colIdxs}}
+\index{colIdxs@{colIdxs}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{colIdxs()}{colIdxs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::col\+Idxs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a span to the column indices array. 
+
+\begin{DoxyReturn}{Returns}
+Span containing the column indices. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00144}{144}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a6ddef904b6b19b74d1f796a06e057131}\label{classNeoN_1_1la_1_1CSRMatrix_a6ddef904b6b19b74d1f796a06e057131} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!colIdxs@{colIdxs}}
+\index{colIdxs@{colIdxs}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{colIdxs()}{colIdxs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::col\+Idxs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a const span to the column indices array. 
+
+\begin{DoxyReturn}{Returns}
+Const span containing the column indices. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_af1509d705d3c8e261ad36f4ce9fbb5ab}\label{classNeoN_1_1la_1_1CSRMatrix_af1509d705d3c8e261ad36f4ce9fbb5ab} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!copyToExecutor@{copyToExecutor}}
+\index{copyToExecutor@{copyToExecutor}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToExecutor()}{copyToExecutor()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::copy\+To\+Executor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{dst\+Exec }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copy the matrix to another executor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dst\+Exec} & The destination executor. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A copy of the matrix on the destination executor. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00175}{175}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a951a3e8899f686f3f0cdb5769d9abb78}\label{classNeoN_1_1la_1_1CSRMatrix_a951a3e8899f686f3f0cdb5769d9abb78} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!copyToHost@{copyToHost}}
+\index{copyToHost@{copyToHost}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copy the matrix to the host. 
+
+\begin{DoxyReturn}{Returns}
+A copy of the matrix on the host. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00191}{191}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a5963e5160ed6e2dc1e032ca55e7a1fd2}\label{classNeoN_1_1la_1_1CSRMatrix_a5963e5160ed6e2dc1e032ca55e7a1fd2} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!exec@{exec}}
+\index{exec@{exec}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the executor associated with this matrix. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the executor. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00116}{116}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a2cdecd7ad4f5ca4d876122f7716b4db2}\label{classNeoN_1_1la_1_1CSRMatrix_a2cdecd7ad4f5ca4d876122f7716b4db2} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!nNonZeros@{nNonZeros}}
+\index{nNonZeros@{nNonZeros}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{nNonZeros()}{nNonZeros()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+Index\+Type \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::n\+Non\+Zeros (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the number of non-\/zero values in the matrix. 
+
+\begin{DoxyReturn}{Returns}
+Number of non-\/zero values. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a704a9ddc7be0401fc304137facef2135}\label{classNeoN_1_1la_1_1CSRMatrix_a704a9ddc7be0401fc304137facef2135} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!nRows@{nRows}}
+\index{nRows@{nRows}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{nRows()}{nRows()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+Index\+Type \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::n\+Rows (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the number of rows in the matrix. 
+
+\begin{DoxyReturn}{Returns}
+Number of rows. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00122}{122}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a72569a368542d352acb3264a3d360536}\label{classNeoN_1_1la_1_1CSRMatrix_a72569a368542d352acb3264a3d360536} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!rowPtrs@{rowPtrs}}
+\index{rowPtrs@{rowPtrs}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{rowPtrs()}{rowPtrs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::row\+Ptrs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a span to the row pointers array. 
+
+\begin{DoxyReturn}{Returns}
+Span containing the row pointers. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a2e4eafae36e3f6f6fc2ebbf139f20655}\label{classNeoN_1_1la_1_1CSRMatrix_a2e4eafae36e3f6f6fc2ebbf139f20655} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!rowPtrs@{rowPtrs}}
+\index{rowPtrs@{rowPtrs}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{rowPtrs()}{rowPtrs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::row\+Ptrs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a const span to the row pointers array. 
+
+\begin{DoxyReturn}{Returns}
+Const span containing the row pointers. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a85db9eda92d62581a034a716afd6bd78}\label{classNeoN_1_1la_1_1CSRMatrix_a85db9eda92d62581a034a716afd6bd78} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!values@{values}}
+\index{values@{values}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{values()}{values()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::values (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a span to the values array. 
+
+\begin{DoxyReturn}{Returns}
+Span containing the matrix values. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00138}{138}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a37dc0ca5898502e30bffb3b69ca75a9b}\label{classNeoN_1_1la_1_1CSRMatrix_a37dc0ca5898502e30bffb3b69ca75a9b} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!values@{values}}
+\index{values@{values}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{values()}{values()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::values (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a const span to the values array. 
+
+\begin{DoxyReturn}{Returns}
+Const span containing the matrix values. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_af21bff84292853f1e860cb5f98fb1984}\label{classNeoN_1_1la_1_1CSRMatrix_af21bff84292853f1e860cb5f98fb1984} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!view@{view}}
+\index{view@{view}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a view representation of the matrix\textquotesingle{}s data. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View} for easy access to matrix elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00200}{200}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CSRMatrix_a664ee60d2662445f2bb91f7267c5e36d}\label{classNeoN_1_1la_1_1CSRMatrix_a664ee60d2662445f2bb91f7267c5e36d} 
+\index{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}!view@{view}}
+\index{view@{view}!NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$@{NeoN::la::CSRMatrix$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+const \mbox{\hyperlink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View}}$<$ const Value\+Type, const Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CSRMatrix}{Neo\+N\+::la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a const view representation of the matrix\textquotesingle{}s data. 
+
+\begin{DoxyReturn}{Returns}
+Const \doxylink{structNeoN_1_1la_1_1CSRMatrixView}{CSRMatrix\+View} for read-\/only access to matrix elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{CSRMatrix_8hpp_source_l00209}{209}} of file \mbox{\hyperlink{CSRMatrix_8hpp_source}{CSRMatrix.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{CSRMatrix_8hpp}{CSRMatrix.\+hpp}}\end{DoxyCompactItemize}

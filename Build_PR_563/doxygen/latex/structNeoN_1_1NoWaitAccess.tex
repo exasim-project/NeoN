@@ -1,0 +1,44 @@
+\doxysection{NeoN\+::No\+Wait\+Access Struct Reference}
+\hypertarget{structNeoN_1_1NoWaitAccess}{}\label{structNeoN_1_1NoWaitAccess}\index{NeoN::NoWaitAccess@{NeoN::NoWaitAccess}}
+
+
+Passkey granting non-\/draining access to \doxylink{classNeoN_1_1BoundaryData}{Boundary\+Data}\textquotesingle{}s value storage.  
+
+
+
+
+{\ttfamily \#include $<$boundary\+Data.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\static \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{structNeoN_1_1NoWaitAccess_a0514f326b93ffc870cc49dfdf6c03de5}{value}} (\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \&in)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Passkey granting non-\/draining access to \doxylink{classNeoN_1_1BoundaryData}{Boundary\+Data}\textquotesingle{}s value storage. 
+
+Boundary\+Data\+::value\+No\+Wait() is private because skipping wait\+All() leaves in-\/flight processor-\/halo exchanges pending and is easy to misuse. Callers that legitimately need it (the processor boundary condition seeding owner values before posting its exchange) go through this struct, so every bypass site is greppable via \doxylink{structNeoN_1_1NoWaitAccess}{No\+Wait\+Access}. 
+
+Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00419}{419}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structNeoN_1_1NoWaitAccess_a0514f326b93ffc870cc49dfdf6c03de5}\label{structNeoN_1_1NoWaitAccess_a0514f326b93ffc870cc49dfdf6c03de5} 
+\index{NeoN::NoWaitAccess@{NeoN::NoWaitAccess}!value@{value}}
+\index{value@{value}!NeoN::NoWaitAccess@{NeoN::NoWaitAccess}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+static \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& Neo\+N\+::\+No\+Wait\+Access\+::value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \&}]{in }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00422}{422}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/fields/\mbox{\hyperlink{boundaryData_8hpp}{boundary\+Data.\+hpp}}\end{DoxyCompactItemize}

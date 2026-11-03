@@ -1,0 +1,318 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1la_1_1BlockMatrix" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::la::BlockMatrix</compoundname>
+    <includes refid="blockMatrix_8hpp" local="no">blockMatrix.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1BlockMatrix_1a2934dbbd8d72d4c01c8844d19e0a52d0" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+        <definition>Executor NeoN::la::BlockMatrix::exec_</definition>
+        <argsstring></argsstring>
+        <name>exec_</name>
+        <qualifiedname>NeoN::la::BlockMatrix::exec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="81" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1BlockMatrix_1af912c2fa43405db10687d7157537ea88" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::la::BlockMatrix::nBlocks_</definition>
+        <argsstring></argsstring>
+        <name>nBlocks_</name>
+        <qualifiedname>NeoN::la::BlockMatrix::nBlocks_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="82" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1BlockMatrix_1a9d840c2c45de9d73c567ddbd3fee7d0b" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;SparsityPattern&lt;localIdx&gt; &gt; NeoN::la::BlockMatrix::sparsity_</definition>
+        <argsstring></argsstring>
+        <name>sparsity_</name>
+        <qualifiedname>NeoN::la::BlockMatrix::sparsity_</qualifiedname>
+        <briefdescription>
+<para>Base (per-block) sparsity. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="83" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1BlockMatrix_1a9b8fb4a0721310072b8e5cdc41f75c7f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1_1la_1aacbefd6854dc28c71fb45c33d372d731" kindref="member">BlockCSRMatrix</ref></type>
+        <definition>BlockCSRMatrix NeoN::la::BlockMatrix::blockMatrix_</definition>
+        <argsstring></argsstring>
+        <name>blockMatrix_</name>
+        <qualifiedname>NeoN::la::BlockMatrix::blockMatrix_</qualifiedname>
+        <briefdescription>
+<para>Single storage for monolithic CSR values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="84" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" bodystart="84" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1af407e05fd80035d0f6c56207d1a4b822" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::BlockMatrix::BlockMatrix</definition>
+        <argsstring>(const Executor &amp;exec, localIdx nBlocks, std::shared_ptr&lt; SparsityPattern&lt; localIdx &gt; &gt; sparsity)</argsstring>
+        <name>BlockMatrix</name>
+        <qualifiedname>NeoN::la::BlockMatrix::BlockMatrix</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nBlocks</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt;</type>
+          <declname>sparsity</declname>
+        </param>
+        <briefdescription>
+<para>Construct from nBlocks and shared sparsity. Values are zero-initialized. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="32" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1aa4890e799c1c1f67521d9d7734f004d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::BlockMatrix::BlockMatrix</definition>
+        <argsstring>(const Executor &amp;exec, localIdx nBlocks, std::shared_ptr&lt; SparsityPattern&lt; localIdx &gt; &gt; sparsity, const Vector&lt; scalar &gt; &amp;values)</argsstring>
+        <name>BlockMatrix</name>
+        <qualifiedname>NeoN::la::BlockMatrix::BlockMatrix</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>nBlocks</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt;</type>
+          <declname>sparsity</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Construct with pre-built values (size must be nBlocks^2 * nnz). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="39" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1aab5eb1000ee85292925bc1d3fe703200" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::la::BlockMatrix::nBlocks</definition>
+        <argsstring>() const</argsstring>
+        <name>nBlocks</name>
+        <qualifiedname>NeoN::la::BlockMatrix::nBlocks</qualifiedname>
+        <briefdescription>
+<para>Number of blocks per dimension. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="47" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1a62cbd80de19a94a915b99ec97ef4fec9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::la::BlockMatrix::nCells</definition>
+        <argsstring>() const</argsstring>
+        <name>nCells</name>
+        <qualifiedname>NeoN::la::BlockMatrix::nCells</qualifiedname>
+        <briefdescription>
+<para>Number of cells (rows in each inner block). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="50" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1a2caa057075b13c4137de1d58ae15f36d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::la::BlockMatrix::nnz</definition>
+        <argsstring>() const</argsstring>
+        <name>nnz</name>
+        <qualifiedname>NeoN::la::BlockMatrix::nnz</qualifiedname>
+        <briefdescription>
+<para>Number of non-zeros per inner block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="53" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1a7ab2dff0bdb18e0d83b60bf3dbe51f88" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::la::BlockMatrix::totalSize</definition>
+        <argsstring>() const</argsstring>
+        <name>totalSize</name>
+        <qualifiedname>NeoN::la::BlockMatrix::totalSize</qualifiedname>
+        <briefdescription>
+<para>Total number of monolithic rows (nBlocks * nCells). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="56" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1ad5dd8207f41aa9c0c1cf1e18abd1d01d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1la_1_1SparsityPattern" kindref="compound">SparsityPattern</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+        <definition>const SparsityPattern&lt; localIdx &gt; &amp; NeoN::la::BlockMatrix::sparsity</definition>
+        <argsstring>() const</argsstring>
+        <name>sparsity</name>
+        <qualifiedname>NeoN::la::BlockMatrix::sparsity</qualifiedname>
+        <briefdescription>
+<para>Access the shared sparsity pattern. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="59" column="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1aa49542324d986c19beb8c79acfcb1e7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+        <definition>Vector&lt; scalar &gt; &amp; NeoN::la::BlockMatrix::values</definition>
+        <argsstring>()</argsstring>
+        <name>values</name>
+        <qualifiedname>NeoN::la::BlockMatrix::values</qualifiedname>
+        <briefdescription>
+<para>Access the flat values vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="62" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1a9d41afe65dbad0f566667fca30fd744e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+        <definition>const Vector&lt; scalar &gt; &amp; NeoN::la::BlockMatrix::values</definition>
+        <argsstring>() const</argsstring>
+        <name>values</name>
+        <qualifiedname>NeoN::la::BlockMatrix::values</qualifiedname>
+        <briefdescription>
+<para>Access the flat values vector (const). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="65" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1ace7cea8e1fbd5ee91f997410d3691733" prot="public" static="no" const="no" explicit="no" inline="no" refqual="lvalue" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1la_1_1BlockMatrixView" kindref="compound">BlockMatrixView</ref></type>
+        <definition>BlockMatrixView NeoN::la::BlockMatrix::view</definition>
+        <argsstring>() &amp;</argsstring>
+        <name>view</name>
+        <qualifiedname>NeoN::la::BlockMatrix::view</qualifiedname>
+        <briefdescription>
+<para>Device-safe view (only on lvalues). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="68" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1a3e36ecfb2728fdd35c9a837fc15a45f4" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1la_1_1BlockMatrixView" kindref="compound">BlockMatrixView</ref></type>
+        <definition>BlockMatrixView NeoN::la::BlockMatrix::view</definition>
+        <argsstring>() &amp;&amp;=delete</argsstring>
+        <name>view</name>
+        <qualifiedname>NeoN::la::BlockMatrix::view</qualifiedname>
+        <briefdescription>
+<para>Prevent <ref refid="classNeoN_1_1la_1_1BlockMatrix_1ace7cea8e1fbd5ee91f997410d3691733" kindref="member">view()</ref> on temporaries. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="71" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1a155cfd2764163d9a8d36c58b1e7a7528" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1_1la_1aacbefd6854dc28c71fb45c33d372d731" kindref="member">BlockCSRMatrix</ref> &amp;</type>
+        <definition>const BlockCSRMatrix &amp; NeoN::la::BlockMatrix::blockCSRMatrix</definition>
+        <argsstring>() const</argsstring>
+        <name>blockCSRMatrix</name>
+        <qualifiedname>NeoN::la::BlockMatrix::blockCSRMatrix</qualifiedname>
+        <briefdescription>
+<para>Access the underlying block CSR matrix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="74" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1BlockMatrix_1a018d67c31343e8f38904cfcc5d0d78ee" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+        <definition>const Executor &amp; NeoN::la::BlockMatrix::exec</definition>
+        <argsstring>() const</argsstring>
+        <name>exec</name>
+        <qualifiedname>NeoN::la::BlockMatrix::exec</qualifiedname>
+        <briefdescription>
+<para>Get the executor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="77" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A block-structured sparse matrix with shared sparsity across all blocks. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Values are stored in monolithic CSR order: the nBlocks*nCells monolithic rows are laid out contiguously. Total values size is nBlocks^2 * nnz. </para>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" line="24" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockMatrix.hpp" bodystart="25" bodyend="85"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a155cfd2764163d9a8d36c58b1e7a7528" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>blockCSRMatrix</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1af407e05fd80035d0f6c56207d1a4b822" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>BlockMatrix</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1aa4890e799c1c1f67521d9d7734f004d5" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>BlockMatrix</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a9b8fb4a0721310072b8e5cdc41f75c7f" prot="private" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>blockMatrix_</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a018d67c31343e8f38904cfcc5d0d78ee" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>exec</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a2934dbbd8d72d4c01c8844d19e0a52d0" prot="private" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>exec_</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1aab5eb1000ee85292925bc1d3fe703200" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>nBlocks</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1af912c2fa43405db10687d7157537ea88" prot="private" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>nBlocks_</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a62cbd80de19a94a915b99ec97ef4fec9" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>nCells</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a2caa057075b13c4137de1d58ae15f36d" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>nnz</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1ad5dd8207f41aa9c0c1cf1e18abd1d01d" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>sparsity</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a9d840c2c45de9d73c567ddbd3fee7d0b" prot="private" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>sparsity_</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a7ab2dff0bdb18e0d83b60bf3dbe51f88" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>totalSize</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1aa49542324d986c19beb8c79acfcb1e7b" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>values</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a9d41afe65dbad0f566667fca30fd744e" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>values</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1ace7cea8e1fbd5ee91f997410d3691733" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>view</name></member>
+      <member refid="classNeoN_1_1la_1_1BlockMatrix_1a3e36ecfb2728fdd35c9a837fc15a45f4" prot="public" virt="non-virtual"><scope>NeoN::la::BlockMatrix</scope><name>view</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

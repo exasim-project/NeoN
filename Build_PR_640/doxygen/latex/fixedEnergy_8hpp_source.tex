@@ -1,0 +1,102 @@
+\doxysection{fixed\+Energy.\+hpp}
+\hypertarget{fixedEnergy_8hpp_source}{}\label{fixedEnergy_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedEnergy.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedEnergy.hpp}}
+\mbox{\hyperlink{fixedEnergy_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00018}00018\ \textcolor{comment}{//\ Recompute\ the\ boundary\ value\ from\ the\ EXISTING\ per-\/face\ refValue\ (does\ NOT\ overwrite}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00019}00019\ \textcolor{comment}{//\ refValue\ with\ a\ stored\ uniform,\ unlike\ FixedValue).\ This\ is\ the\ fixedEnergy\ semantics,}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00020}00020\ \textcolor{comment}{//\ mirroring\ OpenFOAM's\ fixedEnergyFvPatchScalarField:\ an\ external\ caller}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00021}00021\ \textcolor{comment}{//\ (mapEnergyBoundaryFromTemperature)\ sets\ refValue\ every\ call\ from\ the\ current\ temperature}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00022}00022\ \textcolor{comment}{//\ boundary\ value,\ so\ correctBoundaryCondition\ only\ re-\/derives\ the\ boundary\ value\ from}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00023}00023\ \textcolor{comment}{//\ whatever\ refValue\ currently\ holds.}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00024}00024\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5a32ca18b3300b1e7257d7272bd30ae5}{00025}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5a32ca18b3300b1e7257d7272bd30ae5}{applyFixedEnergy}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,\ std::pair<localIdx,\ localIdx>\ range)}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00026}00026\ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keyword}{auto}\ [value,\ valueFraction,\ refValue,\ refGradient]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00028}00028\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue(),}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad()}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00032}00032\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00034}00034\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reads\ (does\ not\ write)\ refValue[i],\ set\ externally}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ refValue[i];}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 1.0;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ use\ refValue}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ refGradient[i]\ =\ zero<ValueType>();\ \textcolor{comment}{//\ not\ used}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}applyFixedEnergy"{}}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00044}00044\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00045}00045\ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00046}00046\ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00048}00048\ \textcolor{comment}{/*\ @brief\ Fixed-\/energy\ boundary\ condition.}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00049}00049\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00050}00050\ \textcolor{comment}{\ *\ Mirrors\ OpenFOAM's\ fixedEnergyFvPatchScalarField:\ the\ boundary\ VALUE\ (refValue)\ is\ set}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00051}00051\ \textcolor{comment}{\ *\ EXTERNALLY\ (by\ NeoN::finiteVolume::cellCentred::mapEnergyBoundaryFromTemperature,\ see}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00052}00052\ \textcolor{comment}{\ *\ energyBoundaryMapping.hpp)\ every\ call\ from\ the\ current\ temperature\ boundary\ value,\ so}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00053}00053\ \textcolor{comment}{\ *\ he's\ fixedValue-\/type\ boundary\ (e.g.\ a\ fixed-\/temperature\ inlet)\ tracks\ T\ live\ rather\ than}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00054}00054\ \textcolor{comment}{\ *\ being\ frozen\ at\ whatever\ he\ happened\ to\ be\ at\ construction.\ correctBoundaryCondition\ only}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00055}00055\ \textcolor{comment}{\ *\ recomputes\ the\ boundary\ value\ from\ the\ current\ refValue,\ never\ clobbering\ it\ with\ a\ stored}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00056}00056\ \textcolor{comment}{\ *\ uniform.\ refValue\ is\ zero-\/initialised\ by\ the\ boundary-\/data\ allocation,\ so\ the\ BC\ behaves\ as}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00057}00057\ \textcolor{comment}{\ *\ a\ zero\ fixedValue\ until\ the\ first\ mapEnergyBoundaryFromTemperature\ call.}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00058}00058\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00059}00059\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy}{00060}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy}{FixedEnergy}}\ :}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<FixedEnergy<ValueType>>}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00062}00062\ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<FixedEnergy<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00065}00065\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_aa0ca986dd01df54a34a3cafbfb601356}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_aa0ca986dd01df54a34a3cafbfb601356}{FixedEnergy}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ \{\},\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{true},\ .fixesValue\ =\ \textcolor{keyword}{true}\})}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00071}00071\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00073}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a37f9bf59695bb4b9202b18380d38c57e}{00073}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a37f9bf59695bb4b9202b18380d38c57e}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00074}00074\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5a32ca18b3300b1e7257d7272bd30ae5}{detail::applyFixedEnergy}}(domainVector,\ this-\/>range());}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00076}00076\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a143fe4d07e5b91b8ee2b53ea49a43b1d}{00078}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a143fe4d07e5b91b8ee2b53ea49a43b1d}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}fixedEnergy"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_aaed21545fa6f854d052be0114474182c}{00080}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_aaed21545fa6f854d052be0114474182c}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a143fe4d07e5b91b8ee2b53ea49a43b1d}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a7294f6c3f3d1c64af2a00f36b3120045}{00082}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a7294f6c3f3d1c64af2a00f36b3120045}{doc}}()}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00083}00083\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Fixed-\/energy\ boundary\ condition\ (externally\ updatable\ per-\/face\ refValue,\ "{}}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}mirrors\ OpenFOAM's\ fixedEnergyFvPatchScalarField)."{}};}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00086}00086\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_afab2494307b9ab7751919e6577e8cb08}{00088}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_afab2494307b9ab7751919e6577e8cb08}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a374d4e269ffbef3ce458d67906d09452}{00090}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedEnergy_a374d4e269ffbef3ce458d67906d09452}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00091}00091\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<FixedEnergy>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00093}00093\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00094}00094\ \};}
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{fixedEnergy_8hpp_source_l00096}00096\ \}}
+
+\end{DoxyCode}

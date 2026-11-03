@@ -1,0 +1,147 @@
+\doxysection{volume\+Field.\+hpp}
+\hypertarget{volumeField_8hpp_source}{}\label{volumeField_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp}}
+\mbox{\hyperlink{volumeField_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2024\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{database_8hpp}{NeoFOAM/core/database/database.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{geometricField_8hpp}{NeoFOAM/finiteVolume/cellCentred/fields/geometricField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoFOAM/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred}{NeoFOAM::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00026}00026\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00027}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{00027}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin}{GeometricFieldMixin}}<ValueType>}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00030}00030\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00032}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_aab5df39dd7bae7f52200abdc3b82ad91}{00032}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_aab5df39dd7bae7f52200abdc3b82ad91}{FieldValueType}}\ =\ ValueType;}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00043}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a678c7c577923a6b2538a410a279f8533}{00043}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a678c7c577923a6b2538a410a279f8533}{VolumeField}}(}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a4ed2e423c631a8c89beb18e2dbe6b3fb}{exec}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a34822743f4c8549b6573fc3abae17b76}{name}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary}{VolumeBoundary<ValueType>}}>\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{boundaryConditions}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00048}00048\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin}{GeometricFieldMixin}}<ValueType>(}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a4ed2e423c631a8c89beb18e2dbe6b3fb}{exec}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a34822743f4c8549b6573fc3abae17b76}{name}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1DomainField}{DomainField}}<ValueType>(\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a4ed2e423c631a8c89beb18e2dbe6b3fb}{exec}},\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}}.nCells(),\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}}.nBoundaryFaces(),\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}}.nBoundaries())}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{key}}(\textcolor{stringliteral}{"{}"{}}),\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{fieldCollectionName}}(\textcolor{stringliteral}{"{}"{}}),\ boundaryConditions\_(\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{boundaryConditions}}),}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ db\_(std::nullopt)}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00057}00057\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00068}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a1208461a1025fe1a937677a9f2e477e5}{00068}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a1208461a1025fe1a937677a9f2e477e5}{VolumeField}}(}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a4ed2e423c631a8c89beb18e2dbe6b3fb}{exec}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a34822743f4c8549b6573fc3abae17b76}{name}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Field}{Field<ValueType>}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a59f7de118d3b27ec7e23474f0395ea4e}{internalField}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1BoundaryFields}{BoundaryFields<ValueType>}}\&\ boundaryFields,}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary}{VolumeBoundary<ValueType>}}>\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{boundaryConditions}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00075}00075\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin}{GeometricFieldMixin}}<ValueType>(\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a4ed2e423c631a8c89beb18e2dbe6b3fb}{exec}},\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a34822743f4c8549b6573fc3abae17b76}{name}},\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}},\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a59f7de118d3b27ec7e23474f0395ea4e}{internalField}},\ boundaryFields),\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{key}}(\textcolor{stringliteral}{"{}"{}}),}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{fieldCollectionName}}(\textcolor{stringliteral}{"{}"{}}),\ boundaryConditions\_(\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{boundaryConditions}}),\ db\_(std::nullopt)}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00078}00078\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{comment}{//\ /**}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{comment}{//\ \ *\ @brief\ Constructor\ for\ a\ VolumeField\ with\ a\ given\ internal\ and\ boundary\ field}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{comment}{//\ \ *}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00083}00083\ \ \ \ \ \textcolor{comment}{//\ \ *\ @param\ name\ The\ name\ of\ the\ field}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{comment}{//\ \ *\ @param\ mesh\ The\ underlying\ mesh}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{comment}{//\ \ *\ @param\ internalField\ the\ underlying\ internal\ field}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{comment}{//\ \ *\ @param\ boundaryFields\ the\ underlying\ boundary\ data\ fields}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{comment}{//\ \ *\ @param\ boundaryConditions\ a\ vector\ of\ boundary\ conditions}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{comment}{//\ \ */}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{comment}{//\ VolumeField(}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ const\ Executor\&\ exec,}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ std::string\ name,}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ const\ UnstructuredMesh\&\ mesh,}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ const\ Field<ValueType>\&\ internalField,}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ const\ std::vector<VolumeBoundary<ValueType>>\&\ boundaryConditions}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{comment}{//\ )}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ :\ GeometricFieldMixin<ValueType>(exec,\ name,\ mesh,\ internalField,\ boundaryFields),}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ key("{}"{}),}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00098}00098\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ fieldCollectionName("{}"{}),\ boundaryConditions\_(boundaryConditions),\ db\_(std::nullopt)}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{comment}{//\ \{correctBoundaryConditions();\}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00113}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_acf80d906d80ef6c7c2b0c0fcb942a4a0}{00113}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_acf80d906d80ef6c7c2b0c0fcb942a4a0}{VolumeField}}(}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a4ed2e423c631a8c89beb18e2dbe6b3fb}{exec}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ std::string\ fieldName,}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundary}{VolumeBoundary<ValueType>}}>\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{boundaryConditions}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1Database}{Database}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a3847630da65e4b2e215b59b38cedecc0}{db}},}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ std::string\ dbKey,}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ std::string\ collectionName}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00121}00121\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin}{GeometricFieldMixin}}<ValueType>(\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a4ed2e423c631a8c89beb18e2dbe6b3fb}{exec}},\ fieldName,\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_a18570fe2823eff871124806028b8fe33}{mesh}}),\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{key}}(dbKey),}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{fieldCollectionName}}(collectionName),\ boundaryConditions\_(\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{boundaryConditions}}),\ db\_(\&\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a3847630da65e4b2e215b59b38cedecc0}{db}})}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00124}00124\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00131}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a6410926302eede17ecb47cea9c3b5a9a}{00131}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a6410926302eede17ecb47cea9c3b5a9a}{VolumeField}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField}}\&\ other)}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin}{GeometricFieldMixin}}<ValueType>(other),\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{key}}(other.\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{key}}),}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{fieldCollectionName}}(other.\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{fieldCollectionName}}),}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ boundaryConditions\_(other.boundaryConditions\_),\ db\_(other.db\_)}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00135}00135\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00143}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a66d8b83a9cc9b3697920a35e7f74847c}{00143}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a66d8b83a9cc9b3697920a35e7f74847c}{correctBoundaryConditions}}()}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00144}00144\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ boundaryCondition\ :\ boundaryConditions\_)}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ boundaryCondition.correctBoundaryCondition(this-\/>\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1GeometricFieldMixin_af90c5d968342bef3df84b8499c3d0d7b}{field\_}});}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00149}00149\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00150}00150\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00156}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a4fd13641ab8efa8845a48e68b4933525}{00156}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a4fd13641ab8efa8845a48e68b4933525}{hasDatabase}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ db\_.has\_value();\ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00163}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a3847630da65e4b2e215b59b38cedecc0}{00163}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1Database}{Database}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a3847630da65e4b2e215b59b38cedecc0}{db}}()}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00164}00164\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!db\_.has\_value())}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Database\ not\ set:\ make\ sure\ the\ field\ is\ registered\ in\ the\ database"{}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *db\_.value();}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00172}00172\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00179}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a5dfacbd3775fee833fb6d91896f12d2b}{00179}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1Database}{Database}}\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a5dfacbd3775fee833fb6d91896f12d2b}{db}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00180}00180\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!db\_.has\_value())}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00182}00182\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Database\ not\ set:\ make\ sure\ the\ field\ is\ registered\ in\ the\ database"{}}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *db\_.value();}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00188}00188\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00195}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ab438563ae281f5bb4644dff02317c6cc}{00195}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ab438563ae281f5bb4644dff02317c6cc}{registered}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{key}}\ !=\ \textcolor{stringliteral}{"{}"{}}\ \&\&\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{fieldCollectionName}}\ !=\ \textcolor{stringliteral}{"{}"{}}\ \&\&\ db\_.has\_value();\ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00197}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{00197}}\ \ \ \ \ std::vector<VolumeBoundary<ValueType>>\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a831d80705bf7e504c2c0403d98722ae1}{boundaryConditions}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00198}00198\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00199}00199\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ boundaryConditions\_;}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00200}00200\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00201}00201\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00202}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{00202}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_a30e98b030165f9dd24fa264c166acadb}{key}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ key\ of\ the\ field\ in\ the\ database}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00203}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{00203}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField_ad695dfb4c8ec53642ec7da06189daffc}{fieldCollectionName}};\ \textcolor{comment}{//\ The\ name\ of\ the\ field\ collection\ in\ the\ database}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00204}00204\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00205}00205\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00206}00206\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00207}00207\ \ \ \ \ std::vector<VolumeBoundary<ValueType>>\ boundaryConditions\_;\ \textcolor{comment}{//\ The\ vector\ of\ boundary\ conditions}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00208}00208\ \ \ \ \ std::optional<Database*>\ db\_;\ \textcolor{comment}{//\ The\ optional\ pointer\ to\ the\ database}}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00209}00209\ \};}
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00210}00210\ }
+\DoxyCodeLine{\Hypertarget{volumeField_8hpp_source_l00211}00211\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+
+\end{DoxyCode}

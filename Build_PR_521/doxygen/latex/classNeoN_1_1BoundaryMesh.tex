@@ -1,0 +1,541 @@
+\doxysection{NeoN\+::Boundary\+Mesh Class Reference}
+\hypertarget{classNeoN_1_1BoundaryMesh}{}\label{classNeoN_1_1BoundaryMesh}\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+
+
+Represents boundaries of an unstructured mesh.  
+
+
+
+
+{\ttfamily \#include $<$boundary\+Mesh.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a17fd67b53b4722437ba688817489ca04}{validate}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aee107e13ac341be0febe8e844e931492}{Boundary\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{namespaceNeoN_a6389e1f6465846887d6bc01ec8ea818d}{label\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{face\+Owners}}, \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ad542449a6ebf93500d1541e6d2364e58}{face\+Centers}}, \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a04a69215c016e86f2fce5ae5f757df16}{owner\+Cell\+Centers}}, \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}{face\+Normals}}, \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af424606847d2c9f5595745e62ddde1a0}{face\+Areas}}, \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a4c7289614259c1196f6a553490967b66}{face\+Unit\+Normals}}, \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af97404c98fd109461227946388578ad0}{delta}}, \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_afa9560b30f5a9016580d8d5fe8acd6c3}{weights}}, \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a4d68eaf96298d79527149e34e1193d7b}{delta\+Coeffs}}, std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a3e64f99b91157e2eae5e2b75c2532c87}{offset}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} proc\+Boundary\+Patches, std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a8b2d9d8cc2251da3e6aa996128017972}{neighbour\+Rank}})
+\begin{DoxyCompactList}\small\item\em Constructor for the \doxylink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh} class. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a6389e1f6465846887d6bc01ec8ea818d}{label\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{face\+Owners}} () const
+\begin{DoxyCompactList}\small\item\em Get the list of labels of owner cells of boundary faces. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a0f1c07ef2b7a0564617110e2894eb1a9}{face\+Owners}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of labels of owner cells for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ad542449a6ebf93500d1541e6d2364e58}{face\+Centers}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of face centers. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_afdbedb7fa19329bac3e7e425cecf9231}{face\+Centers}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of face centers for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a04a69215c016e86f2fce5ae5f757df16}{owner\+Cell\+Centers}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of centers of owner cells of boundary faces. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ae875b328b072c934c8d1cb6e198f2d11}{owner\+Cell\+Centers}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of owner cell centers for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}{face\+Normals}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of face areas normals. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aa1be390305967f58aef0fd51c0c2b76b}{face\+Normals}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of face areas normals for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af424606847d2c9f5595745e62ddde1a0}{face\+Areas}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of face areas. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a11ae0f3ab47b2ec1baa0634647f20518}{face\+Areas}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of face areas for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a4c7289614259c1196f6a553490967b66}{face\+Unit\+Normals}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of face unit normal vectors. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a73e7de231c67e0ab4bedf13c6ef1790c}{face\+Unit\+Normals}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of face unit normal vectors for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af97404c98fd109461227946388578ad0}{delta}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of delta vectors. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aa23ea9b621eb89d2cc6fea8f0fa76ae0}{delta}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of delta vectors for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_afa9560b30f5a9016580d8d5fe8acd6c3}{weights}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of weights. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a3b0e93bcac3e1fcdf878ba484232d10b}{weights}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of weights for a specific boundary face. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a4d68eaf96298d79527149e34e1193d7b}{delta\+Coeffs}} () const
+\begin{DoxyCompactList}\small\item\em Get the field of delta coefficients. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a7c1248627fced7c34412ad36673b5c04}{delta\+Coeffs}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Get a view of delta coefficients for a specific boundary face. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a8b2d9d8cc2251da3e6aa996128017972}{neighbour\+Rank}} (const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Given a patch\+Id the corresponding neighbour Rank gets returned. \end{DoxyCompactList}\item 
+const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a3e64f99b91157e2eae5e2b75c2532c87}{offset}} () const
+\begin{DoxyCompactList}\small\item\em Get the offset of the boundary faces. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a7fe54ce18d4a48815cc277e728fbe2f1}{n\+Proc\+Boundary\+Patches}} () const
+\begin{DoxyCompactList}\small\item\em number of proc boundary patches \end{DoxyCompactList}\item 
+const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a69e62a927b8028e6d77d09a6dca8475c}{neighbour\+Rank}} () const
+\begin{DoxyCompactList}\small\item\em Get the offset of the boundary faces. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac685fcdbbdd1416aba16c00537448e33}{neighbour\+Rank\+For\+Range}} (std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range) const
+\begin{DoxyCompactList}\small\item\em Returns the neighbour rank for the processor patch whose face range matches the given range. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abd9b1b1906b836d58bcaf312194ae564}{n\+Boundaries}} () const
+\begin{DoxyCompactList}\small\item\em Get the number of the boundaries. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ad55fbfdf171c694d69b25e020e2aa2b4}{n\+Boundary\+Faces}} () const
+\begin{DoxyCompactList}\small\item\em Get the number of the boundary faces. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af0e4cc5bea7a7610fc6351e489a7e19f}{n\+Proc\+Boundary\+Faces}} () const
+\begin{DoxyCompactList}\small\item\em Get the number of the processor boundary faces. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac300ef7b3ce5f62a2c952ffb0f4a16d3}{is\+Distributed}} () const
+\begin{DoxyCompactList}\small\item\em Return whether this local mesh is a part of a global distributed mesh. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents boundaries of an unstructured mesh. 
+
+The \doxylink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh} class stores information about the boundary faces and their properties in an unstructured mesh. It provides access to various fields such as face cells, face centers, face normals, face areas normals, magnitudes of face areas normals, delta vectors, weights, delta coefficients, and offsets.
+
+Boundary faces are organised such that regular boundaries are stored first, followed by the processor boundaries.
+
+The class also provides getter methods to access the individual fields and their components.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Executor} & The type of the executor used for computations. \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1BoundaryMesh_aee107e13ac341be0febe8e844e931492}\label{classNeoN_1_1BoundaryMesh_aee107e13ac341be0febe8e844e931492} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!BoundaryMesh@{BoundaryMesh}}
+\index{BoundaryMesh@{BoundaryMesh}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{BoundaryMesh()}{BoundaryMesh()}}
+{\footnotesize\ttfamily Neo\+N\+::\+Boundary\+Mesh\+::\+Boundary\+Mesh (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a6389e1f6465846887d6bc01ec8ea818d}{label\+Vector}}}]{face\+Owners,  }\item[{\mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}}}]{face\+Centers,  }\item[{\mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}}}]{owner\+Cell\+Centers,  }\item[{\mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}}}]{face\+Normals,  }\item[{\mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}}}]{face\+Areas,  }\item[{\mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}}}]{face\+Unit\+Normals,  }\item[{\mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}}}]{delta,  }\item[{\mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}}}]{weights,  }\item[{\mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}}}]{delta\+Coeffs,  }\item[{std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{offset,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{proc\+Boundary\+Patches,  }\item[{std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{neighbour\+Rank }\end{DoxyParamCaption})}
+
+
+
+Constructor for the \doxylink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh} class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & The executor used for computations. \\
+\hline
+{\em face\+Owners} & A list of labels of owner cells of boundary faces. \\
+\hline
+{\em face\+Centers} & A field of face centers. \\
+\hline
+{\em owner\+Cell\+Centers} & A field of centers of owner cells of boundary faces. \\
+\hline
+{\em face\+Normals} & A field of face normal vectors. \\
+\hline
+{\em face\+Areas} & A field of face areas. \\
+\hline
+{\em face\+Unit\+Normals} & A field of face unit normal vectors. \\
+\hline
+{\em delta} & A field of delta vectors. \\
+\hline
+{\em weights} & A field of weights used in cell to face interpolation. \\
+\hline
+{\em delta\+Coeffs} & A field of the inverse of distances between boundary faces and their neighboring cell centers \\
+\hline
+{\em offset} & The offsets of the boundary faces, i.\+e. offset\mbox{[}i\mbox{]}, offset\mbox{[}i+1\mbox{]} define beginning and end of a patch. \\
+\hline
+{\em neighbour\+Rank} & corresponding mpi\+Rank ouf neighbour \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1BoundaryMesh_af97404c98fd109461227946388578ad0}\label{classNeoN_1_1BoundaryMesh_af97404c98fd109461227946388578ad0} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!delta@{delta}}
+\index{delta@{delta}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{delta()}{delta()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::delta (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of delta vectors. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of delta vectors. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_aa23ea9b621eb89d2cc6fea8f0fa76ae0}\label{classNeoN_1_1BoundaryMesh_aa23ea9b621eb89d2cc6fea8f0fa76ae0} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!delta@{delta}}
+\index{delta@{delta}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{delta()}{delta()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::delta (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of delta vectors for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of delta vectors for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a4d68eaf96298d79527149e34e1193d7b}\label{classNeoN_1_1BoundaryMesh_a4d68eaf96298d79527149e34e1193d7b} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!deltaCoeffs@{deltaCoeffs}}
+\index{deltaCoeffs@{deltaCoeffs}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{deltaCoeffs()}{deltaCoeffs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::delta\+Coeffs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of delta coefficients. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of delta coefficients. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a7c1248627fced7c34412ad36673b5c04}\label{classNeoN_1_1BoundaryMesh_a7c1248627fced7c34412ad36673b5c04} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!deltaCoeffs@{deltaCoeffs}}
+\index{deltaCoeffs@{deltaCoeffs}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{deltaCoeffs()}{deltaCoeffs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::delta\+Coeffs (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of delta coefficients for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of delta coefficients for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_af424606847d2c9f5595745e62ddde1a0}\label{classNeoN_1_1BoundaryMesh_af424606847d2c9f5595745e62ddde1a0} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceAreas@{faceAreas}}
+\index{faceAreas@{faceAreas}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceAreas()}{faceAreas()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::face\+Areas (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of face areas. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of face areas. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a11ae0f3ab47b2ec1baa0634647f20518}\label{classNeoN_1_1BoundaryMesh_a11ae0f3ab47b2ec1baa0634647f20518} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceAreas@{faceAreas}}
+\index{faceAreas@{faceAreas}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceAreas()}{faceAreas()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::face\+Areas (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of face areas for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of face areas for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_ad542449a6ebf93500d1541e6d2364e58}\label{classNeoN_1_1BoundaryMesh_ad542449a6ebf93500d1541e6d2364e58} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceCenters@{faceCenters}}
+\index{faceCenters@{faceCenters}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceCenters()}{faceCenters()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::face\+Centers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of face centers. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of face centers. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_afdbedb7fa19329bac3e7e425cecf9231}\label{classNeoN_1_1BoundaryMesh_afdbedb7fa19329bac3e7e425cecf9231} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceCenters@{faceCenters}}
+\index{faceCenters@{faceCenters}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceCenters()}{faceCenters()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::face\+Centers (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of face centers for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of face centers for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}\label{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceNormals@{faceNormals}}
+\index{faceNormals@{faceNormals}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceNormals()}{faceNormals()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::face\+Normals (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of face areas normals. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of face areas normals. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_aa1be390305967f58aef0fd51c0c2b76b}\label{classNeoN_1_1BoundaryMesh_aa1be390305967f58aef0fd51c0c2b76b} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceNormals@{faceNormals}}
+\index{faceNormals@{faceNormals}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceNormals()}{faceNormals()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::face\+Normals (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of face areas normals for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of face areas normals for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}\label{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceOwners@{faceOwners}}
+\index{faceOwners@{faceOwners}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceOwners()}{faceOwners()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a6389e1f6465846887d6bc01ec8ea818d}{label\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::face\+Owners (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the list of labels of owner cells of boundary faces. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of owner cells. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a0f1c07ef2b7a0564617110e2894eb1a9}\label{classNeoN_1_1BoundaryMesh_a0f1c07ef2b7a0564617110e2894eb1a9} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceOwners@{faceOwners}}
+\index{faceOwners@{faceOwners}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceOwners()}{faceOwners()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::face\+Owners (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of labels of owner cells for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of labels of owner cells for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a4c7289614259c1196f6a553490967b66}\label{classNeoN_1_1BoundaryMesh_a4c7289614259c1196f6a553490967b66} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceUnitNormals@{faceUnitNormals}}
+\index{faceUnitNormals@{faceUnitNormals}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceUnitNormals()}{faceUnitNormals()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::face\+Unit\+Normals (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of face unit normal vectors. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of face unit normal vectors. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a73e7de231c67e0ab4bedf13c6ef1790c}\label{classNeoN_1_1BoundaryMesh_a73e7de231c67e0ab4bedf13c6ef1790c} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!faceUnitNormals@{faceUnitNormals}}
+\index{faceUnitNormals@{faceUnitNormals}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{faceUnitNormals()}{faceUnitNormals()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::face\+Unit\+Normals (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of face unit normal vectors for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of face unit normal vectors for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_ac300ef7b3ce5f62a2c952ffb0f4a16d3}\label{classNeoN_1_1BoundaryMesh_ac300ef7b3ce5f62a2c952ffb0f4a16d3} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!isDistributed@{isDistributed}}
+\index{isDistributed@{isDistributed}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{isDistributed()}{isDistributed()}}
+{\footnotesize\ttfamily bool Neo\+N\+::\+Boundary\+Mesh\+::is\+Distributed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Return whether this local mesh is a part of a global distributed mesh. 
+
+
+
+Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00262}{262}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1BoundaryMesh_abd9b1b1906b836d58bcaf312194ae564}\label{classNeoN_1_1BoundaryMesh_abd9b1b1906b836d58bcaf312194ae564} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!nBoundaries@{nBoundaries}}
+\index{nBoundaries@{nBoundaries}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{nBoundaries()}{nBoundaries()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Boundary\+Mesh\+::n\+Boundaries (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the number of the boundaries. 
+
+
+
+Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00247}{247}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1BoundaryMesh_ad55fbfdf171c694d69b25e020e2aa2b4}\label{classNeoN_1_1BoundaryMesh_ad55fbfdf171c694d69b25e020e2aa2b4} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!nBoundaryFaces@{nBoundaryFaces}}
+\index{nBoundaryFaces@{nBoundaryFaces}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{nBoundaryFaces()}{nBoundaryFaces()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Boundary\+Mesh\+::n\+Boundary\+Faces (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the number of the boundary faces. 
+
+
+
+Definition at line \mbox{\hyperlink{boundaryMesh_8hpp_source_l00252}{252}} of file \mbox{\hyperlink{boundaryMesh_8hpp_source}{boundary\+Mesh.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1BoundaryMesh_a69e62a927b8028e6d77d09a6dca8475c}\label{classNeoN_1_1BoundaryMesh_a69e62a927b8028e6d77d09a6dca8475c} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!neighbourRank@{neighbourRank}}
+\index{neighbourRank@{neighbourRank}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{neighbourRank()}{neighbourRank()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& Neo\+N\+::\+Boundary\+Mesh\+::neighbour\+Rank (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the offset of the boundary faces. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the offset of the boundary faces. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a8b2d9d8cc2251da3e6aa996128017972}\label{classNeoN_1_1BoundaryMesh_a8b2d9d8cc2251da3e6aa996128017972} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!neighbourRank@{neighbourRank}}
+\index{neighbourRank@{neighbourRank}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{neighbourRank()}{neighbourRank()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Boundary\+Mesh\+::neighbour\+Rank (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Given a patch\+Id the corresponding neighbour Rank gets returned. 
+
+-\/1 for patches without a distributed neighbour \Hypertarget{classNeoN_1_1BoundaryMesh_ac685fcdbbdd1416aba16c00537448e33}\label{classNeoN_1_1BoundaryMesh_ac685fcdbbdd1416aba16c00537448e33} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!neighbourRankForRange@{neighbourRankForRange}}
+\index{neighbourRankForRange@{neighbourRankForRange}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{neighbourRankForRange()}{neighbourRankForRange()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Boundary\+Mesh\+::neighbour\+Rank\+For\+Range (\begin{DoxyParamCaption}\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption}) const}
+
+
+
+Returns the neighbour rank for the processor patch whose face range matches the given range. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em range} & The \mbox{[}start, end) face index range of the processor patch. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The MPI rank of the neighbour for that patch. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_af0e4cc5bea7a7610fc6351e489a7e19f}\label{classNeoN_1_1BoundaryMesh_af0e4cc5bea7a7610fc6351e489a7e19f} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!nProcBoundaryFaces@{nProcBoundaryFaces}}
+\index{nProcBoundaryFaces@{nProcBoundaryFaces}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{nProcBoundaryFaces()}{nProcBoundaryFaces()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Boundary\+Mesh\+::n\+Proc\+Boundary\+Faces (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the number of the processor boundary faces. 
+
+\Hypertarget{classNeoN_1_1BoundaryMesh_a7fe54ce18d4a48815cc277e728fbe2f1}\label{classNeoN_1_1BoundaryMesh_a7fe54ce18d4a48815cc277e728fbe2f1} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!nProcBoundaryPatches@{nProcBoundaryPatches}}
+\index{nProcBoundaryPatches@{nProcBoundaryPatches}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{nProcBoundaryPatches()}{nProcBoundaryPatches()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Boundary\+Mesh\+::n\+Proc\+Boundary\+Patches (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+number of proc boundary patches 
+
+\Hypertarget{classNeoN_1_1BoundaryMesh_a3e64f99b91157e2eae5e2b75c2532c87}\label{classNeoN_1_1BoundaryMesh_a3e64f99b91157e2eae5e2b75c2532c87} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!offset@{offset}}
+\index{offset@{offset}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{offset()}{offset()}}
+{\footnotesize\ttfamily const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \& Neo\+N\+::\+Boundary\+Mesh\+::offset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the offset of the boundary faces. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the offset of the boundary faces. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a04a69215c016e86f2fce5ae5f757df16}\label{classNeoN_1_1BoundaryMesh_a04a69215c016e86f2fce5ae5f757df16} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!ownerCellCenters@{ownerCellCenters}}
+\index{ownerCellCenters@{ownerCellCenters}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{ownerCellCenters()}{ownerCellCenters()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}{vector\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::owner\+Cell\+Centers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of centers of owner cells of boundary faces. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the field of owner cell centers. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_ae875b328b072c934c8d1cb6e198f2d11}\label{classNeoN_1_1BoundaryMesh_ae875b328b072c934c8d1cb6e198f2d11} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!ownerCellCenters@{ownerCellCenters}}
+\index{ownerCellCenters@{ownerCellCenters}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{ownerCellCenters()}{ownerCellCenters()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::owner\+Cell\+Centers (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of owner cell centers for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of owner cell centers for the specified boundary face. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a17fd67b53b4722437ba688817489ca04}\label{classNeoN_1_1BoundaryMesh_a17fd67b53b4722437ba688817489ca04} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!validate@{validate}}
+\index{validate@{validate}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{validate()}{validate()}}
+{\footnotesize\ttfamily void Neo\+N\+::\+Boundary\+Mesh\+::validate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1BoundaryMesh_afa9560b30f5a9016580d8d5fe8acd6c3}\label{classNeoN_1_1BoundaryMesh_afa9560b30f5a9016580d8d5fe8acd6c3} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!weights@{weights}}
+\index{weights@{weights}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{weights()}{weights()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_ad4b93cc6d70df72f518f4b16fb19810f}{scalar\+Vector}} \& Neo\+N\+::\+Boundary\+Mesh\+::weights (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the field of weights. 
+
+\begin{DoxyReturn}{Returns}
+A constant reference to the boundary field of weights. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1BoundaryMesh_a3b0e93bcac3e1fcdf878ba484232d10b}\label{classNeoN_1_1BoundaryMesh_a3b0e93bcac3e1fcdf878ba484232d10b} 
+\index{NeoN::BoundaryMesh@{NeoN::BoundaryMesh}!weights@{weights}}
+\index{weights@{weights}!NeoN::BoundaryMesh@{NeoN::BoundaryMesh}}
+\doxysubsubsection{\texorpdfstring{weights()}{weights()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::\+Boundary\+Mesh\+::weights (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const}
+
+
+
+Get a view of weights for a specific boundary face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the boundary face. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A view of weights for the specified boundary face. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/mesh/unstructured/\mbox{\hyperlink{boundaryMesh_8hpp}{boundary\+Mesh.\+hpp}}\end{DoxyCompactItemize}

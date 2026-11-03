@@ -1,0 +1,116 @@
+\doxysection{NeoN\+::io\+::Field\+Set Class Reference}
+\hypertarget{classNeoN_1_1io_1_1FieldSet}{}\label{classNeoN_1_1io_1_1FieldSet}\index{NeoN::io::FieldSet@{NeoN::io::FieldSet}}
+
+
+Accumulates references to Volume\+Fields for a single write pass.  
+
+
+
+
+{\ttfamily \#include $<$field\+Writer.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \& \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet_a608e6b2f8644cad7235897ab022c29ca}{add}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&field)
+\begin{DoxyCompactList}\small\item\em Add a scalar Volume\+Field. Returns \texorpdfstring{$\ast$}{*}this for chaining. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \& \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet_a4cb07f8676738f4b5bae18524b96ab31}{add}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&field)
+\begin{DoxyCompactList}\small\item\em Add a \doxylink{classNeoN_1_1Vec3}{Vec3} Volume\+Field. Returns \texorpdfstring{$\ast$}{*}this for chaining. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet_a89077eb7bfbd763561c02c73166a9b1c}{write\+Vtm}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&, const \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \&, const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em Write an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} with all fields in a \doxylink{classNeoN_1_1io_1_1FieldSet}{Field\+Set} to a VTM file. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet_ae4eeb3738a63dbb41141dc50e50c8c77}{write\+Vtk\+Hdf}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&, const \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \&, const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em Write an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} with all fields in a \doxylink{classNeoN_1_1io_1_1FieldSet}{Field\+Set} to a VTK HDF file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Accumulates references to Volume\+Fields for a single write pass. 
+
+Building VTK topology is expensive. \doxylink{classNeoN_1_1io_1_1FieldSet}{Field\+Set} lets you add multiple fields and write them all in one pass (one topology build, multiple Add\+Array calls).
+
+Example\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{NeoN::io::FieldSet}}\ fs;}
+\DoxyCodeLine{fs.\mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet_a608e6b2f8644cad7235897ab022c29ca}{add}}(pressure).\mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet_a608e6b2f8644cad7235897ab022c29ca}{add}}(velocity);}
+\DoxyCodeLine{\mbox{\hyperlink{namespaceNeoN_1_1io_add33bd3404d53e1e49541dd1b20501db}{NeoN::io::writeVtm}}(mesh,\ fs,\ \textcolor{stringliteral}{"{}output.vtm"{}});}
+
+\end{DoxyCode}
+ 
+
+Definition at line \mbox{\hyperlink{fieldWriter_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{fieldWriter_8hpp_source}{field\+Writer.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1io_1_1FieldSet_a608e6b2f8644cad7235897ab022c29ca}\label{classNeoN_1_1io_1_1FieldSet_a608e6b2f8644cad7235897ab022c29ca} 
+\index{NeoN::io::FieldSet@{NeoN::io::FieldSet}!add@{add}}
+\index{add@{add}!NeoN::io::FieldSet@{NeoN::io::FieldSet}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \& Neo\+N\+::io\+::\+Field\+Set\+::add (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{field }\end{DoxyParamCaption})}
+
+
+
+Add a scalar Volume\+Field. Returns \texorpdfstring{$\ast$}{*}this for chaining. 
+
+\Hypertarget{classNeoN_1_1io_1_1FieldSet_a4cb07f8676738f4b5bae18524b96ab31}\label{classNeoN_1_1io_1_1FieldSet_a4cb07f8676738f4b5bae18524b96ab31} 
+\index{NeoN::io::FieldSet@{NeoN::io::FieldSet}!add@{add}}
+\index{add@{add}!NeoN::io::FieldSet@{NeoN::io::FieldSet}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \& Neo\+N\+::io\+::\+Field\+Set\+::add (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{fvcc\+::\+Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{field }\end{DoxyParamCaption})}
+
+
+
+Add a \doxylink{classNeoN_1_1Vec3}{Vec3} Volume\+Field. Returns \texorpdfstring{$\ast$}{*}this for chaining. 
+
+
+
+\doxysubsection{Friends And Related Symbol Documentation}
+\Hypertarget{classNeoN_1_1io_1_1FieldSet_ae4eeb3738a63dbb41141dc50e50c8c77}\label{classNeoN_1_1io_1_1FieldSet_ae4eeb3738a63dbb41141dc50e50c8c77} 
+\index{NeoN::io::FieldSet@{NeoN::io::FieldSet}!writeVtkHdf@{writeVtkHdf}}
+\index{writeVtkHdf@{writeVtkHdf}!NeoN::io::FieldSet@{NeoN::io::FieldSet}}
+\doxysubsubsection{\texorpdfstring{writeVtkHdf}{writeVtkHdf}}
+{\footnotesize\ttfamily void write\+Vtk\+Hdf (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{,  }\item[{const \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \&}]{,  }\item[{const std\+::string \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Write an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} with all fields in a \doxylink{classNeoN_1_1io_1_1FieldSet}{Field\+Set} to a VTK HDF file. 
+
+Topology is built once; all fields are attached as Cell\+Data arrays.
+
+
+\begin{DoxyParams}{Parameters}
+{\em mesh} & The mesh to write. \\
+\hline
+{\em fields} & \doxylink{classNeoN_1_1io_1_1FieldSet}{Field\+Set} containing the fields to include. \\
+\hline
+{\em file\+Path} & Output path (must end in .vtkhdf). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1io_1_1FieldSet_a89077eb7bfbd763561c02c73166a9b1c}\label{classNeoN_1_1io_1_1FieldSet_a89077eb7bfbd763561c02c73166a9b1c} 
+\index{NeoN::io::FieldSet@{NeoN::io::FieldSet}!writeVtm@{writeVtm}}
+\index{writeVtm@{writeVtm}!NeoN::io::FieldSet@{NeoN::io::FieldSet}}
+\doxysubsubsection{\texorpdfstring{writeVtm}{writeVtm}}
+{\footnotesize\ttfamily void write\+Vtm (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{,  }\item[{const \mbox{\hyperlink{classNeoN_1_1io_1_1FieldSet}{Field\+Set}} \&}]{,  }\item[{const std\+::string \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+Write an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} with all fields in a \doxylink{classNeoN_1_1io_1_1FieldSet}{Field\+Set} to a VTM file. 
+
+Topology is built once; all fields are attached as Cell\+Data arrays.
+
+
+\begin{DoxyParams}{Parameters}
+{\em mesh} & The mesh to write. \\
+\hline
+{\em fields} & \doxylink{classNeoN_1_1io_1_1FieldSet}{Field\+Set} containing the fields to include. \\
+\hline
+{\em file\+Path} & Output path (must end in .vtm). \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/mesh/unstructured/io/\mbox{\hyperlink{fieldWriter_8hpp}{field\+Writer.\+hpp}}\end{DoxyCompactItemize}

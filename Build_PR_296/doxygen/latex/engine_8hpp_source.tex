@@ -1,0 +1,64 @@
+\doxysection{engine.\+hpp}
+\hypertarget{engine_8hpp_source}{}\label{engine_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/io/engine.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/io/engine.hpp}}
+\mbox{\hyperlink{engine_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00008}00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1io}{NeoN::io}}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00009}00009\ \{}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00011}00011\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00012}00012\ \textcolor{comment}{\ *\ @class\ Engine}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00013}00013\ \textcolor{comment}{\ *\ @brief\ Type-\/erased\ interface\ to\ store\ the\ IO\ engine/stream\ like\ adios2::Engine.}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00014}00014\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00015}00015\ \textcolor{comment}{\ *\ The\ Engine\ class\ is\ a\ type-\/erased\ interface\ to\ store\ engine/streaming\ components\ from\ IO}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00016}00016\ \textcolor{comment}{\ *\ libraries\ wrapped\ into\ classes\ that\ cohere\ with\ the\ Engine's\ interface.}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00017}00017\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00018}\mbox{\hyperlink{classNeoN_1_1io_1_1Engine}{00018}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1io_1_1Engine}{Engine}}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00020}00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00022}00022\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00023}00023\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Constructs\ an\ Engine\ component\ for\ IO\ from\ a\ specific\ EngineType.}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00024}00024\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00025}00025\ \textcolor{comment}{\ \ \ \ \ *\ @tparam\ EngineType\ The\ engine\ type\ that\ wraps\ a\ specific\ IO\ library\ engine/stream.}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00026}00026\ \textcolor{comment}{\ \ \ \ \ *\ @param\ engine\ The\ engine\ instance\ to\ be\ wrapped.}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00027}00027\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ EngineType>}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1io_1_1Engine_a62e7900825e6c2109d45672eae613308}{00029}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1io_1_1Engine_a62e7900825e6c2109d45672eae613308}{Engine}}(EngineType\ core)\ :\ pimpl\_(std::make\_unique<EngineModel<EngineType>>(std::move(core)))}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00030}00030\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00032}00032\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00035}00035\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Base\ concept\ declaring\ the\ type-\/erased\ interface}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00036}00036\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{struct\ }EngineConcept}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00038}00038\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \string~EngineConcept()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00040}00040\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00043}00043\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Derived\ model\ delegating\ the\ implementation\ to\ the\ type-\/erased\ PIMPL}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00044}00044\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ EngineType>}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{struct\ }EngineModel\ :\ EngineConcept}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00047}00047\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ EngineModel(EngineType\ core)\ :\ core\_(std::move(core))\ \{\}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ EngineType\ core\_;}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00050}00050\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00053}00053\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Type-\/erased\ PIMPL}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00054}00054\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00055}00055\ \ \ \ \ std::unique\_ptr<EngineConcept>\ pimpl\_;}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00056}00056\ \};}
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{engine_8hpp_source_l00058}00058\ \}\ \textcolor{comment}{//\ namespace\ NeoN::io}}
+
+\end{DoxyCode}

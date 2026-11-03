@@ -1,0 +1,235 @@
+\doxysection{spatial\+Operator.\+hpp}
+\hypertarget{spatialOperator_8hpp_source}{}\label{spatialOperator_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/spatialOperator.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/spatialOperator.hpp}}
+\mbox{\hyperlink{spatialOperator_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023-\/2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00003}00003\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <concepts>}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearSystem_8hpp}{NeoN/linearAlgebra/linearSystem.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{input_8hpp}{NeoN/core/input.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{coeff_8hpp}{NeoN/dsl/coeff.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operator_8hpp}{NeoN/dsl/operator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }la\ =\ \mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl}{NeoN::dsl}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00020}00020\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00021}\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasExplicitOperator}{00021}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasExplicitOperator}{HasExplicitOperator}}\ =\ \textcolor{keyword}{requires}(T\ t)\ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00022}00022\ \ \ \ \ \textcolor{comment}{//\ using\ ValueType\ =\ typename\ T::VectorValueType;}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00023}00023\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ t.explicitOperation(std::declval<Vector<typename\ T::VectorValueType>\&>())}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00025}00025\ \ \ \ \ \}\ -\/>\ std::same\_as<void>;\ \textcolor{comment}{//\ Adjust\ return\ type\ and\ arguments\ as\ needed}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00026}00026\ \};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00028}00028\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00029}\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasImplicitOperator}{00029}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasImplicitOperator}{HasImplicitOperator}}\ =\ \textcolor{keyword}{requires}(T\ t)\ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ using\ ValueType\ =\ typename\ T::VectorValueType;}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00031}00031\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ t.implicitOperation(std::declval<la::LinearSystem<typename\ T::VectorValueType,\ localIdx>\&>()}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00034}00034\ \ \ \ \ \}\ -\/>\ std::same\_as<void>;\ \textcolor{comment}{//\ Adjust\ return\ type\ and\ arguments\ as\ needed}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00035}00035\ \};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00037}00037\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00038}\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1IsSpatialOperator}{00038}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1IsSpatialOperator}{IsSpatialOperator}}\ =\ \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasExplicitOperator}{HasExplicitOperator<T>}}\ ||\ \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasImplicitOperator}{HasImplicitOperator<T>}};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00040}00040\ \textcolor{comment}{/*\ @class\ SpatialOperator}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00041}00041\ \textcolor{comment}{\ *\ @brief\ A\ class\ to\ represent\ an\ operator\ in\ NeoNs\ dsl}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00042}00042\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00043}00043\ \textcolor{comment}{\ *\ The\ design\ here\ is\ based\ on\ the\ type\ erasure\ design\ pattern}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00044}00044\ \textcolor{comment}{\ *\ see\ https://www.youtube.com/watch?v=4eeESJQk-\/mw}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00045}00045\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00046}00046\ \textcolor{comment}{\ *\ Motivation\ for\ using\ type\ erasure\ is\ that\ concrete\ implementation}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00047}00047\ \textcolor{comment}{\ *\ of\ Operators\ e.g\ Divergence,\ Laplacian,\ etc\ can\ be\ stored\ in\ a\ vector\ of}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00048}00048\ \textcolor{comment}{\ *\ Operators}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00049}00049\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00050}00050\ \textcolor{comment}{\ *\ @ingroup\ dsl}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00051}00051\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00052}00052\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{00053}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00054}00054\ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00055}00055\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aedfbc85da7dc707f61742b232952bdcc}{00057}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aedfbc85da7dc707f61742b232952bdcc}{VectorValueType}}\ =\ ValueType;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{comment}{//\ FIXME\ add\ again}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{comment}{//\ template<IsSpatialOperator\ T>}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_ac0d411e093c1ccd5a40c630b45638a72}{00062}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_ac0d411e093c1ccd5a40c630b45638a72}{SpatialOperator}}(T\ cls)\ :\ model\_(std::make\_unique<OperatorModel<T>>(std::move(cls)))}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00063}00063\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aaedf167aa2b3590b3ff87c0493e8dbc5}{00065}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aaedf167aa2b3590b3ff87c0493e8dbc5}{SpatialOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator}}\&\ eqnOperator)\ :\ model\_(eqnOperator.model\_-\/>clone())\ \{\}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a51ea515de3795dc003f4ec09fe6fe562}{00067}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a51ea515de3795dc003f4ec09fe6fe562}{SpatialOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator}}\&\&\ eqnOperator)\ :\ model\_(std::move(eqnOperator.model\_))\ \{\}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a0205e14515f0e95115d83a58260dab03}{00069}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a0205e14515f0e95115d83a58260dab03}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator}}\&\ eqnOperator)}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00070}00070\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ model\_\ =\ eqnOperator.model\_-\/>clone();}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00073}00073\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a5e56907203e06efbb1846294fe6714fb}{00075}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a5e56907203e06efbb1846294fe6714fb}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source)\textcolor{keyword}{\ const\ }\{\ model\_-\/>explicitOperation(source);\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a06dc4ead7ef74c3a10db5b0347f8c591}{00077}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a06dc4ead7ef74c3a10db5b0347f8c591}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls)}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00078}00078\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ model\_-\/>implicitOperation(ls);}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00080}00080\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a7dca09b90089c20925c631b6e6493174}{00083}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a7dca09b90089c20925c631b6e6493174}{getType}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getType();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_af61a3a1a208a5fa8a779e3899ed659e9}{00085}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_af61a3a1a208a5fa8a779e3899ed659e9}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getName();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38}{00088}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38}{getCoefficient}}()\ \{\ \textcolor{keywordflow}{return}\ model\_-\/>getCoefficient();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aec6cd2e8e754f1a10ea0a01707f51a4b}{00090}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aec6cd2e8e754f1a10ea0a01707f51a4b}{getCoefficient}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getCoefficient();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ coeffs\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a83dafc552c7cb3d2980a25aa9290305c}{00093}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a83dafc552c7cb3d2980a25aa9290305c}{build}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\ \{\ model\_-\/>build(input);\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00096}\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a78ada1cf73d345d9df1a917d0ba3c76f}{00096}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a78ada1cf73d345d9df1a917d0ba3c76f}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>exec();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00099}00099\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Base\ class\ defining\ the\ concept\ of\ a\ term.\ This\ effectively}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00102}00102\ \textcolor{comment}{\ \ \ \ \ *\ defines\ what\ functions\ need\ to\ be\ implemented\ by\ a\ concrete\ Operator\ implementation}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00103}00103\ \textcolor{comment}{\ \ \ \ \ *\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{keyword}{struct\ }OperatorConcept}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00105}00105\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \string~OperatorConcept()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ explicitOperation(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ implicitOperation(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType,\ localIdx>}}\&\ ls)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ coeffs\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ build(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ name\ of\ the\ operator\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ getName()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ getType()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ getCoefficient()\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ getCoefficient()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00126}00126\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ Prototype\ Design\ Pattern}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<OperatorConcept>\ clone()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00132}00132\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00134}00134\ \ \ \ \ \textcolor{comment}{//\ Templated\ derived\ class\ to\ implement\ the\ type-\/specific\ behavior}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00135}00135\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ConcreteOperatorType>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00136}00136\ \ \ \ \ \textcolor{keyword}{struct\ }OperatorModel\ :\ OperatorConcept}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00137}00137\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ build\ with\ concrete\ operator\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ OperatorModel(ConcreteOperatorType\ concreteOp)\ :\ concreteOp\_(std::move(concreteOp))\ \{\}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ name\ of\ the\ operator\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ std::string\ getName()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getName();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ explicitOperation(Vector<ValueType>\&\ source)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00145}00145\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (HasExplicitOperator<ConcreteOperatorType>)}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concreteOp\_.explicitOperation(source);}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ implicitOperation(la::LinearSystem<ValueType,\ localIdx>\&\ ls)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00153}00153\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (HasImplicitOperator<ConcreteOperatorType>)}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concreteOp\_.implicitOperation(ls);}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ coeffs\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ build(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\textcolor{keyword}{\ override\ }\{\ concreteOp\_.build(input);\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit,\ temporal\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ getType()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getType();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.exec();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ Coeff\&\ getCoefficient()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getCoefficient();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ Coeff\ getCoefficient()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getCoefficient();\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ Prototype\ Design\ Pattern}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ std::unique\_ptr<OperatorConcept>\ clone()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00177}00177\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<OperatorModel>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00179}00179\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ ConcreteOperatorType\ concreteOp\_;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00182}00182\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00183}00183\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00184}00184\ \ \ \ \ std::unique\_ptr<OperatorConcept>\ model\_;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00185}00185\ \};}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00186}00186\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00188}00188\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00189}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a45b8dbfdb03a75f2198ec9fc1146d424}{00189}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ scalarCoeff,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00190}00190\ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00191}00191\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ result\ =\ rhs;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00192}00192\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38}{getCoefficient}}()\ *=\ scalarCoeff;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00193}00193\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00194}00194\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00195}00195\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00196}00196\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00197}00197\ SpatialOperator<ValueType>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00198}\mbox{\hyperlink{namespaceNeoN_1_1dsl_acf2ba01e32969b7a4dbdd538697a0463}{00198}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ coeffVector,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00199}00199\ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00200}00200\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ result\ =\ rhs;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00201}00201\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38}{getCoefficient}}()\ *=\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}(coeffVector);}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00202}00202\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00203}00203\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00204}00204\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00205}00205\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00206}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a186ad4adcdaffe64f7f2823eb47a20cd}{00206}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ coeff,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00207}00207\ \{}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00208}00208\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ result\ =\ rhs;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00209}00209\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38}{getCoefficient}}()\ *=\ coeff;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00210}00210\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00211}00211\ \}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00212}00212\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00213}00213\ \textcolor{comment}{//\ template<typename\ CoeffFunction>}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00214}00214\ \textcolor{comment}{//\ \ \ \ \ requires\ std::invocable<CoeffFunction\&,\ size\_t>}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00215}00215\ \textcolor{comment}{//\ SpatialOperator\ operator*([[maybe\_unused]]\ CoeffFunction\ coeffFunc,\ const\ SpatialOperator\&\ lhs)}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00216}00216\ \textcolor{comment}{//\ \{}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00217}00217\ \textcolor{comment}{//\ \ \ \ \ //\ TODO\ implement}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00218}00218\ \textcolor{comment}{//\ \ \ \ \ NF\_ERROR\_EXIT("{}Not\ implemented"{});}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00219}00219\ \textcolor{comment}{//\ \ \ \ \ SpatialOperator\ result\ =\ lhs;}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00220}00220\ \textcolor{comment}{//\ \ \ \ \ //\ if\ (!result.getCoefficient().useSpan)}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00221}00221\ \textcolor{comment}{//\ \ \ \ \ //\ \{}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00222}00222\ \textcolor{comment}{//\ \ \ \ \ //\ \ \ \ \ result.setVector(std::make\_shared<Vector<scalar>>(result.exec(),}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00223}00223\ \textcolor{comment}{//\ \ \ \ \ result.nCells(),\ 1.0));}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00224}00224\ \textcolor{comment}{//\ \ \ \ \ //\ \}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00225}00225\ \textcolor{comment}{//\ \ \ \ \ //\ map(result.exec(),\ result.getCoefficient().values,\ scaleFunc);}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00226}00226\ \textcolor{comment}{//\ \ \ \ \ return\ result;}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00227}00227\ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00228}00228\ }
+\DoxyCodeLine{\Hypertarget{spatialOperator_8hpp_source_l00229}00229\ \}\ \textcolor{comment}{//\ namespace\ dsl}}
+
+\end{DoxyCode}

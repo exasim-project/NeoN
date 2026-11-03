@@ -1,0 +1,104 @@
+\doxysection{optimizer.\+hpp}
+\hypertarget{optimizer_8hpp_source}{}\label{optimizer_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/optimizer.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/optimizer.hpp}}
+\mbox{\hyperlink{optimizer_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{expression_8hpp}{NeoN/dsl/expression.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{spatialOperator_8hpp}{NeoN/dsl/spatialOperator.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gaussGreenDivLaplacian_8hpp}{NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1dsl}{NeoN::dsl}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00026}00026\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExpressionType>}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00027}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer}{00027}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer}{Optimizer}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00029}00029\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer_ad7b76be8bbca47117e9c68386c905903}{00031}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer_ad7b76be8bbca47117e9c68386c905903}{\string~Optimizer}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00038}\mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer_a80cf5d590e5e2404cb7785781c85b487}{00038}}\ \ \ \ \ \textcolor{keyword}{virtual}\ ExpressionType\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer_a80cf5d590e5e2404cb7785781c85b487}{optimize}}(\textcolor{keyword}{const}\ ExpressionType\&\ expr)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00039}00039\ \};}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00054}00054\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExpressionType>}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DivLapOptimizer}{00055}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1DivLapOptimizer}{DivLapOptimizer}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer}{Optimizer}}<ExpressionType>}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00056}00056\ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00057}00057\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DivLapOptimizer_a28de09bef0dc3f33069395ec536653b7}{00059}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1DivLapOptimizer_a28de09bef0dc3f33069395ec536653b7}{\string~DivLapOptimizer}}()\ \{\}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1dsl_1_1DivLapOptimizer_a2dce232ed510b030ebd7ff7952b4a04b}{00061}}\ \ \ \ \ ExpressionType\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1DivLapOptimizer_a2dce232ed510b030ebd7ff7952b4a04b}{optimize}}(\textcolor{keyword}{const}\ ExpressionType\&\ expr)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00062}00062\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ ExpressionType\ out(expr);}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ early\ return\ if\ not\ both\ operators\ are\ present}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!(expr.template\ hasOperator<Operator::Type::Implicit>(\textcolor{stringliteral}{"{}DivOperator"{}})}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ expr.template\ hasOperator<Operator::Type::Implicit>(\textcolor{stringliteral}{"{}LaplacianOperator"{}})))}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }ValueType\ =\ \textcolor{keyword}{typename}\ ExpressionType::ExpressionValueType;}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ divOperator\ =}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ out.template\ getOperator<SpatialOperator<ValueType>,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788}{Operator::Type::Implicit}}>(}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}DivOperator"{}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .getConfig();}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ lapOperator\ =}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ out.template\ getOperator<SpatialOperator<ValueType>,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3a07e01d7a96d9fd76cf08aa5916f7c788}{Operator::Type::Implicit}}>(}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}LaplacianOperator"{}}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .getConfig();}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{dsl::SpatialOperator<ValueType>}}\ divLapOperator\ =}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian}{finiteVolume::cellCentred::GaussGreenDivLaplacian<ValueType>}}(}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ expr.exec(),\ divOperator,\ lapOperator}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ out.addOperator(divLapOperator);}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ out.template\ dropOperator<Operator::Type::Implicit>(\textcolor{stringliteral}{"{}DivOperator"{}});}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ out.template\ dropOperator<Operator::Type::Implicit>(\textcolor{stringliteral}{"{}LaplacianOperator"{}});}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00094}00094\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00095}00095\ \};}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00109}00109\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExpressionType>}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00110}\mbox{\hyperlink{namespaceNeoN_1_1dsl_adb5a54395037066d03de9d1f34471450}{00110}}\ ExpressionType\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_adb5a54395037066d03de9d1f34471450}{optimize}}(\textcolor{keyword}{const}\ ExpressionType\&\ in)}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00111}00111\ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keyword}{auto}\ optimizer\ =\ std::vector<std::shared\_ptr<Optimizer<ExpressionType>>>\ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ std::make\_shared<DivLapOptimizer<ExpressionType>>()}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00114}00114\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00116}00116\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_adb5a54395037066d03de9d1f34471450}{optimize}}(in,\ optimizer);}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00117}00117\ \}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00130}00130\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExpressionType>}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00131}\mbox{\hyperlink{namespaceNeoN_1_1dsl_abfe3b3aa51c3aad886d76e67b7e358d3}{00131}}\ ExpressionType\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_adb5a54395037066d03de9d1f34471450}{optimize}}(}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{keyword}{const}\ ExpressionType\&\ in,\ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<\mbox{\hyperlink{classNeoN_1_1dsl_1_1Optimizer}{Optimizer<ExpressionType>}}>>\&\ opts}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00133}00133\ )}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00134}00134\ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00135}00135\ \ \ \ \ ExpressionType\ out(in);}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00137}00137\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ opt\ :\ opts)}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00138}00138\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ out\ =\ opt-\/>optimize(out);}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00140}00140\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00142}00142\ \ \ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00143}00143\ \}}
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00144}00144\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{optimizer_8hpp_source_l00146}00146\ \}\ \textcolor{comment}{//\ namespace\ dsl}}
+
+\end{DoxyCode}

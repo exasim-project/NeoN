@@ -1,0 +1,49 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/helpers/exceptions.hpp File Reference}
+\hypertarget{exceptions_8hpp}{}\label{exceptions_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1Error}{Neo\+N\+::\+Error}}
+\begin{DoxyCompactList}\small\item\em Base class for consistent error representation. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1DimensionMismatch}{Neo\+N\+::\+Dimension\+Mismatch}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classNeoN_1_1Error}{Error} for handling two containers of incompatible lengths. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{exceptions_8hpp_ad5d4e37fe86567a1b588532e3d6f94e1}{Neo\+N\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+LENGTH}}(\+\_\+op1,  \+\_\+op2)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{exceptions_8hpp_ad5d4e37fe86567a1b588532e3d6f94e1}\label{exceptions_8hpp_ad5d4e37fe86567a1b588532e3d6f94e1} 
+\index{exceptions.hpp@{exceptions.hpp}!NeoN\_ASSERT\_EQUAL\_LENGTH@{NeoN\_ASSERT\_EQUAL\_LENGTH}}
+\index{NeoN\_ASSERT\_EQUAL\_LENGTH@{NeoN\_ASSERT\_EQUAL\_LENGTH}!exceptions.hpp@{exceptions.hpp}}
+\doxysubsubsection{\texorpdfstring{NeoN\_ASSERT\_EQUAL\_LENGTH}{NeoN\_ASSERT\_EQUAL\_LENGTH}}
+{\footnotesize\ttfamily \#define Neo\+N\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+LENGTH(\begin{DoxyParamCaption}\item[{}]{\+\_\+op1,  }\item[{}]{\+\_\+op2 }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{if}\ (\_op1.size()\ !=\ \_op2.size())\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ throw\ ::NeoN::DimensionMismatch(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \_\_FILE\_\_,\ \_\_LINE\_\_,\ \_\_func\_\_,\ \_op1.size(),\ \_op2.size(),\ \textcolor{stringliteral}{"{}expected\ equal\ dimensions"{}}\ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ );\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \}}
+
+\end{DoxyCode}
+Asserts that {\ttfamily \+\_\+op1} and {\ttfamily \+\_\+op2} have the same length.
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Dimension\+Mismatch} & if {\ttfamily \+\_\+op1} and {\ttfamily \+\_\+op2} differ in the number of rows or columns \\
+\hline
+\end{DoxyExceptions}
+
+
+Definition at line \mbox{\hyperlink{exceptions_8hpp_source_l00096}{96}} of file \mbox{\hyperlink{exceptions_8hpp_source}{exceptions.\+hpp}}.
+

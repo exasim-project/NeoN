@@ -1,0 +1,79 @@
+\doxysection{core.\+hpp}
+\hypertarget{core_8hpp_source}{}\label{core_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/io/core.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/io/core.hpp}}
+\mbox{\hyperlink{core_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00008}00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1io}{NeoN::io}}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00009}00009\ \{}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00011}00011\ \textcolor{comment}{//\ forward\ declare}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00012}00012\ \textcolor{keyword}{class\ }Config;}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00014}00014\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00015}00015\ \textcolor{comment}{\ *\ @class\ Core}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00016}00016\ \textcolor{comment}{\ *\ @brief\ Type-\/erased\ interface\ to\ store\ the\ IO\ core\ like\ adios2::ADIOS.}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00017}00017\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ The\ Core\ class\ is\ a\ type-\/erased\ interface\ to\ store\ core\ components\ from\ IO}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ libraries\ wrapped\ into\ classes\ that\ cohere\ with\ the\ Core's\ interface.}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00020}00020\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00021}\mbox{\hyperlink{classNeoN_1_1io_1_1Core}{00021}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1io_1_1Core}{Core}}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00023}00023\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00026}00026\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Constructs\ a\ Core\ component\ for\ IO\ from\ a\ specific\ CoreType.}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00027}00027\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00028}00028\ \textcolor{comment}{\ \ \ \ \ *\ @tparam\ CoreType\ The\ core\ type\ that\ wraps\ a\ specific\ IO\ library\ base.}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00029}00029\ \textcolor{comment}{\ \ \ \ \ *\ @param\ core\ The\ core\ instance\ to\ be\ wrapped.}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00030}00030\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ CoreType>}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1io_1_1Core_a43b05a854876d972ddfdfdadc2ce3333}{00032}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1io_1_1Core_a43b05a854876d972ddfdfdadc2ce3333}{Core}}(CoreType\ core)\ :\ pimpl\_(std::make\_unique<CoreModel<CoreType>>(std::move(core)))}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00033}00033\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1io_1_1Core_aa0fb87216663407fd7e77e4d147d6d22}{00035}}\ \ \ \ \ std::shared\_ptr<Config>\ \mbox{\hyperlink{classNeoN_1_1io_1_1Core_aa0fb87216663407fd7e77e4d147d6d22}{createConfig}}(\textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00036}00036\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pimpl\_-\/>createConfig(\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}});}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00038}00038\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00040}00040\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00043}00043\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Base\ concept\ declaring\ the\ type-\/erased\ interface}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00044}00044\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{struct\ }CoreConcept}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00046}00046\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \string~CoreConcept()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::shared\_ptr<Config>\ createConfig(\textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00049}00049\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00052}00052\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Derived\ model\ delegating\ the\ implementation\ to\ the\ type-\/erased\ PIMPL}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00053}00053\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ CoreType>}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keyword}{struct\ }CoreModel\ :\ CoreConcept}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00056}00056\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ CoreModel(CoreType\ core)\ :\ core\_(std::move(core))\ \{\}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ std::shared\_ptr<Config>\ createConfig(\textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00060}00060\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ core\_-\/>createConfig(\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}});}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ CoreType\ core\_;}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00065}00065\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00068}00068\ \textcolor{comment}{\ \ \ \ \ *\ @brief\ Type-\/erased\ PIMPL}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00069}00069\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00070}00070\ \ \ \ \ std::unique\_ptr<CoreConcept>\ pimpl\_;}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00071}00071\ \};}
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{core_8hpp_source_l00073}00073\ \}\ \textcolor{comment}{//\ namespace\ NeoN::io}}
+
+\end{DoxyCode}

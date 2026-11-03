@@ -1,0 +1,76 @@
+\doxysection{energy\+Boundary\+Mapping.\+hpp}
+\hypertarget{energyBoundaryMapping_8hpp_source}{}\label{energyBoundaryMapping_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/energyBoundaryMapping.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/energyBoundaryMapping.hpp}}
+\mbox{\hyperlink{energyBoundaryMapping_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryData_8hpp}{NeoN/fields/boundaryData.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00011}00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00014}00014\ \textcolor{comment}{/*\ @brief\ Map\ a\ temperature\ field's\ boundary\ data\ onto\ an\ energy\ field's\ boundary\ data}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00015}00015\ \textcolor{comment}{\ *\ through\ the\ constant-\/specific-\/heat\ relation\ \`{}he\ =\ Cv\ *\ (T\ -\/\ Tref)`.}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00016}00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ Mirrors\ what\ OpenFOAM's\ basicThermo\ does\ internally\ for\ every\ solver\ that\ transports\ \`{}he`}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ rather\ than\ \`{}T`\ directly\ (fixedEnergyFvPatchScalarField/gradientEnergyFvPatchScalarField,}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ src/thermophysicalModels/basic/derivedFvPatchFields/):\ a\ solver\ that\ reads\ \`{}0/T`\ BCs\ but}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ transports\ \`{}he`\ calls\ this\ once\ per\ outer\ iteration\ (after\ \`{}T.correctBoundaryConditions()`,}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ before\ assembling/solving\ the\ energy\ equation)\ to\ push\ the\ current\ \`{}T`\ boundary\ state\ into}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ \`{}he`'s\ own\ boundary\ storage,\ then\ calls\ \`{}he.correctBoundaryConditions()`\ so\ each\ patch's\ own}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ BC\ type\ (FixedEnergy/GradientEnergy,\ see\ fixedEnergy.hpp/gradientEnergy.hpp)\ re-\/derives}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00024}00024\ \textcolor{comment}{\ *\ \`{}he`'s\ boundary\ value\ from\ what\ was\ just\ written.}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00025}00025\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00026}00026\ \textcolor{comment}{\ *\ \`{}he\ =\ Cv*(T\ -\/\ Tref)`\ is\ affine,\ so\ the\ map\ is\ applied\ component-\/wise\ to\ both\ halves\ of\ the}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00027}00027\ \textcolor{comment}{\ *\ mixed-\/BC\ representation\ every\ NeoN\ boundary\ condition\ shares\ (refValue/refGrad/}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00028}00028\ \textcolor{comment}{\ *\ valueFraction,\ see\ e.g.\ fixedFluxPressure.hpp):}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00029}00029\ \textcolor{comment}{\ *\ \ \ -\/\ refValue\ (the\ Dirichlet/fixedValue-\/type\ target):\ \ he.refValue\ =\ Cv*(T.refValue\ -\/\ Tref)}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00030}00030\ \textcolor{comment}{\ *\ \ \ -\/\ refGrad\ \ (the\ Neumann/gradient-\/type\ target):\ \ \ \ \ \ he.refGrad\ \ =\ Cv*T.refGrad}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00031}00031\ \textcolor{comment}{\ *\ \ \ -\/\ valueFraction\ (the\ Dirichlet/Neumann\ blend):\ copied\ through\ unchanged\ -\/-\/\ the\ blend}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00032}00032\ \textcolor{comment}{\ *\ \ \ \ \ itself\ doesn't\ depend\ on\ which\ units\ are\ being\ transported.}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00033}00033\ \textcolor{comment}{\ *\ This\ correctly\ reproduces\ OpenFOAM's\ fixedEnergy\ BC\ exactly\ (a\ pure\ Dirichlet\ target)\ and}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00034}00034\ \textcolor{comment}{\ *\ its\ gradientEnergy\ BC\ exactly\ for\ constant,\ spatially-\/uniform\ Cv\ (where\ the\ general}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00035}00035\ \textcolor{comment}{\ *\ chain-\/rule\ gradient\ map\ collapses\ to\ this\ simple\ scaling);\ a\ spatially-\/varying\ or}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00036}00036\ \textcolor{comment}{\ *\ temperature-\/dependent\ Cv\ would\ need\ the\ per-\/face\ Cv\ as\ a\ Field\ rather\ than\ a\ scalar\ here\ -\/-\/}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00037}00037\ \textcolor{comment}{\ *\ out\ of\ scope\ for\ this\ constant-\/Cv\ implementation.}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00038}00038\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00039}00039\ \textcolor{comment}{\ *\ Internal\ field\ values\ are\ untouched\ entirely\ -\/-\/\ this\ operates\ on\ boundary\ data\ only\ (it}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00040}00040\ \textcolor{comment}{\ *\ never\ needed\ a\ whole\ Field,\ just\ the\ refValue/refGrad/valueFraction\ triple),\ so\ it\ takes}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00041}00041\ \textcolor{comment}{\ *\ BoundaryData\ directly:\ call\ as}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00042}00042\ \textcolor{comment}{\ *\ \`{}mapEnergyBoundaryFromTemperature(T.boundaryData(),\ he.boundaryData(),\ Cv,\ Tref)`.\ Call}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00043}00043\ \textcolor{comment}{\ *\ \`{}he.correctBoundaryConditions()`\ afterward\ to\ materialise\ the\ values.}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00044}00044\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00045}00045\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00046}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab4d595c25d3c0f20ec32f7c366fa73a0}{00046}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab4d595c25d3c0f20ec32f7c366fa73a0}{mapEnergyBoundaryFromTemperature}}(}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<ValueType>}}\&\ temperature,}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00048}00048\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<ValueType>}}\&\ energy,}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00049}00049\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ Cv,}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00050}00050\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ Tref}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00051}00051\ )}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00052}00052\ \{}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{auto}\ [heRefValue,\ heRefGrad,\ heValueFraction]\ =}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(energy.\mbox{\hyperlink{classNeoN_1_1BoundaryData_a2000c3e4c0057048852dd6e99aa60076}{refValue}}(),\ energy.\mbox{\hyperlink{classNeoN_1_1BoundaryData_aab70af30068774c938cfb22cf124a325}{refGrad}}(),\ energy.\mbox{\hyperlink{classNeoN_1_1BoundaryData_a798de2cb1247efa03c0eab3dada94ef7}{valueFraction}}());}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keyword}{auto}\ [TRefValue,\ TRefGrad,\ TValueFraction]\ =}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(temperature.\mbox{\hyperlink{classNeoN_1_1BoundaryData_a2000c3e4c0057048852dd6e99aa60076}{refValue}}(),\ temperature.\mbox{\hyperlink{classNeoN_1_1BoundaryData_aab70af30068774c938cfb22cf124a325}{refGrad}}(),\ temperature.\mbox{\hyperlink{classNeoN_1_1BoundaryData_a798de2cb1247efa03c0eab3dada94ef7}{valueFraction}}());}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00058}00058\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ energy.\mbox{\hyperlink{classNeoN_1_1BoundaryData_a6ca425f2d62d70e928e73f4812f89171}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \{0,\ energy.refValue().size()\},}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ heRefValue[i]\ =\ Cv\ *\ (TRefValue[i]\ -\/\ Tref);}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ heRefGrad[i]\ =\ Cv\ *\ TRefGrad[i];}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ heValueFraction[i]\ =\ TValueFraction[i];}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}mapEnergyBoundaryFromTemperature"{}}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00067}00067\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00068}00068\ \}}
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{energyBoundaryMapping_8hpp_source_l00070}00070\ \}}
+
+\end{DoxyCode}

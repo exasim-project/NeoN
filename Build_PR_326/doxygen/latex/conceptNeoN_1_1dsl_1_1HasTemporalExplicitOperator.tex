@@ -1,0 +1,28 @@
+\doxysection{NeoN\+::dsl\+::Has\+Temporal\+Explicit\+Operator Concept Reference}
+\hypertarget{conceptNeoN_1_1dsl_1_1HasTemporalExplicitOperator}{}\label{conceptNeoN_1_1dsl_1_1HasTemporalExplicitOperator}\index{NeoN::dsl::HasTemporalExplicitOperator@{NeoN::dsl::HasTemporalExplicitOperator}}
+
+
+{\ttfamily \#include $<$temporal\+Operator.\+hpp$>$}
+
+\doxysubsection{Concept definition}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalExplicitOperator}{NeoN::dsl::HasTemporalExplicitOperator}}\ =\ \ \textcolor{keyword}{requires}(T\ t)\ \{}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ t.explicitOperation(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<Vector<typename\ T::VectorValueType>\&>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<NeoN::scalar>(),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ std::declval<NeoN::scalar>()}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\ \ \ \ \}\ -\/>\ std::same\_as<void>;\ }
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{temporalOperator_8hpp_source_l00019}{19}} of file \mbox{\hyperlink{temporalOperator_8hpp_source}{temporal\+Operator.\+hpp}}.
+

@@ -1,0 +1,212 @@
+\doxysection{NeoN\+::la\+::Block\+Vector Class Reference}
+\hypertarget{classNeoN_1_1la_1_1BlockVector}{}\label{classNeoN_1_1la_1_1BlockVector}\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+
+
+A flat vector storing n\+Blocks contiguous blocks of n\+Cells scalars each.  
+
+
+
+
+{\ttfamily \#include $<$block\+Vector.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a3066ab351e088cef97325613bd6dd1dd}{Block\+Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a7f4aba33afa4cf43911d0508e89c23bd}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_ad2508b435aa520a15673d28cd550ab3c}{n\+Blocks}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a01f46cdf91a686d1954c47e920814fda}{n\+Cells}})
+\begin{DoxyCompactList}\small\item\em Construct a zero-\/initialized block vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a11a836f182de16e34c62f116c6940d34}{Block\+Vector}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a7f4aba33afa4cf43911d0508e89c23bd}{exec}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_ad2508b435aa520a15673d28cd550ab3c}{n\+Blocks}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a01f46cdf91a686d1954c47e920814fda}{n\+Cells}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} init\+Val)
+\begin{DoxyCompactList}\small\item\em Construct a block vector filled with a uniform value. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_af6bd8a8a4469d0b05c379d8dd39d3558}{vector}} ()
+\begin{DoxyCompactList}\small\item\em Access the flat (monolithic) vector. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a8e3fcec6abef99735f0018d9556374fa}{vector}} () const
+\begin{DoxyCompactList}\small\item\em Access the flat (monolithic) vector (const). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_ad2508b435aa520a15673d28cd550ab3c}{n\+Blocks}} () const
+\begin{DoxyCompactList}\small\item\em Number of blocks. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a01f46cdf91a686d1954c47e920814fda}{n\+Cells}} () const
+\begin{DoxyCompactList}\small\item\em Number of cells per block. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a9239e0d5cf6ec3bc6abc97322c962d49}{total\+Size}} () const
+\begin{DoxyCompactList}\small\item\em Total size (n\+Blocks \texorpdfstring{$\ast$}{*} n\+Cells). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a338137e8d74b2bc72e6f905890941c20}{copy\+Block\+To}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&dst) const
+\begin{DoxyCompactList}\small\item\em Copy block i from the flat data into an external vector (scatter). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a7abfd983662267366ac2e97d6d65a099}{copy\+Block\+From}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&src)
+\begin{DoxyCompactList}\small\item\em Copy an external vector into block i of the flat data (gather). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView}{Block\+Vector\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a0be344e8000e7a0f1fa36edece2da195}{view}} () \&
+\begin{DoxyCompactList}\small\item\em Device-\/safe view (only on lvalues). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView}{Block\+Vector\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a52242c278b2fe3c07a8994a7061c6f2f}{view}} () \&\&=delete
+\begin{DoxyCompactList}\small\item\em Prevent \doxylink{classNeoN_1_1la_1_1BlockVector_a0be344e8000e7a0f1fa36edece2da195}{view()} on temporaries. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector_a7f4aba33afa4cf43911d0508e89c23bd}{exec}} () const
+\begin{DoxyCompactList}\small\item\em Get the executor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A flat vector storing n\+Blocks contiguous blocks of n\+Cells scalars each. 
+
+Layout\+: \mbox{[}block0\+\_\+cell0 ... block0\+\_\+cellN, block1\+\_\+cell0 ... block1\+\_\+cellN, ...\mbox{]} Block I occupies data\mbox{[}I \texorpdfstring{$\ast$}{*} n\+Cells ... (I+1) \texorpdfstring{$\ast$}{*} n\+Cells). 
+
+Definition at line \mbox{\hyperlink{blockVector_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{blockVector_8hpp_source}{block\+Vector.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a3066ab351e088cef97325613bd6dd1dd}\label{classNeoN_1_1la_1_1BlockVector_a3066ab351e088cef97325613bd6dd1dd} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!BlockVector@{BlockVector}}
+\index{BlockVector@{BlockVector}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{BlockVector()}{BlockVector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Vector\+::\+Block\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Blocks,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells }\end{DoxyParamCaption})}
+
+
+
+Construct a zero-\/initialized block vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor for memory allocation. \\
+\hline
+{\em n\+Blocks} & Number of blocks (fields). \\
+\hline
+{\em n\+Cells} & Number of cells per block. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a11a836f182de16e34c62f116c6940d34}\label{classNeoN_1_1la_1_1BlockVector_a11a836f182de16e34c62f116c6940d34} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!BlockVector@{BlockVector}}
+\index{BlockVector@{BlockVector}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{BlockVector()}{BlockVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Vector\+::\+Block\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Blocks,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{init\+Val }\end{DoxyParamCaption})}
+
+
+
+Construct a block vector filled with a uniform value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exec} & Executor for memory allocation. \\
+\hline
+{\em n\+Blocks} & Number of blocks (fields). \\
+\hline
+{\em n\+Cells} & Number of cells per block. \\
+\hline
+{\em init\+Val} & Initial value for all elements. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a7abfd983662267366ac2e97d6d65a099}\label{classNeoN_1_1la_1_1BlockVector_a7abfd983662267366ac2e97d6d65a099} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!copyBlockFrom@{copyBlockFrom}}
+\index{copyBlockFrom@{copyBlockFrom}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{copyBlockFrom()}{copyBlockFrom()}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::\+Block\+Vector\+::copy\+Block\+From (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{src }\end{DoxyParamCaption})}
+
+
+
+Copy an external vector into block i of the flat data (gather). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & Block index. \\
+\hline
+{\em src} & Source vector (must have size \texorpdfstring{$>$}{>}= n\+Cells). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a338137e8d74b2bc72e6f905890941c20}\label{classNeoN_1_1la_1_1BlockVector_a338137e8d74b2bc72e6f905890941c20} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!copyBlockTo@{copyBlockTo}}
+\index{copyBlockTo@{copyBlockTo}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{copyBlockTo()}{copyBlockTo()}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::\+Block\+Vector\+::copy\+Block\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{dst }\end{DoxyParamCaption}) const}
+
+
+
+Copy block i from the flat data into an external vector (scatter). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & Block index. \\
+\hline
+{\em dst} & Destination vector (must have size \texorpdfstring{$>$}{>}= n\+Cells). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a7f4aba33afa4cf43911d0508e89c23bd}\label{classNeoN_1_1la_1_1BlockVector_a7f4aba33afa4cf43911d0508e89c23bd} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!exec@{exec}}
+\index{exec@{exec}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& Neo\+N\+::la\+::\+Block\+Vector\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the executor. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_ad2508b435aa520a15673d28cd550ab3c}\label{classNeoN_1_1la_1_1BlockVector_ad2508b435aa520a15673d28cd550ab3c} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!nBlocks@{nBlocks}}
+\index{nBlocks@{nBlocks}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{nBlocks()}{nBlocks()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Vector\+::n\+Blocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of blocks. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a01f46cdf91a686d1954c47e920814fda}\label{classNeoN_1_1la_1_1BlockVector_a01f46cdf91a686d1954c47e920814fda} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!nCells@{nCells}}
+\index{nCells@{nCells}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{nCells()}{nCells()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Vector\+::n\+Cells (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Number of cells per block. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a9239e0d5cf6ec3bc6abc97322c962d49}\label{classNeoN_1_1la_1_1BlockVector_a9239e0d5cf6ec3bc6abc97322c962d49} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!totalSize@{totalSize}}
+\index{totalSize@{totalSize}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{totalSize()}{totalSize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Vector\+::total\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Total size (n\+Blocks \texorpdfstring{$\ast$}{*} n\+Cells). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_af6bd8a8a4469d0b05c379d8dd39d3558}\label{classNeoN_1_1la_1_1BlockVector_af6bd8a8a4469d0b05c379d8dd39d3558} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!vector@{vector}}
+\index{vector@{vector}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{vector()}{vector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& Neo\+N\+::la\+::\+Block\+Vector\+::vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Access the flat (monolithic) vector. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a8e3fcec6abef99735f0018d9556374fa}\label{classNeoN_1_1la_1_1BlockVector_a8e3fcec6abef99735f0018d9556374fa} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!vector@{vector}}
+\index{vector@{vector}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{vector()}{vector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& Neo\+N\+::la\+::\+Block\+Vector\+::vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Access the flat (monolithic) vector (const). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a0be344e8000e7a0f1fa36edece2da195}\label{classNeoN_1_1la_1_1BlockVector_a0be344e8000e7a0f1fa36edece2da195} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!view@{view}}
+\index{view@{view}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView}{Block\+Vector\+View}} Neo\+N\+::la\+::\+Block\+Vector\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&}
+
+
+
+Device-\/safe view (only on lvalues). 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockVector_a52242c278b2fe3c07a8994a7061c6f2f}\label{classNeoN_1_1la_1_1BlockVector_a52242c278b2fe3c07a8994a7061c6f2f} 
+\index{NeoN::la::BlockVector@{NeoN::la::BlockVector}!view@{view}}
+\index{view@{view}!NeoN::la::BlockVector@{NeoN::la::BlockVector}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView}{Block\+Vector\+View}} Neo\+N\+::la\+::\+Block\+Vector\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+Prevent \doxylink{classNeoN_1_1la_1_1BlockVector_a0be344e8000e7a0f1fa36edece2da195}{view()} on temporaries. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{blockVector_8hpp}{block\+Vector.\+hpp}}\end{DoxyCompactItemize}

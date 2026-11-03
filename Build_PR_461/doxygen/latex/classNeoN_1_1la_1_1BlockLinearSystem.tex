@@ -1,0 +1,127 @@
+\doxysection{NeoN\+::la\+::Block\+Linear\+System Class Reference}
+\hypertarget{classNeoN_1_1la_1_1BlockLinearSystem}{}\label{classNeoN_1_1la_1_1BlockLinearSystem}\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+
+
+Orchestrator that owns a block matrix, RHS, and solution vectors.  
+
+
+
+
+{\ttfamily \#include $<$block\+Linear\+System.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a6ba7a8786b6819eef1d75edbcbef875d}{Block\+Linear\+System}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::vector$<$ std\+::string $>$ field\+Names, std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \texorpdfstring{$\ast$}{*} $>$ fields, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ sparsity, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&solver\+Dict)
+\begin{DoxyCompactList}\small\item\em Construct with named fields for bdsl-\/based assembly. \end{DoxyCompactList}\item 
+{\footnotesize template$<$std\+::size\+\_\+t N$>$ }\\auto \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_acbcfadd9763481e5254a4eed3f6faaec}{expressions}} ()
+\begin{DoxyCompactList}\small\item\em Access N expressions for structured binding. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{bdsl\+::\+Block\+Expression}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a73742c6539b31dcbcd54005f9c5f9794}{expression}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i)
+\begin{DoxyCompactList}\small\item\em Access the i-\/th expression. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a376491ee64055c6b7f9883c89fce689c}{set\+Rhs}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_abf36668b1079f0acc8758233e077b510}{rhs}})
+\begin{DoxyCompactList}\small\item\em Set the RHS vector for equation i. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_add44bcf8cca2d1c3805aff00e071318f}{assemble}} ()
+\begin{DoxyCompactList}\small\item\em Assemble operators into block matrix coupling entries. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a6869dd493cd48e25eb37014067ccff88}{solve}} ()
+\begin{DoxyCompactList}\small\item\em Gather fields, solve, scatter back to fields. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix}{Block\+Matrix}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_a09af9248de081e1448fad38a195fc4a6}{matrix}} () const
+\item 
+const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{Block\+Vector}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1BlockLinearSystem_abf36668b1079f0acc8758233e077b510}{rhs}} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Orchestrator that owns a block matrix, RHS, and solution vectors. 
+
+Ties together \doxylink{classNeoN_1_1la_1_1BlockMatrix}{Block\+Matrix}, \doxylink{classNeoN_1_1la_1_1BlockVector}{Block\+Vector}, and Block\+Solve with expression-\/driven assembly using bdsl operators. Operators carry field names; \doxylink{classNeoN_1_1la_1_1BlockLinearSystem}{Block\+Linear\+System} maps names to block columns during assembly. 
+
+Definition at line \mbox{\hyperlink{blockLinearSystem_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{blockLinearSystem_8hpp_source}{block\+Linear\+System.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_a6ba7a8786b6819eef1d75edbcbef875d}\label{classNeoN_1_1la_1_1BlockLinearSystem_a6ba7a8786b6819eef1d75edbcbef875d} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!BlockLinearSystem@{BlockLinearSystem}}
+\index{BlockLinearSystem@{BlockLinearSystem}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{BlockLinearSystem()}{BlockLinearSystem()}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Block\+Linear\+System\+::\+Block\+Linear\+System (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::vector$<$ std\+::string $>$}]{field\+Names,  }\item[{std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \texorpdfstring{$\ast$}{*} $>$}]{fields,  }\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$}]{sparsity,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{solver\+Dict }\end{DoxyParamCaption})}
+
+
+
+Construct with named fields for bdsl-\/based assembly. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_add44bcf8cca2d1c3805aff00e071318f}\label{classNeoN_1_1la_1_1BlockLinearSystem_add44bcf8cca2d1c3805aff00e071318f} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!assemble@{assemble}}
+\index{assemble@{assemble}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::\+Block\+Linear\+System\+::assemble (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Assemble operators into block matrix coupling entries. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_a73742c6539b31dcbcd54005f9c5f9794}\label{classNeoN_1_1la_1_1BlockLinearSystem_a73742c6539b31dcbcd54005f9c5f9794} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!expression@{expression}}
+\index{expression@{expression}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{expression()}{expression()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{bdsl\+::\+Block\+Expression}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \& Neo\+N\+::la\+::\+Block\+Linear\+System\+::expression (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption})}
+
+
+
+Access the i-\/th expression. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_acbcfadd9763481e5254a4eed3f6faaec}\label{classNeoN_1_1la_1_1BlockLinearSystem_acbcfadd9763481e5254a4eed3f6faaec} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!expressions@{expressions}}
+\index{expressions@{expressions}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{expressions()}{expressions()}}
+{\footnotesize\ttfamily template$<$std\+::size\+\_\+t N$>$ \\
+auto Neo\+N\+::la\+::\+Block\+Linear\+System\+::expressions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access N expressions for structured binding. 
+
+
+
+Definition at line \mbox{\hyperlink{blockLinearSystem_8hpp_source_l00052}{52}} of file \mbox{\hyperlink{blockLinearSystem_8hpp_source}{block\+Linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_a09af9248de081e1448fad38a195fc4a6}\label{classNeoN_1_1la_1_1BlockLinearSystem_a09af9248de081e1448fad38a195fc4a6} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!matrix@{matrix}}
+\index{matrix@{matrix}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{matrix()}{matrix()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockMatrix}{Block\+Matrix}} \& Neo\+N\+::la\+::\+Block\+Linear\+System\+::matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_abf36668b1079f0acc8758233e077b510}\label{classNeoN_1_1la_1_1BlockLinearSystem_abf36668b1079f0acc8758233e077b510} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!rhs@{rhs}}
+\index{rhs@{rhs}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{rhs()}{rhs()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1la_1_1BlockVector}{Block\+Vector}} \& Neo\+N\+::la\+::\+Block\+Linear\+System\+::rhs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_a376491ee64055c6b7f9883c89fce689c}\label{classNeoN_1_1la_1_1BlockLinearSystem_a376491ee64055c6b7f9883c89fce689c} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!setRhs@{setRhs}}
+\index{setRhs@{setRhs}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{setRhs()}{setRhs()}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::\+Block\+Linear\+System\+::set\+Rhs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Set the RHS vector for equation i. 
+
+\Hypertarget{classNeoN_1_1la_1_1BlockLinearSystem_a6869dd493cd48e25eb37014067ccff88}\label{classNeoN_1_1la_1_1BlockLinearSystem_a6869dd493cd48e25eb37014067ccff88} 
+\index{NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}!solve@{solve}}
+\index{solve@{solve}!NeoN::la::BlockLinearSystem@{NeoN::la::BlockLinearSystem}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::\+Block\+Linear\+System\+::solve (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gather fields, solve, scatter back to fields. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{blockLinearSystem_8hpp}{block\+Linear\+System.\+hpp}}\end{DoxyCompactItemize}

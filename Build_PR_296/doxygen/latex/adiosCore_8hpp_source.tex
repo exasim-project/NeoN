@@ -1,0 +1,47 @@
+\doxysection{adios\+Core.\+hpp}
+\hypertarget{adiosCore_8hpp_source}{}\label{adiosCore_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/io/adiosCore.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/io/adiosCore.hpp}}
+\mbox{\hyperlink{adiosCore_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00008}00008\ \textcolor{comment}{//\ forward\ declaration}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00009}00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceadios2}{adios2}}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00010}00010\ \{}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00011}00011\ \textcolor{keyword}{class\ }ADIOS;}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00012}00012\ \textcolor{keyword}{class\ }IO;}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00013}00013\ \textcolor{keyword}{class\ }Engine;}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00014}00014\ \}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1io}{NeoN::io}}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00019}00019\ \textcolor{comment}{//\ forward\ declare}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00020}00020\ \textcolor{keyword}{class\ }AdiosConfig;}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00022}00022\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ @class\ AdiosCore}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00024}00024\ \textcolor{comment}{\ *\ @brief\ Wrapper\ and\ storage\ class\ for\ the\ adios2::ADIOS\ instance.}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00025}00025\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1io_1_1AdiosCore}{00026}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1io_1_1AdiosCore}{AdiosCore}}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00028}00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00030}\mbox{\hyperlink{classNeoN_1_1io_1_1AdiosCore_adf7c5ab84605ec86680eb0c1a33ff489}{00030}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1io_1_1AdiosCore_adf7c5ab84605ec86680eb0c1a33ff489}{AdiosCore}}()\ \{\ init();\ \}}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1io_1_1AdiosCore_a3b2b0f08b0bbeb47b4a7a3cdef47bb9f}{00032}}\ \ \ \ \ std::shared\_ptr<Config>\ \mbox{\hyperlink{classNeoN_1_1io_1_1AdiosCore_a3b2b0f08b0bbeb47b4a7a3cdef47bb9f}{createConfig}}(\textcolor{keyword}{const}\ std::string\&\ key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00034}00034\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keywordtype}{void}\ init();}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<adios2::ADIOS>\ adiosPtr\_;}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00039}00039\ \};}
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{adiosCore_8hpp_source_l00041}00041\ \}\ \textcolor{comment}{//\ namespace\ NeoN::io}}
+
+\end{DoxyCode}

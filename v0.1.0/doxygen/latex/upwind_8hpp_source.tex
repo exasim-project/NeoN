@@ -1,0 +1,54 @@
+\doxysection{upwind.\+hpp}
+\hypertarget{upwind_8hpp_source}{}\label{upwind_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/interpolation/upwind.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/interpolation/upwind.hpp}}
+\mbox{\hyperlink{upwind_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoFOAM/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoFOAM/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructured_8hpp}{NeoFOAM/mesh/unstructured.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{geometryScheme_8hpp}{NeoFOAM/finiteVolume/cellCentred/stencil/geometryScheme.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred}{NeoFOAM::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00019}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind}{00019}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind}{Upwind}}\ :\ \textcolor{keyword}{public}\ SurfaceInterpolationFactory::Register<Upwind>}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00022}00022\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00024}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_aa086c4f8827261c4e6c6b6a0b5c83329}{00024}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_aa086c4f8827261c4e6c6b6a0b5c83329}{Upwind}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \mbox{\hyperlink{namespaceNeoFOAM_a161184af07a233e2513b53451edc6b39}{Input}}\ input);}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00026}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a718d0f14a83895e55079b9601f370f17}{00026}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a718d0f14a83895e55079b9601f370f17}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}upwind"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00028}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_ad883eed3591ce43da6605f40ca4e7cdf}{00028}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_ad883eed3591ce43da6605f40ca4e7cdf}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}upwind\ interpolation"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00030}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_ae1fd04097da11d7f99478c29b4d7871b}{00030}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_ae1fd04097da11d7f99478c29b4d7871b}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00032}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a705bf4fce1dbefc8f98525c1c8181c88}{00032}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a705bf4fce1dbefc8f98525c1c8181c88}{interpolate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ volField,\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ surfaceField)}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00035}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a3e707faf426ca0be3b62dbd72ec9b97f}{00035}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a3e707faf426ca0be3b62dbd72ec9b97f}{interpolate}}(}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ volField,}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ surfaceField}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00039}00039\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00041}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a557cf81fcc6c9daab567d27be7617ea8}{00041}}\ \ \ \ \ std::unique\_ptr<SurfaceInterpolationFactory>\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Upwind_a557cf81fcc6c9daab567d27be7617ea8}{clone}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00043}00043\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00046}00046\ \};}
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{upwind_8hpp_source_l00048}00048\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+
+\end{DoxyCode}

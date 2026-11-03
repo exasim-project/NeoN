@@ -1,0 +1,176 @@
+\doxysection{operators.\+hpp}
+\hypertarget{operators_8hpp_source}{}\label{operators_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/mpi/operators.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/mpi/operators.hpp}}
+\mbox{\hyperlink{operators_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <complex>}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <mpi.h>}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }mpi}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00026}00026\ \textcolor{keyword}{enum\ class}\ ReduceOp}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00028}00028\ \ \ \ \ Max,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00029}00029\ \ \ \ \ Min,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00030}00030\ \ \ \ \ Sum,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00031}00031\ \ \ \ \ Prod,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00032}00032\ \ \ \ \ Land,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00033}00033\ \ \ \ \ Band,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00034}00034\ \ \ \ \ Lor,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00035}00035\ \ \ \ \ Bor,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00036}00036\ \ \ \ \ Maxloc,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00037}00037\ \ \ \ \ Minloc}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00038}00038\ \};}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00046}00046\ \textcolor{keyword}{constexpr}\ MPI\_Op\ getOp(\textcolor{keyword}{const}\ ReduceOp\ op)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00047}00047\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keywordflow}{switch}\ (op)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00049}00049\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Max:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_MAX;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Min:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_MIN;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Sum:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_SUM;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Prod:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_PROD;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Land:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_LAND;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Band:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_BAND;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Lor:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_LOR;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Bor:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_BOR;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Maxloc:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_MAXLOC;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keywordflow}{case}\ ReduceOp::Minloc:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_MINLOC;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Invalid\ MPI\ reduce\ operation\ requested."{}});}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_LOR;\ \textcolor{comment}{//\ This\ is\ to\ suppress\ the\ warning}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00073}00073\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00074}00074\ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00082}00082\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00083}00083\ \textcolor{keyword}{constexpr}\ MPI\_Datatype\ getType()}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00084}00084\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ char>)\ \textcolor{keywordflow}{return}\ MPI\_CHAR;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ wchar\_t>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_WCHAR;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ short>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_SHORT;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ int>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_INT;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ long>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_LONG;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ long\ long>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_LONG\_LONG;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ unsigned\ short>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_UNSIGNED\_SHORT;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00098}00098\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ unsigned>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_UNSIGNED;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ unsigned\ long>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_UNSIGNED\_LONG;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ unsigned\ long\ long>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_UNSIGNED\_LONG\_LONG;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ float>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_FLOAT;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ double>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_DOUBLE;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ long\ double>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_LONG\_DOUBLE;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ bool>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_CXX\_BOOL;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ std::complex<float>>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_CXX\_FLOAT\_COMPLEX;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00114}00114\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ std::complex<double>>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_CXX\_DOUBLE\_COMPLEX;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00116}00116\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same\_v<valueType,\ std::complex<long\ double>>)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_CXX\_LONG\_DOUBLE\_COMPLEX;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Invalid\ MPI\ datatype\ requested."{}});}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keywordflow}{return}\ MPI\_CHAR;\ \textcolor{comment}{//\ This\ is\ to\ suppress\ the\ warning}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00121}00121\ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00133}00133\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00134}00134\ \textcolor{keywordtype}{void}\ allReduce(valueType\&\ value,\ \textcolor{keyword}{const}\ ReduceOp\ op,\ MPI\_Comm\ comm)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00135}00135\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00136}00136\ \ \ \ \ MPI\_Allreduce(}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ MPI\_IN\_PLACE,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(\&value),\ 1,\ getType<valueType>(),\ getOp(op),\ comm}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00138}00138\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00139}00139\ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00150}00150\ \textcolor{keyword}{template}<>}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00151}00151\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ allReduce(Vec3\&\ vector,\ \textcolor{keyword}{const}\ ReduceOp\ op,\ MPI\_Comm\ comm)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00152}00152\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00153}00153\ \ \ \ \ MPI\_Allreduce(}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ MPI\_IN\_PLACE,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(vector.data()),}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\textcolor{keyword}{>}(vector.size()),}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ getType<scalar>(),}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ getOp(op),}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ comm}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00160}00160\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00161}00161\ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00175}00175\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00176}00176\ \textcolor{keywordtype}{void}\ isend(}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00177}00177\ \ \ \ \ \textcolor{keyword}{const}\ valueType*\ buffer,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00178}00178\ \ \ \ \ \textcolor{keyword}{const}\ mpi\_label\_t\ size,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00179}00179\ \ \ \ \ mpi\_label\_t\ rankReceive,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00180}00180\ \ \ \ \ mpi\_label\_t\ tag,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00181}00181\ \ \ \ \ MPI\_Comm\ comm,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00182}00182\ \ \ \ \ MPI\_Request*\ request}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00183}00183\ )}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00184}00184\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00185}00185\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ MPI\_Isend(buffer,\ size,\ getType<valueType>(),\ rankReceive,\ tag,\ comm,\ request);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00187}00187\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Isend\ failed."{}});}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00188}00188\ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00202}00202\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00203}00203\ \textcolor{keywordtype}{void}\ irecv(}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00204}00204\ \ \ \ \ valueType*\ buffer,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00205}00205\ \ \ \ \ \textcolor{keyword}{const}\ mpi\_label\_t\ size,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00206}00206\ \ \ \ \ mpi\_label\_t\ rankSend,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00207}00207\ \ \ \ \ mpi\_label\_t\ tag,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00208}00208\ \ \ \ \ MPI\_Comm\ comm,}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00209}00209\ \ \ \ \ MPI\_Request*\ request}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00210}00210\ )}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00211}00211\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00212}00212\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Irecv(buffer,\ size,\ getType<valueType>(),\ rankSend,\ tag,\ comm,\ request);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00213}00213\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Irecv\ failed."{}});}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00214}00214\ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00215}00215\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00223}00223\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ test(MPI\_Request*\ request)}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00224}00224\ \{}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00225}00225\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ flag;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00226}00226\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Test(request,\ \&flag,\ MPI\_STATUS\_IGNORE);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00227}00227\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Test\ failed."{}});}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00228}00228\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{bool}\textcolor{keyword}{>}(flag);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00229}00229\ \}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00230}00230\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00231}00231\ \}\ \textcolor{comment}{//\ namespace\ mpi}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00232}00232\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00233}00233\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00234}00234\ }
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00235}00235\ \}}
+
+\end{DoxyCode}

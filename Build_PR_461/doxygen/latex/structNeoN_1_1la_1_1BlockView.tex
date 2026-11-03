@@ -1,0 +1,107 @@
+\doxysection{NeoN\+::la\+::Block\+View Struct Reference}
+\hypertarget{structNeoN_1_1la_1_1BlockView}{}\label{structNeoN_1_1la_1_1BlockView}\index{NeoN::la::BlockView@{NeoN::la::BlockView}}
+
+
+Device-\/safe view into an n\+Blocks x n\+Blocks dense coupling matrix.  
+
+
+
+
+{\ttfamily \#include $<$block\+Matrix\+View.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \& \mbox{\hyperlink{structNeoN_1_1la_1_1BlockView_aa1ff3bf3bba6caecd6346843ab95dbdc}{operator()}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} j) const
+\begin{DoxyCompactList}\small\item\em 2D access into the coupling matrix. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \& \mbox{\hyperlink{structNeoN_1_1la_1_1BlockView_af606ae5e2658f0bac0544176d5425fa0}{operator\mbox{[}$\,$\mbox{]}}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} offset) const
+\begin{DoxyCompactList}\small\item\em Flat offset access. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockView_adbbda3d3c6d2f6f1d61c73e52f3e80dd}{values}}
+\begin{DoxyCompactList}\small\item\em Column-\/major data, size = n\+Blocks \texorpdfstring{$\ast$}{*} n\+Blocks. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{structNeoN_1_1la_1_1BlockView_ac2c92b31eb4a20cb8886d7070fec2100}{n\+Blocks}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Device-\/safe view into an n\+Blocks x n\+Blocks dense coupling matrix. 
+
+Represents the coupling between field components at a single CSR position (cell pair). Stored in column-\/major order\+: operator()(i, j) accesses values\mbox{[}i + j \texorpdfstring{$\ast$}{*} n\+Blocks\mbox{]}. 
+
+Definition at line \mbox{\hyperlink{blockMatrixView_8hpp_source_l00025}{25}} of file \mbox{\hyperlink{blockMatrixView_8hpp_source}{block\+Matrix\+View.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structNeoN_1_1la_1_1BlockView_aa1ff3bf3bba6caecd6346843ab95dbdc}\label{structNeoN_1_1la_1_1BlockView_aa1ff3bf3bba6caecd6346843ab95dbdc} 
+\index{NeoN::la::BlockView@{NeoN::la::BlockView}!operator()@{operator()}}
+\index{operator()@{operator()}!NeoN::la::BlockView@{NeoN::la::BlockView}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \& Neo\+N\+::la\+::\+Block\+View\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+2D access into the coupling matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & Row (field component row). \\
+\hline
+{\em j} & Column (field component column). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the coupling value. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{blockMatrixView_8hpp_source_l00037}{37}} of file \mbox{\hyperlink{blockMatrixView_8hpp_source}{block\+Matrix\+View.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1BlockView_af606ae5e2658f0bac0544176d5425fa0}\label{structNeoN_1_1la_1_1BlockView_af606ae5e2658f0bac0544176d5425fa0} 
+\index{NeoN::la::BlockView@{NeoN::la::BlockView}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::la::BlockView@{NeoN::la::BlockView}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \& Neo\+N\+::la\+::\+Block\+View\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{offset }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Flat offset access. 
+
+
+
+Definition at line \mbox{\hyperlink{blockMatrixView_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{blockMatrixView_8hpp_source}{block\+Matrix\+View.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structNeoN_1_1la_1_1BlockView_ac2c92b31eb4a20cb8886d7070fec2100}\label{structNeoN_1_1la_1_1BlockView_ac2c92b31eb4a20cb8886d7070fec2100} 
+\index{NeoN::la::BlockView@{NeoN::la::BlockView}!nBlocks@{nBlocks}}
+\index{nBlocks@{nBlocks}!NeoN::la::BlockView@{NeoN::la::BlockView}}
+\doxysubsubsection{\texorpdfstring{nBlocks}{nBlocks}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+View\+::n\+Blocks}
+
+
+
+Definition at line \mbox{\hyperlink{blockMatrixView_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{blockMatrixView_8hpp_source}{block\+Matrix\+View.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1BlockView_adbbda3d3c6d2f6f1d61c73e52f3e80dd}\label{structNeoN_1_1la_1_1BlockView_adbbda3d3c6d2f6f1d61c73e52f3e80dd} 
+\index{NeoN::la::BlockView@{NeoN::la::BlockView}!values@{values}}
+\index{values@{values}!NeoN::la::BlockView@{NeoN::la::BlockView}}
+\doxysubsubsection{\texorpdfstring{values}{values}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}$>$ Neo\+N\+::la\+::\+Block\+View\+::values}
+
+
+
+Column-\/major data, size = n\+Blocks \texorpdfstring{$\ast$}{*} n\+Blocks. 
+
+
+
+Definition at line \mbox{\hyperlink{blockMatrixView_8hpp_source_l00027}{27}} of file \mbox{\hyperlink{blockMatrixView_8hpp_source}{block\+Matrix\+View.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{blockMatrixView_8hpp}{block\+Matrix\+View.\+hpp}}\end{DoxyCompactItemize}

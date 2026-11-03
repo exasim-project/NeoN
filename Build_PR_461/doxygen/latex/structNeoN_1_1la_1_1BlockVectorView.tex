@@ -1,0 +1,125 @@
+\doxysection{NeoN\+::la\+::Block\+Vector\+View Struct Reference}
+\hypertarget{structNeoN_1_1la_1_1BlockVectorView}{}\label{structNeoN_1_1la_1_1BlockVectorView}\index{NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}}
+
+
+Device-\/safe view into a flat block vector.  
+
+
+
+
+{\ttfamily \#include $<$block\+Vector\+View.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a790dcf05cce92d2ca8079bc2b2e1f23c}{operator()}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} i) const
+\begin{DoxyCompactList}\small\item\em Access block I as a subview. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \& \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a79a49dc2693e142b779a6a088983825e}{operator\mbox{[}$\,$\mbox{]}}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} global\+Index) const
+\begin{DoxyCompactList}\small\item\em Direct element access into the flat data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a8d3439e925c29cf205fa8db07baf7313}{data}}
+\begin{DoxyCompactList}\small\item\em Flat data of size n\+Blocks \texorpdfstring{$\ast$}{*} n\+Cells. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_abd37ad128426d7965a385c1f040a8a79}{n\+Blocks}}
+\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{structNeoN_1_1la_1_1BlockVectorView_a58785088bc0f60cbb926605cd760e02b}{n\+Cells}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Device-\/safe view into a flat block vector. 
+
+Provides mdspan-\/like access\+: operator()(\+I) returns a subview for block I. All blocks have the same size (n\+Cells), so offsets are trivially I \texorpdfstring{$\ast$}{*} n\+Cells. 
+
+Definition at line \mbox{\hyperlink{blockVectorView_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{blockVectorView_8hpp_source}{block\+Vector\+View.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structNeoN_1_1la_1_1BlockVectorView_a790dcf05cce92d2ca8079bc2b2e1f23c}\label{structNeoN_1_1la_1_1BlockVectorView_a790dcf05cce92d2ca8079bc2b2e1f23c} 
+\index{NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}!operator()@{operator()}}
+\index{operator()@{operator()}!NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::la\+::\+Block\+Vector\+View\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access block I as a subview. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The block index. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classNeoN_1_1View}{View$<$scalar$>$} subview for block i. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{blockVectorView_8hpp_source_l00035}{35}} of file \mbox{\hyperlink{blockVectorView_8hpp_source}{block\+Vector\+View.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1BlockVectorView_a79a49dc2693e142b779a6a088983825e}\label{structNeoN_1_1la_1_1BlockVectorView_a79a49dc2693e142b779a6a088983825e} 
+\index{NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \& Neo\+N\+::la\+::\+Block\+Vector\+View\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{global\+Index }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Direct element access into the flat data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em global\+Index} & The global index into the flat array. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the scalar value. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{blockVectorView_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{blockVectorView_8hpp_source}{block\+Vector\+View.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structNeoN_1_1la_1_1BlockVectorView_a8d3439e925c29cf205fa8db07baf7313}\label{structNeoN_1_1la_1_1BlockVectorView_a8d3439e925c29cf205fa8db07baf7313} 
+\index{NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}!data@{data}}
+\index{data@{data}!NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}}
+\doxysubsubsection{\texorpdfstring{data}{data}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}$>$ Neo\+N\+::la\+::\+Block\+Vector\+View\+::data}
+
+
+
+Flat data of size n\+Blocks \texorpdfstring{$\ast$}{*} n\+Cells. 
+
+
+
+Definition at line \mbox{\hyperlink{blockVectorView_8hpp_source_l00025}{25}} of file \mbox{\hyperlink{blockVectorView_8hpp_source}{block\+Vector\+View.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1BlockVectorView_abd37ad128426d7965a385c1f040a8a79}\label{structNeoN_1_1la_1_1BlockVectorView_abd37ad128426d7965a385c1f040a8a79} 
+\index{NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}!nBlocks@{nBlocks}}
+\index{nBlocks@{nBlocks}!NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}}
+\doxysubsubsection{\texorpdfstring{nBlocks}{nBlocks}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Vector\+View\+::n\+Blocks}
+
+
+
+Definition at line \mbox{\hyperlink{blockVectorView_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{blockVectorView_8hpp_source}{block\+Vector\+View.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1BlockVectorView_a58785088bc0f60cbb926605cd760e02b}\label{structNeoN_1_1la_1_1BlockVectorView_a58785088bc0f60cbb926605cd760e02b} 
+\index{NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}!nCells@{nCells}}
+\index{nCells@{nCells}!NeoN::la::BlockVectorView@{NeoN::la::BlockVectorView}}
+\doxysubsubsection{\texorpdfstring{nCells}{nCells}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Block\+Vector\+View\+::n\+Cells}
+
+
+
+Definition at line \mbox{\hyperlink{blockVectorView_8hpp_source_l00027}{27}} of file \mbox{\hyperlink{blockVectorView_8hpp_source}{block\+Vector\+View.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{blockVectorView_8hpp}{block\+Vector\+View.\+hpp}}\end{DoxyCompactItemize}

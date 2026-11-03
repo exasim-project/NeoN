@@ -1,0 +1,336 @@
+\doxysection{flow\+Rate\+Inlet\+Velocity.\+hpp}
+\hypertarget{flowRateInletVelocity_8hpp_source}{}\label{flowRateInletVelocity_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/flowRateInletVelocity.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/flowRateInletVelocity.hpp}}
+\mbox{\hyperlink{flowRateInletVelocity_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <limits>}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{traits_8hpp}{NeoN/core/primitives/traits.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryContext_8hpp}{NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{patchSum_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volume/detail/patchSum.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00023}00023\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00026}00026\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00029}00029\ \textcolor{comment}{//\ Shared\ kernel\ behind\ FlowRateInletVelocity,\ mirroring\ OpenFOAM's}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00030}00030\ \textcolor{comment}{//\ flowRateInletVelocityFvPatchVectorField::updateValues(rho).\ With\ n\ the\ unit\ outward\ normal\ of\ a}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00031}00031\ \textcolor{comment}{//\ face,\ magSf\ its\ area\ and\ rho\ the\ density\ of\ the\ face\ (1\ for\ a\ volumetric\ flow\ rate):}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00032}00032\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00033}00033\ \textcolor{comment}{//\ uniform\ profile\ (default):}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00034}00034\ \textcolor{comment}{//\ \ \ avgU\ \ =\ -\/flowRate\ /\ sum(rho\ *\ magSf)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (sum\ over\ the\ whole\ patch,\ all\ ranks)}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00035}00035\ \textcolor{comment}{//\ \ \ value\ =\ avgU\ *\ n}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00036}00036\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00037}00037\ \textcolor{comment}{//\ extrapolateProfile:}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00038}00038\ \textcolor{comment}{//\ \ \ Up\ \ =\ ownerValue;\ \ nUp\ =\ n\ \&\ Up;\ \ Up\ -\/=\ nUp\ *\ n\ \ \ \ \ \ \ \ \ \ \ (keep\ the\ tangential\ part)}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00039}00039\ \textcolor{comment}{//\ \ \ nUp\ =\ min(nUp,\ 0)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (remove\ reverse\ flow)}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00040}00040\ \textcolor{comment}{//\ \ \ estimated\ =\ -\/sum(rho\ *\ magSf\ *\ nUp)}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00041}00041\ \textcolor{comment}{//\ \ \ if\ (estimated\ >\ 0.5\ *\ flowRate)\ \ nUp\ *=\ |flowRate|\ /\ |estimated|}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00042}00042\ \textcolor{comment}{//\ \ \ else\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nUp\ -\/=\ (flowRate\ -\/\ estimated)\ /\ sum(rho\ *\ magSf)}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00043}00043\ \textcolor{comment}{//\ \ \ value\ =\ Up\ +\ nUp\ *\ n}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00044}00044\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00045}00045\ \textcolor{comment}{//\ The\ patch\ is\ a\ Dirichlet\ patch\ (valueFraction\ =\ 1,\ refGrad\ =\ 0).\ When\ the\ density\ the\ flow\ rate}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00046}00046\ \textcolor{comment}{//\ needs\ is\ not\ available\ (see\ FlowRateInletVelocity)\ the\ patch\ degrades\ to\ zero-\/gradient,\ the\ same}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00047}00047\ \textcolor{comment}{//\ fallback\ every\ context-\/aware\ NeoN\ BC\ uses.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00048}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2caafc3f5dd59409388072fff97b3a69}{00048}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2caafc3f5dd59409388072fff97b3a69}{setFlowRateInletVelocity}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00049}00049\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00051}00051\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00052}00052\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ flowRate,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00053}00053\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ NeoN::scalar>}}\ boundaryRho,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00054}00054\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ constantRho,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keywordtype}{bool}\ useBoundaryRho,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keywordtype}{bool}\ extrapolateProfile}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00057}00057\ )}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00058}00058\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{auto}\ [faceNormalsV,\ faceAreasV,\ boundaryFaceOwnersV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}{faceNormals}}(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af424606847d2c9f5595745e62ddde1a0}{faceAreas}}(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{faceOwners}}()}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00064}00064\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{comment}{//\ density\ of\ face\ i:\ (useBoundaryRho\ ?\ boundaryRho[i]\ :\ constantRho).\ Written\ out\ in\ every}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{comment}{//\ kernel\ instead\ of\ a\ shared\ lambda:\ device\ lambdas\ must\ not\ be\ nested.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ rhoAreaSum\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a354957c6832d19c636ef00a342495968}{patchSum}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ mesh,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\&\ sum)\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ sum\ +=\ (useBoundaryRho\ ?\ boundaryRho[i]\ :\ constantRho)\ *\ faceAreasV[i];}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00074}00074\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue()}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00081}00081\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00083}00083\ \ \ \ \ \textcolor{keywordflow}{if}\ (!extrapolateProfile)}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00084}00084\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ avgU\ =\ -\/flowRate\ /\ rhoAreaSum;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ n\ =\ faceNormalsV[i]\ /\ faceAreasV[i];}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ newValue\ =\ avgU\ *\ n;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ NeoN::zero<NeoN::Vec3>();}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ newValue;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ newValue;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setFlowRateInletVelocity"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00100}00100\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ flow\ rate\ carried\ by\ the\ inflow\ part\ of\ the\ patch\ normal\ velocity\ of\ the\ adjacent\ cells}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ estimatedFlowRate\ =\ -\/\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a354957c6832d19c636ef00a342495968}{patchSum}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ mesh,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\&\ sum)\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ n\ =\ faceNormalsV[i]\ /\ faceAreasV[i];}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ nUp\ =\ n\ \&\ internalV[boundaryFaceOwnersV[i]];}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ inflowNUp\ =\ nUp\ <\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0)\ ?\ nUp\ :\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ sum\ +=\ (useBoundaryRho\ ?\ boundaryRho[i]\ :\ constantRho)\ *\ faceAreasV[i]\ *\ inflowNUp;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00112}00112\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00114}00114\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ scale\ =\ estimatedFlowRate\ >\ 0.5\ *\ flowRate;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00115}00115\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ factor\ =}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ scale\ ?\ Kokkos::abs(flowRate)\ /\ Kokkos::abs(estimatedFlowRate)\ :\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ shift\ =}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ scale\ ?\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0)\ :\ (flowRate\ -\/\ estimatedFlowRate)\ /\ rhoAreaSum;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00120}00120\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ n\ =\ faceNormalsV[i]\ /\ faceAreasV[i];}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ ownerValue\ =\ internalV[boundaryFaceOwnersV[i]];}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ ownerNUp\ =\ n\ \&\ ownerValue;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ tangential\ =\ ownerValue\ -\/\ n\ *\ ownerNUp;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ inflowNUp\ =\ ownerNUp\ <\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0)\ ?\ ownerNUp\ :\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ nUp\ =\ inflowNUp\ *\ factor\ -\/\ shift;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ newValue\ =\ tangential\ +\ nUp\ *\ n;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ NeoN::zero<NeoN::Vec3>();}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ newValue;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ newValue;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setFlowRateInletVelocityExtrapolated"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00137}00137\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00138}00138\ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00140}00140\ \textcolor{comment}{//\ Zero-\/gradient\ fallback,\ used\ when\ the\ density\ a\ mass\ flow\ rate\ needs\ is\ not\ available.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00141}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a54a9414034675e2a37b93f0d24a1bb20}{00141}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a54a9414034675e2a37b93f0d24a1bb20}{setFlowRateInletVelocityZeroGradient}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00142}00142\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00143}00143\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00144}00144\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00145}00145\ )}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00146}00146\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00148}00148\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ boundaryFaceOwnersV\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{faceOwners}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00149}00149\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue()}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00154}00154\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00156}00156\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ ownerValue\ =\ internalV[boundaryFaceOwnersV[i]];}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ NeoN::zero<NeoN::Vec3>();}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ ownerValue;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ ownerValue;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setFlowRateInletVelocityZeroGradient"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00167}00167\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00168}00168\ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00170}00170\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00172}00172\ \textcolor{comment}{//\ FlowRateInletVelocity:\ inlet\ velocity\ that\ carries\ a\ prescribed\ flow\ rate\ through\ the\ patch,}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00173}00173\ \textcolor{comment}{//\ mirroring\ OpenFOAM's\ flowRateInletVelocity.\ See\ detail::setFlowRateInletVelocity\ for\ the\ exact}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00174}00174\ \textcolor{comment}{//\ formulas.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00175}00175\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00176}00176\ \textcolor{comment}{//\ Dictionary\ entries\ (flow\ rates\ are\ plain\ scalars;\ OpenFOAM's\ Function1\ form}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00177}00177\ \textcolor{comment}{//\ \`{}massFlowRate\ constant\ X`\ has\ to\ be\ flattened\ by\ the\ case\ reader):}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00178}00178\ \textcolor{comment}{//\ \ \ volumetricFlowRate\ \ volumetric\ flow\ rate\ in\ m\string^3/s\ (takes\ precedence),\ or}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00179}00179\ \textcolor{comment}{//\ \ \ massFlowRate\ \ \ \ \ \ \ \ mass\ flow\ rate\ in\ kg/s,\ which\ needs\ the\ density,\ see\ below}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00180}00180\ \textcolor{comment}{//\ \ \ rho\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ of\ the\ density\ field\ (default\ "{}rho"{};\ "{}none"{}\ means\ density\ 1)}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00181}00181\ \textcolor{comment}{//\ \ \ rhoInlet\ \ \ \ \ \ \ \ \ \ \ \ constant\ density,\ used\ when\ the\ density\ field\ is\ not\ available}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00182}00182\ \textcolor{comment}{//\ \ \ extrapolateProfile\ \ keep\ the\ tangential\ velocity\ and\ the\ shape\ of\ the\ inflow\ of\ the\ adjacent}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00183}00183\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cells\ instead\ of\ a\ uniform\ profile\ (default\ false)}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00184}00184\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00185}00185\ \textcolor{comment}{//\ For\ a\ mass\ flow\ rate\ the\ density\ is\ read\ from\ the\ boundary\ values\ of\ the\ field\ \`{}rho`\ in\ the}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00186}00186\ \textcolor{comment}{//\ BoundaryContext.\ Without\ such\ a\ field\ the\ constant\ \`{}rhoInlet`\ is\ used.\ If\ neither\ exists\ the}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00187}00187\ \textcolor{comment}{//\ context-\/aware\ overload\ throws,\ as\ OpenFOAM\ stops\ with\ an\ error;\ the\ plain\ overload\ (no\ context}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00188}00188\ \textcolor{comment}{//\ at\ all,\ e.g.\ while\ the\ field\ is\ created)\ degrades\ to\ zero-\/gradient.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00189}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity}{00189}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity}{FlowRateInletVelocity}}\ :}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00190}00190\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<NeoN::Vec3>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<FlowRateInletVelocity>}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00191}00191\ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00192}00192\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<NeoN::Vec3>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<FlowRateInletVelocity>}};}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00193}00193\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00194}00194\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00195}00195\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00196}00196\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00197}00197\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00198}00198\ \ \ \ \ \textcolor{comment}{//\ A\ Dirichlet\ patch,\ like\ OpenFOAM's\ (it\ derives\ from\ fixedValue):\ assignable\ =\ false,\ so\ a}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00199}00199\ \ \ \ \ \textcolor{comment}{//\ pressure-\/velocity\ coupling\ that\ constrains\ HbyA\ on\ non-\/assignable\ velocity\ patches}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00200}00200\ \ \ \ \ \textcolor{comment}{//\ (constrainHbyA)\ feeds\ the\ prescribed\ inlet\ velocity\ into\ the\ flux,\ and\ fixesValue\ =\ true.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00201}00201\ \ \ \ \ \textcolor{comment}{//\ The\ value\ is\ still\ recomputed\ from\ the\ flow\ rate\ on\ every\ call.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00202}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_afc3c31f5687f4dbb909864209e282a6a}{00202}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_afc3c31f5687f4dbb909864209e282a6a}{FlowRateInletVelocity}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00203}00203\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{false},\ .fixesValue\ =\ \textcolor{keyword}{true}\}),\ mesh\_(mesh),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ flowRate\_(0),\ volumetric\_(dict.contains(\textcolor{stringliteral}{"{}volumetricFlowRate"{}})),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ rhoName\_(dict.contains(\textcolor{stringliteral}{"{}rho"{}})\ ?\ dict.get<std::string>(\textcolor{stringliteral}{"{}rho"{}})\ :\ std::string(\textcolor{stringliteral}{"{}rho"{}})),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ rhoInlet\_(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dict.contains(\textcolor{stringliteral}{"{}rhoInlet"{}})\ ?\ dict.get<\mbox{\hyperlink{namespaceNeoN}{NeoN}}::\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}>(\textcolor{stringliteral}{"{}rhoInlet"{}})}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ -\/std::numeric\_limits<\mbox{\hyperlink{namespaceNeoN}{NeoN}}::\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}>::max()}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ extrapolateProfile\_(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dict.contains(\textcolor{stringliteral}{"{}extrapolateProfile"{}})\ ?\ dict.get<bool>(\textcolor{stringliteral}{"{}extrapolateProfile"{}})\ :\ false}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00213}00213\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00214}00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (volumetric\_)}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00215}00215\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ flowRate\_\ =\ dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}volumetricFlowRate"{}});}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00217}00217\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00218}00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (dict.contains(\textcolor{stringliteral}{"{}massFlowRate"{}}))}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00219}00219\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ flowRate\_\ =\ dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}massFlowRate"{}});}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00221}00221\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00222}00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00223}00223\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}flowRateInletVelocity\ boundary\ condition\ on\ patch\ "{}}\ +\ std::to\_string(patchID)}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}\ requires\ either\ 'volumetricFlowRate'\ or\ 'massFlowRate'"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00228}00228\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00229}00229\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00230}00230\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00231}00231\ \ \ \ \ \textcolor{comment}{//\ No\ context\ =>\ no\ density\ field:\ fine\ for\ a\ volumetric\ flow\ rate,\ rho\ "{}none"{}\ or\ a\ constant}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00232}00232\ \ \ \ \ \textcolor{comment}{//\ rhoInlet,\ otherwise\ zero-\/gradient.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00233}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_aeb43d97e17b81672dc765a62db180011}{00233}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_aeb43d97e17b81672dc765a62db180011}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00234}00234\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00235}00235\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (volumetric\_\ ||\ rhoName\_\ ==\ \textcolor{stringliteral}{"{}none"{}})}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00236}00236\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00237}00237\ \ \ \ \ \ \ \ \ \ \ \ \ applyConstantDensity(domainVector,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1));}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00238}00238\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (rhoInlet\_\ >=\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0))}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00240}00240\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ applyConstantDensity(domainVector,\ rhoInlet\_);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00243}00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00244}00244\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a54a9414034675e2a37b93f0d24a1bb20}{detail::setFlowRateInletVelocityZeroGradient}}(domainVector,\ mesh\_,\ this-\/>range());}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00246}00246\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00247}00247\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00248}00248\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00249}00249\ \ \ \ \ \textcolor{comment}{//\ Context-\/aware,\ in\ OpenFOAM's\ order:\ density\ 1\ for\ a\ volumetric\ flow\ rate\ or\ rho\ "{}none"{};}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00250}00250\ \ \ \ \ \textcolor{comment}{//\ else\ the\ boundary\ values\ of\ the\ field\ \`{}rho`,\ if\ the\ context\ has\ it;\ else\ the\ constant}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00251}00251\ \ \ \ \ \textcolor{comment}{//\ rhoInlet;\ else\ an\ error.}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00252}00252\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00253}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a3ac3850ce826f46ee3e8be95e3b0b9f3}{00253}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a3ac3850ce826f46ee3e8be95e3b0b9f3}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{BoundaryContext}}\&\ ctx)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00254}00254\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00255}00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (volumetric\_\ ||\ rhoName\_\ ==\ \textcolor{stringliteral}{"{}none"{}})}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00256}00256\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ applyConstantDensity(domainVector,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1));}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00258}00258\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00259}00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ctx.hasScalar(rhoName\_))}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00260}00260\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00261}00261\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2caafc3f5dd59409388072fff97b3a69}{detail::setFlowRateInletVelocity}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00263}00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>range(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flowRate\_,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ctx.scalarFieldPtr(rhoName\_).boundaryData().value().view(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{true},}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extrapolateProfile\_}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00271}00271\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00272}00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (rhoInlet\_\ >=\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0))}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00273}00273\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ applyConstantDensity(domainVector,\ rhoInlet\_);}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00275}00275\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00276}00276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00277}00277\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}flowRateInletVelocity\ boundary\ condition\ on\ patch\ "{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ std::to\_string(this-\/>patchID())\ +\ \textcolor{stringliteral}{"{}:\ a\ mass\ flow\ rate\ needs\ the\ density\ field\ '"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ rhoName\_\ +\ \textcolor{stringliteral}{"{}'\ in\ the\ boundary\ context\ or\ a\ constant\ 'rhoInlet'"{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00283}00283\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00284}00284\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00285}00285\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00286}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a0f9be72ba6231ff6b7355317fd49b2b3}{00286}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a0f9be72ba6231ff6b7355317fd49b2b3}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}flowRateInletVelocity"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00287}00287\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00288}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a0d96b584a183c5341c6c1034dd8224f2}{00288}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a0d96b584a183c5341c6c1034dd8224f2}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a0f9be72ba6231ff6b7355317fd49b2b3}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00289}00289\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00290}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_acdb197a91808e3d89244054c0f253a86}{00290}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_acdb197a91808e3d89244054c0f253a86}{doc}}()}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00291}00291\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00292}00292\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Inlet\ velocity\ carrying\ a\ prescribed\ volumetric\ or\ mass\ flow\ rate\ through\ the\ "{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}patch\ "{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(OpenFOAM's\ flowRateInletVelocity):\ a\ uniform\ profile\ along\ the\ inward\ normal,\ or\ "{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}with\ extrapolateProfile\ the\ adjacent\ cells'\ tangential\ velocity\ and\ inflow\ shape,\ "{}}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rescaled\ to\ the\ flow\ rate."{}};}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00297}00297\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00298}00298\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00299}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a8c09cc205a9395a71d9f9d21ed299263}{00299}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a8c09cc205a9395a71d9f9d21ed299263}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00300}00300\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00301}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a0b7d26645e0203db041f406baef8b4a9}{00301}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<NeoN::Vec3>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FlowRateInletVelocity_a0b7d26645e0203db041f406baef8b4a9}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00302}00302\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00303}00303\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<FlowRateInletVelocity>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00304}00304\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00305}00305\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00306}00306\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00307}00307\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00308}00308\ \ \ \ \ \textcolor{keywordtype}{void}\ applyConstantDensity(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ rho)}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00309}00309\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00310}00310\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2caafc3f5dd59409388072fff97b3a69}{detail::setFlowRateInletVelocity}}(}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00312}00312\ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>range(),}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ flowRate\_,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ NeoN::scalar>}}\ \{\},}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ rho,}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{false},}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ extrapolateProfile\_}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00319}00319\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00320}00320\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00321}00321\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00322}00322\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00323}00323\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ flowRate\_;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00324}00324\ \ \ \ \ \textcolor{keywordtype}{bool}\ volumetric\_;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00325}00325\ \ \ \ \ std::string\ rhoName\_;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00326}00326\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ rhoInlet\_;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00327}00327\ \ \ \ \ \textcolor{keywordtype}{bool}\ extrapolateProfile\_;}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00328}00328\ \};}
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00329}00329\ }
+\DoxyCodeLine{\Hypertarget{flowRateInletVelocity_8hpp_source_l00330}00330\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
+
+\end{DoxyCode}

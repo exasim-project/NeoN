@@ -1,0 +1,137 @@
+\doxysection{petsc.\+hpp}
+\hypertarget{petsc_8hpp_source}{}\label{petsc_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/petsc.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/petsc.hpp}}
+\mbox{\hyperlink{petsc_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#if\ NF\_WITH\_PETSC}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <petscvec\_kokkos.hpp>}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <petscmat.h>}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <petscksp.h>}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{dictionary_8hpp}{NeoN/core/dictionary.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearSystem_8hpp}{NeoN/linearAlgebra/linearSystem.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{utilities_8hpp}{NeoN/linearAlgebra/utilities.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{petscSolverContext_8hpp}{NeoN/linearAlgebra/petscSolverContext.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearAlgebra_2solver_8hpp}{NeoN/linearAlgebra/solver.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00019}00019\ \textcolor{comment}{//\ \#include\ "{}NeoN/core/database/petscSolverContextCollection.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}};}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00023}00023\ \textcolor{keyword}{namespace\ }NeoN::la::petsc}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00026}00026\ \textcolor{comment}{//\ template<typename\ ValueType>}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00028}00028\ \textcolor{keyword}{class\ }petscSolver\ :\ \textcolor{keyword}{public}\ SolverFactory::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<petscSolver>}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00029}00029\ \{}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ SolverFactory::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<petscSolver>}};}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00033}00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00035}00035\ \ \ \ \ Dictionary\ solverDict\_;}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{comment}{//\ Mat\ Amat\_;}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{comment}{//\ KSP\ ksp\_;}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{comment}{//\ Vec\ sol\_,\ rhs\_;}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ NeoN::la::petscSolverContext::petscSolverContext<scalar>\ petsctx\_;}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00044}00044\ \textcolor{comment}{\ \ \ \ \ \ \ \ NeoN::Database\&\ db\_;}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00045}00045\ \textcolor{comment}{\ \ \ \ \ \ \ \ std::string\ eqnName\_;}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00046}00046\ \textcolor{comment}{\ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00048}00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00050}00050\ \ \ \ \ petscSolver(Executor\ exec,\ Dictionary\ solverDict)\ :\ Base(exec),\ solverDict\_(solverDict)}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{comment}{//,\ Amat\_(nullptr),\ ksp\_(nullptr),\ sol\_(nullptr),}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{comment}{//\ \ rhs\_(nullptr),petsctx\_(exec\_)}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//,\ db\_(db),\ eqnName\_(eqnName)}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00054}00054\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//-\/\ Destructor}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{virtual}\ \string~petscSolver()}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00058}00058\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ MatDestroy(\&Amat\_);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ KSPDestroy(\&ksp\_);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VecDestroy(\&sol\_);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VecDestroy(\&rhs\_);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00063}00063\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Petsc"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ doc()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TBD"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ schema()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<SolverFactory>\ clone()\ const\ final}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00072}00072\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ FIXME}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00075}00075\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00079}00079\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ada71c048be641dc3b2eba2df764384b1}{solve}}(\textcolor{keyword}{const}\ LinearSystem<scalar,\ localIdx>\&\ sys,\ Vector<scalar>\&\ x)\ \textcolor{keyword}{const}\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00080}00080\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ Mat\ Amat;}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ KSP\ ksp;}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ Vec\ sol,\ rhs;}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ NeoN::la::petscSolverContext::petscSolverContext<scalar>\ petsctx(exec\_);}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ std::size\_t\ nrows\ =\ sys.rhs().size();}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ petsctx.initialize(sys);}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ Amat\ =\ petsctx.AMat();}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ rhs\ =\ petsctx.rhs();}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ sol\ =\ petsctx.sol();}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ ksp\ =\ petsctx.ksp();}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ VecSetValuesCOO(rhs,\ sys.rhs().data(),\ ADD\_VALUES);}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ MatSetValuesCOO(Amat,\ sys.matrix().values().data(),\ ADD\_VALUES);}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ MatView(Amat\_,\ PETSC\_VIEWER\_STDOUT\_WORLD);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VecView(rhs\_,\ PETSC\_VIEWER\_STDOUT\_WORLD);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ KSPCreate(PETSC\_COMM\_WORLD,\ \&ksp\_);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ KSPSetOperators(ksp,\ Amat,\ Amat);}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ KSPSetTolerances(ksp,\ 1.e-\/9,\ PETSC\_DEFAULT,\ PETSC\_DEFAULT,\ PETSC\_DEFAULT);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ KSPSetFromOptions(ksp\_);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ KSPSetUp(ksp);}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ PetscCallVoid(KSPSolve(ksp,\ rhs,\ sol));}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ numIter\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ KSPGetIterationNumber(ksp,\ \&numIter);}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ PetscScalar*\ x\_help\ =\ \textcolor{keyword}{static\_cast<}PetscScalar*\textcolor{keyword}{>}(x.data());}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ VecGetArray(sol,\ \&x\_help);}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ Vector<scalar>\ x2(x.exec(),\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}*\textcolor{keyword}{>}(x\_help),\ nrows,\ x.exec());}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ x\ =\ x2;}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ residual\ norms\ are\ missing}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{numIter,\ 0.0,\ 0.0\};}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00126}00126\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00127}00127\ \};}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00129}00129\ \}}
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{petsc_8hpp_source_l00131}00131\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

@@ -1,0 +1,34 @@
+\doxysection{NeoN\+::Logging\+::detail Namespace Reference}
+\hypertarget{namespaceNeoN_1_1Logging_1_1detail}{}\label{namespaceNeoN_1_1Logging_1_1detail}\index{NeoN::Logging::detail@{NeoN::Logging::detail}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat}{Fatal\+Format}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{log\+Fatal}} (const std\+::string \&message)
+\item 
+bool \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df}{should\+Log}} (\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}} level, std\+::string log\+Name="{}Neo\+N"{})
+\begin{DoxyCompactList}\small\item\em Returns whether a message at the given level would actually be emitted by the named logger. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}\label{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817} 
+\index{NeoN::Logging::detail@{NeoN::Logging::detail}!logFatal@{logFatal}}
+\index{logFatal@{logFatal}!NeoN::Logging::detail@{NeoN::Logging::detail}}
+\doxysubsubsection{\texorpdfstring{logFatal()}{logFatal()}}
+{\footnotesize\ttfamily void Neo\+N\+::\+Logging\+::detail\+::log\+Fatal (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df}\label{namespaceNeoN_1_1Logging_1_1detail_a7e73addd14a38aa9ed6d117a4ea987df} 
+\index{NeoN::Logging::detail@{NeoN::Logging::detail}!shouldLog@{shouldLog}}
+\index{shouldLog@{shouldLog}!NeoN::Logging::detail@{NeoN::Logging::detail}}
+\doxysubsubsection{\texorpdfstring{shouldLog()}{shouldLog()}}
+{\footnotesize\ttfamily bool Neo\+N\+::\+Logging\+::detail\+::should\+Log (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}}]{level,  }\item[{std\+::string}]{log\+Name = {\ttfamily "{}NeoN"{}} }\end{DoxyParamCaption})}
+
+
+
+Returns whether a message at the given level would actually be emitted by the named logger. 
+
+The convenience helpers below call this BEFORE building the message so that on muted ranks (non-\/root MPI ranks log at error level only) no string formatting happens at all — keeping the hot path free of cost in distributed runs. It is also null-\/safe\+: if the logger is not registered yet it returns false instead of dereferencing a null pointer. 

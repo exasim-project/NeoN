@@ -1,0 +1,111 @@
+\doxysection{NeoN\+::la\+::Cell\+Based\+Iterator\+::Cell\+Based\+Data Struct Reference}
+\hypertarget{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{}\label{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}\index{NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}}
+
+
+Pre-\/computed connectivity required for cell-\/based assembly.  
+
+
+
+
+{\ttfamily \#include $<$mesh\+Iteration\+Strategies.\+hpp$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2}{size}}
+\begin{DoxyCompactList}\small\item\em Number of cells. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}{cell\+Faces}}
+\begin{DoxyCompactList}\small\item\em Cell-\/to-\/face stencil; segments correspond to cells, values are face indices. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53}{face\+Neighbour}}
+\begin{DoxyCompactList}\small\item\em For each stencil entry\+: the cell on the other side of the face. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587}{face\+Sign}}
+\begin{DoxyCompactList}\small\item\em Sign of the face contribution\+: +1 if this cell owns the face, -\/1 otherwise. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037}{matrix\+Column\+Idx}}
+\begin{DoxyCompactList}\small\item\em Flat index into the CSR matrix values array for each stencil entry. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Pre-\/computed connectivity required for cell-\/based assembly. 
+
+All arrays are indexed by the flat position within \doxylink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}{cell\+Faces}, i.\+e. for cell {\ttfamily c} the relevant slice runs from {\ttfamily cell\+Faces.\+offset(c)} to {\ttfamily cell\+Faces.\+offset}(c+1). 
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}\label{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b} 
+\index{NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}!cellFaces@{cellFaces}}
+\index{cellFaces@{cellFaces}!NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}}
+\doxysubsubsection{\texorpdfstring{cellFaces}{cellFaces}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}$>$ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\+Cell\+Based\+Data\+::cell\+Faces}
+
+
+
+Cell-\/to-\/face stencil; segments correspond to cells, values are face indices. 
+
+
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53}\label{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53} 
+\index{NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}!faceNeighbour@{faceNeighbour}}
+\index{faceNeighbour@{faceNeighbour}!NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}}
+\doxysubsubsection{\texorpdfstring{faceNeighbour}{faceNeighbour}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}$>$ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\+Cell\+Based\+Data\+::face\+Neighbour}
+
+
+
+For each stencil entry\+: the cell on the other side of the face. 
+
+
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00110}{110}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587}\label{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587} 
+\index{NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}!faceSign@{faceSign}}
+\index{faceSign@{faceSign}!NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}}
+\doxysubsubsection{\texorpdfstring{faceSign}{faceSign}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}$>$ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\+Cell\+Based\+Data\+::face\+Sign}
+
+
+
+Sign of the face contribution\+: +1 if this cell owns the face, -\/1 otherwise. 
+
+
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00114}{114}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037}\label{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037} 
+\index{NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}!matrixColumnIdx@{matrixColumnIdx}}
+\index{matrixColumnIdx@{matrixColumnIdx}!NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}}
+\doxysubsubsection{\texorpdfstring{matrixColumnIdx}{matrixColumnIdx}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}$>$ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\+Cell\+Based\+Data\+::matrix\+Column\+Idx}
+
+
+
+Flat index into the CSR matrix values array for each stencil entry. 
+
+
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00117}{117}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2}\label{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2} 
+\index{NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}!size@{size}}
+\index{size@{size}!NeoN::la::CellBasedIterator::CellBasedData@{NeoN::la::CellBasedIterator::CellBasedData}}
+\doxysubsubsection{\texorpdfstring{size}{size}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\+Cell\+Based\+Data\+::size}
+
+
+
+Number of cells. 
+
+
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00104}{104}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{meshIterationStrategies_8hpp}{mesh\+Iteration\+Strategies.\+hpp}}\end{DoxyCompactItemize}

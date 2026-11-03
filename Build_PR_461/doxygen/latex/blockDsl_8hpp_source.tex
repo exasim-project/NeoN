@@ -1,0 +1,248 @@
+\doxysection{block\+Dsl.\+hpp}
+\hypertarget{blockDsl_8hpp_source}{}\label{blockDsl_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockDsl.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockDsl.hpp}}
+\mbox{\hyperlink{blockDsl_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vector_8hpp}{NeoN/core/vector/vector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockMatrixView_8hpp}{NeoN/linearAlgebra/blockMatrixView.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{sparsityPattern_8hpp}{NeoN/linearAlgebra/sparsityPattern.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00019}\mbox{\hyperlink{namespaceNeoN_1_1bdsl}{00019}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1bdsl}{NeoN::bdsl}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00029}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm}{00029}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm}{BlockSourceTerm}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00030}00030\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00032}00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00034}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_aa8b5308443836d5f90e9fd436c3aecc4}{00034}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_aa8b5308443836d5f90e9fd436c3aecc4}{VectorValueType}}\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00036}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a59d4e540321a9c9bd64e0db69914f4e7}{00036}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a59d4e540321a9c9bd64e0db69914f4e7}{BlockSourceTerm}}(\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a2dd57fe0528326101c9bb24dc9198cdc}{coefficient}},\ std::string\ fieldName);}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00038}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a73123ae871c859fe78eca7712e9db649}{00038}}\ \ \ \ \ [[nodiscard]]\ std::string\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a73123ae871c859fe78eca7712e9db649}{getFieldName}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a6e260f4ebc7967f11da5b4cfa541aa92}{00039}}\ \ \ \ \ [[nodiscard]]\ std::string\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a6e260f4ebc7967f11da5b4cfa541aa92}{getName}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00040}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a2dd57fe0528326101c9bb24dc9198cdc}{00040}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_a2dd57fe0528326101c9bb24dc9198cdc}{coefficient}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00042}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_aa6895d7c733b2b0ec2cfb32771cedb5e}{00042}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockSourceTerm_aa6895d7c733b2b0ec2cfb32771cedb5e}{implicitOperation}}(}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{la::BlockMatrixView}}\ bmView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{la::SparsityView<localIdx>}}\ spView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ eqI,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ colJ,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00049}00049\ \ \ \ \ )\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00051}00051\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00053}00053\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ coefficient\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00054}00054\ \ \ \ \ std::string\ fieldName\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00055}00055\ \};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00061}00061\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00062}\mbox{\hyperlink{conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator}{00062}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator}{IsBlockSpatialOperator}}\ =\ \textcolor{keyword}{requires}(T\ \textcolor{keyword}{const}\ t)\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00063}00063\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ t.getFieldName()}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00065}00065\ \ \ \ \ \}\ -\/>\ std::convertible\_to<std::string>;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00066}00066\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ t.getName()}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00068}00068\ \ \ \ \ \}\ -\/>\ std::convertible\_to<std::string>;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00069}00069\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ t.implicitOperation(}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<la::BlockMatrixView>(),}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<la::SparsityView<localIdx>>(),}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<localIdx>(),}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<localIdx>(),}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<localIdx>(),}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<const\ Executor\&>()}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00078}00078\ \ \ \ \ \}\ -\/>\ std::same\_as<void>;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00079}00079\ \};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00089}00089\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{00090}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00091}00091\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00093}00093\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{keyword}{template}<IsBlockSpatialOperator\ T>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00096}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a689a4872f94a980936e392e9578d73e6}{00096}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a689a4872f94a980936e392e9578d73e6}{SpatialOperator}}(T\ cls)\ :\ model\_(std::make\_unique<OperatorModel<T>>(std::move(cls)))}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00097}00097\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00099}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a83dd7eecff2d22e4141bdcb8ee1e73da}{00099}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a83dd7eecff2d22e4141bdcb8ee1e73da}{SpatialOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator}}\&\ other)\ :\ model\_(other.model\_-\/>clone())\ \{\}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00101}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a7b5270169fc251eee96b3e3fd15228bc}{00101}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a7b5270169fc251eee96b3e3fd15228bc}{SpatialOperator}}(\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator}}\&\&\ other)\ :\ model\_(std::move(other.model\_))\ \{\}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00103}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a3d6321ba16a687ae64de2d71f3d50365}{00103}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator}}\&\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a3d6321ba16a687ae64de2d71f3d50365}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator}}\&\ other)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00104}00104\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ model\_\ =\ other.model\_-\/>clone();}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00107}00107\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a50c38fd1b47b3ce8b879c67ac58865f5}{00109}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator}}\&\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a50c38fd1b47b3ce8b879c67ac58865f5}{operator=}}(\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator}}\&\&\ other)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00110}00110\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ model\_\ =\ std::move(other.model\_);}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00113}00113\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00115}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a64f295899c3bcf02e8a7c98aaed21ac2}{00115}}\ \ \ \ \ [[nodiscard]]\ std::string\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a64f295899c3bcf02e8a7c98aaed21ac2}{getFieldName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getFieldName();\ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00117}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_aba006aabf4f99a58eb06be623659e4d5}{00117}}\ \ \ \ \ [[nodiscard]]\ std::string\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_aba006aabf4f99a58eb06be623659e4d5}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getName();\ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00119}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a5ec14e4547cba1a1e389c04733649e7e}{00119}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator_a5ec14e4547cba1a1e389c04733649e7e}{implicitOperation}}(}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{la::BlockMatrixView}}\ bmView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{la::SparsityView<localIdx>}}\ spView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ eqI,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ colJ,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00126}00126\ \ \ \ \ )\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00127}00127\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ model\_-\/>implicitOperation(bmView,\ spView,\ eqI,\ colJ,\ nCells,\ exec);}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00129}00129\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00131}00131\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00133}00133\ \ \ \ \ \textcolor{keyword}{struct\ }OperatorConcept}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00134}00134\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \string~OperatorConcept()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ getFieldName()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ getName()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ implicitOperation(}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{la::BlockMatrixView}}\ bmView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{la::SparsityView<localIdx>}}\ spView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ eqI,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ colJ,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ )\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<OperatorConcept>\ clone()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00147}00147\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00149}00149\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ConcreteType>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00150}00150\ \ \ \ \ \textcolor{keyword}{struct\ }OperatorModel\ :\ OperatorConcept}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00151}00151\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ OperatorModel(ConcreteType\ op)\ :\ op\_(std::move(op))\ \{\}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00153}00153\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ std::string\ getFieldName()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ op\_.getFieldName();\ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ std::string\ getName()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ op\_.getName();\ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ implicitOperation(}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1BlockMatrixView}{la::BlockMatrixView}}\ bmView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{la::SparsityView<localIdx>}}\ spView,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ eqI,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ colJ,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nCells,}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00166}00166\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ op\_.implicitOperation(bmView,\ spView,\ eqI,\ colJ,\ nCells,\ exec);}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ std::unique\_ptr<OperatorConcept>\ clone()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00171}00171\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<OperatorModel>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ ConcreteType\ op\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00176}00176\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00178}00178\ \ \ \ \ std::unique\_ptr<OperatorConcept>\ model\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00179}00179\ \};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00181}00181\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00185}00185\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00186}00186\ std::vector<SpatialOperator<ValueType>>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00187}\mbox{\hyperlink{namespaceNeoN_1_1bdsl_affa67451164e1f28cb337c6873693870}{00187}}\ \mbox{\hyperlink{namespaceNeoN_1_1bdsl_affa67451164e1f28cb337c6873693870}{operator+}}(\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ a,\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ b)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00188}00188\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00189}00189\ \ \ \ \ std::vector<SpatialOperator<ValueType>>\ result;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00190}00190\ \ \ \ \ result.push\_back(std::move(a));}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00191}00191\ \ \ \ \ result.push\_back(std::move(b));}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00192}00192\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00193}00193\ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00198}00198\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00199}00199\ std::vector<SpatialOperator<ValueType>>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00200}\mbox{\hyperlink{namespaceNeoN_1_1bdsl_a32962e7c19685b6b3734ca9400c5255d}{00200}}\ \mbox{\hyperlink{namespaceNeoN_1_1bdsl_affa67451164e1f28cb337c6873693870}{operator+}}(std::vector<\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}>\ ops,\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ op)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00201}00201\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00202}00202\ \ \ \ \ ops.push\_back(std::move(op));}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00203}00203\ \ \ \ \ \textcolor{keywordflow}{return}\ ops;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00204}00204\ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00205}00205\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00206}00206\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00215}00215\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00216}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{00216}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{BlockExpression}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00217}00217\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00218}00218\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00219}00219\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00221}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_aa03a89dcb2b26f098cd2860018374f20}{00221}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_aa03a89dcb2b26f098cd2860018374f20}{BlockExpression}}(\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_ab74959cf9cf446e0eede5355ab8c03ae}{equationIndex}},\ std::vector<std::string>\ fieldNames)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00222}00222\ \ \ \ \ \ \ \ \ :\ equationIndex\_(\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_ab74959cf9cf446e0eede5355ab8c03ae}{equationIndex}}),\ fieldNames\_(std::move(fieldNames))}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00223}00223\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00224}00224\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00225}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_af7724f18570fb5f3faf7b8e5d6e99d19}{00225}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{BlockExpression}}\&\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_af7724f18570fb5f3faf7b8e5d6e99d19}{operator=}}(\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}\ op)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00226}00226\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00227}00227\ \ \ \ \ \ \ \ \ operators\_.clear();}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00228}00228\ \ \ \ \ \ \ \ \ operators\_.push\_back(std::move(op));}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00229}00229\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00230}00230\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00231}00231\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00232}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_a6eb4520267a0aef58f5c8fb14dfd731f}{00232}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression}{BlockExpression}}\&\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_a6eb4520267a0aef58f5c8fb14dfd731f}{operator=}}(std::vector<\mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator<ValueType>}}>\ ops)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00233}00233\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00234}00234\ \ \ \ \ \ \ \ \ operators\_\ =\ std::move(ops);}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00235}00235\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00236}00236\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00238}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_ab74959cf9cf446e0eede5355ab8c03ae}{00238}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_ab74959cf9cf446e0eede5355ab8c03ae}{equationIndex}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ equationIndex\_;\ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00239}00239\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00240}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_ab1b3e56f1d3ef70f05f251e61ce40890}{00240}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ std::vector<SpatialOperator<ValueType>>\&\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_ab1b3e56f1d3ef70f05f251e61ce40890}{operators}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00241}00241\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ operators\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00243}00243\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00244}00244\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00249}\mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_aebd8f9909b81d41cd101ae403bfd943a}{00249}}\ \ \ \ \ [[nodiscard]]\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1BlockExpression_aebd8f9909b81d41cd101ae403bfd943a}{fieldColumn}}(\textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00250}00250\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00251}00251\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ j\ =\ 0;\ j\ <\ static\_cast<localIdx>(fieldNames\_.size());\ ++j)}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00252}00252\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fieldNames\_[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(j)]\ ==\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ j;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00257}00257\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00258}00258\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00259}00259\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00260}00260\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00261}00261\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00262}00262\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00263}00263\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ equationIndex\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00264}00264\ \ \ \ \ std::vector<std::string>\ fieldNames\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00265}00265\ \ \ \ \ std::vector<SpatialOperator<ValueType>>\ operators\_;}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00266}00266\ \};}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00267}00267\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00268}00268\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00269}\mbox{\hyperlink{namespaceNeoN_1_1bdsl_1_1imp}{00269}}\ \textcolor{keyword}{namespace\ }imp}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00270}00270\ \{}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00271}00271\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00278}00278\ \mbox{\hyperlink{classNeoN_1_1bdsl_1_1SpatialOperator}{SpatialOperator<scalar>}}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00279}00279\ source(\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ coeff,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ field,\ \textcolor{keyword}{const}\ std::string\&\ fieldName);}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00280}00280\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00281}00281\ \}\ \textcolor{comment}{//\ namespace\ imp}}
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00282}00282\ }
+\DoxyCodeLine{\Hypertarget{blockDsl_8hpp_source_l00283}00283\ \}\ \textcolor{comment}{//\ namespace\ NeoN::bdsl}}
+
+\end{DoxyCode}

@@ -1,0 +1,58 @@
+\doxysection{linear.\+hpp}
+\hypertarget{linear_8hpp_source}{}\label{linear_8hpp_source}\index{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/interpolation/linear.hpp@{/home/runner/work/NeoFOAM/NeoFOAM/include/NeoFOAM/finiteVolume/cellCentred/interpolation/linear.hpp}}
+\mbox{\hyperlink{linear_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00002}00002\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ NeoFOAM\ authors}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00004}00004\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoFOAM/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoFOAM/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoFOAM/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{geometryScheme_8hpp}{NeoFOAM/finiteVolume/cellCentred/stencil/geometryScheme.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructured_8hpp}{NeoFOAM/mesh/unstructured.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoFOAM_1_1finiteVolume_1_1cellCentred}{NeoFOAM::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00021}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear}{00021}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear}{Linear}}\ :\ \textcolor{keyword}{public}\ SurfaceInterpolationFactory::Register<Linear>}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00024}00024\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00026}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_af534d6b3f1567cee8faf492a7fe1a16e}{00026}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_af534d6b3f1567cee8faf492a7fe1a16e}{Linear}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \mbox{\hyperlink{namespaceNeoFOAM_a161184af07a233e2513b53451edc6b39}{Input}}\ input);}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00028}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a7b24cdc3bd137f5529d24ce35a974a32}{00028}}\ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a7b24cdc3bd137f5529d24ce35a974a32}{Linear}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoFOAM_aaa4d35d275559f501cb6a1eec717c905}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00030}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_aafa87890358da74768d73f448b421226}{00030}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_aafa87890358da74768d73f448b421226}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}linear"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00032}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a95253a0833f3991b64086cefba6efea3}{00032}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a95253a0833f3991b64086cefba6efea3}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}linear\ interpolation"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00034}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a2c413be05167a0847cec04c703c9f445}{00034}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a2c413be05167a0847cec04c703c9f445}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00036}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_aa22e0f306b7c6f82fd693d5046072460}{00036}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_aa22e0f306b7c6f82fd693d5046072460}{interpolate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ volField,\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ surfaceField)}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00039}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a60b6364bed95696df2c62fe33c2246e8}{00039}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a60b6364bed95696df2c62fe33c2246e8}{interpolate}}(}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ volField,}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ surfaceField}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00043}00043\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00045}\mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a67f1c9128ab1603b9d071e1ba12e8da4}{00045}}\ \ \ \ \ std::unique\_ptr<SurfaceInterpolationFactory>\ \mbox{\hyperlink{classNeoFOAM_1_1finiteVolume_1_1cellCentred_1_1Linear_a67f1c9128ab1603b9d071e1ba12e8da4}{clone}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00047}00047\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00050}00050\ \};}
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{linear_8hpp_source_l00052}00052\ \}\ \textcolor{comment}{//\ namespace\ NeoFOAM}}
+
+\end{DoxyCode}

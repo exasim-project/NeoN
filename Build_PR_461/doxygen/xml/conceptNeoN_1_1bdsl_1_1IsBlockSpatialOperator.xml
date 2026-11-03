@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator" kind="concept">
+    <compoundname>NeoN::bdsl::IsBlockSpatialOperator</compoundname>
+    <includes refid="blockDsl_8hpp" local="no">blockDsl.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename T&gt;
+concept <ref refid="conceptNeoN_1_1bdsl_1_1IsBlockSpatialOperator" kindref="compound">NeoN::bdsl::IsBlockSpatialOperator</ref> =  requires(T const t) {
+    {
+        t.getFieldName()
+    } -&gt; std::convertible_to&lt;std::string&gt;;
+    {
+        t.getName()
+    } -&gt; std::convertible_to&lt;std::string&gt;;
+    {
+        t.implicitOperation(
+            std::declval&lt;<ref refid="structNeoN_1_1la_1_1BlockMatrixView" kindref="compound">la::BlockMatrixView</ref>&gt;(),
+            std::declval&lt;<ref refid="structNeoN_1_1la_1_1SparsityView" kindref="compound">la::SparsityView</ref>&lt;localIdx&gt;&gt;(),
+            std::declval&lt;localIdx&gt;(),
+            std::declval&lt;localIdx&gt;(),
+            std::declval&lt;localIdx&gt;(),
+            std::declval&lt;const Executor&amp;&gt;()
+        )
+    } -&gt; std::same_as&lt;void&gt;;
+}    </initializer>
+    <briefdescription>
+<para>Concept for types that can act as block spatial operators. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/blockDsl.hpp" line="62" column="1"/>
+  </compounddef>
+</doxygen>

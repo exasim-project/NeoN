@@ -1,0 +1,157 @@
+\doxysection{fixed\+Mean.\+hpp}
+\hypertarget{fixedMean_8hpp_source}{}\label{fixedMean_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp}}
+\mbox{\hyperlink{fixedMean_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{error_8hpp}{NeoN/core/error.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{patchSum_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volume/detail/patchSum.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00018}00018\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00024}00024\ \textcolor{comment}{//\ Shared\ kernel\ behind\ FixedMean,\ mirroring\ OpenFOAM's\ fixedMeanFvPatchField::updateCoeffs()}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00025}00025\ \textcolor{comment}{//\ for\ a\ scalar\ field.\ The\ patch\ value\ is\ the\ adjacent\ cell\ value,\ corrected\ so\ that\ the}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00026}00026\ \textcolor{comment}{//\ area-\/weighted\ mean\ over\ the\ whole\ patch\ (all\ ranks)\ is\ the\ prescribed\ meanValue:}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00027}00027\ \textcolor{comment}{//\ \ \ meanPsi\ =\ sum(magSf\ *\ ownerValue)\ /\ sum(magSf)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (gWeightedAverage)}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00028}00028\ \textcolor{comment}{//\ \ \ if\ (|meanValue|\ >\ SMALL\ \&\&\ |meanPsi|\ >\ 0.5\ |meanValue|)}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00029}00029\ \textcolor{comment}{//\ \ \ \ \ \ \ value\ =\ ownerValue\ *\ |meanValue|\ /\ |meanPsi|\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (scale)}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00030}00030\ \textcolor{comment}{//\ \ \ else}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00031}00031\ \textcolor{comment}{//\ \ \ \ \ \ \ value\ =\ ownerValue\ +\ (meanValue\ -\/\ meanPsi)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (shift)}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00032}00032\ \textcolor{comment}{//\ with\ SMALL\ =\ 1e-\/15,\ OpenFOAM's\ double-\/precision\ SMALL.\ The\ scaled\ branch\ uses\ the\ magnitudes}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00033}00033\ \textcolor{comment}{//\ like\ OpenFOAM\ does,\ so\ the\ sign\ of\ the\ owner\ values\ is\ kept.\ The\ result\ is\ a\ Dirichlet\ patch}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00034}00034\ \textcolor{comment}{//\ (valueFraction\ =\ 1,\ refGrad\ =\ 0)\ recomputed\ from\ the\ current\ owner\ values\ on\ every\ call,\ as}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00035}00035\ \textcolor{comment}{//\ OpenFOAM\ does\ in\ updateCoeffs().}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00036}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4b149ba9e6c15566a7bd5479f62fa55e}{00036}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4b149ba9e6c15566a7bd5479f62fa55e}{setFixedMeanValue}}(}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00037}00037\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00039}00039\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00040}00040\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ meanValue}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00041}00041\ )}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00042}00042\ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ small\ =\ 1.0e-\/15;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{auto}\ [faceAreasV,\ boundaryFaceOwnersV]\ =}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af424606847d2c9f5595745e62ddde1a0}{faceAreas}}(),\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{faceOwners}}());}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ areaSum\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a354957c6832d19c636ef00a342495968}{patchSum}}(}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ mesh,\ range,\ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\&\ sum)\ \{\ sum\ +=\ faceAreasV[i];\ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00051}00051\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ weightedSum\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a354957c6832d19c636ef00a342495968}{patchSum}}(}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ mesh,}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\&\ sum)\ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ sum\ +=\ faceAreasV[i]\ *\ internalV[boundaryFaceOwnersV[i]];}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00058}00058\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{comment}{//\ gWeightedAverage:\ no\ weight,\ no\ average\ (a\ rank-\/less\ or\ empty\ patch\ keeps\ its\ owner\ values)}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ meanPsi\ =\ areaSum\ >\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0)\ ?\ weightedSum\ /\ areaSum\ :\ meanValue;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ scale\ =}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ Kokkos::abs(meanValue)\ >\ small\ \&\&\ Kokkos::abs(meanPsi)\ >\ 0.5\ *\ Kokkos::abs(meanValue);}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ factor\ =}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ scale\ ?\ Kokkos::abs(meanValue)\ /\ Kokkos::abs(meanPsi)\ :\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ shift\ =\ scale\ ?\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0)\ :\ meanValue\ -\/\ meanPsi;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue()}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00074}00074\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00076}00076\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ newValue\ =\ internalV[boundaryFaceOwnersV[i]]\ *\ factor\ +\ shift;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ newValue;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ newValue;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setFixedMeanValue"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00087}00087\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00088}00088\ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00090}00090\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00092}00092\ \textcolor{comment}{//\ FixedMean:\ a\ Dirichlet\ patch\ whose\ values\ follow\ the\ adjacent\ cells,\ shifted\ or\ scaled\ so\ that}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00093}00093\ \textcolor{comment}{//\ the\ area-\/weighted\ patch\ mean\ is\ meanValue\ (OpenFOAM's\ fixedMean).\ It\ is\ used\ on\ a\ pressure}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00094}00094\ \textcolor{comment}{//\ outlet\ where\ the\ mean,\ not\ the\ profile,\ is\ prescribed.\ See\ detail::setFixedMeanValue\ for\ the}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00095}00095\ \textcolor{comment}{//\ exact\ formula.}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00096}00096\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00097}00097\ \textcolor{comment}{//\ Scalar\ fields\ only.\ meanValue\ is\ a\ plain\ scalar;\ OpenFOAM's\ Function1\ form\ \`{}meanValue\ constant\ X`}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00098}00098\ \textcolor{comment}{//\ has\ to\ be\ flattened\ by\ the\ case\ reader.}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00099}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean}{00099}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean}{FixedMean}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<NeoN::scalar>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<FixedMean>}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00100}00100\ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<NeoN::scalar>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<FixedMean>}};}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00103}00103\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{comment}{//\ A\ Dirichlet\ patch,\ like\ OpenFOAM's\ (it\ derives\ from\ fixedValue):\ assignable\ =\ false\ and}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{comment}{//\ fixesValue\ =\ true.\ The\ values\ are\ still\ recomputed\ from\ the\ owner\ cells\ on\ every\ call.}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a3858bc94144d9127b48184dc85b9bd74}{00109}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a3858bc94144d9127b48184dc85b9bd74}{FixedMean}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{false},\ .fixesValue\ =\ \textcolor{keyword}{true}\}),\ mesh\_(mesh),}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ meanValue\_(0)}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00112}00112\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!dict.contains(\textcolor{stringliteral}{"{}meanValue"{}}))}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}fixedMean\ boundary\ condition\ on\ patch\ "{}}\ +\ std::to\_string(patchID)}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}\ requires\ a\ 'meanValue'\ entry"{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ meanValue\_\ =\ dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}meanValue"{}});}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00121}00121\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00123}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a2389308f60ba7ddc50afde6ffbf7b41b}{00123}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a2389308f60ba7ddc50afde6ffbf7b41b}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00124}00124\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4b149ba9e6c15566a7bd5479f62fa55e}{detail::setFixedMeanValue}}(domainVector,\ mesh\_,\ this-\/>range(),\ meanValue\_);}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00126}00126\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00128}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a33346602fa1cfd6ccc3fcc7fbcf656ba}{00128}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a33346602fa1cfd6ccc3fcc7fbcf656ba}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}fixedMean"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00130}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a760e9af9ee8ba497baa93bf1b443af60}{00130}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a760e9af9ee8ba497baa93bf1b443af60}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a33346602fa1cfd6ccc3fcc7fbcf656ba}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00132}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a0171c771588d9982e824338a45735353}{00132}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a0171c771588d9982e824338a45735353}{doc}}()}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00133}00133\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Dirichlet\ patch\ following\ the\ adjacent\ cell\ values,\ shifted\ or\ scaled\ so\ that\ the\ "{}}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}area-\/weighted\ mean\ over\ the\ patch\ is\ meanValue\ (OpenFOAM's\ fixedMean)."{}};}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00136}00136\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00138}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a6f048ece8bf1ea612c602867c3720d88}{00138}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_a6f048ece8bf1ea612c602867c3720d88}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00140}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_ad61d9af4837792026ac5a3e3f1825d01}{00140}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<NeoN::scalar>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_ad61d9af4837792026ac5a3e3f1825d01}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00141}00141\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<FixedMean>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00143}00143\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00144}00144\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00145}00145\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00146}00146\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00148}00148\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ meanValue\_;}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00149}00149\ \};}
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00150}00150\ }
+\DoxyCodeLine{\Hypertarget{fixedMean_8hpp_source_l00151}00151\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
+
+\end{DoxyCode}

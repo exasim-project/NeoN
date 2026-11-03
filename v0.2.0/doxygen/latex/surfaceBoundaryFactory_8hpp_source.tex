@@ -1,0 +1,80 @@
+\doxysection{surface\+Boundary\+Factory.\+hpp}
+\hypertarget{surfaceBoundaryFactory_8hpp_source}{}\label{surfaceBoundaryFactory_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp}}
+\mbox{\hyperlink{surfaceBoundaryFactory_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{dictionary_8hpp}{NeoN/core/dictionary.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{runtimeSelectionFactory_8hpp}{NeoN/core/runtimeSelectionFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryPatchMixin_8hpp}{NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00014}00014\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00015}00015\ \{}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00017}00017\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00018}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{00018}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{SurfaceBoundaryFactory}}\ :}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00019}00019\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1RuntimeSelectionFactory}{NeoN::RuntimeSelectionFactory}}<}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00020}00020\ \ \ \ \ \ \ \ \ SurfaceBoundaryFactory<ValueType>,}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00021}00021\ \ \ \ \ \ \ \ \ Parameters<const\ UnstructuredMesh\&,\ const\ Dictionary\&,\ localIdx>>,}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00022}00022\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{BoundaryPatchMixin}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00023}00023\ \{}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00024}00024\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a49f97638c687788d6e6b1939254baa65}{00026}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a49f97638c687788d6e6b1939254baa65}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SurfaceBoundaryFactory"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00028}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_af2ed9427a67e2c073750142dd176de5b}{00028}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_af2ed9427a67e2c073750142dd176de5b}{SurfaceBoundaryFactory}}(}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00030}00030\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{BoundaryPatchMixin}}(mesh,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}})\ \{\};}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00033}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479}{00033}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ field)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a33c858a6c846aa18e6b1f8a2f49f799c}{00035}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<SurfaceBoundaryFactory>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a33c858a6c846aa18e6b1f8a2f49f799c}{clone}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00036}00036\ \};}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00044}00044\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00045}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{00045}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{SurfaceBoundary}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{BoundaryPatchMixin}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00046}00046\ \{}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00047}00047\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00049}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_ab1f105d1e2d806c28571d3faed135ea6}{00049}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_ab1f105d1e2d806c28571d3faed135ea6}{SurfaceBoundary}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}})}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{BoundaryPatchMixin}}(}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.boundaryMesh().offset()[static\_cast<\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\_t}}>(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}})],}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.boundaryMesh().offset()[static\_cast<\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\_t}}>(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}})\ +\ 1],}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ boundaryCorrectionStrategy\_(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{SurfaceBoundaryFactory}}<ValueType>::create(}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dict.get<std::string>(\textcolor{stringliteral}{"{}type"{}}),\ mesh,\ dict,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ ))}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00058}00058\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_aff2946737c68fe5689d8c3e299e44f7b}{00060}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_aff2946737c68fe5689d8c3e299e44f7b}{SurfaceBoundary}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{SurfaceBoundary}}\&\ other)}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{BoundaryPatchMixin}}(other),}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ boundaryCorrectionStrategy\_(other.boundaryCorrectionStrategy\_-\/>clone())}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00063}00063\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_a87497d90f1e08dd0c62c81aac5fc3ee3}{00065}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary_a87497d90f1e08dd0c62c81aac5fc3ee3}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00066}00066\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ boundaryCorrectionStrategy\_-\/>correctBoundaryCondition(domainVector);}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00068}00068\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00071}00071\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{comment}{//\ NOTE\ needs\ full\ namespace\ to\ be\ not\ ambiguous}}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00074}00074\ \ \ \ \ std::unique\_ptr<NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory<ValueType>>}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ boundaryCorrectionStrategy\_;}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00076}00076\ \};}
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{surfaceBoundaryFactory_8hpp_source_l00079}00079\ \}}
+
+\end{DoxyCode}
