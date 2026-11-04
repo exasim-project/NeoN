@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue" kind="class" language="C++" prot="public">
     <compoundname>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">SurfaceBoundaryFactory&lt; ValueType &gt;::template Register</basecompoundref>
+    <basecompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::template Register&lt; FixedValue&lt; ValueType &gt; &gt;</basecompoundref>
     <includes refid="surface_2fixedValue_8hpp" local="no">fixedValue.hpp</includes>
     <templateparamlist>
       <param>
@@ -10,9 +10,9 @@
       </param>
     </templateparamlist>
     <sectiondef kind="private-type">
-      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1ab6a3908ed0902ec7e1d8ba7587c88f06" prot="private" static="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" kindref="compound">SurfaceBoundaryFactory</ref>&lt; ValueType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue" kindref="compound">FixedValue</ref>&lt; ValueType &gt; &gt;</type>
-        <definition>using NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue&lt; ValueType &gt;::Base =  SurfaceBoundaryFactory&lt;ValueType&gt;::template Register&lt;FixedValue&lt;ValueType&gt; &gt;</definition>
+      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a21cd69ddd6f6d8596b330cff9cf15fcf" prot="private" static="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1af2ed9427a67e2c073750142dd176de5b" kindref="member">SurfaceBoundaryFactory</ref>&lt; ValueType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a16f96652f6750690e1fef6463c7fcc48" kindref="member">FixedValue</ref>&lt; ValueType &gt; &gt;</type>
+        <definition>using NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue&lt; ValueType &gt;::Base =  SurfaceBoundaryFactory&lt;ValueType&gt;::template Register&lt;FixedValue&lt;ValueType&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>Base</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue::Base</qualifiedname>
@@ -57,7 +57,7 @@
           <declname>dict</declname>
         </param>
         <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <type><ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></type>
           <declname>patchID</declname>
         </param>
         <briefdescription>
@@ -74,6 +74,7 @@
         <argsstring>(Field&lt; ValueType &gt; &amp;domainVector) override</argsstring>
         <name>correctBoundaryCondition</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue::correctBoundaryCondition</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1ad2366da040f76e43102964a5333f1479">correctBoundaryCondition</reimplements>
         <param>
           <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
           <declname>domainVector</declname>
@@ -87,11 +88,12 @@
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/fixedValue.hpp" line="52" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/fixedValue.hpp" bodystart="52" bodyend="55"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a02546e6ea98cdf1f91825583fcbc9d94" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory" kindref="compound">SurfaceBoundaryFactory</ref>&lt; ValueType &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1af2ed9427a67e2c073750142dd176de5b" kindref="member">SurfaceBoundaryFactory</ref>&lt; ValueType &gt; &gt;</type>
         <definition>virtual std::unique_ptr&lt; SurfaceBoundaryFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue&lt; ValueType &gt;::clone</definition>
         <argsstring>() const override</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue::clone</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a33c858a6c846aa18e6b1f8a2f49f799c">clone</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -150,37 +152,78 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>NeoN::RuntimeSelectionFactory&lt; SurfaceBoundaryFactory&lt; ValueType &gt;, Parameters&lt; const UnstructuredMesh &amp;, const Dictionary &amp;, localIdx &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
+      <node id="4">
+        <label>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin"/>
+      </node>
+      <node id="2">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; FixedValue&lt; ValueType &gt; &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue&lt; ValueType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>SurfaceBoundaryFactory::template Register&lt; FixedValue&lt; ValueType &gt; &gt;</label>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="3">
+        <label>NeoN::RuntimeSelectionFactory&lt; SurfaceBoundaryFactory&lt; ValueType &gt;, Parameters&lt; const UnstructuredMesh &amp;, const Dictionary &amp;, localIdx &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
+      <node id="4">
+        <label>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin"/>
+      </node>
+      <node id="2">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; FixedValue&lt; ValueType &gt; &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue&lt; ValueType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>SurfaceBoundaryFactory::template Register&lt; FixedValue&lt; ValueType &gt; &gt;</label>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/fixedValue.hpp" line="41" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/fixedValue.hpp" bodystart="43" bodyend="71"/>
     <listofallmembers>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1ab6a3908ed0902ec7e1d8ba7587c88f06" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a21cd69ddd6f6d8596b330cff9cf15fcf" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a2f25d5ddb8da863d82821cd0360307c9" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a3346a58e9b29984e6459d093592c9a21" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a90f3092d2971c49e8c067dbdf4482ef6" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>BoundaryPatchMixin</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a02546e6ea98cdf1f91825583fcbc9d94" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>clone</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1aa63978ced9fa8c25e455bb52d0e56b8f" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>correctBoundaryCondition</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a27d0073c00775520a2b447c34a151231" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>doc</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a26175fdfa0ced8e1cb08e52298bcadf3" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>end_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a16f96652f6750690e1fef6463c7fcc48" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>FixedValue</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1a43e3c7f61491928a6f0f72f67e58c266" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>fixedValue_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1af6b170bcaf7c0994185c17cd43f2caef" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>name</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ad87db48a445a1b1b7536d74e0fd60c59" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>patchEnd</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a33d95d3e0b72d8383358f886b925f764" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>patchID</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1adbf45e525a5c07ad1b0d9f6707806011" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>patchID_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a152a639fe77a2a27df9a4ac9687b1cb5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>patchSize</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a0585c196f28f070971c918bde2c034e9" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>patchStart</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ac3d7e3335fc87d8c40af60de9eca56c0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>range</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_1aba7175d4263b350797265f1290bfa351" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>schema</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a7cf9bd6e98631b3ae53370953bc22d72" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>set</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a704e4f166091d177d272ad0e55186531" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>start_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1af2ed9427a67e2c073750142dd176de5b" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>SurfaceBoundaryFactory</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_1a2d8adf06aa62c69686fc792a5ecc2551" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>update</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a33e0e460fb4a0acdb198a0153ffd84f6" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::surfaceBoundary::FixedValue</scope><name>~BoundaryPatchMixin</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

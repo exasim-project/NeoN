@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="sundials_8hpp" kind="file" language="C++">
     <compoundname>sundials.hpp</compoundname>
     <briefdescription>
@@ -71,7 +71,7 @@
 <codeline lineno="78"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="79"><highlight class="normal"></highlight></codeline>
 <codeline lineno="88"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SKVectorType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fieldToSunNVectorImpl(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">NeoN::Vector&lt;ValueType&gt;</ref>&amp;<sp/>field,<sp/>N_Vector&amp;<sp/>vector)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fieldToSunNVectorImpl(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>NeoN::Vector&lt;ValueType&gt;&amp;<sp/>field,<sp/>N_Vector&amp;<sp/>vector)</highlight></codeline>
 <codeline lineno="90"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>view<sp/>=<sp/>::sundials::kokkos::GetVec&lt;SKVectorType&gt;(vector)-&gt;View();</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fieldView<sp/>=<sp/>field.<ref refid="classNeoN_1_1Vector_1ad537cb55485b851cbc3c1f3760b77ab9" kindref="member">view</ref>();</highlight></codeline>
@@ -84,7 +84,7 @@
 <codeline lineno="99"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"></highlight></codeline>
 <codeline lineno="108"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fieldToSunNVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">NeoN::Vector&lt;ValueType&gt;</ref>&amp;<sp/>field,<sp/>N_Vector&amp;<sp/>vector)</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fieldToSunNVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>NeoN::Vector&lt;ValueType&gt;&amp;<sp/>field,<sp/>N_Vector&amp;<sp/>vector)</highlight></codeline>
 <codeline lineno="110"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>CHECK<sp/>FOR<sp/>N_Vector<sp/>on<sp/>correct<sp/>space<sp/>in<sp/>DEBUG</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::GPUExecutor&gt;(field.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>()))</highlight></codeline>
@@ -110,7 +110,7 @@
 <codeline lineno="132"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"></highlight></codeline>
 <codeline lineno="142"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SKVectorType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>sunNVectorToVectorImpl(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/>vector,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">NeoN::Vector&lt;ValueType&gt;</ref>&amp;<sp/>field)</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>sunNVectorToVectorImpl(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/>vector,<sp/>NeoN::Vector&lt;ValueType&gt;&amp;<sp/>field)</highlight></codeline>
 <codeline lineno="144"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>view<sp/>=<sp/>::sundials::kokkos::GetVec&lt;SKVectorType&gt;(vector)-&gt;View();</highlight></codeline>
 <codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType*<sp/>fieldData<sp/>=<sp/>field.<ref refid="classNeoN_1_1Vector_1a43e0722e173db5b15126abbc163b5eb1" kindref="member">data</ref>();</highlight></codeline>
@@ -123,7 +123,7 @@
 <codeline lineno="153"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="154"><highlight class="normal"></highlight></codeline>
 <codeline lineno="161"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>sunNVectorToVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/>vector,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">NeoN::Vector&lt;ValueType&gt;</ref>&amp;<sp/>field)</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>sunNVectorToVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>N_Vector&amp;<sp/>vector,<sp/>NeoN::Vector&lt;ValueType&gt;&amp;<sp/>field)</highlight></codeline>
 <codeline lineno="163"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::GPUExecutor&gt;(field.<ref refid="classNeoN_1_1Vector_1aaf18ea0e8c0b963eea6b54db622cd1fa" kindref="member">exec</ref>()))</highlight></codeline>
 <codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -152,8 +152,8 @@
 <codeline lineno="202"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pointer<sp/>wrangling</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ValueType<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SolutionVectorType::VectorValueType;</highlight></codeline>
-<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">NeoN::dsl::Expression&lt;ValueType&gt;</ref>*<sp/>pdeExpre<sp/>=</highlight></codeline>
-<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="normal"><ref refid="classNeoN_1_1dsl_1_1Expression" kindref="compound">NeoN::dsl::Expression&lt;ValueType&gt;</ref>*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(userData);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/>NeoN::dsl::Expression&lt;ValueType&gt;*<sp/>pdeExpre<sp/>=</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="normal">NeoN::dsl::Expression&lt;ValueType&gt;*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(userData);</highlight></codeline>
 <codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/>sunrealtype*<sp/>yDotArray<sp/>=<sp/>N_VGetArrayPointer(ydot);</highlight></codeline>
 <codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/>sunrealtype*<sp/>yArray<sp/>=<sp/>N_VGetArrayPointer(y);</highlight></codeline>
 <codeline lineno="209"><highlight class="normal"></highlight></codeline>
@@ -162,9 +162,9 @@
 <codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>dereference<sp/>pointers<sp/>in<sp/>sundails.&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="214"><highlight class="normal"></highlight></codeline>
-<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>size<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(N_VGetLength(y));</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>size<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(N_VGetLength(y));</highlight></codeline>
 <codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Copy<sp/>initial<sp/>value<sp/>from<sp/>y<sp/>to<sp/>source.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">NeoN::Vector&lt;NeoN::scalar&gt;</ref><sp/><ref refid="namespaceNeoN_1_1dsl_1_1exp_1a1af72d0f302573a202dd802e69062214" kindref="member">source</ref><sp/>=<sp/>pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1ae5c2fec7fad4ac672d73e6f44ae7c4ab" kindref="member">explicitOperation</ref>(size)<sp/>*<sp/>-1.0;<sp/></highlight><highlight class="comment">//<sp/>compute<sp/>spatial</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/>NeoN::Vector&lt;NeoN::scalar&gt;<sp/><ref refid="namespaceNeoN_1_1dsl_1_1exp_1a1af72d0f302573a202dd802e69062214" kindref="member">source</ref><sp/>=<sp/>pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1ae5c2fec7fad4ac672d73e6f44ae7c4ab" kindref="member">explicitOperation</ref>(size)<sp/>*<sp/>-1.0;<sp/></highlight><highlight class="comment">//<sp/>compute<sp/>spatial</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a3457b41aba26d227a5cfa86d052abbfb" kindref="member">fence</ref>(pdeExpre-&gt;<ref refid="classNeoN_1_1dsl_1_1Expression_1ad7581ac19b360ac79225710d2a38005a" kindref="member">exec</ref>());</highlight></codeline>
 <codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/>NeoN::sundials::fieldToSunNVector(source,<sp/>ydot);<sp/></highlight><highlight class="comment">//<sp/>assign<sp/>rhs<sp/>to<sp/>ydot.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
@@ -306,7 +306,7 @@
 <codeline lineno="413"><highlight class="normal"></highlight></codeline>
 <codeline lineno="417"><highlight class="normal"><sp/><sp/><sp/><sp/>SKVector&amp;<sp/>operator=(SKVector&amp;&amp;)<sp/>noexcept<sp/>=<sp/>delete;</highlight></codeline>
 <codeline lineno="418"><highlight class="normal"></highlight></codeline>
-<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>setExecutor(const<sp/><ref refid="namespaceNeoN" kindref="compound">NeoN</ref>::Executor&amp;<sp/>exec)</highlight></codeline>
+<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>setExecutor(const<sp/>NeoN::Executor&amp;<sp/>exec)</highlight></codeline>
 <codeline lineno="424"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="425"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(std::holds_alternative&lt;NeoN::GPUExecutor&gt;(exec))</highlight></codeline>
 <codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
