@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>NeoN::timeIntegration::TimeIntegratorBase</compoundname>
     <basecompoundref refid="classNeoN_1_1RuntimeSelectionFactory" prot="public" virt="non-virtual">NeoN::RuntimeSelectionFactory&lt; TimeIntegratorBase&lt; SolutionType &gt;, Parameters&lt; const Dictionary &amp;, const Dictionary &amp; &gt; &gt;</basecompoundref>
@@ -153,11 +153,14 @@
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/timeIntegration.hpp" line="39" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1aa97bc8f374d17702e1c8f4816b8d0f24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" kindref="compound">TimeIntegratorBase</ref> &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase_1a88cfefa71b232c6a9aed200291761b5e" kindref="member">TimeIntegratorBase</ref> &gt;</type>
         <definition>virtual std::unique_ptr&lt; TimeIntegratorBase &gt; NeoN::timeIntegration::TimeIntegratorBase&lt; SolutionType &gt;::clone</definition>
         <argsstring>() const =0</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::timeIntegration::TimeIntegratorBase::clone</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1a44c328deeb3eb7dd09b66e7a6863ac25">clone</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1a6fa3324a8f1fd041ecb377e0a6ded05d">clone</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1timeIntegration_1_1SteadyState_1ab091ad7d0554b5b062af31cedcc914b3">clone</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -172,6 +175,8 @@
         <argsstring>() const</argsstring>
         <name>explicitIntegration</name>
         <qualifiedname>NeoN::timeIntegration::TimeIntegratorBase::explicitIntegration</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1timeIntegration_1_1BackwardEuler_1ac3ccde4fbcaf9b3f414e95694a7c3402">explicitIntegration</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1timeIntegration_1_1SteadyState_1a7e7a9562bde14c0bdd40c5742ce262e5">explicitIntegration</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -186,21 +191,25 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>NeoN::RuntimeSelectionFactory&lt; TimeIntegratorBase&lt; SolutionType &gt;, Parameters&lt; const Dictionary &amp;, const Dictionary &amp; &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
       <node id="1">
         <label>NeoN::timeIntegration::TimeIntegratorBase&lt; SolutionType &gt;</label>
         <link refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>NeoN::RuntimeSelectionFactory&lt; TimeIntegratorBase&lt; SolutionType &gt;, Parameters&lt; const Dictionary &amp;, const Dictionary &amp; &gt; &gt;</label>
-        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
-      </node>
     </inheritancegraph>
     <collaborationgraph>
       <node id="3">
         <label>NeoN::Dictionary</label>
         <link refid="classNeoN_1_1Dictionary"/>
+      </node>
+      <node id="2">
+        <label>NeoN::RuntimeSelectionFactory&lt; TimeIntegratorBase&lt; SolutionType &gt;, Parameters&lt; const Dictionary &amp;, const Dictionary &amp; &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
       <node id="1">
         <label>NeoN::timeIntegration::TimeIntegratorBase&lt; SolutionType &gt;</label>
@@ -211,10 +220,6 @@
           <edgelabel>solutionDict_</edgelabel>
           <edgelabel>timeIntegrationDict_</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>NeoN::RuntimeSelectionFactory&lt; TimeIntegratorBase&lt; SolutionType &gt;, Parameters&lt; const Dictionary &amp;, const Dictionary &amp; &gt; &gt;</label>
-        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/timeIntegration.hpp" line="20" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/timeIntegration.hpp" bodystart="24" bodyend="52"/>
