@@ -97,8 +97,8 @@ public:
     // refValue/valueFraction drive the operators via the mixed-BC kernels; a global Dirichlet flag
     // would over-constrain mixed-flow patches.
     InletOutlet(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false}), mesh_(mesh),
-          inletValue_(dict.get<ValueType>("inletValue")),
+        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false, .mixed = true}),
+          mesh_(mesh), inletValue_(dict.get<ValueType>("inletValue")),
           phiName_(dict.contains("phi") ? dict.get<std::string>("phi") : std::string("phi"))
     {}
 
