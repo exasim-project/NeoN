@@ -16,10 +16,6 @@ the import package is ``neon``:
 
 The package supports CPython 3.9–3.13 and depends on NumPy.
 
-.. contents::
-   :local:
-   :depth: 1
-
 Installing
 ----------
 

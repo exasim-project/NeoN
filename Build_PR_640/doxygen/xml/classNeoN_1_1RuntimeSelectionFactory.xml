@@ -1,9 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1RuntimeSelectionFactory" kind="class" language="C++" prot="public">
     <compoundname>NeoN::RuntimeSelectionFactory</compoundname>
-    <derivedcompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::DivOperatorFactory&lt; FieldValueType, AssemblyType &gt;</derivedcompoundref>
-    <derivedcompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory&lt; FieldValueType, AssemblyType &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::template Register&lt; GaussGreenDiv&lt; FieldValueType, AssemblyType &gt; &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::template Register&lt; CellLimitedGrad &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::template Register&lt; GaussGreenGrad &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::template Register&lt; GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt; &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" prot="public" virt="non-virtual">NeoN::timeIntegration::template Register&lt; BackwardEuler&lt; SolutionVectorType &gt; &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" prot="public" virt="non-virtual">NeoN::timeIntegration::template Register&lt; ForwardEuler&lt; SolutionVectorType &gt; &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase" prot="public" virt="non-virtual">NeoN::timeIntegration::template Register&lt; SteadyState&lt; SolutionVectorType &gt; &gt;</derivedcompoundref>
     <includes refid="runtimeSelectionFactory_8hpp" local="no">runtimeSelectionFactory.hpp</includes>
     <templateparamlist>
       <param>
@@ -42,15 +47,75 @@
         <label>NeoN::RuntimeSelectionFactory&lt; Base, Params &gt;</label>
         <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
+      <node id="4">
+        <label>NeoN::finiteVolume::cellCentred::CellLimitedGrad</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
-        <label>NeoN::finiteVolume::cellCentred::DivOperatorFactory&lt; FieldValueType, AssemblyType &gt;</label>
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; GaussGreenDiv&lt; FieldValueType, AssemblyType &gt; &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="6">
+        <label>NeoN::finiteVolume::cellCentred::GaussGreenGrad</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="3">
-        <label>NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory&lt; FieldValueType, AssemblyType &gt;</label>
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; CellLimitedGrad &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; GaussGreenGrad &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt; &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>NeoN::timeIntegration::BackwardEuler&lt; SolutionVectorType &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1BackwardEuler"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>NeoN::timeIntegration::ForwardEuler&lt; SolutionVectorType &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1ForwardEuler"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>NeoN::timeIntegration::SteadyState&lt; SolutionVectorType &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1SteadyState"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>NeoN::timeIntegration::template Register&lt; BackwardEuler&lt; SolutionVectorType &gt; &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>NeoN::timeIntegration::template Register&lt; ForwardEuler&lt; SolutionVectorType &gt; &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>NeoN::timeIntegration::template Register&lt; SteadyState&lt; SolutionVectorType &gt; &gt;</label>
+        <link refid="classNeoN_1_1timeIntegration_1_1TimeIntegratorBase"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
