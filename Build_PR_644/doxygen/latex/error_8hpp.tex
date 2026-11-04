@@ -23,27 +23,27 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail}{Neo\+N\+::\+Loggi
 \doxysubsubsection*{Macros}
 \begin{DoxyCompactItemize}
 \item 
-\#define \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)~    "{}Error\+: "{} $<$$<$ message $<$$<$ "{}\textbackslash{}n\+File\+: "{} $<$$<$ \+\_\+\+\_\+\+FILE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n\+Line\+: "{} $<$$<$ \+\_\+\+\_\+\+LINE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n"{}
+\#define \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)
 \begin{DoxyCompactList}\small\item\em Builds an error message fragment with the message, file, and line. The stack trace is emitted separately by log\+Fatal()/terminate(). \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\+\_\+\+ERROR\+\_\+\+EXIT}}(message)~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())
+\#define \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\+\_\+\+ERROR\+\_\+\+EXIT}}(message)
 \begin{DoxyCompactList}\small\item\em Macro for printing an error message and aborting the program. \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\+\_\+\+THROW}}(message)~    throw \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+N\+::\+Neo\+NException}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())
+\#define \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\+\_\+\+THROW}}(message)
 \begin{DoxyCompactList}\small\item\em Macro for throwing a Neo\+NException with the specified error message. \end{DoxyCompactList}\item 
 \#define \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\+\_\+\+ASSERT}}(condition,  message)
 \begin{DoxyCompactList}\small\item\em Macro for asserting a condition and printing an error message if the condition is false. \end{DoxyCompactList}\item 
 \#define \mbox{\hyperlink{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}{NF\+\_\+\+ASSERT\+\_\+\+THROW}}(condition,  message)
 \begin{DoxyCompactList}\small\item\em Macro for asserting a condition and throwing a Neo\+NException if the condition is false. \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT}}(condition,  message)~((void)0)
+\#define \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT}}(condition,  message)
 \begin{DoxyCompactList}\small\item\em Macro for asserting a condition and printing an error message if the condition is false (only in debug mode). \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+THROW}}(condition,  message)~((void)0)
+\#define \mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+THROW}}(condition,  message)
 \begin{DoxyCompactList}\small\item\em Macro for asserting a condition and throwing a Neo\+NException if the condition is false (only in debug mode). \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_a40409dec4da3178309a1b0f662496159}{NF\+\_\+\+ASSERT\+\_\+\+EQUAL}}(a,  b)~\mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\+\_\+\+ASSERT}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)
+\#define \mbox{\hyperlink{error_8hpp_a40409dec4da3178309a1b0f662496159}{NF\+\_\+\+ASSERT\+\_\+\+EQUAL}}(a,  b)
 \begin{DoxyCompactList}\small\item\em Macro for asserting that two values are equal and printing an error message if they are not. \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL}}(a,  b)~\mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)
+\#define \mbox{\hyperlink{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL}}(a,  b)
 \begin{DoxyCompactList}\small\item\em Macro for asserting that two values are equal and printing an error message if they are not (only in debug mode). \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d}{NF\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW}}(a,  b)~\mbox{\hyperlink{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}{NF\+\_\+\+ASSERT\+\_\+\+THROW}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)
+\#define \mbox{\hyperlink{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d}{NF\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW}}(a,  b)
 \begin{DoxyCompactList}\small\item\em Macro for asserting that two values are equal and throwing a Neo\+NException if they are not. \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW}}(a,  b)~    \mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+THROW}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)
+\#define \mbox{\hyperlink{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW}}(a,  b)
 \begin{DoxyCompactList}\small\item\em Macro for asserting that two values are equal and throwing a Neo\+NException if they are not (only in debug mode). \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
@@ -52,12 +52,14 @@ void \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771
 \end{DoxyCompactItemize}
 
 
+\label{doc-define-members}
+\Hypertarget{error_8hpp_doc-define-members}
 \doxysubsection{Macro Definition Documentation}
-\Hypertarget{error_8hpp_aecc669a189db22f652ffb9788f01a99b}\label{error_8hpp_aecc669a189db22f652ffb9788f01a99b} 
-\index{error.hpp@{error.hpp}!NF\_ASSERT@{NF\_ASSERT}}
+\Hypertarget{error_8hpp_aecc669a189db22f652ffb9788f01a99b}\index{error.hpp@{error.hpp}!NF\_ASSERT@{NF\_ASSERT}}
 \index{NF\_ASSERT@{NF\_ASSERT}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ASSERT}{NF\_ASSERT}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ASSERT(\begin{DoxyParamCaption}\item[{}]{condition,  }\item[{}]{message }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \label{error_8hpp_aecc669a189db22f652ffb9788f01a99b} 
+\#define NF\+\_\+\+ASSERT(\begin{DoxyParamCaption}\item[{}]{condition}{, }\item[{}]{message}{}\end{DoxyParamCaption})}
 
 {\bfseries Value\+:}
 \begin{DoxyCode}{0}
@@ -91,12 +93,17 @@ This macro checks the specified condition and, if it evaluates to false, prints 
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_a40409dec4da3178309a1b0f662496159}\label{error_8hpp_a40409dec4da3178309a1b0f662496159} 
-\index{error.hpp@{error.hpp}!NF\_ASSERT\_EQUAL@{NF\_ASSERT\_EQUAL}}
+\Hypertarget{error_8hpp_a40409dec4da3178309a1b0f662496159}\index{error.hpp@{error.hpp}!NF\_ASSERT\_EQUAL@{NF\_ASSERT\_EQUAL}}
 \index{NF\_ASSERT\_EQUAL@{NF\_ASSERT\_EQUAL}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ASSERT\_EQUAL}{NF\_ASSERT\_EQUAL}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ASSERT\+\_\+\+EQUAL(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~\mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\+\_\+\+ASSERT}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)}
+{\footnotesize\ttfamily \label{error_8hpp_a40409dec4da3178309a1b0f662496159} 
+\#define NF\+\_\+\+ASSERT\+\_\+\+EQUAL(\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(a\ ==\ b,\ \textcolor{stringliteral}{"{}Expected\ "{}}\ <<\ b\ <<\ \textcolor{stringliteral}{"{},\ got\ "{}}\ <<\ a)}
+
+\end{DoxyCode}
 
 
 Macro for asserting that two values are equal and printing an error message if they are not. 
@@ -114,12 +121,17 @@ This macro checks that the two specified values are equal and, if they are not, 
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00218}{218}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d}\label{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d} 
-\index{error.hpp@{error.hpp}!NF\_ASSERT\_EQUAL\_THROW@{NF\_ASSERT\_EQUAL\_THROW}}
+\Hypertarget{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d}\index{error.hpp@{error.hpp}!NF\_ASSERT\_EQUAL\_THROW@{NF\_ASSERT\_EQUAL\_THROW}}
 \index{NF\_ASSERT\_EQUAL\_THROW@{NF\_ASSERT\_EQUAL\_THROW}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ASSERT\_EQUAL\_THROW}{NF\_ASSERT\_EQUAL\_THROW}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~\mbox{\hyperlink{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}{NF\+\_\+\+ASSERT\+\_\+\+THROW}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)}
+{\footnotesize\ttfamily \label{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d} 
+\#define NF\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}{NF\_ASSERT\_THROW}}(a\ ==\ b,\ \textcolor{stringliteral}{"{}Expected\ "{}}\ <<\ b\ <<\ \textcolor{stringliteral}{"{},\ got\ "{}}\ <<\ a)}
+
+\end{DoxyCode}
 
 
 Macro for asserting that two values are equal and throwing a Neo\+NException if they are not. 
@@ -137,11 +149,11 @@ This macro checks that the two specified values are equal and, if they are not, 
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00245}{245}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}\label{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32} 
-\index{error.hpp@{error.hpp}!NF\_ASSERT\_THROW@{NF\_ASSERT\_THROW}}
+\Hypertarget{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}\index{error.hpp@{error.hpp}!NF\_ASSERT\_THROW@{NF\_ASSERT\_THROW}}
 \index{NF\_ASSERT\_THROW@{NF\_ASSERT\_THROW}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ASSERT\_THROW}{NF\_ASSERT\_THROW}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ASSERT\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{condition,  }\item[{}]{message }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \label{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32} 
+\#define NF\+\_\+\+ASSERT\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{condition}{, }\item[{}]{message}{}\end{DoxyParamCaption})}
 
 {\bfseries Value\+:}
 \begin{DoxyCode}{0}
@@ -172,12 +184,17 @@ This macro checks the specified condition and, if it evaluates to false, constru
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00144}{144}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_af1af39ea56903b56ed322432441511b5}\label{error_8hpp_af1af39ea56903b56ed322432441511b5} 
-\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT@{NF\_DEBUG\_ASSERT}}
+\Hypertarget{error_8hpp_af1af39ea56903b56ed322432441511b5}\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT@{NF\_DEBUG\_ASSERT}}
 \index{NF\_DEBUG\_ASSERT@{NF\_DEBUG\_ASSERT}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_DEBUG\_ASSERT}{NF\_DEBUG\_ASSERT}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT(\begin{DoxyParamCaption}\item[{}]{condition,  }\item[{}]{message }\end{DoxyParamCaption})~((void)0)}
+{\footnotesize\ttfamily \label{error_8hpp_af1af39ea56903b56ed322432441511b5} 
+\#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT(\begin{DoxyParamCaption}\item[{}]{condition}{, }\item[{}]{message}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((void)0)}
+
+\end{DoxyCode}
 
 
 Macro for asserting a condition and printing an error message if the condition is false (only in debug mode). 
@@ -195,12 +212,17 @@ This macro does nothing in release mode.
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00190}{190}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0}\label{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0} 
-\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_EQUAL@{NF\_DEBUG\_ASSERT\_EQUAL}}
+\Hypertarget{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0}\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_EQUAL@{NF\_DEBUG\_ASSERT\_EQUAL}}
 \index{NF\_DEBUG\_ASSERT\_EQUAL@{NF\_DEBUG\_ASSERT\_EQUAL}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_DEBUG\_ASSERT\_EQUAL}{NF\_DEBUG\_ASSERT\_EQUAL}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~\mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)}
+{\footnotesize\ttfamily \label{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0} 
+\#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL(\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(a\ ==\ b,\ \textcolor{stringliteral}{"{}Expected\ "{}}\ <<\ b\ <<\ \textcolor{stringliteral}{"{},\ got\ "{}}\ <<\ a)}
+
+\end{DoxyCode}
 
 
 Macro for asserting that two values are equal and printing an error message if they are not (only in debug mode). 
@@ -218,12 +240,17 @@ This macro is equivalent to NF\+\_\+\+ASSERT\+\_\+\+EQUAL in debug mode.
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00230}{230}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}\label{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1} 
-\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_EQUAL\_THROW@{NF\_DEBUG\_ASSERT\_EQUAL\_THROW}}
+\Hypertarget{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_EQUAL\_THROW@{NF\_DEBUG\_ASSERT\_EQUAL\_THROW}}
 \index{NF\_DEBUG\_ASSERT\_EQUAL\_THROW@{NF\_DEBUG\_ASSERT\_EQUAL\_THROW}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_DEBUG\_ASSERT\_EQUAL\_THROW}{NF\_DEBUG\_ASSERT\_EQUAL\_THROW}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~    \mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+THROW}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)}
+{\footnotesize\ttfamily \label{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1} 
+\#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{NF\_DEBUG\_ASSERT\_THROW}}(a\ ==\ b,\ \textcolor{stringliteral}{"{}Expected\ "{}}\ <<\ b\ <<\ \textcolor{stringliteral}{"{},\ got\ "{}}\ <<\ a)}
+
+\end{DoxyCode}
 
 
 Macro for asserting that two values are equal and throwing a Neo\+NException if they are not (only in debug mode). 
@@ -241,12 +268,17 @@ This macro is equivalent to NF\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW in debug 
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00257}{257}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}\label{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe} 
-\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_THROW@{NF\_DEBUG\_ASSERT\_THROW}}
+\Hypertarget{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}\index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_THROW@{NF\_DEBUG\_ASSERT\_THROW}}
 \index{NF\_DEBUG\_ASSERT\_THROW@{NF\_DEBUG\_ASSERT\_THROW}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_DEBUG\_ASSERT\_THROW}{NF\_DEBUG\_ASSERT\_THROW}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{condition,  }\item[{}]{message }\end{DoxyParamCaption})~((void)0)}
+{\footnotesize\ttfamily \label{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe} 
+\#define NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{condition}{, }\item[{}]{message}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((void)0)}
+
+\end{DoxyCode}
 
 
 Macro for asserting a condition and throwing a Neo\+NException if the condition is false (only in debug mode). 
@@ -264,12 +296,17 @@ This macro does nothing in release mode.
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00203}{203}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}\label{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49} 
-\index{error.hpp@{error.hpp}!NF\_ERROR\_EXIT@{NF\_ERROR\_EXIT}}
+\Hypertarget{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}\index{error.hpp@{error.hpp}!NF\_ERROR\_EXIT@{NF\_ERROR\_EXIT}}
 \index{NF\_ERROR\_EXIT@{NF\_ERROR\_EXIT}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ERROR\_EXIT}{NF\_ERROR\_EXIT}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ERROR\+\_\+\+EXIT(\begin{DoxyParamCaption}\item[{}]{message }\end{DoxyParamCaption})~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())}
+{\footnotesize\ttfamily \label{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49} 
+\#define NF\+\_\+\+ERROR\+\_\+\+EXIT(\begin{DoxyParamCaption}\item[{}]{message}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{NeoN::Logging::detail::logFatal}}((std::stringstream()\ <<\ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\_ERROR\_MESSAGE}}(message)).str())}
+
+\end{DoxyCode}
 
 
 Macro for printing an error message and aborting the program. 
@@ -285,12 +322,17 @@ This macro prints the specified error message to the standard error stream, incl
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}\label{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692} 
-\index{error.hpp@{error.hpp}!NF\_ERROR\_MESSAGE@{NF\_ERROR\_MESSAGE}}
+\Hypertarget{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}\index{error.hpp@{error.hpp}!NF\_ERROR\_MESSAGE@{NF\_ERROR\_MESSAGE}}
 \index{NF\_ERROR\_MESSAGE@{NF\_ERROR\_MESSAGE}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ERROR\_MESSAGE}{NF\_ERROR\_MESSAGE}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ERROR\+\_\+\+MESSAGE(\begin{DoxyParamCaption}\item[{}]{message }\end{DoxyParamCaption})~    "{}Error\+: "{} $<$$<$ message $<$$<$ "{}\textbackslash{}n\+File\+: "{} $<$$<$ \+\_\+\+\_\+\+FILE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n\+Line\+: "{} $<$$<$ \+\_\+\+\_\+\+LINE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n"{}}
+{\footnotesize\ttfamily \label{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692} 
+\#define NF\+\_\+\+ERROR\+\_\+\+MESSAGE(\begin{DoxyParamCaption}\item[{}]{message}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \textcolor{stringliteral}{"{}Error:\ "{}}\ <<\ message\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)nFile:\ "{}}\ <<\ \_\_FILE\_\_\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)nLine:\ "{}}\ <<\ \_\_LINE\_\_\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
+
+\end{DoxyCode}
 
 
 Builds an error message fragment with the message, file, and line. The stack trace is emitted separately by log\+Fatal()/terminate(). 
@@ -304,12 +346,17 @@ Builds an error message fragment with the message, file, and line. The stack tra
 
 Definition at line \mbox{\hyperlink{error_8hpp_source_l00074}{74}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
-\Hypertarget{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}\label{error_8hpp_a01fd2dadf84a907b46bb93644bde393f} 
-\index{error.hpp@{error.hpp}!NF\_THROW@{NF\_THROW}}
+\Hypertarget{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}\index{error.hpp@{error.hpp}!NF\_THROW@{NF\_THROW}}
 \index{NF\_THROW@{NF\_THROW}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_THROW}{NF\_THROW}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{message }\end{DoxyParamCaption})~    throw \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+N\+::\+Neo\+NException}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())}
+{\footnotesize\ttfamily \label{error_8hpp_a01fd2dadf84a907b46bb93644bde393f} 
+\#define NF\+\_\+\+THROW(\begin{DoxyParamCaption}\item[{}]{message}{}\end{DoxyParamCaption})}
 
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{throw}\ \mbox{\hyperlink{classNeoN_1_1NeoNException}{NeoN::NeoNException}}((std::stringstream()\ <<\ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\_ERROR\_MESSAGE}}(message)).str())}
+
+\end{DoxyCode}
 
 
 Macro for throwing a Neo\+NException with the specified error message. 

@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean" kind="class" language="C++" prot="public">
     <compoundname>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">VolumeBoundaryFactory&lt; NeoN::scalar &gt;::template Register</basecompoundref>
+    <basecompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::template Register&lt; FixedMean &gt;</basecompoundref>
     <includes refid="fixedMean_8hpp" local="no">fixedMean.hpp</includes>
     <sectiondef kind="private-type">
       <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1ae0a279821abe456eba4fd006c9de1aea" prot="private" static="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean" kindref="compound">FixedMean</ref> &gt;</type>
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a805723729eacf9d559d686233df8eb27" kindref="member">VolumeBoundaryFactory</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a3858bc94144d9127b48184dc85b9bd74" kindref="member">FixedMean</ref> &gt;</type>
         <definition>using NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean::Base =  VolumeBoundaryFactory&lt;NeoN::scalar&gt;::template Register&lt;FixedMean&gt;</definition>
         <argsstring></argsstring>
         <name>Base</name>
@@ -66,7 +66,7 @@
           <declname>dict</declname>
         </param>
         <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <type><ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></type>
           <declname>patchID</declname>
         </param>
         <briefdescription>
@@ -83,6 +83,7 @@
         <argsstring>(Field&lt; NeoN::scalar &gt; &amp;domainVector) final</argsstring>
         <name>correctBoundaryCondition</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean::correctBoundaryCondition</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a4096139369d9bd6502e50c56422052d2">correctBoundaryCondition</reimplements>
         <param>
           <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt; &amp;</type>
           <declname>domainVector</declname>
@@ -95,12 +96,13 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp" line="123" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp" bodystart="123" bodyend="126"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a760e9af9ee8ba497baa93bf1b443af60" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a760e9af9ee8ba497baa93bf1b443af60" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>std::string</type>
         <definition>std::string NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean::getName</definition>
         <argsstring>() const override</argsstring>
         <name>getName</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean::getName</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1ac59aad1b4745aaa76ffdd6008015b00b">getName</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -110,11 +112,12 @@
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp" line="130" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp" bodystart="130" bodyend="130"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1ad61d9af4837792026ac5a3e3f1825d01" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a805723729eacf9d559d686233df8eb27" kindref="member">VolumeBoundaryFactory</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt; &gt;</type>
         <definition>virtual std::unique_ptr&lt; VolumeBoundaryFactory&lt; NeoN::scalar &gt; &gt; NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean::clone</definition>
         <argsstring>() const final</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean::clone</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a06ed95a7e62e1faa3e6869eb9fb70a32">clone</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -173,39 +176,84 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>NeoN::RuntimeSelectionFactory&lt; Base, Params &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
+      <node id="4">
+        <label>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin"/>
+      </node>
+      <node id="2">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; FixedMean &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>VolumeBoundaryFactory&lt; NeoN::scalar &gt;::template Register&lt; FixedMean &gt;</label>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="3">
+        <label>NeoN::RuntimeSelectionFactory&lt; Base, Params &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
+      <node id="4">
+        <label>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin"/>
+      </node>
+      <node id="2">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; FixedMean &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>VolumeBoundaryFactory&lt; NeoN::scalar &gt;::template Register&lt; FixedMean &gt;</label>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp" line="99" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedMean.hpp" bodystart="100" bodyend="149"/>
     <listofallmembers>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a5c503a1e25c6fa991727e7e246130109" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>attributes</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1adad9d6655b500dd68e8fd74a55cbb081" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>attributes_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1ae0a279821abe456eba4fd006c9de1aea" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a2f25d5ddb8da863d82821cd0360307c9" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a3346a58e9b29984e6459d093592c9a21" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a90f3092d2971c49e8c067dbdf4482ef6" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>BoundaryPatchMixin</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1ad61d9af4837792026ac5a3e3f1825d01" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>clone</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a2389308f60ba7ddc50afde6ffbf7b41b" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>correctBoundaryCondition</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1affd0ad639e269e701db4a736be8d06de" prot="public" virt="virtual" ambiguityscope="NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory&lt; NeoN::scalar &gt;::template Register&lt; FixedMean &gt;::"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>correctBoundaryCondition</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a0171c771588d9982e824338a45735353" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>doc</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a26175fdfa0ced8e1cb08e52298bcadf3" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>end_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a3858bc94144d9127b48184dc85b9bd74" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>FixedMean</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a760e9af9ee8ba497baa93bf1b443af60" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>getName</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a760e9af9ee8ba497baa93bf1b443af60" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>getName</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a15db0515613359ad755299abdb8fa7ca" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>meanValue_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a663edb7a2e965ce722c864a73626f18d" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>mesh_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a33346602fa1cfd6ccc3fcc7fbcf656ba" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>name</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ad87db48a445a1b1b7536d74e0fd60c59" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>patchEnd</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a33d95d3e0b72d8383358f886b925f764" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>patchID</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1adbf45e525a5c07ad1b0d9f6707806011" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>patchID_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a152a639fe77a2a27df9a4ac9687b1cb5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>patchSize</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a0585c196f28f070971c918bde2c034e9" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>patchStart</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ac3d7e3335fc87d8c40af60de9eca56c0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>range</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedMean_1a6f048ece8bf1ea612c602867c3720d88" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>schema</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a159a7bfaf16963bf4acf4a73e2e42422" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>set</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a704e4f166091d177d272ad0e55186531" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>start_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a7447a0202cffe2b0ec1c0fdfc5494710" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>update</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a805723729eacf9d559d686233df8eb27" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>VolumeBoundaryFactory</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a33e0e460fb4a0acdb198a0153ffd84f6" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>~BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a3ba452b07c8ab275d70445f936f6005b" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::FixedMean</scope><name>~VolumeBoundaryFactory</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

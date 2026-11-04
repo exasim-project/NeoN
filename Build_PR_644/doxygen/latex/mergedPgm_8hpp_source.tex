@@ -196,7 +196,7 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00210}00210\ \ \ \ \ \ \ \ \ t-\/>copy\_from(r);}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00211}00211\ \ \ \ \ \ \ \ \ t-\/>sub\_scaled(one,\ ad);\ \textcolor{comment}{//\ t\ =\ r\ -\/\ sf\ A\ d}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00212}00212\ \ \ \ \ \ \ \ \ d-\/>scale(sf);\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ d\ =\ sf\ d}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00213}00213\ \ \ \ \ \ \ \ \ invDiag\_-\/>apply(one,\ local(\textcolor{keyword}{static\_cast<}\textcolor{keyword}{const\ }VecType*\textcolor{keyword}{>}(t)),\ \mbox{\hyperlink{namespaceNeoN_a7ab23a6da54994291e4c183456fc75d8}{one}},\ local(d));\ \textcolor{comment}{//\ d\ +=\ D\string^-\/1\ t}}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00213}00213\ \ \ \ \ \ \ \ \ invDiag\_-\/>apply(one,\ local(\textcolor{keyword}{static\_cast<}\textcolor{keyword}{const\ }VecType*\textcolor{keyword}{>}(t)),\ one,\ local(d));\ \textcolor{comment}{//\ d\ +=\ D\string^-\/1\ t}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00214}00214\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00215}00215\ \ \ \ \ \ \ \ \ x-\/>scale(beta);}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00216}00216\ \ \ \ \ \ \ \ \ x-\/>add\_scaled(alpha,\ d);}
@@ -247,7 +247,7 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00292}00292\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00293}00293\ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ get\_system\_matrix()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ system\_matrix\_;\ \}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00294}00294\ }
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00295}00295\ \ \ \ \ GKO\_CREATE\_FACTORY\_PARAMETERS(parameters,\ \mbox{\hyperlink{classFactory}{Factory}})}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00295}00295\ \ \ \ \ GKO\_CREATE\_FACTORY\_PARAMETERS(parameters,\ Factory)}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00296}00296\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00298}00298\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ GKO\_FACTORY\_PARAMETER\_SCALAR(merge\_levels,\ 2u);}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00300}00300\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ GKO\_FACTORY\_PARAMETER\_SCALAR(max\_iterations,\ 15u);}
@@ -257,8 +257,8 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00305}00305\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ GKO\_FACTORY\_PARAMETER\_SCALAR(scale\_correction,\ \textcolor{keyword}{false});}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00306}00306\ \ \ \ \ \};}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00307}00307\ \ \ \ \ \textcolor{keyword}{class\ }reuse\_data\_type;}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00308}00308\ \ \ \ \ GKO\_ENABLE\_LIN\_OP\_FACTORY\_WITH\_REUSE(MergedPgm,\ parameters,\ \mbox{\hyperlink{classFactory}{Factory}},\ reuse\_data\_type);}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00309}00309\ \ \ \ \ GKO\_ENABLE\_BUILD\_METHOD(\mbox{\hyperlink{classFactory}{Factory}});}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00308}00308\ \ \ \ \ GKO\_ENABLE\_LIN\_OP\_FACTORY\_WITH\_REUSE(MergedPgm,\ parameters,\ Factory,\ reuse\_data\_type);}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00309}00309\ \ \ \ \ GKO\_ENABLE\_BUILD\_METHOD(Factory);}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00310}00310\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00317}00317\ \ \ \ \ \textcolor{keyword}{class\ }reuse\_data\_type\ :\ \textcolor{keyword}{public}\ gko::LinOpFactory::ReuseData}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00318}00318\ \ \ \ \ \{}
@@ -287,12 +287,12 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00341}00341\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00342}00342\ \ \ \ \ \textcolor{keyword}{explicit}\ MergedPgm(std::shared\_ptr<const\ gko::Executor>\ exec)\ :\ gko::LinOp(std::move(exec))\ \{\}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00343}00343\ }
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00344}00344\ \ \ \ \ MergedPgm(\textcolor{keyword}{const}\ \mbox{\hyperlink{classFactory}{Factory}}*\ factory,\ std::shared\_ptr<const\ gko::LinOp>\ system\_matrix)}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00344}00344\ \ \ \ \ MergedPgm(\textcolor{keyword}{const}\ Factory*\ factory,\ std::shared\_ptr<const\ gko::LinOp>\ system\_matrix)}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00345}00345\ \ \ \ \ \ \ \ \ :\ MergedPgm(factory,\ std::move(system\_matrix),\ nullptr)}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00346}00346\ \ \ \ \ \{\}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00347}00347\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00348}00348\ \ \ \ \ MergedPgm(}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00349}00349\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFactory}{Factory}}*\ factory,}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00349}00349\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Factory*\ factory,}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00350}00350\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ system\_matrix,}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00351}00351\ \ \ \ \ \ \ \ \ reuse\_data\_type\&\ reuse\_data}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00352}00352\ \ \ \ \ )}
@@ -300,7 +300,7 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00354}00354\ \ \ \ \ \{\}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00355}00355\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00356}00356\ \ \ \ \ MergedPgm(}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00357}00357\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFactory}{Factory}}*\ factory,}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00357}00357\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Factory*\ factory,}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00358}00358\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ system\_matrix,}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00359}00359\ \ \ \ \ \ \ \ \ reuse\_data\_type*\ reuse\_data}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00360}00360\ \ \ \ \ )}
@@ -323,7 +323,7 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00377}00377\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00378}00378\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00380}00380\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ check\_reuse\_consistent(}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00381}00381\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFactory}{Factory}}*,\ \textcolor{keyword}{const}\ gko::LinOp*\ input,\ \textcolor{keyword}{const}\ reuse\_data\_type\&\ reuse\_data}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00381}00381\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Factory*,\ \textcolor{keyword}{const}\ gko::LinOp*\ input,\ \textcolor{keyword}{const}\ reuse\_data\_type\&\ reuse\_data}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00382}00382\ \ \ \ \ )}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00383}00383\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00384}00384\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!reuse\_data.initialized\_)\ \textcolor{keywordflow}{return};}
@@ -340,8 +340,8 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00395}00395\ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/\ localized\ /\ Schwarz\ path:\ fine\ op\ is\ a\ plain\ Csr\ on\ this\ rank\ -\/-\/-\/-\/}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00396}00396\ \ \ \ \ \textcolor{keywordtype}{void}\ generateLocal(reuse\_data\_type*\ reuseData)}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00397}00397\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00398}00398\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classA}{A}}\ =\ as\_csr(system\_matrix\_);}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00399}00399\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ fineRows\ =\ \mbox{\hyperlink{classA}{A}}-\/>get\_size()[0];}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00398}00398\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ A\ =\ as\_csr(system\_matrix\_);}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00399}00399\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ fineRows\ =\ A-\/>get\_size()[0];}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00400}00400\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ reuseMerged\ =\ reuseData\ \&\&\ reuseData-\/>initialized\_;}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00401}00401\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00402}00402\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Run\ Pgm\ \`{}merge\_levels`\ times,\ composing\ the\ per-\/level\ aggregations\ BY\ INDEX.\ Each\ inner}}
@@ -354,7 +354,7 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00409}00409\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ and\ only\ the\ coarse\ operator\ is\ refreshed.}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00410}00410\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ pgmFactory\ =\ makePgm();}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00411}00411\ \ \ \ \ \ \ \ \ std::vector<std::unique\_ptr<gko::LinOpFactory::ReuseData>>\ newSlots;}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00412}00412\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ csr>\ coarse\ =\ \mbox{\hyperlink{classA}{A}};}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00412}00412\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ csr>\ coarse\ =\ A;}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00413}00413\ \ \ \ \ \ \ \ \ std::vector<IndexType>\ mergedAgg;\ \textcolor{comment}{//\ fine\ row\ -\/>\ current\ coarse\ index\ (host)}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00414}00414\ \ \ \ \ \ \ \ \ gko::size\_type\ coarseRows\ =\ 0;}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00415}00415\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ <\ parameters\_.merge\_levels;\ ++i)}
@@ -381,7 +381,7 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00436}00436\ \ \ \ \ \ \ \ \ \ \ \ \ restrict\_\ =\ gko::share(gko::as<csr>(pCsr-\/>transpose()));\ \textcolor{comment}{//\ Csr,\ coarse\ x\ fine}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00437}00437\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00438}00438\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ coarse\ ==\ P\_merged\string^T\ A\ P\_merged\ already\ (last\ Pgm\ level's\ coarse\ op);\ use\ it\ directly.}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00439}00439\ \ \ \ \ \ \ \ \ setLevel(\mbox{\hyperlink{classA}{A}},\ \mbox{\hyperlink{classA}{A}}.get(),\ coarse);}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00439}00439\ \ \ \ \ \ \ \ \ setLevel(A,\ A.get(),\ coarse);}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00440}00440\ \ \ \ \ \ \ \ \ recordReuse(reuseData,\ std::move(newSlots),\ \textcolor{keyword}{false});}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00441}00441\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00442}00442\ }

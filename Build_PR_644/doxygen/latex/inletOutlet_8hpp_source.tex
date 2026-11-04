@@ -21,7 +21,7 @@
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00018}00018\ \{}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00019}00019\ }
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{detail}}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00021}00021\ \{}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00022}00022\ \textcolor{comment}{//\ Shared\ kernel\ behind\ inletOutlet.\ Per\ boundary\ face\ it\ switches\ between\ two\ mixed-\/BC\ states}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00023}00023\ \textcolor{comment}{//\ according\ to\ the\ sign\ of\ the\ face\ flux\ phi:}}
@@ -56,8 +56,8 @@
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00052}00052\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ range,}
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internal\ =\ internalV[owner];}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00058}00058\ }
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Inflow\ where\ the\ face\ flux\ is\ negative;\ otherwise\ outflow\ (zero-\/gradient).}}
@@ -65,7 +65,7 @@
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00061}00061\ }
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ valueFraction;}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ inletValue;}
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ NeoN::zero<ValueType>();}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{NeoN::zero<ValueType>}}();}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ inletValue\ *\ valueFraction\ +\ internal\ *\ (1.0\ -\/\ valueFraction);}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \},}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setInletOutletValue"{}}}
@@ -84,7 +84,7 @@
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00080}00080\ \textcolor{comment}{//\ to\ zeroGradient,\ so\ a\ solver\ that\ wants\ the\ dynamic\ switch\ must\ call\ the\ field's}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00081}00081\ \textcolor{comment}{//\ correctBoundaryConditions(ctx)\ with\ phi\ inserted\ into\ the\ context.}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00082}00082\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet}{00083}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet}{InletOutlet}}\ :}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet}{00083}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ae8f68f9076952d0c676ffd46ed986675}{InletOutlet}}\ :}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<InletOutlet<ValueType>>}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00085}00085\ \{}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =}
@@ -94,13 +94,13 @@
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00090}00090\ }
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00092}00092\ }
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ab4d847e8aa3c0f5d1b27aa3e0aad90ca}{00093}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet}{InletOutletType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet}{InletOutlet<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ab4d847e8aa3c0f5d1b27aa3e0aad90ca}{00093}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ab4d847e8aa3c0f5d1b27aa3e0aad90ca}{InletOutletType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ae8f68f9076952d0c676ffd46ed986675}{InletOutlet<ValueType>}};}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00094}00094\ }
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{comment}{//\ assignable\ =\ true:\ the\ boundary\ value\ is\ recomputed\ every\ correctBoundaryCondition\ call,\ so}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{comment}{//\ any\ downstream\ overwrite\ is\ reversible.\ fixesValue\ =\ false:\ the\ per-\/face}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{comment}{//\ refValue/valueFraction\ drive\ the\ operators\ via\ the\ mixed-\/BC\ kernels;\ a\ global\ Dirichlet\ flag}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00098}00098\ \ \ \ \ \textcolor{comment}{//\ would\ over-\/constrain\ mixed-\/flow\ patches.}}
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00099}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ae8f68f9076952d0c676ffd46ed986675}{00099}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ae8f68f9076952d0c676ffd46ed986675}{InletOutlet}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00099}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ae8f68f9076952d0c676ffd46ed986675}{00099}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_ae8f68f9076952d0c676ffd46ed986675}{InletOutlet}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ patchID)}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{true},\ .fixesValue\ =\ \textcolor{keyword}{false}\}),\ mesh\_(mesh),}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ inletValue\_(dict.get<ValueType>(\textcolor{stringliteral}{"{}inletValue"{}})),}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ phiName\_(dict.contains(\textcolor{stringliteral}{"{}phi"{}})\ ?\ dict.get<std::string>(\textcolor{stringliteral}{"{}phi"{}})\ :\ std::string(\textcolor{stringliteral}{"{}phi"{}}))}
