@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory</compoundname>
     <basecompoundref refid="classNeoN_1_1RuntimeSelectionFactory" prot="public" virt="non-virtual">NeoN::RuntimeSelectionFactory&lt; FaceNormalGradientFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</basecompoundref>
@@ -11,7 +11,7 @@
     </templateparamlist>
     <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory_1a22e24e86e36721c15f1d1e2aefc02de5" prot="protected" static="no" mutable="no">
-        <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+        <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref></type>
         <definition>const Executor NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory&lt; ValueType &gt;::exec_</definition>
         <argsstring></argsstring>
         <name>exec_</name>
@@ -41,13 +41,13 @@
     </sectiondef>
     <sectiondef kind="public-static-func">
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory_1a1dbd4e95e6c40fdbdf8135ec30d2552f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory" kindref="compound">FaceNormalGradientFactory</ref> &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory_1ae42d440a3811a8acc0307c9b02d0127f" kindref="member">FaceNormalGradientFactory</ref> &gt;</type>
         <definition>static std::unique_ptr&lt; FaceNormalGradientFactory &gt; NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory&lt; ValueType &gt;::create</definition>
         <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;uMesh, const Input &amp;inputs)</argsstring>
         <name>create</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::create</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
           <declname>exec</declname>
         </param>
         <param>
@@ -55,7 +55,7 @@
           <declname>uMesh</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a7832dfa5a418fe87dc2e3de60259dfbf" kindref="member">Input</ref> &amp;</type>
           <declname>inputs</declname>
         </param>
         <briefdescription>
@@ -89,7 +89,7 @@
         <name>FaceNormalGradientFactory</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::FaceNormalGradientFactory</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
           <declname>exec</declname>
         </param>
         <param>
@@ -124,6 +124,9 @@
         <argsstring>(const VolumeField&lt; ValueType &gt; &amp;volVector, SurfaceField&lt; ValueType &gt; &amp;surfaceVector) const =0</argsstring>
         <name>faceNormalGrad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::faceNormalGrad</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_1a2d243ea09743f10f77a19d43b24f9188">faceNormalGrad</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedCorrected_1a599e023ea9776c4f5dd8f2e42aad1df1">faceNormalGrad</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_1acc3a5933e521063cc4b1f45348dfd4d5">faceNormalGrad</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
           <declname>volVector</declname>
@@ -148,6 +151,9 @@
         <argsstring>() const =0</argsstring>
         <name>deltaCoeffs</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::deltaCoeffs</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_1a83fc772e89c090379138884196377ac5">deltaCoeffs</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedCorrected_1a48128a4aea208ccce74a45f9ce06ceb9">deltaCoeffs</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_1a994f86a6c6d51e240428fe3461f1ee3c">deltaCoeffs</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -162,6 +168,8 @@
         <argsstring>() const</argsstring>
         <name>hasImplicitCorrection</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::hasImplicitCorrection</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_1a510d88dc0774e63c49a60d2c309ecfa1">hasImplicitCorrection</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedCorrected_1a469be6f818737c0d56e16e20d5f9c494">hasImplicitCorrection</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -176,6 +184,8 @@
         <argsstring>(const VolumeField&lt; ValueType &gt; &amp;, SurfaceField&lt; ValueType &gt; &amp;corrField) const</argsstring>
         <name>implicitCorrection</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::implicitCorrection</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_1a3f2e17a1ff6f3f9d809c4e1088869404">implicitCorrection</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedCorrected_1aedc24e34c87903a0f5678aa4f2c7adf5">implicitCorrection</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
         </param>
@@ -192,11 +202,14 @@
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp" line="76" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp" bodystart="76" bodyend="79"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory_1ade9209ee9afa72a1a322e1ec6c44449c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory" kindref="compound">FaceNormalGradientFactory</ref>&lt; ValueType &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory_1ae42d440a3811a8acc0307c9b02d0127f" kindref="member">FaceNormalGradientFactory</ref>&lt; ValueType &gt; &gt;</type>
         <definition>virtual std::unique_ptr&lt; FaceNormalGradientFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory&lt; ValueType &gt;::clone</definition>
         <argsstring>() const =0</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory::clone</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_1a14b7d1932f36565f89f491ebf6f18921">clone</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedCorrected_1a491ca5d03397e8c3147f718eff8e000e">clone</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_1af1c1b2abeb550dc7b6fda809a9791e96">clone</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -211,18 +224,22 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>NeoN::RuntimeSelectionFactory&lt; FaceNormalGradientFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::FaceNormalGradientFactory&lt; ValueType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>NeoN::RuntimeSelectionFactory&lt; FaceNormalGradientFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
         <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="3">
         <label>NeoN::UnstructuredMesh</label>
         <link refid="classNeoN_1_1UnstructuredMesh"/>
@@ -235,10 +252,6 @@
         <childnode refid="3" relation="usage">
           <edgelabel>mesh_</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>NeoN::RuntimeSelectionFactory&lt; FaceNormalGradientFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
-        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp" line="24" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp" bodystart="28" bodyend="88"/>
