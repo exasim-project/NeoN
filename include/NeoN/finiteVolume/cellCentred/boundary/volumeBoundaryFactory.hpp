@@ -33,6 +33,12 @@ struct BoundaryAttributes
                                     ///< damping must be applied as a per-component diagonal
                                     ///< correction at solve time rather than via the RHS.
                                     ///< Defaults to false so all existing BCs are unaffected.
+    bool mixed = false;             ///< whether this is a mixed BC (per-face valueFraction blending
+                                    ///< a refValue with a gradient). OpenFOAM's
+    ///< mixedFvPatchField::fixesValue() is true, which pressureControl
+    ///< uses to find the reference pressure; here fixesValue stays
+    ///< false because it drives the gradient treatment. Defaults to
+    ///< false.
 };
 
 template<typename ValueType>
