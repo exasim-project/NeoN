@@ -23,7 +23,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # pinned: the apt package list below targets Ubuntu 24.04
+    runs-on: ubuntu-24.04
     if: >
       github.repository == 'exasim-project/NeoN' &&
       (github.event_name != 'pull_request' ||
@@ -49,12 +50,6 @@ jobs:
     steps:
       - name: Checkout to repository
         uses: actions/checkout@v4
-
-      - name: Add clang repo
-        run: |
-          sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
-          wget https://apt.llvm.org/llvm-snapshot.gpg.key
-          sudo apt-key add llvm-snapshot.gpg.key
 
       - name: Set up cache
         uses: actions/cache@v4
