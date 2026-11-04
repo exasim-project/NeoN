@@ -27,5 +27,6 @@ var searchData=
   ['volumeboundaryfactory_24',['VolumeBoundaryFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['volumefield_25',['VolumeField',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['volumefield_3c_20fieldvaluetype_20_3e_26',['VolumeField&lt; FieldValueType &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['volumefield_3c_20scalar_20_3e_27',['VolumeField&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]]
+  ['volumefield_3c_20scalar_20_3e_27',['VolumeField&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['volumefield_3c_20vec3_20_3e_28',['VolumeField&lt; Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html',1,'NeoN::finiteVolume::cellCentred']]]
 ];

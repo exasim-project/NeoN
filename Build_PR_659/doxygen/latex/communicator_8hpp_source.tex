@@ -24,10 +24,10 @@
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00021}00021\ \{}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00022}00022\ }
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}\textcolor{preprocessor}{}}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00027}00027\ \textcolor{keyword}{struct\ }NodeCommMap}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00028}00028\ \{}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00029}00029\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}\ local\_idx;\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00029}00029\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ local\_idx;\ }
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00030}00030\ \};}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00031}00031\ }
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00035}00035\ \textcolor{keyword}{using\ }RankCommMap\ =\ std::vector<NodeCommMap>;}
@@ -77,7 +77,7 @@
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rankBuffer\ =\ CommBuffer\_[commName]-\/>getSend<valueType>(rank);}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (sizeType\ data\ =\ 0;\ data\ <\ sendMap\_[rank].size();\ ++data)}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rankBuffer[data]\ =}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ field.view()[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(sendMap\_[rank][data].local\_idx)];}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ field.view()[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\textcolor{keyword}{>}(sendMap\_[rank][data].local\_idx)];}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>startComm();}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00114}00114\ \ \ \ \ \}}
@@ -97,7 +97,7 @@
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ rankBuffer\ =\ CommBuffer\_[commName]-\/>getReceive<valueType>(rank);}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (sizeType\ data\ =\ 0;\ data\ <\ receiveMap\_[rank].size();\ ++data)}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ field.view()[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\textcolor{keyword}{>}(receiveMap\_[rank][data].local\_idx)]\ =}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ field.view()[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\textcolor{keyword}{>}(receiveMap\_[rank][data].local\_idx)]\ =}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rankBuffer[data];}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ CommBuffer\_[commName]-\/>finaliseComm();}
@@ -112,6 +112,7 @@
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00154}00154\ \ \ \ \ std::vector<bufferType>\ buffers;\ }
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00155}00155\ \ \ \ \ std::unordered\_map<std::string,\ bufferType*>}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ CommBuffer\_;\ }
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00158}00158\ }
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00163}00163\ \ \ \ \ bufferType*\ findDuplexBuffer();}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00164}00164\ }
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00169}00169\ \ \ \ \ bufferType*\ createNewDuplexBuffer();}
