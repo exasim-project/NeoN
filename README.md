@@ -1,5 +1,4 @@
-**[Requirements](#requirements)** |
-**[Compilation](#Compilation)** |
+**[Quickstart](#quickstart)** |
 **[Integration](#integration-with-other-cfd-frameworks)** |
 **[Documentation](https://exasim-project.com/NeoN/latest)** |
 **[Roadmap](https://github.com/orgs/exasim-project/projects/1/views/8)** |
@@ -16,6 +15,10 @@ By combining finite-volume abstractions with modern C++ and performance-portable
 
 Its modular architecture enables performance-portable execution and solver backends, currently using [Kokkos](https://github.com/kokkos/kokkos) and [Ginkgo](https://github.com/ginkgo-project/ginkgo) while remaining flexible to adopt alternative technologies as the framework evolves.
 
+> [!IMPORTANT]
+> The NeoN project needs you!
+> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
+
 ## Key Features
 
 - Execution on
@@ -29,165 +32,33 @@ Its modular architecture enables performance-portable execution and solver backe
 
 ---
 
-> [!IMPORTANT]
-> The NeoN project needs you!
-> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
+## Quickstart
 
-## Requirements
+To build the C++ library from source you need CMake ≥ 3.22, a C++20 compiler (_gcc >= 13_ or _clang >= 19_), [Ninja](https://ninja-build.org/) (only when using the CMake presets) and, optionally, MPI (disable with `-DNeoN_WITH_MPI=OFF`). Kokkos, Ginkgo and other C++ dependencies are managed through `CPM <https://github.com/cpm-cmake/CPM.cmake>` and fetched automatically when suitable system installations are unavailable.
 
-NeoN has the following requirements
+    git clone https://github.com/exasim-project/NeoN.git && cd NeoN
+    cmake --preset production -DNeoN_WITH_MPI=OFF
+    cmake --build --preset production
 
-*  _cmake > 3.22_
-*  _gcc >= 13_ or  _clang >= 19_
-*  _Kokkos 5.0.2_
+Alternatively, try NeoN from Python via the prebuilt CPU package from PyPI (Python 3.9–3.13):
 
-For GPU support
-* NVIDIA: CUDA _12+_
-* AMD: ROCm _6.4.1_
-* Intel: oneAPI Base Toolkit _2024.2_
+    pip install neon_pde
 
-For development it is required to use [pre-commit](https://pre-commit.com/).
-
-### C++ dependencies
-
-C++ dependencies like Kokkos are handled via [CPM](https://github.com/cpm-cmake/CPM.cmake) and are cloned at the configuration step.
-However, the cmake build process will prefer system wide installed C++ dependencies like Kokkos, cxxopts, etc.
-If you prefer to clone, configure and build dependencies your self consider setting `-DCPM_USE_LOCAL_PACKAGES = OFF`, see [CPM](https://github.com/cpm-cmake/CPM.cmake) for more details.
-
-## Compilation
+```python
+import neon
+neon.initialize()
+executor = neon.CPUExecutor()
+v = neon.ScalarVector(executor, 10, 1.0)
+print(neon.__version__, v.size())
+del v, executor
+neon.finalize()
+```
 
 [![workflows/Build on linux](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml?query=branch%3Amain)
 [![workflows/Build on OSX](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml?query=branch%3Amain)
 [![workflows/Build on windows](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml?query=branch%3Amain)
 
-NeoN uses cmake to build, thus the standard cmake procedure should work.
-From a build directory you can execute
-
-    cmake <DesiredBuildFlags> ..
-    cmake --build .
-    cmake --install .
-
-Additionally, we provide several Cmake presets to set commmonly required flags if you compile NeoN in combination with Kokkos.
-
-    cmake --list-presets # To list existing presets
-    cmake --preset production # To configure for production use
-    cmake --build --preset production # To compile for production use
-
-
-### Executing Tests
-
-We provide a set of unit tests which can be executed via ctest or
-
-    cmake --build . --target test
-
-### Installing the Python bindings
-
-NeoN ships Python bindings as the `neon_pde` distribution (imported as `neon`).
-The package requires Python 3.9–3.13 and NumPy.
-
-**CPU (from PyPI).** Pre-built CPU wheels are published to PyPI for Linux
-(x86-64/ARM64), Windows (AMD64) and macOS (Apple Silicon/Intel):
-
-    pip install neon_pde
-
-**Conda / pixi (from prefix.dev).** The same releases are published as conda
-packages named `neon-pde` to a [prefix.dev](https://prefix.dev) channel, which
-also installs the NeoN C++ runtime, headers and CMake package files into the
-environment:
-
-    pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
-
-    # CUDA 12.8, CPython 3.12, NVIDIA Ampere (sm_80), linux-64
-    pixi add "neon-pde=*=cuda_py312*" -c https://prefix.dev/exasim-project -c conda-forge
-
-Conda packages cover CPython 3.10–3.13 on `linux-64`, `linux-aarch64`, `osx-64`
-and `osx-arm64`; Windows and Python 3.9 are wheel-only.
-
-**CUDA (from GitHub Releases).** GPU wheels are *not* published to PyPI because
-they are large and depend on the NVIDIA driver. They are attached to the
-corresponding [GitHub Release](https://github.com/exasim-project/NeoN/releases)
-and carry a local version suffix such as `+cuda128`. A release carries a single
-GPU wheel, built for CPython 3.12 on Linux x86-64; install it directly by URL:
-
-    # CUDA 12.8, CPython 3.12, Linux x86-64, NVIDIA Ampere (sm_80)
-    pip install https://github.com/exasim-project/NeoN/releases/download/v0.3.0rc2/neon_pde-0.3.0rc2+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl
-
-The CUDA wheel needs a host NVIDIA driver providing `libcuda.so.1` (it is
-intentionally not bundled). It does not require a local CUDA toolkit at runtime,
-but it does require glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+).
-
-**From source.** Building the bindings uses `scikit-build-core` and compiles the
-C++ library, so a C++20 compiler and CMake ≥ 3.22 are required:
-
-    # CPU build. Both GPU backends must be disabled explicitly: with neither set,
-    # AutoEnableDevice.cmake probes for nvcc/hipcc and enables that backend.
-    pip install . --config-settings=cmake.define.Kokkos_ENABLE_CUDA=OFF \
-                  --config-settings=cmake.define.Kokkos_ENABLE_HIP=OFF
-
-    # CUDA build (matching the released wheels)
-    pip install . --config-settings=cmake.define.Kokkos_ENABLE_CUDA=ON \
-                  --config-settings=cmake.define.Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON \
-                  --config-settings=cmake.define.Kokkos_ARCH_AMPERE80=ON \
-                  --config-settings=cmake.define.CMAKE_CUDA_ARCHITECTURES=80 \
-                  --config-settings=cmake.define.CMAKE_CUDA_STANDARD=20
-
-Verify an installation with:
-
-```python
-import neon
-print(neon.__version__, neon.__has_serial__, neon.__has_cpu__, neon.__has_gpu__)
-```
-
-See [the documentation](https://exasim-project.com/NeoN/latest) for the full
-install-and-release workflow.
-
-### Python Wheels
-
-The Python distribution name is `neon_pde`, which produces wheel filenames
-starting with `neon_pde`. The import package remains `neon`.
-
-The package version in `pyproject.toml` is the source of truth. CMake reads that
-version during configuration, and the generated `neon.__version__` uses the same
-value.
-
-GitHub Actions uses cibuildwheel to build wheels for release tags and explicitly
-requested manual builds. Stable releases use tags named like `v0.1.0`. Manual
-non-tag builds use development versions like `0.1.1.dev202605270217123`. The
-wheel workflow does not currently run for ordinary branch pushes, pull requests,
-or on a nightly schedule.
-
-CPU wheels are built for:
-
-* Linux x86-64
-* Linux ARM64
-* Windows AMD64
-* macOS Apple Silicon
-* macOS Intel
-
-The CPU matrix covers CPython 3.9 through 3.13. CPU wheels use the plain package
-version and are published to PyPI only for stable `v*.*.*` tags.
-
-CUDA wheels are currently limited to CUDA 12.8 on Linux x86-64 with CPython
-3.12. They use a local version suffix such as `0.1.0+cuda128`, are uploaded as
-workflow artifacts, and are attached to the GitHub Release for stable tags.
-
-### Conda packages
-
-Conda packages are built from `recipe/recipe.yaml` with
-[rattler-build](https://rattler.build) by
-`.github/workflows/conda_packages.yaml`, on the same triggers and with the same
-version scheme as the wheels, and are published to prefix.dev. Build one locally
-with:
-
-    ci/install_rattler_build.sh                       # optional, pinned release
-    ci/build_conda_packages.sh --python 3.12 --gpu cpu
-
-The GPU flavour is part of the build string (`cpu_py312_*`, `cuda_py312_*`,
-`rocm_py312_*`), so all flavours coexist in one channel. The ROCm flavour is
-experimental and manual-dispatch only: conda-forge has no rocBLAS/rocSPARSE/
-rocThrust/rocPRIM, so it ships Kokkos HIP without the Ginkgo solver backend.
-GitHub-hosted runners do not provide a GPU, so the CUDA wheel build does not run
-runtime tests against the resulting wheel.
+Further installation options (GPU builds, conda/pixi packages, CUDA wheels, Spack), the full list of requirements and how to run the tests are described in the [installation guide](https://exasim-project.com/NeoN/latest/installation.html) and the [Python bindings guide](https://exasim-project.com/NeoN/latest/python_bindings.html).
 
 ## Integration with other CFD Frameworks
 
@@ -197,7 +68,4 @@ Examples how to integrate NeoN into CFD frameworks and how to write applications
 
 ## Documentation
 
-An online documentation can be found [here](https://exasim-project.com/NeoN/latest), be cautious since this repository is currently evolving the documentation might not always reflect the latest stage.
-
-For building the documentation further dependencies like doxygen and sphinx are requirement.
-The list of requirements can be found [here](https://github.com/exasim-project/NeoN/actions/workflows/build_doc.yaml)
+The online documentation can be found [here](https://exasim-project.com/NeoN/latest). Since NeoN is evolving quickly, the documentation might not always reflect the latest state.
