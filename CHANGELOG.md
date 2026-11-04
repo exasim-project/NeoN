@@ -23,6 +23,7 @@
 - Publish nightly `neon-pde` conda packages of develop to the prefix.dev `exasim-project/nightlies` channel when develop changed [#735](https://github.com/exasim-project/NeoN/pull/735)
 - Add Open MPI flavours of the `neon-pde` conda package, built with GCC and with clang, for downstream MPI codes such as NeoFOAM [#736](https://github.com/exasim-project/NeoN/pull/736)
 ## Fixes
+- Honour a cell-limited gradient scheme in the scalar `linearUpwind` interpolation, as OpenFOAM does [#723](https://github.com/exasim-project/NeoN/pull/723)
 - Use the `ddtSchemes` default entry in `DdtOperator::read` for a field without an entry of its own, as OpenFOAM does [#712](https://github.com/exasim-project/NeoN/pull/712)
 - Fix explicit temporal operators (e.g. `exp.ddt(p)`, `exp.ddt(rho, K)`) being silently dropped when an `Expression` is assembled into the right-hand side, and make the non-density-weighted explicit `ddt` honor its coefficient [#707](https://github.com/exasim-project/NeoN/pull/707)
 - Build the CUDA code of Ginkgo and Umpire for the architectures Kokkos targets, unless `CMAKE_CUDA_ARCHITECTURES` is set: Umpire enabled the CUDA language first, so `CMAKE_CUDA_ARCHITECTURES` defaulted to the nvcc default (sm_52) and Ginkgo and Umpire were built for sm_52 only (e.g. instead of sm_90 on H200) [#738](https://github.com/exasim-project/NeoN/pull/738)
