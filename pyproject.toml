@@ -17,11 +17,11 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Programming Language :: C++",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
@@ -45,6 +45,8 @@ all = [
 
 [build-system]
 requires = [
+    "cmake>=3.22",
+    "ninja",
     "scikit-build-core[pyproject]>=0.11.0",
     "nanobind>=2.9.0",
 ]
@@ -61,6 +63,16 @@ editable.rebuild = false
 
 [tool.scikit-build.cmake.define]
 NeoN_BUILD_PYTHON_BINDINGS = "ON"
+
+[tool.cibuildwheel]
+build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+skip = "pp* *-musllinux* *-win32 *-manylinux_i686"
+test-command = "python {project}/ci/check_installed_wheel.py"
+
+[tool.cibuildwheel.macos.environment]
+# Kokkos uses C++17/20 aligned new/delete, which needs macOS 10.13+. Match the
+# arm64 floor so the x86_64 default (below 10.13) does not fail to compile.
+MACOSX_DEPLOYMENT_TARGET = "11.0"
 
 [tool.pytest.ini_options]
 testpaths = ["test"]

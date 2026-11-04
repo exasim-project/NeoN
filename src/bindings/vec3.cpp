@@ -35,7 +35,7 @@ void registerVec3(nb::module_& m)
 
         .def(
             "__getitem__",
-            [](const NeoN::Vec3& v, size_t i)
+            [](const NeoN::Vec3& v, sizeType i)
             {
                 if (i >= 3) throw std::out_of_range("Vec3 index out of range");
                 return v[i];
@@ -45,7 +45,7 @@ void registerVec3(nb::module_& m)
         )
         .def(
             "__setitem__",
-            [](NeoN::Vec3& v, size_t i, NeoN::scalar value)
+            [](NeoN::Vec3& v, sizeType i, NeoN::scalar value)
             {
                 if (i >= 3) throw std::out_of_range("Vec3 index out of range");
                 v[i] = value;
@@ -130,6 +130,13 @@ void registerVec3(nb::module_& m)
         )
 
         .def(
+            "cross",
+            [](const NeoN::Vec3& a, const NeoN::Vec3& b) { return a ^ b; },
+            "other"_a,
+            "Compute cross product with another Vec3"
+        )
+
+        .def(
             "mag",
             [](const NeoN::Vec3& v) { return NeoN::mag(v); },
             "Compute magnitude (length) of the vector"
@@ -170,6 +177,14 @@ void registerVec3(nb::module_& m)
         "vec1"_a,
         "vec2"_a,
         "Compute dot product of two Vec3s"
+    );
+
+    m.def(
+        "cross",
+        [](const NeoN::Vec3& a, const NeoN::Vec3& b) { return a ^ b; },
+        "vec1"_a,
+        "vec2"_a,
+        "Compute cross product of two Vec3s"
     );
 }
 

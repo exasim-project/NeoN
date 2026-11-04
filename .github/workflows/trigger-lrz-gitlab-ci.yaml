@@ -29,8 +29,9 @@ jobs:
       skip-intel: ${{ steps.skip-labels.outputs.skip-intel }}
 
     if: >
-      github.event_name != 'pull_request' ||
-      !contains(github.event.pull_request.labels.*.name, 'skip-build')
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
 
     env:
       LRZ_GROUP: greole
@@ -160,6 +161,7 @@ jobs:
     needs: [build-and-test-neon]
 
     if: >
+      github.repository == 'exasim-project/NeoN' &&
       github.event_name == 'pull_request' &&
       contains(github.event.pull_request.labels.*.name, 'benchmark')
 

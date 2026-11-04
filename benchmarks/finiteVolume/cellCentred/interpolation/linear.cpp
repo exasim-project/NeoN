@@ -6,43 +6,66 @@
                             // a custom main
 
 #include "NeoN/NeoN.hpp"
-#include "../../../catch_main.hpp"
+#include "benchmarks/catch_main.hpp"
+#include "test/catch2/executorGenerator.hpp"
 
-#include <catch2/catch_template_test_macros.hpp>
-
-using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
-using NeoN::finiteVolume::cellCentred::VolumeField;
-using NeoN::finiteVolume::cellCentred::SurfaceField;
-
-namespace NeoN
+/**@brief Benchmark linear surface interpolation from a volume field to a surface field.
+ *
+ * Constructs a volume field initialised to one and benchmarks the Gauss-linear
+ * interpolation onto the mesh faces.
+ *
+ * @tparam TestType Field value type (e.g. NeoN::scalar, NeoN::Vec3)
+ * @param execName    Name of the executor, used as benchmark label
+ * @param exec        Executor on which all fields and operations run
+ * @param mesh        Unstructured mesh over which the interpolation is applied
+ * @param sectionName Catch2 section label, typically the mesh size string (e.g. "256x256")
+ */
+template<typename TestType>
+void runLinearBenchmark(
+    const std::string& execName,
+    const NeoN::Executor& exec,
+    NeoN::UnstructuredMesh& mesh,
+    const std::string& sectionName
+)
 {
+    NeoN::Input input = NeoN::TokenList({std::string("linear")});
 
-TEMPLATE_TEST_CASE("linear", "[template]", NeoN::scalar, NeoN::Vec3)
-{
-    auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
-
-    NeoN::Executor exec = GENERATE(
-        NeoN::Executor(NeoN::SerialExecutor {}),
-        NeoN::Executor(NeoN::CPUExecutor {}),
-        NeoN::Executor(NeoN::GPUExecutor {})
-    );
-
-    std::string execName = std::visit([](auto e) { return e.name(); }, exec);
-    UnstructuredMesh mesh = create1DUniformMesh(exec, size);
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<TestType>>(mesh);
-    Input input = TokenList({std::string("linear")});
-    auto linear = SurfaceInterpolation<TestType>(exec, mesh, input);
+    auto linear = fvcc::SurfaceInterpolation<TestType>(exec, mesh, input);
+    auto in = fvcc::VolumeField<TestType>(exec, "in", mesh, {});
+    auto out = fvcc::SurfaceField<TestType>(exec, "out", mesh, surfaceBCs);
+    NeoN::fill(in.internalVector(), NeoN::one<TestType>());
 
-    auto in = VolumeField<TestType>(exec, "in", mesh, {});
-    auto out = SurfaceField<TestType>(exec, "out", mesh, surfaceBCs);
-
-    fill(in.internalVector(), one<TestType>());
-
-    // capture the value of size as section name
-    DYNAMIC_SECTION("" << size)
+    DYNAMIC_SECTION(sectionName + " - Interpolate")
     {
-        BENCHMARK(std::string(execName)) { return (linear.interpolate(in, out)); };
+        BENCHMARK(std::string(execName)) { linear.interpolate(in, out); };
     }
 }
 
+TEMPLATE_TEST_CASE("Linear::2D", "[bench]", NeoN::scalar, NeoN::Vec3)
+{
+    auto nCellsPerDim = GENERATE(256, 512, 1024);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::UnstructuredMesh mesh = NeoN::create2DUniformMesh(exec, nCellsPerDim, nCellsPerDim);
+
+    const std::string sectionName =
+        std::to_string(nCellsPerDim) + "x" + std::to_string(nCellsPerDim);
+
+    runLinearBenchmark<TestType>(std::string(execName), exec, mesh, sectionName);
+}
+
+TEMPLATE_TEST_CASE("Linear::3D", "[bench]", NeoN::scalar, NeoN::Vec3)
+{
+    auto nCellsPerDim = GENERATE(32, 64, 128);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::UnstructuredMesh mesh =
+        NeoN::create3DUniformMesh(exec, nCellsPerDim, nCellsPerDim, nCellsPerDim);
+
+    const std::string sectionName = std::to_string(nCellsPerDim) + "x"
+                                  + std::to_string(nCellsPerDim) + "x"
+                                  + std::to_string(nCellsPerDim);
+
+    runLinearBenchmark<TestType>(std::string(execName), exec, mesh, sectionName);
 }

@@ -14,12 +14,14 @@
 // how-to-force-a-static-member-to-be-initialized?noredirect=1&lq=1
 #pragma once
 
-#include <memory>
-#include <unordered_map>
-#include <iostream>
 #include <functional>
+#include <iostream>
+#include <memory>
+#include <ranges>
+#include <unordered_map>
 
 #include "error.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
@@ -236,12 +238,8 @@ public:
      */
     static std::vector<std::string> entries()
     {
-        std::vector<std::string> entries;
-        for (const auto& it : table())
-        {
-            entries.push_back(it.first);
-        }
-        return entries;
+        auto k = table() | std::views::keys;
+        return {k.begin(), k.end()};
     }
 
 
@@ -349,7 +347,7 @@ public:
 
     virtual ~RuntimeSelectionFactory() = default;
 
-    static std::size_t size() { return table().size(); }
+    static sizeType size() { return table().size(); }
 
     /**
      * @brief Returns the lookup table for runtime selection.
@@ -390,7 +388,7 @@ private:
     static void keyExistsOrError(const std::string& name)
     {
         const auto& tbl = table();
-        if (tbl.find(name) == tbl.end())
+        if (!tbl.contains(name))
         {
             auto msg = std::string {" Could not find constructor for "} + name + "\n";
             msg += "valid constructors are: \n";

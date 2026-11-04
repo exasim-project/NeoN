@@ -55,6 +55,9 @@ public:
 
     virtual const SurfaceField<scalar>& deltaCoeffs() const override
     {
+        // The uncorrected surface-normal gradient uses nonOrthDeltaCoeffs (1/(n.d)), NOT the
+        // orthogonal 1/|d|: on a non-orthogonal mesh 1/(n.d) is the consistent normal-gradient
+        // coefficient. The two coincide on orthogonal meshes.
         return geometryScheme_->nonOrthDeltaCoeffs();
     }
 

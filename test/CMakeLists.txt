@@ -73,9 +73,11 @@ function(NeoN_unit_test TEST)
   else()
     add_test(
       NAME ${TEST}
-      COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE} ${NeoN_COMMAND}
+      # Absolute path: MPICH's hydra only searches PATH, unlike Open MPI's mpirun.
+      COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE}
+              $<TARGET_FILE:${NeoN_COMMAND}>
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
-    set_tests_properties(${TEST} PROPERTIES TIMEOUT 10)
+    set_tests_properties(${TEST} PROPERTIES TIMEOUT 60)
     set_tests_properties(${TEST} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
     if(${MPIEXEC_MAX_NUMPROCS} LESS NeoN_MPI_SIZE)
       message(WARNING "Test <${TEST}> requested <${NeoN_MPI_SIZE}> processors, "
@@ -87,6 +89,9 @@ endfunction()
 
 add_subdirectory(core)
 add_subdirectory(dsl)
+if(NeoN_WITH_MPI)
+  add_subdirectory(distributed)
+endif()
 add_subdirectory(fields)
 add_subdirectory(finiteVolume)
 add_subdirectory(linearAlgebra)

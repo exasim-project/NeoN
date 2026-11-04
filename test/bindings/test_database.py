@@ -65,11 +65,3 @@ def test_document_unique_ids():
     doc2 = neon.Document()
 
     assert doc1.id() != doc2.id()
-
-
-if __name__ == "__main__":
-    test_document_creation()
-    test_document_validation()
-    test_database_creation()
-    test_database_contains()
-    test_document_unique_ids()

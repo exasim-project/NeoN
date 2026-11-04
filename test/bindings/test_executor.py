@@ -2,17 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-def test_import():
-    try:
-        import neon  # noqa: F401
-
-        assert True  # If import succeeds, the test passes
-
-    except ImportError:
-        assert False  # If import fails, the test fails
-
-import neon
 import pytest
+import neon
 
 def test_serial_executor():
     exec = neon.SerialExecutor()

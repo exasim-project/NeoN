@@ -6,6 +6,8 @@
 
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/primitives/symmTensor.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -19,32 +21,52 @@ void computeLinearInterpolation(
 {
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS] = views(
+    auto dstB = dst.boundaryData().value().view();
+    const auto [srcS, weightS, weightB, ownerS, neighS, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
-        dst.mesh().faceOwner(),
-        dst.mesh().faceNeighbour(),
+        weights.boundaryData().value(),
+        dst.mesh().faceOwners(),
+        dst.mesh().faceNeighbors(),
         src.boundaryData().value()
     );
     auto nInternalFaces = dst.mesh().nInternalFaces();
+    auto nBoundaryFaces = dst.mesh().nBoundaryFaces();
 
     NeoN::parallelFor(
         exec,
-        {0, dstS.size()},
+        {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            if (facei < nInternalFaces)
-            {
-                auto own = ownerS[facei];
-                auto nei = neighS[facei];
-                dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
-            }
-            else
-            {
-                dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
-            }
+            auto own = ownerS[facei];
+            auto nei = neighS[facei];
+            dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
         },
-        "computeLinearInterpolation"
+        "computeLinearInterpolationInternal"
     );
+
+    NeoN::parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) { dstB[bfi] = weightB[bfi] * boundS[bfi]; },
+        "computeLinearInterpolationBoundary"
+    );
+
+    auto nProcBoundaryFaces = dst.mesh().nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto bfOwners = dst.mesh().boundaryMesh().faceOwners().view();
+        NeoN::parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                auto bcfacei = nBoundaryFaces + procFacei;
+                auto own = bfOwners[bcfacei];
+                dstB[bcfacei] =
+                    weightB[bcfacei] * srcS[own] + (1 - weightB[bcfacei]) * boundS[bcfacei];
+            },
+            "computeLinearInterpolationProcBoundary"
+        );
+    }
 }
 
 #define NF_DECLARE_COMPUTE_IMP_LIN_INT(TYPENAME)                                                   \
@@ -53,6 +75,8 @@ void computeLinearInterpolation(
 
 NF_DECLARE_COMPUTE_IMP_LIN_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LIN_INT(Vec3);
+NF_DECLARE_COMPUTE_IMP_LIN_INT(Tensor);
+NF_DECLARE_COMPUTE_IMP_LIN_INT(SymmTensor);
 
 // template class Linear<scalar>;
 // template class Linear<Vec3>;

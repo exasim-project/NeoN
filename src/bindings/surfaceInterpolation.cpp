@@ -18,6 +18,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" // these are required for registration
 
 namespace nb = nanobind;
 using namespace nb::literals;
@@ -79,6 +80,20 @@ void declare_surface_interpolation(nb::module_& m, const char* name)
             "src"_a,
             "dst"_a,
             "Interpolate into an existing surface field"
+        )
+        // Flux-aware overload. Upwind-biased schemes (upwind, linearUpwind, linearUpwindV)
+        // need the face flux to pick the upwind cell and abort without it, so they are
+        // unreachable through the overloads above.
+        .def(
+            "interpolate_into",
+            [](const fvcc::SurfaceInterpolation<T>& self,
+               const fvcc::SurfaceField<NeoN::scalar>& flux,
+               const fvcc::VolumeField<T>& src,
+               fvcc::SurfaceField<T>& dst) { self.interpolate(flux, src, dst); },
+            "flux"_a,
+            "src"_a,
+            "dst"_a,
+            "Interpolate into an existing surface field using a face flux (upwind-biased schemes)"
         )
         .def(
             "weight",

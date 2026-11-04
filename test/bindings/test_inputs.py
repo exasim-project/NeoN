@@ -186,3 +186,44 @@ def test_dictionary_repr():
     repr_str = repr(dictionary)
     assert "Dictionary" in repr_str
     assert "size=0" in repr_str
+
+
+def test_dictionary_token_list_round_trip():
+    """Insert a TokenList into a Dictionary and read it back."""
+    scheme = neon.TokenList(["Gauss", "linear"])
+    scheme.insert_int(2)
+
+    dictionary = neon.Dictionary()
+    dictionary.insert_token_list("div(phi,U)", scheme)
+
+    assert "div(phi,U)" in dictionary
+
+    retrieved = dictionary.get_token_list("div(phi,U)")
+    assert retrieved.size() == 3
+    assert retrieved.get_string(0) == "Gauss"
+    assert retrieved.get_string(1) == "linear"
+    assert retrieved.get_int(2) == 2
+
+
+def test_dictionary_token_list_copy_semantics():
+    """get_token_list returns a copy, so mutating it leaves the Dictionary untouched."""
+    dictionary = neon.Dictionary()
+    dictionary.insert_token_list("interpolation", neon.TokenList(["upwind"]))
+
+    retrieved = dictionary.get_token_list("interpolation")
+    retrieved.insert_string("limited")
+    assert retrieved.size() == 2
+
+    assert dictionary.get_token_list("interpolation").size() == 1
+
+    # inserting a TokenList also stores a copy
+    scheme = neon.TokenList(["linear"])
+    dictionary.insert_token_list("laplacian", scheme)
+    scheme.insert_string("corrected")
+    assert dictionary.get_token_list("laplacian").size() == 1
+
+
+def test_dictionary_get_token_list_missing_key():
+    dictionary = neon.Dictionary()
+    with pytest.raises(Exception):
+        dictionary.get_token_list("does-not-exist")

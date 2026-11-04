@@ -14,14 +14,14 @@ TEST_CASE("Array Constructors")
 
     SECTION("Empty Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Array<NeoN::scalar> arrayA(exec, size);
         REQUIRE(arrayA.size() == size);
     }
 
     SECTION("Single Value Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::scalar value = 5.0;
         NeoN::Array<NeoN::scalar> arrayA(exec, size, value);
         REQUIRE(arrayA.size() == size);
@@ -34,7 +34,7 @@ TEST_CASE("Array Constructors")
 
     SECTION("Copy Constructor " + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Array<NeoN::scalar> arrayA(exec, size);
         NeoN::fill(arrayA, 5.0);
         NeoN::Array<NeoN::scalar> arrayB(arrayA);
@@ -74,7 +74,7 @@ TEST_CASE("Array Container Operations")
 
     SECTION("empty, size, range" + execName)
     {
-        NeoN::localIdx size = 10;
+        NeoN::sizeType size = 10;
         NeoN::Array<NeoN::scalar> arrayA(exec, 0);
         NeoN::Array<NeoN::scalar> arrayB(exec, size);
         REQUIRE(arrayA.empty() == true);
@@ -100,6 +100,35 @@ TEST_CASE("Array Container Operations")
         auto subview = hostA.view({1, 3});
         REQUIRE(subview[0] == 2);
         REQUIRE(subview[1] == 3);
+    }
+
+    SECTION("view range validation " + execName)
+    {
+        NeoN::Array<NeoN::label> a(exec, {1, 2, 3});
+        auto hostA = a.copyToHost();
+        const auto& constHostA = hostA;
+
+        // valid ranges
+        REQUIRE(hostA.view({0, 3}).size() == 3);
+        REQUIRE(hostA.view({0, 0}).size() == 0);
+        REQUIRE(hostA.view({3, 3}).size() == 0);
+        REQUIRE(constHostA.view({1, 3}).size() == 2);
+
+        // end beyond size
+        REQUIRE_THROWS_AS(hostA.view({0, 4}), std::out_of_range);
+        REQUIRE_THROWS_AS(hostA.view({4, 4}), std::out_of_range);
+        REQUIRE_THROWS_AS(constHostA.view({0, 4}), std::out_of_range);
+
+        // begin after end
+        REQUIRE_THROWS_AS(hostA.view({2, 1}), std::out_of_range);
+        REQUIRE_THROWS_AS(constHostA.view({2, 1}), std::out_of_range);
+
+        // negative begin (only expressible with a signed localIdx)
+        if constexpr (std::is_signed_v<NeoN::localIdx>)
+        {
+            REQUIRE_THROWS_AS(hostA.view({-1, 2}), std::out_of_range);
+            REQUIRE_THROWS_AS(constHostA.view({-1, 2}), std::out_of_range);
+        }
     }
 
     SECTION("copyToHost " + execName)

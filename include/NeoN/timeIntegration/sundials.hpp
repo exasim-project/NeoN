@@ -231,7 +231,7 @@ namespace detail
  * @param[in,out] vec Vector to initialize
  */
 template<typename Vector>
-void initNVector(size_t size, std::shared_ptr<SUNContext> context, Vector& vec)
+void initNVector(sizeType size, std::shared_ptr<SUNContext> context, Vector& vec)
 {
     vec.initNVector(size, context);
 }
@@ -282,7 +282,7 @@ public:
 
 
     using KVector = ::sundials::kokkos::Vector<Kokkos::Serial>;
-    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
+    void initNVector(sizeType size, std::shared_ptr<SUNContext> context)
     {
         kvector_ = KVector(size, *context);
         svector_ = kvector_;
@@ -317,7 +317,7 @@ public:
     SKVectorHostDefault& operator=(const SKVectorHostDefault& other) = delete;
     SKVectorHostDefault& operator=(SKVectorHostDefault&& other) = delete;
 
-    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
+    void initNVector(sizeType size, std::shared_ptr<SUNContext> context)
     {
         kvector_ = KVector(size, *context);
         svector_ = kvector_;
@@ -352,7 +352,7 @@ public:
     SKVectorDefault& operator=(const SKVectorDefault& other) = delete;
     SKVectorDefault& operator=(SKVectorDefault&& other) = delete;
 
-    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
+    void initNVector(sizeType size, std::shared_ptr<SUNContext> context)
     {
         kvector_ = KVector(size, *context);
         svector_ = kvector_;
@@ -449,7 +449,7 @@ public:
      * @param size Number of vector elements
      * @param context SUNDIALS context for vector operations
      */
-    void initNVector(size_t size, std::shared_ptr<SUNContext> context)
+    void initNVector(sizeType size, std::shared_ptr<SUNContext> context)
     {
         std::visit(
             [size, &context](auto& vec) { detail::initNVector(size, context, vec); }, vector_

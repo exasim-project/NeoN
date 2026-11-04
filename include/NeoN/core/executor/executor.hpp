@@ -7,6 +7,7 @@
 #include <string>
 #include <variant>
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/executor/serialExecutor.hpp"
 #include "NeoN/core/executor/GPUExecutor.hpp"
 #include "NeoN/core/executor/CPUExecutor.hpp"

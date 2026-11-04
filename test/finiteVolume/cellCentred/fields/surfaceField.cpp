@@ -29,29 +29,24 @@ TEST_CASE("surfaceVector")
         }
 
         fvcc::SurfaceField<NeoN::scalar> sf(exec, "sf", mesh, bcs);
-        // the internal field is 4 because the mesh has 4 boundaryFaces
-        NeoN::fill(sf.internalVector(), 1.0);
+        // single-cell mesh has 0 internal faces and 4 boundary faces
+        REQUIRE(sf.internalVector().size() == 0);
+        REQUIRE(sf.boundaryData().value().size() == 4);
 
+        // Fill boundary values with 1.0 before correctBoundaryConditions
+        NeoN::fill(sf.boundaryData().value(), 1.0);
         {
-            auto internalValues = sf.internalVector().copyToHost();
-            for (NeoN::localIdx i = 0; i < internalValues.size(); ++i)
+            auto bValues = sf.boundaryData().value().copyToHost();
+            for (NeoN::localIdx i = 0; i < bValues.size(); ++i)
             {
-                REQUIRE(internalValues.view()[i] == 1.0);
+                REQUIRE(bValues.view()[i] == 1.0);
             }
         }
 
         sf.correctBoundaryConditions();
         REQUIRE(sf.exec() == exec);
-        REQUIRE(sf.internalVector().size() == 4);
 
-        // the correctBoundaryConditions also sets the internalfield to 2.0
-        // for surfaceVectors
-        auto internalValues = sf.internalVector().copyToHost();
-        for (NeoN::localIdx i = 0; i < internalValues.size(); ++i)
-        {
-            REQUIRE(internalValues.view()[i] == 2.0);
-        }
-
+        // correctBoundaryConditions sets boundary data to fixedValue (2.0)
         auto values = sf.boundaryData().value().copyToHost();
         for (NeoN::localIdx i = 0; i < values.size(); ++i)
         {

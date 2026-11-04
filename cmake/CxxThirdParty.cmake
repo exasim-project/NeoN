@@ -6,11 +6,39 @@
 
 include(cmake/Versions.cmake)
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_WITH_MPI)
   if(WIN32)
-    message(FATAL_ERROR "NeoN_ENABLE_MPI_SUPPORT not supported on Windows")
+    message(FATAL_ERROR "NeoN_WITH_MPI not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
+  # Distribution MPI builds record the distribution's build flags in their compiler wrappers, e.g.
+  # Ubuntu's MPICH reports -flto=auto -ffat-lto-objects. FindMPI passes them on through MPI::MPI_C
+  # and MPI::MPI_CXX, which silently enables GCC LTO for everything using MPI. That breaks nvcc
+  # compiled code: LTO merges the per-object host stubs and their fatbinData symbols collide.
+  #
+  # Scrub FindMPI's cache rather than the targets: every later find_package(MPI), e.g. the
+  # find_dependency(MPI) in GinkgoConfig.cmake, rebuilds the targets from these variables.
+  foreach(_neon_var MPI_C_COMPILE_OPTIONS MPI_CXX_COMPILE_OPTIONS MPI_C_LINK_FLAGS
+                    MPI_CXX_LINK_FLAGS)
+    if(NOT DEFINED CACHE{${_neon_var}})
+      continue()
+    endif()
+    set(_neon_value "$CACHE{${_neon_var}}")
+    string(REGEX REPLACE "(^|[ ;])-f(no-)?(fat-)?lto[^ ;]*" "\\1" _neon_value "${_neon_value}")
+    string(REGEX REPLACE "  +" " " _neon_value "${_neon_value}")
+    string(REGEX REPLACE ";;+" ";" _neon_value "${_neon_value}")
+    string(REGEX REPLACE "^[ ;]+|[ ;]+$" "" _neon_value "${_neon_value}")
+    get_property(
+      _neon_doc
+      CACHE ${_neon_var}
+      PROPERTY HELPSTRING)
+    set(${_neon_var}
+        "${_neon_value}"
+        CACHE STRING "${_neon_doc}" FORCE)
+  endforeach()
+  # Rebuild MPI::MPI_C and MPI::MPI_CXX from the scrubbed cache.
+  find_package(MPI 3.1 REQUIRED)
+  include(cmake/DetectMpiThreadSupport.cmake)
 endif()
 
 if(${NeoN_WITH_PETSC})
@@ -78,7 +106,7 @@ cpmaddpackage(
   YES)
 
 if(${NeoN_WITH_SPDLOG})
-  set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL ON")
+  set(SPDLOG_OPTIONS "SPDLOG_FMT_EXTERNAL_HO ON")
   cpmaddpackage(
     NAME
     spdlog
@@ -116,6 +144,15 @@ if(${NeoN_WITH_UMPIRE})
     "ENABLE_TESTS OFF"
     SYSTEM
     YES)
+
+  # Umpire/BLT set INSTALL_RPATH to the absolute install prefix, which scikit-build-core's $ORIGIN
+  # rewriter doesn't catch. Force $ORIGIN so the installed libs can find their siblings (e.g.
+  # libumpire → libcamp).
+  foreach(_umpire_tgt umpire camp)
+    if(TARGET ${_umpire_tgt})
+      set_target_properties(${_umpire_tgt} PROPERTIES INSTALL_RPATH "\$ORIGIN")
+    endif()
+  endforeach()
 endif()
 
 if(${NeoN_WITH_ADIOS2})
@@ -218,7 +255,7 @@ endif()
 
 if(${NeoN_WITH_GINKGO})
   # --- nlohmann_json ---
-  find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET)
+  find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET CONFIG)
   if(NOT nlohmann_json_FOUND)
     message(STATUS "System nlohmann_json not found — fetching from GitHub via CPM.cmake...")
     cpmaddpackage(
@@ -242,6 +279,13 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # Ginkgo shares NeoN's Umpire pool only in shared builds: it rejects Umpire in static builds,
+    # where each library would also carry its own Umpire ResourceManager.
+    if(NeoN_WITH_UMPIRE AND BUILD_SHARED_LIBS)
+      set(NeoN_GINKGO_WITH_UMPIRE ON)
+    else()
+      set(NeoN_GINKGO_WITH_UMPIRE OFF)
+    endif()
     cpmaddpackage(
       NAME
       Ginkgo
@@ -259,10 +303,32 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_EXAMPLES OFF"
       "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
       "GINKGO_ENABLE_HALF OFF"
-      "GINKGO_BUILD_MPI OFF"
+      "GINKGO_BUILD_MPI ${NeoN_WITH_MPI}"
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
-      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}"
+      "GINKGO_BUILD_UMPIRE ${NeoN_GINKGO_WITH_UMPIRE}")
+
+    # Ginkgo's build_helpers.cmake forces its targets to ${PROJECT_BINARY_DIR}/lib, ignoring
+    # CMAKE_LIBRARY_OUTPUT_DIRECTORY. Route them into our shared lib output dir so all CPM-built
+    # deps live together and downstream RPATHs need only one entry.
+    foreach(
+      _ginkgo_tgt
+      ginkgo
+      ginkgo_omp
+      ginkgo_cuda
+      ginkgo_reference
+      ginkgo_hip
+      ginkgo_dpcpp
+      ginkgo_device)
+      if(TARGET ${_ginkgo_tgt})
+        set_target_properties(
+          ${_ginkgo_tgt}
+          PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+                     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
+      endif()
+    endforeach()
   endif()
 endif()
 
@@ -272,6 +338,7 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
   else()
     set(DEV_MODULE Development.Module)
   endif()
+  set(Python_FIND_VIRTUALENV "FIRST")
 
   if(DEFINED ENV{VIRTUAL_ENV})
     set(Python_ROOT_DIR "$ENV{VIRTUAL_ENV}")
@@ -280,15 +347,26 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
     Python
     COMPONENTS Interpreter ${DEV_MODULE}
     REQUIRED)
-  cpmaddpackage(
-    NAME
-    nanobind
-    GITHUB_REPOSITORY
-    wjakob/nanobind
-    VERSION
-    ${NeoN_NANOBIND_VERSION}
-    SYSTEM
-    YES)
+  if(NeoN_EXTERNAL_NANOBIND)
+    # Use the nanobind shipped in the active Python environment (a build requirement, see
+    # pyproject). pybFoam is built against that same copy, so _neon and pybFoam share one
+    # libnanobind ABI by construction and NeoN_NANOBIND_VERSION does not have to be kept in sync.
+    execute_process(
+      COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      OUTPUT_VARIABLE nanobind_ROOT)
+    find_package(nanobind CONFIG REQUIRED)
+  else()
+    cpmaddpackage(
+      NAME
+      nanobind
+      GITHUB_REPOSITORY
+      wjakob/nanobind
+      VERSION
+      ${NeoN_NANOBIND_VERSION}
+      SYSTEM
+      YES)
+  endif()
 endif()
 
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)

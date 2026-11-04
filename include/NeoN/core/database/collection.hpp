@@ -4,12 +4,14 @@
 
 #pragma once
 
-#include <unordered_map>
+#include <algorithm>
+#include <ranges>
 #include <string>
+#include <unordered_map>
 #include <memory>
-#include <algorithm> // for std::sort
 
 #include "NeoN/core/database/document.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
@@ -89,9 +91,9 @@ public:
     /**
      * @brief Returns the number of documents in the collection.
      *
-     * @return size_t The number of documents.
+     * @return sizeType The number of documents.
      */
-    size_t size() const;
+    sizeType size() const;
 
     /**
      * @brief Returns the type of the collection.
@@ -167,7 +169,7 @@ private:
         virtual const Document& doc(const std::string& id) const = 0;
         virtual std::vector<std::string> find(const std::function<bool(const Document&)>& predicate
         ) const = 0;
-        virtual size_t size() const = 0;
+        virtual sizeType size() const = 0;
         virtual std::string type() const = 0;
         virtual std::string name() const = 0;
         virtual Database& db() = 0;
@@ -189,7 +191,7 @@ private:
             return collection_.find(predicate);
         }
 
-        size_t size() const override { return collection_.size(); }
+        sizeType size() const override { return collection_.size(); }
 
         std::string type() const override { return collection_.type(); }
 
@@ -283,9 +285,9 @@ public:
     /**
      * @brief Gets the number of documents in the collection.
      *
-     * @return std::size_t The number of documents.
+     * @return sizeType The number of documents.
      */
-    std::size_t size() const { return docs_.size(); }
+    sizeType size() const { return docs_.size(); }
 
     /**
      * @brief Gets a const reference to the database.
@@ -322,12 +324,9 @@ public:
      */
     std::vector<std::string> sortedKeys() const
     {
-        std::vector<std::string> result;
-        for (const auto& [key, doc] : docs_)
-        {
-            result.push_back(key);
-        }
-        std::sort(result.begin(), result.end());
+        auto k = docs_ | std::views::keys;
+        std::vector<std::string> result(k.begin(), k.end());
+        std::ranges::sort(result);
         return result;
     }
 

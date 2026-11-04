@@ -8,6 +8,7 @@
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/core/memory/allocator.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
@@ -23,9 +24,9 @@ public:
     using GPUMemSpace = Kokkos::DefaultExecutionSpace::memory_space;
     using CPUMemSpace = Kokkos::HostSpace;
 
-    void* alloc(size_t size) override;
+    void* alloc(sizeType size) override;
 
-    void* realloc(void* ptr, size_t size) override;
+    void* realloc(void* ptr, sizeType size) override;
 
     void free(void* ptr) override;
 

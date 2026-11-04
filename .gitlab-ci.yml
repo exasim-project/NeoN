@@ -5,21 +5,24 @@
 # ============================================================
 #  GPU-specific images and runner configuration
 # ============================================================
+# Ginkgo develop with Umpire support (ginkgo-project/ginkgo#2125), built by
+# exasim-project/ginkgo-packaging, with MPICH built from source (GPU-aware for CUDA and ROCm).
+# Pinned by digest: the runner caches SIF images by name, so a rebuilt tag would not be pulled again.
 .gpu-nvidia:
   tags: ["nvidia-gpus"]
-  image: chihtaw/cuda-openfoam-ginkgo:12.8.1-v2412-arch_89
+  image: ghcr.io/exasim-project/ginkgo-cuda@sha256:94d6c4cf7bf393eee953382a87f22bebd87128f135d4b8ba60bcc4ed1f6fe407 # nightly-20261101
   variables:
     GPU_VENDOR: nvidia
 
 .gpu-amd:
   tags: ["amd-gpus"]
-  image: chihtaw/rocm-openfoam-ginkgo:6.4.1-v2412-arch_gfx90a
+  image: ghcr.io/exasim-project/ginkgo-rocm@sha256:477c622e52e4788ca169adfee9727c8d81b09dfb89b905cfcbdefa5e051444d2 # nightly-20261101
   variables:
     GPU_VENDOR: amd
 
 .gpu-intel:
   tags: ["intel-gpus"]
-  image: dheerajraghunathan/oneapi-openfoam-ginkgo:2025.3-v2412-arch_pvc
+  image: ghcr.io/exasim-project/ginkgo-sycl@sha256:f90635e4919f2adbeaf45d0f98f503502d3ba7663547f217594f151471ce0731 # nightly-20261101
   variables:
     GPU_VENDOR: intel
 
@@ -32,7 +35,6 @@
     RUN_IDENTIFIER: "${CI_PIPELINE_ID}"
     REPO_NAME: "NeoFOAM-BenchmarkData"
     TARGET_REPO: "github.com/exasim-project/${REPO_NAME}.git"
-    TARGET_BRANCH: "ci-benchmarks"
 
   before_script:
     - pip3 install --user --break-system-packages xmltodict

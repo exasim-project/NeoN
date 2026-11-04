@@ -5,6 +5,8 @@
 #pragma once
 
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/primitives/symmTensor.hpp"
 
 /* @brief given a c macro the macro gets called for all regularly used integer types
  * this is used to instantiate templates for our container types
@@ -29,4 +31,6 @@
  */
 #define NN_FOR_ALL_VALUE_TYPES(_macro)                                                             \
     NN_FOR_ALL_SCALAR_TYPES(_macro);                                                               \
-    _macro(Vec3)
+    _macro(Vec3);                                                                                  \
+    _macro(Tensor);                                                                                \
+    _macro(SymmTensor)

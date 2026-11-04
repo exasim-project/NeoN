@@ -18,3 +18,5 @@ int RANK;
 int COMM_SIZE;
 
 bool IS_ROOT = false;
+
+bool IO_SERIALIZATION = false;

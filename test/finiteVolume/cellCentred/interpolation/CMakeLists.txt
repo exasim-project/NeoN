@@ -4,4 +4,7 @@
 
 neon_unit_test(linear)
 neon_unit_test(upwind)
+neon_unit_test(linearUpwind)
 neon_unit_test(surfaceInterpolation)
+neon_unit_test(linearUpwindV)
+neon_unit_test(limitedLinear)

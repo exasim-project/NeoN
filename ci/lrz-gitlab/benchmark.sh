@@ -15,8 +15,8 @@ PR_NUMBER=${PR_NUMBER:?Error: Must set PR number}
 RESULTS_DIR=${RESULTS_DIR:-results}
 TARGET_REPO=${TARGET_REPO:?Must set TARGET_REPO}
 REPO_NAME=$(basename "$TARGET_REPO" .git)
-TARGET_BRANCH=${TARGET_BRANCH:?Must set TARGET_BRANCH}
 RUN_IDENTIFIER=${RUN_IDENTIFIER:?Must set RUN_IDENTIFIER}
+CI_RUNNER_DESCRIPTION=${CI_RUNNER_DESCRIPTION:?Must set CI_RUNNER_DESCRIPTION}
 API_TOKEN_GITHUB=${API_TOKEN_GITHUB:?Must set API_TOKEN_GITHUB}
 
 echo "Selected GPU vendor: ${GPU_VENDOR}"
@@ -63,16 +63,20 @@ build_and_benchmark() {
     git fetch origin "${branch}"
     git checkout "${branch}"
 
+    # Use the Ginkgo of the image unless this branch requests a commit it lacks.
+    local ginkgo_args
+    ginkgo_args="$(./ci/ginkgo-cmake-args.sh)"
+
     echo ">>> Configuring build"
     if [[ "$GPU_VENDOR" == "nvidia" ]]; then
-        cmake --preset $PRESET -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+        cmake --preset $PRESET ${ginkgo_args} -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
     elif [[ "$GPU_VENDOR" == "amd" ]]; then
         # Set up environment
         export CXX_COMPILER_PATH="$(which g++)"
         export CXX_SOURCE="${CXX_COMPILER_PATH%/*/*}"
         export CXX_LIBDIR="${CXX_SOURCE}/lib64"
         export LD_LIBRARY_PATH=${CXX_LIBDIR}:${LD_LIBRARY_PATH}
-        cmake --preset $PRESET \
+        cmake --preset $PRESET ${ginkgo_args} \
             -DCMAKE_PREFIX_PATH=/opt/rocm \
             -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang \
             -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ \
@@ -82,7 +86,7 @@ build_and_benchmark() {
             -DKokkos_ARCH_AMD_GFX90A=ON \
             -DNeoN_WITH_THREADS=OFF
     elif [[ "$GPU_VENDOR" == "intel" ]]; then
-        cmake --preset $PRESET \
+        cmake --preset $PRESET ${ginkgo_args} \
             -DCMAKE_CXX_COMPILER=icpx \
             -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
             -DKokkos_ENABLE_SYCL=ON \
@@ -90,7 +94,7 @@ build_and_benchmark() {
             -DNeoN_WITH_THREADS=OFF \
             -DCMAKE_BUILD_TYPE="release"
     else
-        cmake --preset $PRESET -DNeoN_WITH_THREADS=OFF
+        cmake --preset $PRESET ${ginkgo_args} -DNeoN_WITH_THREADS=OFF
     fi
 
     echo ">>> Building"
@@ -117,14 +121,14 @@ push_results() {
     git clone "https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}"
     cd "${REPO_NAME}"
 
-    git checkout "${TARGET_BRANCH}" || git checkout -b "${TARGET_BRANCH}"
-    mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
+    git checkout "NeoN_PR_${PR_NUMBER}" || git checkout -b "NeoN_PR_${PR_NUMBER}"
+    mkdir -p "NeoN/${PR_NUMBER}/${CI_RUNNER_DESCRIPTION}"
+    cp -r ../${RESULTS_DIR}/* "NeoN/${PR_NUMBER}/${CI_RUNNER_DESCRIPTION}"
 
     git add .
     git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
     git pull --rebase || true
-    git push origin "${TARGET_BRANCH}"
+    git push origin "NeoN_PR_${PR_NUMBER}"
 }
 
 ### Main execution ###

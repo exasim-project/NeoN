@@ -11,6 +11,7 @@
 #include <petscmat.h>
 #include <petscksp.h>
 
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -77,8 +78,7 @@ public:
     }
 
 
-    virtual SolverStats
-    solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
+    virtual SolverStats solve(const LinearSystem<scalar>& sys, Vector<scalar>& x) const final
     {
 
         Mat Amat;
@@ -88,7 +88,7 @@ public:
 
         NeoN::la::petscSolverContext::petscSolverContext<scalar> petsctx(exec_);
 
-        std::size_t nrows = sys.rhs().size();
+        sizeType nrows = sys.rhs().size();
 
         petsctx.initialize(sys);
 

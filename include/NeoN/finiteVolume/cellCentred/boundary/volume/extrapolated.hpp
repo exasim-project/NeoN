@@ -29,12 +29,12 @@ void extrapolateValue(
 {
     const auto iVector = domainVector.internalVector().view();
 
-    auto [refGradient, value, valueFraction, refValue, faceCells] = views(
+    auto [refGradient, value, valueFraction, refValue, boundaryFaceOwners] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),
         domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceCells()
+        mesh.boundaryMesh().faceOwners()
     );
 
 
@@ -43,7 +43,7 @@ void extrapolateValue(
         range,
         NEON_LAMBDA(const localIdx i) {
             // operator / is not defined for all ValueTypes
-            ValueType internalCellValue = iVector[faceCells[i]];
+            ValueType internalCellValue = iVector[boundaryFaceOwners[i]];
             value[i] = internalCellValue;
             valueFraction[i] = 1.0;          // only use refValue
             refValue[i] = internalCellValue; // not used
@@ -62,6 +62,8 @@ class Extrapolated :
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using ExtrapolatedType = Extrapolated<ValueType>;
 
     Extrapolated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
@@ -74,6 +76,8 @@ public:
     }
 
     static std::string name() { return "extrapolated"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "TBD"; }
 

@@ -73,7 +73,7 @@ void RungeKutta<SolutionVectorType>::initSUNERKSolver(
 {
     initExpression(exp);
     initSUNContext();
-    initSUNVector(field.exec(), static_cast<size_t>(field.internalVector().size()));
+    initSUNVector(field.exec(), field.internalVector().size()));
     initSUNInitialConditions(field);
     initODEMemory(t);
 }
@@ -102,7 +102,7 @@ void RungeKutta<SolutionVectorType>::initSUNContext()
 }
 
 template<typename SolutionVectorType>
-void RungeKutta<SolutionVectorType>::initSUNVector(const Executor& exec, size_t size)
+void RungeKutta<SolutionVectorType>::initSUNVector(const Executor& exec, sizeType size)
 {
     NF_DEBUG_ASSERT(context_, "SUNContext is a nullptr.");
     solution_.setExecutor(exec);

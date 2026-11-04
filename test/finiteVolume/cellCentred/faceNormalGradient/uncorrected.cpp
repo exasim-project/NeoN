@@ -48,6 +48,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
         fvcc::FaceNormalGradient<TestType> uncorrected(exec, mesh, input);
         uncorrected.faceNormalGrad(phi, phif);
 
+        // internal faces
         auto phifHost = phif.internalVector().copyToHost();
         auto sPhif = phifHost.view();
         for (NeoN::localIdx i = 0; i < nCells - 1; i++)
@@ -57,14 +58,13 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
                 NeoN::mag(sPhif[i] - 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8)
             );
         }
-        // left boundary is  -10.0
-        REQUIRE(
-            NeoN::mag(sPhif[nCells - 1] + 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8)
-        );
-        // right boundary is 10.0
-        REQUIRE(
-            NeoN::mag(sPhif[nCells] - 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8)
-        );
+        // boundary faces are now in boundaryData().value()
+        auto phifBHost = phif.boundaryData().value().copyToHost();
+        auto sPhifB = phifBHost.view();
+        // left boundary (bfi=0): gradient is -10.0
+        REQUIRE(NeoN::mag(sPhifB[0] + 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8));
+        // right boundary (bfi=1): gradient is 10.0
+        REQUIRE(NeoN::mag(sPhifB[1] - 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8));
     }
 }
 }

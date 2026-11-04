@@ -8,9 +8,6 @@
 
 #include "NeoN/NeoN.hpp"
 
-template<typename T>
-using I = std::initializer_list<T>;
-
 TEST_CASE("volumeVector")
 {
     namespace fvcc = NeoN::finiteVolume::cellCentred;

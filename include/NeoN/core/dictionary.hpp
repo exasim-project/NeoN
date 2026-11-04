@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "NeoN/core/demangle.hpp"
+#include "NeoN/core/visibility.hpp"
 
 namespace NeoN
 {
@@ -19,6 +20,20 @@ void logOutRange(
     const std::string& key,
     const std::unordered_map<std::string, std::any>& data
 );
+
+namespace detail
+{
+
+/** @brief A wrapper class to put references in dictionaries to overcome the issue that std::any
+ * cannot hold a reference use with care since if the original values does not exist anymore it will
+ * be a dangling reference */
+template<typename HoldType>
+struct RefHolder
+{
+    const HoldType& c;
+};
+
+}
 
 /**
  * @class Dictionary
@@ -31,7 +46,7 @@ void logOutRange(
  * using the `subDict` function. The values are stored using `std::any`, which
  * allows storing values of any type.
  */
-class Dictionary
+class NEON_TYPE_VISIBLE Dictionary
 {
 public:
 

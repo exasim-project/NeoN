@@ -23,7 +23,7 @@ namespace NeoN::bindings
 void registerBoundaryMesh(nb::module_& m)
 {
     // Boundary Mesh
-    //  It contains fields for face centres, normals, areas, connectivity, and
+    //  It contains fields for face centers, normals, areas, connectivity, and
     //  interpolation weights. The offset vector allows accessing boundary-specific data.
     nb::class_<NeoN::BoundaryMesh>(
         m, "BoundaryMesh", "Boundary mesh containing information about boundary faces"
@@ -40,68 +40,72 @@ void registerBoundaryMesh(nb::module_& m)
                 NeoN::vectorVector,
                 NeoN::scalarVector,
                 NeoN::scalarVector,
+                std::vector<NeoN::localIdx>,
+                NeoN::localIdx,
                 std::vector<NeoN::localIdx>>(),
             "exec"_a,
-            "face_cells"_a,
-            "cf"_a,
-            "cn"_a,
-            "sf"_a,
-            "mag_sf"_a,
-            "nf"_a,
+            "face_owners"_a,
+            "face_centers"_a,
+            "owner_cell_centers"_a,
+            "face_normals"_a,
+            "face_areas"_a,
+            "face_unit_normals"_a,
             "delta"_a,
             "weights"_a,
             "delta_coeffs"_a,
             "offset"_a,
+            "procBoundaryPatches"_a,
+            "neighbourRank"_a,
             "Create a BoundaryMesh with all geometric data"
         )
 
         .def(
-            "face_cells",
+            "face_owners",
             static_cast<const NeoN::labelVector& (NeoN::BoundaryMesh::*)() const>(
-                &NeoN::BoundaryMesh::faceCells
+                &NeoN::BoundaryMesh::faceOwners
             ),
             nb::rv_policy::reference_internal,
             "Get the vector of face cell indices (which cell each boundary face belongs to)"
         )
         .def(
-            "cf",
+            "face_centers",
             static_cast<const NeoN::vectorVector& (NeoN::BoundaryMesh::*)() const>(
-                &NeoN::BoundaryMesh::cf
+                &NeoN::BoundaryMesh::faceCenters
             ),
             nb::rv_policy::reference_internal,
-            "Get the vector of face centres"
+            "Get the vector of face centers"
         )
         .def(
-            "cn",
+            "owner_cell_centers",
             static_cast<const NeoN::vectorVector& (NeoN::BoundaryMesh::*)() const>(
-                &NeoN::BoundaryMesh::cn
+                &NeoN::BoundaryMesh::ownerCellCenters
             ),
             nb::rv_policy::reference_internal,
-            "Get the vector of neighbor cell centres"
+            "Get the vector of owner cell centers"
         )
         .def(
-            "sf",
+            "face_normals",
             static_cast<const NeoN::vectorVector& (NeoN::BoundaryMesh::*)() const>(
-                &NeoN::BoundaryMesh::sf
+                &NeoN::BoundaryMesh::faceNormals
             ),
             nb::rv_policy::reference_internal,
-            "Get the vector of face area normals (area * unit normal)"
+            "Get the vector of face normal vectors"
         )
         .def(
-            "mag_sf",
+            "face_areas",
             static_cast<const NeoN::scalarVector& (NeoN::BoundaryMesh::*)() const>(
-                &NeoN::BoundaryMesh::magSf
+                &NeoN::BoundaryMesh::faceAreas
             ),
             nb::rv_policy::reference_internal,
-            "Get the vector of face area magnitudes"
+            "Get the vector of face areas "
         )
         .def(
-            "nf",
+            "face_unit_normals",
             static_cast<const NeoN::vectorVector& (NeoN::BoundaryMesh::*)() const>(
-                &NeoN::BoundaryMesh::nf
+                &NeoN::BoundaryMesh::faceUnitNormals
             ),
             nb::rv_policy::reference_internal,
-            "Get the vector of face unit normals"
+            "Get the vector of face unit normal vectors"
         )
         .def(
             "delta",
@@ -129,15 +133,14 @@ void registerBoundaryMesh(nb::module_& m)
         )
         .def(
             "offset",
-            &NeoN::BoundaryMesh::offset,
+            nb::overload_cast<>(&NeoN::BoundaryMesh::offset, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the offset vector for accessing boundary-specific data"
         )
-
         .def(
             "__repr__",
             [](const NeoN::BoundaryMesh& bm)
-            { return "<BoundaryMesh with " + std::to_string(bm.faceCells().size()) + " faces>"; }
+            { return "<BoundaryMesh with " + std::to_string(bm.faceOwners().size()) + " faces>"; }
         );
 }
 

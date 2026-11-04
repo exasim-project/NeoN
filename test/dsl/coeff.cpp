@@ -29,24 +29,17 @@ TEST_CASE("Coeff")
 
         Coeff d {3.0, fA};
         dsl::detail::toVector(d, res);
-        auto hostResD = res.copyToHost();
-        REQUIRE(hostResD.data()[0] == 6.0);
-        REQUIRE(hostResD.data()[1] == 6.0);
-        REQUIRE(hostResD.data()[2] == 6.0);
+        auto resDexp = std::vector<NeoN::scalar> {6.0, 6.0, 6.0};
+        REQUIRE_THAT(res, Equals(resDexp));
 
         Coeff e = d * b;
         dsl::detail::toVector(e, res);
-        auto hostResE = res.copyToHost();
-        REQUIRE(hostResE.data()[0] == 12.0);
-        REQUIRE(hostResE.data()[1] == 12.0);
-        REQUIRE(hostResE.data()[2] == 12.0);
-
+        auto resEexp = std::vector<NeoN::scalar> {12.0, 12.0, 12.0};
+        REQUIRE_THAT(res, Equals(resEexp));
         Coeff f = b * d;
         dsl::detail::toVector(f, res);
-        auto hostResF = res.copyToHost();
-        REQUIRE(hostResF.data()[0] == 12.0);
-        REQUIRE(hostResF.data()[1] == 12.0);
-        REQUIRE(hostResF.data()[2] == 12.0);
+        auto resFexp = std::vector<NeoN::scalar> {12.0, 12.0, 12.0};
+        REQUIRE_THAT(res, Equals(resFexp));
     }
 
     SECTION("evaluation in parallelFor" + execName)
@@ -58,47 +51,32 @@ TEST_CASE("Coeff")
 
         SECTION("view")
         {
-            Coeff coeff = fieldB; // is a view with uniform value 1.0
-            {
-                NeoN::parallelFor(
-                    fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return coeff[i] + 2.0; }
-                );
-            };
-            auto hostVectorA = fieldA.copyToHost();
-            REQUIRE(coeff.hasView() == true);
-            REQUIRE(hostVectorA.view()[0] == 3.0);
-            REQUIRE(hostVectorA.view()[1] == 3.0);
-            REQUIRE(hostVectorA.view()[2] == 3.0);
+            Coeff c = fieldB; // is a view with uniform value 1.0
+            NeoN::parallelFor(
+                fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return c[i] + 2.0; }
+            );
+            auto resAexp = std::vector<NeoN::scalar> {3.0, 3.0, 3.0};
+            REQUIRE_THAT(fieldA, Equals(resAexp));
         }
 
         SECTION("scalar")
         {
-            Coeff coeff = Coeff(2.0);
-            {
-                NeoN::parallelFor(
-                    fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return coeff[i] + 2.0; }
-                );
-            };
-            auto hostVectorA = fieldA.copyToHost();
-            REQUIRE(coeff.hasView() == false);
-            REQUIRE(hostVectorA.view()[0] == 4.0);
-            REQUIRE(hostVectorA.view()[1] == 4.0);
-            REQUIRE(hostVectorA.view()[2] == 4.0);
+            Coeff c = Coeff(2.0);
+            NeoN::parallelFor(
+                fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return c[i] + 2.0; }
+            );
+            auto resAexp = std::vector<NeoN::scalar> {4.0, 4.0, 4.0};
+            REQUIRE_THAT(fieldA, Equals(resAexp));
         }
 
         SECTION("view and scalar")
         {
-            Coeff coeff {-5.0, fieldB};
-            {
-                NeoN::parallelFor(
-                    fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return coeff[i] + 2.0; }
-                );
-            };
-            auto hostVectorA = fieldA.copyToHost();
-            REQUIRE(coeff.hasView() == true);
-            REQUIRE(hostVectorA.view()[0] == -3.0);
-            REQUIRE(hostVectorA.view()[1] == -3.0);
-            REQUIRE(hostVectorA.view()[2] == -3.0);
+            Coeff c {-5.0, fieldB};
+            NeoN::parallelFor(
+                fieldA, NEON_LAMBDA(const NeoN::localIdx i) { return c[i] + 2.0; }
+            );
+            auto resAexp = std::vector<NeoN::scalar> {-3.0, -3.0, -3.0};
+            REQUIRE_THAT(fieldA, Equals(resAexp));
         }
     }
 }

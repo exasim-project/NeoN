@@ -18,7 +18,7 @@ std::vector<std::string> Collection::find(const std::function<bool(const Documen
     return impl_->find(predicate);
 }
 
-size_t Collection::size() const { return impl_->size(); }
+sizeType Collection::size() const { return impl_->size(); }
 
 std::string Collection::type() const { return impl_->type(); }
 

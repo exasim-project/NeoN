@@ -19,6 +19,8 @@ class Calculated : public VolumeBoundaryFactory<ValueType>::template Register<Ca
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using CalculatedType = Calculated<ValueType>;
 
     Calculated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
@@ -28,6 +30,8 @@ public:
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}
 
     static std::string name() { return "calculated"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "TBD"; }
 

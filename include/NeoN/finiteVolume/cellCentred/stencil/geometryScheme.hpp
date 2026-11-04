@@ -5,6 +5,8 @@
 #pragma once
 
 
+#include <optional>
+
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
@@ -19,29 +21,33 @@ class GeometrySchemeFactory
 
 public:
 
-    GeometrySchemeFactory(const UnstructuredMesh& mesh);
+    GeometrySchemeFactory();
 
     virtual ~GeometrySchemeFactory() = default;
 
     virtual void updateWeights(const Executor& exec, SurfaceField<scalar>& weights) = 0;
 
-    virtual void updateDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& deltaCoeffs) = 0;
-
     virtual void
     updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs) = 0;
 
-    virtual void
-    updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<Vec3>& nonOrthDeltaCoeffs) = 0;
+    // nonOrthDeltaCoeffs is the precomputed 1/(n.d) field (must be updated first); the
+    // correction vectors read it rather than re-deriving the formula, keeping a single
+    // source of truth for the coefficient.
+    virtual void updateNonOrthCorrectionVec3s(
+        const Executor& exec,
+        const SurfaceField<scalar>& nonOrthDeltaCoeffs,
+        SurfaceField<Vec3>& nonOrthCorrectionVec3s
+    ) = 0;
 };
 
 /* @class GeometryScheme
- * @brief Implements access to compute deltaCoeffs, weights, and nonOrthDeltaCoeffs
+ * @brief Implements access to compute weights and nonOrthDeltaCoeffs
  *
  * Where:
- *  - deltaCoeff: inverse owner to neighbour cell centre distance
  *  - weight: the distance of the cell centre to face normalized by the distance to the neighbour
  * cell
- *  - nonOrthDeltaCoeff: faceNormal * cellToCellDist
+ *  - nonOrthDeltaCoeff: 1 / (faceNormal . cellToCellDist), the over-relaxed (non-orthogonal)
+ * inverse distance, floored at 1 / (0.05 * |cellToCellDist|)
  */
 class GeometryScheme
 {
@@ -51,7 +57,6 @@ public:
         const Executor& exec,
         std::unique_ptr<GeometrySchemeFactory> kernel,
         const SurfaceField<scalar>& weights,
-        const SurfaceField<scalar>& deltaCoeffs,
         const SurfaceField<scalar>& nonOrthDeltaCoeffs,
         const SurfaceField<Vec3>& nonOrthCorrectionVec3s
     );
@@ -69,14 +74,34 @@ public:
 
     const SurfaceField<scalar>& weights() const;
 
-    const SurfaceField<scalar>& deltaCoeffs() const;
-
     const SurfaceField<scalar>& nonOrthDeltaCoeffs() const;
 
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s() const;
 
+    // Vector from the owner cell centre to the face centre (Cf - C_own), one per internal face.
+    // Eagerly computed and cached by update() while the mesh centres are still alive; schemes that
+    // need a cell-to-face offset (e.g. linearUpwind's gradient correction) read it from here.
+    const SurfaceField<Vec3>& faceDeltaOwner() const;
+
+    // Vector from the neighbour cell centre to the face centre (Cf - C_nei), one per internal face.
+    const SurfaceField<Vec3>& faceDeltaNeighbour() const;
+
+    // Safety-net trigger for the faceDelta* fields: builds them from the still-live mesh centres if
+    // update() has not already (it normally has, since update() computes them eagerly), then
+    // releases the source geometry via reset(). Errors out if the centres were already freed.
+    // Idempotent; const so it is reachable through the shared (read-only) GeometryScheme handle.
+    // No-op cost once the deltas exist is a single bool check.
+    void ensureFaceDeltas() const;
+
     void update();
 
+    // Frees the mesh's per-cell/face centre arrays once the geometry-scheme fields are cached, to
+    // save device memory. Deferred (lazy + idempotent): triggered on the first read of any cached
+    // geometry field, or by ensureFaceDeltas() right after the faceDelta* fields are built — not in
+    // update(), so that a late faceDelta* opt-in can still read the centres.
+    // TODO: check if we can remove the temporary fields from the unstructured mesh
+    // altogether: compute the geometry-scheme data explicitly first and pass it as an
+    // argument, instead of freeing mesh members after the fact.
     void reset() const;
 
     std::string name() const;
@@ -91,9 +116,18 @@ private:
     std::unique_ptr<GeometrySchemeFactory> kernel_;
 
     SurfaceField<scalar> weights_;
-    SurfaceField<scalar> deltaCoeffs_;
     SurfaceField<scalar> nonOrthDeltaCoeffs_;
     SurfaceField<Vec3> nonOrthCorrectionVec3s_;
+
+    // Populated (from the mesh centres) eagerly by update(); ensureFaceDeltas() is a fallback that
+    // fills them if update() somehow hasn't. std::optional so they can be released with reset(),
+    // and mutable so the const accessors / ensureFaceDeltas() can populate them through the shared
+    // handle. Each holds nInternalFaces * sizeof(Vec3) of device memory.
+    mutable std::optional<SurfaceField<Vec3>> faceDeltaOwner_;
+    mutable std::optional<SurfaceField<Vec3>> faceDeltaNeighbour_;
+    mutable bool faceDeltasComputed_ = false;
+    // Guards the one-shot, deferred release of the mesh centre arrays (see reset()).
+    mutable bool sourceGeometryReleased_ = false;
 };
 
 } // namespace NeoN

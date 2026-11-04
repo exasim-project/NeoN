@@ -6,9 +6,7 @@
 
 namespace NeoN
 {
-void logOutRange(
-    const std::out_of_range& e, const std::size_t& key, const std::vector<std::any>& data
-)
+void logOutRange(const std::out_of_range& e, const sizeType& key, const std::vector<std::any>& data)
 {
     std::cerr << "Index is out of bounds: " << key << " \n"
               << "the size is :" << data.size() << " \n"
@@ -19,7 +17,7 @@ TokenList::TokenList() : data_(), nextIndex_(0) {}
 
 TokenList::TokenList(const TokenList& other) : data_(other.data_), nextIndex_(other.nextIndex_) {}
 
-TokenList::TokenList(const std::vector<std::any>& data, size_t nextIndex)
+TokenList::TokenList(const std::vector<std::any>& data, sizeType nextIndex)
     : data_(data), nextIndex_(nextIndex)
 {}
 
@@ -29,14 +27,14 @@ TokenList::TokenList(const std::initializer_list<std::any>& initList)
 
 void TokenList::insert(const std::any& value) { data_.push_back(value); }
 
-void TokenList::remove(size_t index)
+void TokenList::remove(sizeType index)
 {
     data_.erase(data_.begin() + static_cast<std::vector<double>::difference_type>(index));
 }
 
 [[nodiscard]] bool TokenList::empty() const { return data_.empty(); }
 
-[[nodiscard]] size_t TokenList::size() const { return data_.size(); }
+[[nodiscard]] sizeType TokenList::size() const { return data_.size(); }
 
 [[nodiscard]] std::vector<std::any>& TokenList::tokens() { return data_; }
 

@@ -8,6 +8,24 @@
 
 #include "NeoN/core/primitives/traits.hpp"
 
+/**
+ * @brief Integer types used throughout NeoN.
+ *
+ * The following type aliases distinguish between different kinds of integer
+ * values:
+ *
+ * - `label` identifies mesh entities (e.g. cell number and face number)
+ * - `localIdx` indexes data that is local to a process or execution space,
+ *   such as arrays, views, and local graph structures.
+ * - `globalIdx` identifies globally unique entities in distributed-memory
+ *   computations.
+ * - `sizeType` represents sizes and counts (e.g. container sizes, iteration
+ *   counts, and memory sizes) and should not be used to identify mesh
+ *   entities.
+ *
+ * The widths of `label`, `localIdx`, and `globalIdx` depend on the compile-time
+ * configuration (`NeoN_DP_LABEL` and `NeoN_US_IDX`).
+ */
 
 namespace NeoN
 {
@@ -35,7 +53,7 @@ using globalIdx = int64_t;
 
 #endif
 
-using size_t = std::size_t;
+using sizeType = std::size_t;
 using mpi_label_t = int;
 
 // traits for label

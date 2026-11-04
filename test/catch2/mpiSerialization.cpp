@@ -4,40 +4,38 @@
 
 #include "mpiSerialization.hpp"
 
+#include <atomic>
 #include <thread>
 #include <vector>
 
 #include "mpiGlobals.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
-void serializeIO(volatile bool* threadShutdown)
+using NeoN::sizeType;
+
+void serializeIO(std::atomic<bool>* threadShutdown)
 {
     if (!IS_ROOT)
     {
         return;
     }
 
-    std::vector<MPI_Request> req(static_cast<std::size_t>(COMM_SIZE));
+    std::vector<MPI_Request> req(static_cast<sizeType>(COMM_SIZE));
     bool recvBuffer;
     for (int i = 0; i < COMM_SIZE; ++i)
     {
         MPI_Irecv(
-            &recvBuffer,
-            1,
-            MPI_CXX_BOOL,
-            i,
-            SERIALIZATION_TAG,
-            COMM,
-            &req[static_cast<std::size_t>(i)]
+            &recvBuffer, 1, MPI_CXX_BOOL, i, SERIALIZATION_TAG, COMM, &req[static_cast<sizeType>(i)]
         );
     }
 
-    while (!*threadShutdown)
+    while (!threadShutdown->load())
     {
         // completed will be the index within req of a request that has finished. This is
         // equivalent to rank of the process who wants to print
         int completed = MPI_UNDEFINED;
         int flag;
-        while (completed == MPI_UNDEFINED && !*threadShutdown)
+        while (completed == MPI_UNDEFINED && !threadShutdown->load())
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
             MPI_Testany(
@@ -45,7 +43,7 @@ void serializeIO(volatile bool* threadShutdown)
             );
         }
 
-        if (*threadShutdown)
+        if (threadShutdown->load())
         {
             break;
         }
@@ -74,7 +72,7 @@ void serializeIO(volatile bool* threadShutdown)
             completed,
             SERIALIZATION_TAG,
             COMM,
-            &req[static_cast<std::size_t>(completed)]
+            &req[static_cast<sizeType>(completed)]
         );
     }
 }
