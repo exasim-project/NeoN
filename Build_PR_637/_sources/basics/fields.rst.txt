@@ -26,6 +26,7 @@ The Vector class is the basic container class and is the central component for i
 One of the key differences between accessing the elements of a ``Vector`` and typical ``std`` sequential data containers is the lack of subscript or direct element access operators.
 This is to prevent accidental access to device memory from the host.
 The correct procedure to access ``Vector`` elements is indirectly through a ``view``, as shown below:
+
 .. code-block:: cpp
 
     // Host Vectors
@@ -71,6 +72,7 @@ The ``fieldBinaryOp``  is implemented using our parallelFor implementations whic
 A simplified version of the ``parallelFor`` function is shown below.
 
 .. code-block:: cpp
+
     template<typename Executor, parallelForKernel Kernel>
     void parallelFor(
         [[maybe_unused]] const Executor& exec, std::pair<NeoN::sizeType, NeoN::sizeType> range, Kernel kernel

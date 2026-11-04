@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated" kind="class" language="C++" prot="public">
     <compoundname>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">VolumeBoundaryFactory&lt; ValueType &gt;::template Register</basecompoundref>
+    <basecompoundref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" prot="public" virt="non-virtual">NeoN::finiteVolume::cellCentred::template Register&lt; Extrapolated&lt; ValueType &gt; &gt;</basecompoundref>
     <includes refid="extrapolated_8hpp" local="no">extrapolated.hpp</includes>
     <templateparamlist>
       <param>
@@ -10,9 +10,9 @@
       </param>
     </templateparamlist>
     <sectiondef kind="private-type">
-      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1ab6befca61b7048428ccd68e362491a7d" prot="private" static="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory</ref>&lt; ValueType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated" kindref="compound">Extrapolated</ref>&lt; ValueType &gt; &gt;</type>
-        <definition>using NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated&lt; ValueType &gt;::Base =  VolumeBoundaryFactory&lt;ValueType&gt;::template Register&lt;Extrapolated&lt;ValueType&gt; &gt;</definition>
+      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1af70cf702fe322ee62735ef90c541c2e2" prot="private" static="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a805723729eacf9d559d686233df8eb27" kindref="member">VolumeBoundaryFactory</ref>&lt; ValueType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a340bd68a2f070e9700823ec19a977dda" kindref="member">Extrapolated</ref>&lt; ValueType &gt; &gt;</type>
+        <definition>using NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated&lt; ValueType &gt;::Base =  VolumeBoundaryFactory&lt;ValueType&gt;::template Register&lt;Extrapolated&lt;ValueType&gt;&gt;</definition>
         <argsstring></argsstring>
         <name>Base</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated::Base</qualifiedname>
@@ -27,7 +27,7 @@
     </sectiondef>
     <sectiondef kind="public-type">
       <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a8067013f72e53e76a45ae0138fcbd7c4" prot="public" static="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated" kindref="compound">Extrapolated</ref>&lt; ValueType &gt;</type>
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a340bd68a2f070e9700823ec19a977dda" kindref="member">Extrapolated</ref>&lt; ValueType &gt;</type>
         <definition>using NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated&lt; ValueType &gt;::ExtrapolatedType =  Extrapolated&lt;ValueType&gt;</definition>
         <argsstring></argsstring>
         <name>ExtrapolatedType</name>
@@ -73,7 +73,7 @@
           <declname>dict</declname>
         </param>
         <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <type><ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></type>
           <declname>patchID</declname>
         </param>
         <briefdescription>
@@ -90,6 +90,7 @@
         <argsstring>(Field&lt; ValueType &gt; &amp;domainVector) final</argsstring>
         <name>correctBoundaryCondition</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated::correctBoundaryCondition</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a4096139369d9bd6502e50c56422052d2">correctBoundaryCondition</reimplements>
         <param>
           <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
           <declname>domainVector</declname>
@@ -102,12 +103,13 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" line="73" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" bodystart="73" bodyend="76"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a3daa83076a49f2f6afa027958b7f2d42" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a3daa83076a49f2f6afa027958b7f2d42" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>std::string</type>
         <definition>std::string NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated&lt; ValueType &gt;::getName</definition>
         <argsstring>() const override</argsstring>
         <name>getName</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated::getName</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1ac59aad1b4745aaa76ffdd6008015b00b">getName</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -117,11 +119,12 @@
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" line="80" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" bodystart="80" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a5554790a7b94d3c87550e4fa8246e84a" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory" kindref="compound">VolumeBoundaryFactory</ref>&lt; ValueType &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a805723729eacf9d559d686233df8eb27" kindref="member">VolumeBoundaryFactory</ref>&lt; ValueType &gt; &gt;</type>
         <definition>virtual std::unique_ptr&lt; VolumeBoundaryFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated&lt; ValueType &gt;::clone</definition>
         <argsstring>() const final</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated::clone</qualifiedname>
+        <reimplements refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a06ed95a7e62e1faa3e6869eb9fb70a32">clone</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -180,39 +183,84 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>NeoN::RuntimeSelectionFactory&lt; VolumeBoundaryFactory&lt; ValueType &gt;, Parameters&lt; const UnstructuredMesh &amp;, const Dictionary &amp;, localIdx &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
+      <node id="4">
+        <label>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin"/>
+      </node>
+      <node id="2">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; Extrapolated&lt; ValueType &gt; &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated&lt; ValueType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>VolumeBoundaryFactory::template Register&lt; Extrapolated&lt; ValueType &gt; &gt;</label>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="3">
+        <label>NeoN::RuntimeSelectionFactory&lt; VolumeBoundaryFactory&lt; ValueType &gt;, Parameters&lt; const UnstructuredMesh &amp;, const Dictionary &amp;, localIdx &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
+      <node id="4">
+        <label>NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin"/>
+      </node>
+      <node id="2">
+        <label>NeoN::finiteVolume::cellCentred::template Register&lt; Extrapolated&lt; ValueType &gt; &gt;</label>
+        <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated&lt; ValueType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>VolumeBoundaryFactory::template Register&lt; Extrapolated&lt; ValueType &gt; &gt;</label>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" line="58" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" bodystart="60" bodyend="94"/>
     <listofallmembers>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1ab6befca61b7048428ccd68e362491a7d" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a5c503a1e25c6fa991727e7e246130109" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>attributes</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1adad9d6655b500dd68e8fd74a55cbb081" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>attributes_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1af70cf702fe322ee62735ef90c541c2e2" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a2f25d5ddb8da863d82821cd0360307c9" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a3346a58e9b29984e6459d093592c9a21" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a90f3092d2971c49e8c067dbdf4482ef6" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>BoundaryPatchMixin</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a5554790a7b94d3c87550e4fa8246e84a" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>clone</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a1fc9bd56bfccc7a875a6ec5f9f57400e" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>correctBoundaryCondition</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1affd0ad639e269e701db4a736be8d06de" prot="public" virt="virtual" ambiguityscope="NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory&lt; ValueType &gt;::template Register&lt; Extrapolated&lt; ValueType &gt; &gt;::"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>correctBoundaryCondition</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a23bf088ef994133485e84405e8a8d00c" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>doc</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a26175fdfa0ced8e1cb08e52298bcadf3" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>end_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a340bd68a2f070e9700823ec19a977dda" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>Extrapolated</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a8067013f72e53e76a45ae0138fcbd7c4" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>ExtrapolatedType</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a3daa83076a49f2f6afa027958b7f2d42" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>getName</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a3daa83076a49f2f6afa027958b7f2d42" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>getName</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a284dfbe25a67bdf1cdeaf39db36ed161" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>mesh_</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a2a57aeedb0d764cb2a795619719d7fe8" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>name</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ad87db48a445a1b1b7536d74e0fd60c59" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>patchEnd</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a33d95d3e0b72d8383358f886b925f764" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>patchID</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1adbf45e525a5c07ad1b0d9f6707806011" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>patchID_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a152a639fe77a2a27df9a4ac9687b1cb5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>patchSize</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a0585c196f28f070971c918bde2c034e9" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>patchStart</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1ac3d7e3335fc87d8c40af60de9eca56c0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>range</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Extrapolated_1a970f371002c68aff8add7f4c544d143a" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>schema</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a159a7bfaf16963bf4acf4a73e2e42422" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>set</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a704e4f166091d177d272ad0e55186531" prot="protected" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>start_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a7447a0202cffe2b0ec1c0fdfc5494710" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>update</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a805723729eacf9d559d686233df8eb27" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>VolumeBoundaryFactory</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_1a33e0e460fb4a0acdb198a0153ffd84f6" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>~BoundaryPatchMixin</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_1a3ba452b07c8ab275d70445f936f6005b" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::volumeBoundary::Extrapolated</scope><name>~VolumeBoundaryFactory</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
