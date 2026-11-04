@@ -6,11 +6,11 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Parallel Algorithms" href="algorithms.html"><link rel="prev" title="Executor" href="executor.html">
         <link rel="canonical" href="https://exasim-project.com/NeoN/basics/fields.html">
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
         <title>Vectors - NeoN documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=acfd86a5" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6a4ff913" />
     
@@ -303,19 +303,19 @@
 <p>The Vector class is the basic container class and is the central component for implementing a platform portable CFD framework.
 One of the key differences between accessing the elements of a <code class="docutils literal notranslate"><span class="pre">Vector</span></code> and typical <code class="docutils literal notranslate"><span class="pre">std</span></code> sequential data containers is the lack of subscript or direct element access operators.
 This is to prevent accidental access to device memory from the host.
-The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Vector</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">view</span></code>, as shown below:
-.. code-block:: cpp</p>
-<blockquote>
-<div><p>// Host Vectors
-Vector&lt;T&gt; hostVector(Executor::CPUExecutor, <a href="#id1"><span class="problematic" id="id2">size_</span></a>);
-auto hostVectorView = hostVector.view();
-hostVectorView[1] = 1; // assuming <a href="#id3"><span class="problematic" id="id4">size_</span></a> &gt; 2.</p>
-<p>// Device Vectors
-Vector&lt;T&gt; deviceVector(Executor::GPUExecutor, <a href="#id5"><span class="problematic" id="id6">size_</span></a>);
-auto deviceVectorOnHost = deviceVector.copyToHost();
-auto deviceVectorOnHostView = deviceVectorOnHost.view();
-deviceVectorOnHostView[1] = 1; // assuming <a href="#id7"><span class="problematic" id="id8">size_</span></a> &gt; 2.</p>
-</div></blockquote>
+The correct procedure to access <code class="docutils literal notranslate"><span class="pre">Vector</span></code> elements is indirectly through a <code class="docutils literal notranslate"><span class="pre">view</span></code>, as shown below:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Host Vectors</span>
+<span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">hostVector</span><span class="p">(</span><span class="n">Executor</span><span class="o">::</span><span class="n">CPUExecutor</span><span class="p">,</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">hostVectorView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hostVector</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
+<span class="n">hostVectorView</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// assuming size_ &gt; 2.</span>
+
+<span class="c1">// Device Vectors</span>
+<span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deviceVector</span><span class="p">(</span><span class="n">Executor</span><span class="o">::</span><span class="n">GPUExecutor</span><span class="p">,</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">deviceVectorOnHost</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deviceVector</span><span class="p">.</span><span class="n">copyToHost</span><span class="p">();</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">deviceVectorOnHostView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deviceVectorOnHost</span><span class="p">.</span><span class="n">view</span><span class="p">();</span>
+<span class="n">deviceVectorOnHostView</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// assuming size_ &gt; 2.</span>
+</pre></div>
+</div>
 <p>Vectors support basic algebraic operations such as binary operations like the addition or subtraction of two fields, or scalar operations like the multiplication of a field with a scalar.
 In the following, some implementation details of the field operations are detailed using the additions operator as an example.
 The block of code below shows an example implementation of the addition operator.</p>
@@ -341,6 +341,28 @@ The <code class="docutils literal notranslate"><span class="pre">fieldBinaryOp</
 </pre></div>
 </div>
 <p>A simplified version of the <code class="docutils literal notranslate"><span class="pre">parallelFor</span></code> function is shown below.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Executor</span><span class="p">,</span><span class="w"> </span><span class="n">parallelForKernel</span><span class="w"> </span><span class="n">Kernel</span><span class="o">&gt;</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">parallelFor</span><span class="p">(</span>
+<span class="w">    </span><span class="p">[[</span><span class="n">maybe_unused</span><span class="p">]]</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Executor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exec</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">NeoN</span><span class="o">::</span><span class="n">sizeType</span><span class="p">,</span><span class="w"> </span><span class="n">NeoN</span><span class="o">::</span><span class="n">sizeType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">range</span><span class="p">,</span><span class="w"> </span><span class="n">Kernel</span><span class="w"> </span><span class="n">kernel</span>
+<span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">range</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_reference_t</span><span class="o">&lt;</span><span class="n">Executor</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">SerialExecutor</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">runOn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Executor</span><span class="o">::</span><span class="n">exec</span><span class="p">;</span>
+<span class="w">        </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">parallel_for</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;parallelFor&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">RangePolicy</span><span class="o">&lt;</span><span class="n">runOn</span><span class="o">&gt;</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">),</span>
+<span class="w">            </span><span class="n">NEON_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>The code snippet highlights another important aspect, the executor.
 The executor defines the <code class="docutils literal notranslate"><span class="pre">Kokkos::RangePolicy</span></code>, see  <a class="reference external" href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md">Kokkos Programming Model</a>.
 Besides defining the RangePolicy, the executor also holds functions for allocating and deallocationg memory.
@@ -430,7 +452,7 @@ Both derive from the <code class="docutils literal notranslate"><span class="pre
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
