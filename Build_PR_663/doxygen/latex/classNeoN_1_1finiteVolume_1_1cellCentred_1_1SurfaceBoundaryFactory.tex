@@ -1,0 +1,167 @@
+\doxysection{NeoN\+::finite\+Volume\+::cell\+Centred\+::Surface\+Boundary\+Factory\texorpdfstring{$<$}{<} Value\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+
+
+{\ttfamily \#include $<$surface\+Boundary\+Factory.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::finite\+Volume\+::cell\+Centred\+::Surface\+Boundary\+Factory\texorpdfstring{$<$}{<} Value\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=0.645161cm]{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_af2ed9427a67e2c073750142dd176de5b}{Surface\+Boundary\+Factory}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}})
+\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479}{correct\+Boundary\+Condition}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&field)=0
+\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a7cf9bd6e98631b3ae53370953bc22d72}{set}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector)
+\begin{DoxyCompactList}\small\item\em One-\/time patch initialisation, applied once per field before the first \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}{update()}. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}{update}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector)
+\begin{DoxyCompactList}\small\item\em Per-\/iteration boundary update, applied on every correct\+Boundary\+Conditions() call. \end{DoxyCompactList}\item 
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_af2ed9427a67e2c073750142dd176de5b}{Surface\+Boundary\+Factory}} $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a33c858a6c846aa18e6b1f8a2f49f799c}{clone}} () const =0
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Patch\+Mixin}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a2f25d5ddb8da863d82821cd0360307c9}{Boundary\+Patch\+Mixin}} ()
+\item 
+virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33e0e460fb4a0acdb198a0153ffd84f6}{\texorpdfstring{$\sim$}{\string~}\+Boundary\+Patch\+Mixin}} ()=default
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a3346a58e9b29984e6459d093592c9a21}{Boundary\+Patch\+Mixin}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}})
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a90f3092d2971c49e8c067dbdf4482ef6}{Boundary\+Patch\+Mixin}} (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} start, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} end, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}})
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a0585c196f28f070971c918bde2c034e9}{patch\+Start}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ad87db48a445a1b1b7536d74e0fd60c59}{patch\+End}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a152a639fe77a2a27df9a4ac9687b1cb5}{patch\+Size}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}} () const
+\item 
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a49f97638c687788d6e6b1939254baa65}{name}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Patch\+Mixin}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_adbf45e525a5c07ad1b0d9f6707806011}{patch\+ID\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The id of this patch. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a704e4f166091d177d272ad0e55186531}{start\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The start index of the patch in the boundary\+Vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a26175fdfa0ced8e1cb08e52298bcadf3}{end\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The end index of the patch in the boundary\+Vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type$>$\newline
+class Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory$<$ Value\+Type $>$}
+
+
+Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00018}{18}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
+
+
+
+\label{doc-constructors}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_af2ed9427a67e2c073750142dd176de5b}\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!SurfaceBoundaryFactory@{SurfaceBoundaryFactory}}
+\index{SurfaceBoundaryFactory@{SurfaceBoundaryFactory}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SurfaceBoundaryFactory()}{SurfaceBoundaryFactory()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_af2ed9427a67e2c073750142dd176de5b} 
+template$<$typename Value\+Type$>$ \\
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::\+Surface\+Boundary\+Factory (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{}{, }\item[{\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}}}]{patch\+ID}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a33c858a6c846aa18e6b1f8a2f49f799c}\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!clone@{clone}}
+\index{clone@{clone}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a33c858a6c846aa18e6b1f8a2f49f799c} 
+template$<$typename Value\+Type$>$ \\
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_af2ed9427a67e2c073750142dd176de5b}{Surface\+Boundary\+Factory}} $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::clone (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Calculated_a4fa6126136cb275b789aa919544fc89e}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Calculated$<$ Value\+Type $>$}}, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Empty_a7e02de4148feb46b123f34a295b7fe8f}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Empty$<$ Value\+Type $>$}}, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_a02546e6ea98cdf1f91825583fcbc9d94}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Fixed\+Value$<$ Value\+Type $>$}}, and \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Processor_ad091e37c435e8d1f04786916758ba47f}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Processor$<$ Value\+Type $>$}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479}\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!correctBoundaryCondition@{correctBoundaryCondition}}
+\index{correctBoundaryCondition@{correctBoundaryCondition}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{correctBoundaryCondition()}{correctBoundaryCondition()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479} 
+template$<$typename Value\+Type$>$ \\
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::correct\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{field}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Calculated_a035de003e7738e1c83d89544fbd36597}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Calculated$<$ Value\+Type $>$}}, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Empty_a9cc0fb1b0eff68cdf9c1a662b4126d1c}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Empty$<$ Value\+Type $>$}}, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1FixedValue_aa63978ced9fa8c25e455bb52d0e56b8f}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Fixed\+Value$<$ Value\+Type $>$}}, and \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Processor_adac4159bfcb7fe72e37135a00fdfea50}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Processor$<$ Value\+Type $>$}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a49f97638c687788d6e6b1939254baa65}\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!name@{name}}
+\index{name@{name}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a49f97638c687788d6e6b1939254baa65} 
+template$<$typename Value\+Type$>$ \\
+std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::name (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a7cf9bd6e98631b3ae53370953bc22d72}\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!set@{set}}
+\index{set@{set}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{set()}{set()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a7cf9bd6e98631b3ae53370953bc22d72} 
+template$<$typename Value\+Type$>$ \\
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+One-\/time patch initialisation, applied once per field before the first \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}{update()}. 
+
+For patch data fixed for the lifetime of the field (e.\+g. constant mixed-\/\+BC coefficients). Default\+: no-\/op. 
+
+Reimplemented in \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Processor_a27426b042fcfc5bb243c1a518e8ce479}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Processor$<$ Value\+Type $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00041}{41}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!update@{update}}
+\index{update@{update}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551} 
+template$<$typename Value\+Type$>$ \\
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Per-\/iteration boundary update, applied on every correct\+Boundary\+Conditions() call. 
+
+Default forwards to \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479}{correct\+Boundary\+Condition()} so non-\/split BCs are unchanged. 
+
+Reimplemented in \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Processor_a7d894147d9a1ffa50eccfdb16b39b8f9}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::surface\+Boundary\+::\+Processor$<$ Value\+Type $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00048}{48}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/finite\+Volume/cell\+Centred/boundary/\mbox{\hyperlink{surfaceBoundaryFactory_8hpp}{surface\+Boundary\+Factory.\+hpp}}\end{DoxyCompactItemize}
