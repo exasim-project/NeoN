@@ -390,6 +390,27 @@ public:
         );
     }
 
+    /*@brief subtract explicit temporal terms (e.g. exp::ddt) from the linear system rhs
+     *
+     * Unlike spatial operators, temporal explicitOperation already returns volume-integrated
+     * values (see DdtOperator::explicitOperation), so no additional cell-volume scaling is
+     * applied here.
+     */
+    template<typename AssemblyType = ValueType>
+    void assembleExplicitTemporalSource(
+        la::LinearSystem<AssemblyType, ValueType>& ls, scalar t, scalar dt
+    ) const
+    {
+        Vector<ValueType> expTmp(exec_, ls.rhs().size(), zero<ValueType>());
+        explicitOperation(expTmp, t, dt);
+        auto [expSource, rhs] = views(expTmp, ls.rhs());
+        parallelFor(
+            ls.exec(),
+            {0, static_cast<localIdx>(rhs.size())},
+            NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i]; }
+        );
+    }
+
     /** @brief construct a linear system and force assembly including explicit source terms
      *
      * @param ps post-assembly functors applied to the system after assembly
@@ -423,6 +444,7 @@ public:
     {
         assemble<AssemblyType>(t, dt, ls, ps);
         assembleExplicitSource(ls, mesh);
+        assembleExplicitTemporalSource(ls, t, dt);
     }
 
     /* @brief assemble into a given linear system (implicit operators only, no explicit sources)
