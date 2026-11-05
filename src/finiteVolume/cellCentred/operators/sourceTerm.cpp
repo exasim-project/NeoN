@@ -120,6 +120,53 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) c
 }
 
 
+template<typename ValueType>
+void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<scalar, ValueType>& ls) const
+    requires(!std::is_same_v<ValueType, scalar>)
+{
+    if (!spCoeff_)
+    {
+        NF_ERROR_EXIT("Not implemented");
+    }
+    const auto operatorScaling = this->getCoefficient();
+    const auto vol = spCoeff_->mesh().cellVolumes().view();
+    const auto [coeff] = views(spCoeff_->internalVector());
+    auto values = ls.matrix().values().view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    if (suSp_)
+    {
+        // same split as the coupled overload; the scalar diagonal is shared by all components
+        auto rhs = ls.rhs().view();
+        const auto [fieldView] = views(this->field_.internalVector());
+        NeoN::parallelFor(
+            ls.exec(),
+            {0, coeff.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const scalar c = coeff[celli];
+                const scalar cPos = c > scalar(0) ? c : scalar(0);
+                const scalar cNeg = c < scalar(0) ? c : scalar(0);
+                const scalar scaling = operatorScaling[celli];
+                values[ma.diagIdx(celli)] += scaling * cPos * vol[celli];
+                rhs[celli] += -scaling * cNeg * vol[celli] * fieldView[celli];
+            },
+            "SuSp::implicitOperationScalarMtx"
+        );
+        return;
+    }
+
+    // Sp implicit: scalar diagonal += scaling * spCoeff * volume
+    NeoN::parallelFor(
+        ls.exec(),
+        {0, coeff.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            values[ma.diagIdx(celli)] += operatorScaling[celli] * coeff[celli] * vol[celli];
+        },
+        "Sp::implicitOperationScalarMtx"
+    );
+}
+
+
 // instantiate the template class
 template class SourceTerm<scalar>;
 template class SourceTerm<Vec3>;
