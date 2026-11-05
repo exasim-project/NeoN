@@ -24,6 +24,7 @@
 - Publish nightly `neon-pde` conda packages of develop to the prefix.dev `exasim-project/nightlies` channel when develop changed [#735](https://github.com/exasim-project/NeoN/pull/735)
 - Add Open MPI flavours of the `neon-pde` conda package, built with GCC and with clang, for downstream MPI codes such as NeoFOAM [#736](https://github.com/exasim-project/NeoN/pull/736)
 ## Fixes
+- Make the `limitedLinear` and `limitedLinearV` weights deterministic on a flat scalar field: slopes that are only floating-point round-off no longer decide between central and upwind differencing [#724](https://github.com/exasim-project/NeoN/pull/724)
 - Honour a cell-limited gradient scheme in the scalar `linearUpwind` interpolation, as OpenFOAM does [#723](https://github.com/exasim-project/NeoN/pull/723)
 - Use the `ddtSchemes` default entry in `DdtOperator::read` for a field without an entry of its own, as OpenFOAM does [#712](https://github.com/exasim-project/NeoN/pull/712)
 - Fix explicit temporal operators (e.g. `exp.ddt(p)`, `exp.ddt(rho, K)`) being silently dropped when an `Expression` is assembled into the right-hand side, and make the non-density-weighted explicit `ddt` honor its coefficient [#707](https://github.com/exasim-project/NeoN/pull/707)

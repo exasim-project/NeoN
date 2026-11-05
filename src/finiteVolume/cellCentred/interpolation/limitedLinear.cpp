@@ -48,8 +48,24 @@ scalar limitedLinearLimiter(const scalar twoByk, const scalar gradf, const scala
     return Kokkos::max(Kokkos::min(twoByk * tvdRatio(gradf, gradcf), scalar(1)), scalar(0));
 }
 
+/* @brief relative size below which a slope of a scalar field is floating-point round-off.
+ *
+ * The Gauss gradient of a flat field is a sum of face values times area vectors that cancels only
+ * up to round-off (about 1e-16 of the field, times the few terms summed), and its sign depends on
+ * the order of the sum. 1e-12 is four orders above that and far below any variation that carries
+ * slope information.
+ */
+constexpr scalar flatFieldSlopeTolerance = 1e-12;
+
 /* @brief the two slopes the TVD ratio is built from, for a scalar field: the face difference and
  * the upwind-cell gradient projected on the cell-to-cell vector d.
+ *
+ * On a flat field the face difference is exactly zero and the gradient is only round-off. The
+ * ratio then saturates and takes the SIGN of that round-off (see tvdRatio), so the limiter would
+ * flip between 1 (central) and 0 (upwind) with the last bits of the field value and the order of
+ * the gradient sum. Both slopes are zeroed when both are round-off, which gives the central
+ * differencing a flat field is meant to get; OpenFOAM's gradient of a flat field cancels to exactly
+ * zero and takes the same branch.
  */
 NEON_INLINE_FUNCTION
 void faceSlopes(
@@ -63,6 +79,13 @@ void faceSlopes(
 {
     gradf = phiN - phiP;
     gradcf = d & gradUpwind;
+    const scalar roundOff =
+        flatFieldSlopeTolerance * Kokkos::max(Kokkos::abs(phiP), Kokkos::abs(phiN));
+    if (Kokkos::abs(gradf) <= roundOff && Kokkos::abs(gradcf) <= roundOff)
+    {
+        gradf = scalar(0);
+        gradcf = scalar(0);
+    }
 }
 
 /* @brief the same slopes for a vector field, as OpenFOAM's NVDVTVDV: both are taken along the face

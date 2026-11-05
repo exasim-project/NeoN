@@ -63,6 +63,70 @@ Vector<scalar> interpolateOnRamp(
 
 } // namespace
 
+// On a flat field the face difference is exactly zero and the cell gradient is only round-off, so
+// the TVD ratio carries no slope information. OpenFOAM's gradient of a uniform field cancels to
+// exactly zero there and the limiter is 1 (central differencing). The limiter must not depend on
+// the sign of round-off in the gradient: the weights have to be central for any flat value and
+// either flux direction. (The interpolated values of a constant field cannot show this -- they are
+// the constant for any weights -- so the weights themselves are checked.)
+TEST_CASE("limitedLinear weights are central on a flat field, whatever its value")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    const localIdx n = 6;
+    auto mesh = create3DUniformMesh(exec, n, n, n, 1.0, 1.0, 1.0);
+    Input input = TokenList({std::string("limitedLinear"), scalar(1)});
+    auto scheme = SurfaceInterpolation<scalar>(exec, mesh, input);
+
+    // values whose last bits differ: the 1e-12 and 1e-9 steps are the ones a round-off sign flips
+    // on
+    const std::vector<scalar> flatValues {
+        0.00325,
+        0.00325 * (1 + 1e-12),
+        0.00325 * (1 + 1e-9),
+        0.00325 * (1 + 1e-6),
+        2.6,
+        2.6 * (1 + 1e-12),
+        1.0,
+        1.0e5,
+        1.0e-8
+    };
+
+    for (const scalar flatValue : flatValues)
+    {
+        for (const scalar fluxSign : {1.0, -1.0})
+        {
+            INFO("flat value " << flatValue << ", flux sign " << fluxSign);
+            auto in = VolumeField<scalar>(
+                exec, "in", mesh, fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh)
+            );
+            auto flux = SurfaceField<scalar>(
+                exec, "flux", mesh, fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh)
+            );
+            auto weights = SurfaceField<scalar>(
+                exec,
+                "weights",
+                mesh,
+                fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh)
+            );
+            fill(in.internalVector(), flatValue);
+            fill(in.boundaryData().value(), flatValue);
+            fill(flux.internalVector(), fluxSign);
+
+            scheme.weight(flux, in, weights);
+
+            auto w = weights.internalVector().copyToHost();
+            localIdx nNotCentral = 0;
+            for (localIdx facei = 0; facei < toLocalIdx(w.size()); ++facei)
+            {
+                if (std::abs(w.view()[facei] - 0.5) > 1e-12) ++nNotCentral;
+            }
+            REQUIRE(nNotCentral == 0);
+        }
+    }
+}
+
 // A constant field has a zero face gradient, so the ratio saturates, the limiter is 1 and the
 // scheme is pure central differencing — which reproduces the constant exactly.
 TEST_CASE("limitedLinear preserves a constant field")
