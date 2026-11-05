@@ -98,10 +98,11 @@ public:
 
     using Base::correctBoundaryCondition;
 
-    // assignable = true: recomputed every correctBoundaryCondition call. fixesValue = false and
+    // assignable = false, as OpenFOAM's mixed patch fields (constrainHbyA then sets HbyA to the
+    // patch value). fixesValue = false and
     // mixed = true, as for freestreamVelocity.
     FreestreamPressure(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false, .mixed = true}),
+        : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = false, .mixed = true}),
           mesh_(mesh), freestreamValue_(dict.get<NeoN::scalar>("freestreamValue")),
           UName_(dict.contains("U") ? dict.get<std::string>("U") : std::string("U"))
     {}
