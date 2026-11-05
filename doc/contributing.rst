@@ -3,7 +3,35 @@ Contributing
 
 Contributions are highly welcome. Here is some information getting you started.
 
-All participants are expected to follow the `NeoN Code of Conduct <https://github.com/exasim-project/NeoN/blob/main/CODE_OF_CONDUCT.md>`_.
+All participants are expected to follow the `NeoN Code of Conduct <https://github.com/exasim-project/NeoN/blob/develop/CODE_OF_CONDUCT.md>`_.
+
+Reporting Issues and Getting Help
+"""""""""""""""""""""""""""""""""
+
+**Reporting bugs.**
+If you encounter a bug, a build failure, or incorrect results, please open an issue on the
+`GitHub issue tracker <https://github.com/exasim-project/NeoN/issues>`_.
+Before opening a new issue, search the existing issues to check whether the problem has already been reported.
+To help us reproduce the problem, please include the following where applicable:
+
+ * **Version information:** NeoN version or commit hash
+ * **Installation details:** installation method (source build, ``pip``, conda/pixi, or Spack) and Python version (if applicable)
+ * **Environment:** operating system and, for source builds, compiler and CMake version
+ * **Build configuration:** CMake preset or configuration options used (e.g., ``-DNeoN_WITH_MPI=OFF``) for source builds
+ * **Compute platform:** Kokkos backend and hardware (e.g., CUDA on NVIDIA H100, HIP on AMD MI210, OpenMP on CPU), including GPU driver and toolkit version if applicable
+ * **Reproducible example:** a minimal, self-contained example that reproduces the problem
+ * **Error details:** the full error message or log output
+ * **Expected vs. observed behaviour:** what you expected to happen and what happened instead
+
+**Requesting features.**
+Feature requests and suggestions for improvements are also welcome as GitHub issues.
+Please describe the intended use case and, if possible, sketch how the feature could look from a user's perspective.
+
+**Asking questions and seeking help.**
+For questions about using NeoN, integrating it into another CFD framework, or where to start contributing,
+please use `GitHub Discussions <https://github.com/exasim-project/NeoN/discussions>`_
+or join the community chat on `Gitter <https://matrix.to/#/#NeoFOAM:gitter.im>`_.
+Questions asked in public help other users as well, so we prefer these channels over private messages.
 
 NeoN Code Style Guide
 """"""""""""""""""""""""
@@ -11,8 +39,8 @@ NeoN Code Style Guide
 To simplify coding and code reviews you should adhere to the following code style. However, most
 of NeoNs code style guide is checked via automated tools.
 For example, formatting and non-format related code style is enforced via clang-format and clang-tidy.
-Corresponding configuration files are `.clang-format <https://github.com/exasim-project/NeoN/blob/main/.clang-format>`_
-and `.clang-tidy <https://github.com/exasim-project/NeoN/blob/main/.clang-format/.clang-tidy>`_.
+Corresponding configuration files are `.clang-format <https://github.com/exasim-project/NeoN/blob/develop/.clang-format>`_
+and `.clang-tidy <https://github.com/exasim-project/NeoN/blob/develop/.clang-tidy>`_.
 Furthermore, adequate licensing of the source code is checked via the reuse linter and typos checks for obvious spelling issues.
 Thus, this style guide doesn't list all stylistic rules explicitly but rather gives advice for ambiguous situations and mentions the rational for some decisions.
 
@@ -41,7 +69,7 @@ Folder structure and file names:
    ``finiteVolume/cellCentred/geometryModel/model.hpp``.
 
 Collaboration via Pull Requests
-""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""
 
 If you want to contribute a specific feature or fix, please don't hesitate to open a PR. After creating the PR, the following process is applied.
 
@@ -50,13 +78,13 @@ If you want to contribute a specific feature or fix, please don't hesitate to op
  * Make sure that all required pipelines succeed.
  * If you add new features, make sure to provide sufficient unit tests.
    Also at some point before merging you can add the ``full-ci`` label to include build and tests on GPU hardware.
- * If you add a new feature or bug-fix, please add an entry to the ``Changelog.md`` file.
-   For pure refactor PRs, the ``Skip-Changelog`` label can be set.
+ * If you add a new feature or bug-fix, please add an entry to the ``CHANGELOG.md`` file.
+   For pure refactor PRs, the ``skip-changelog`` label can be set.
  * If the PR should be merged in a specific order or if you don't have the permission to merge, add the ``ready-to-merge`` label.
- * Before merging, make sure to rebase your PR on to the latest state of ``main``.
- * Make sure to add yourself to the ``Authors.md`` file.
+ * Before merging, make sure to rebase your PR on to the latest state of ``develop``.
+ * Make sure to add yourself to the ``AUTHORS.md`` file.
  * To simplify the review process, small to medium sized PRs are preferred.
-   If your PR exceeds 1000 lines of code changes, consider to break the PR up into smaller PRs which can be merged via `stacked PRs <https://graphite.dev/blog/stacked-prs>`_.
+   If your PR exceeds 1000 lines of code changes, consider to break the PR up into smaller PRs which can be merged via `stacked PRs <https://graphite.dev/guides/stacked-diffs>`_.
 
 Github Workflows and Labels
 """""""""""""""""""""""""""
@@ -68,9 +96,11 @@ The following labels and their meaning are discussed here:
  * ``ready-to-merge``: Signal that the work on this PR has been finished and can be merged.
  * ``skip-changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
  * ``skip-build``: Don't run any build steps, including building the compile commands database.
- * ``Skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
+ * ``skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
  * ``full-ci``: Run tests on AWS and enable sanitizer workflows.
  * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
+ * ``benchmark``: Run the benchmark jobs on GPUs in the LRZ pipeline.
+ * ``skip-nvidia``, ``skip-amd``, ``skip-intel``: Skip the GPU tests on the respective vendor's hardware in the LRZ pipeline.
 
 A full list of the labels can be found `here <https://github.com/exasim-project/NeoN/labels>`_.
 
