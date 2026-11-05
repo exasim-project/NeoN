@@ -80,11 +80,12 @@ TEST_CASE("freestreamVelocity_volume")
         return field;
     };
 
-    SECTION("attributes: a mixed, assignable, non-Dirichlet patch " + execName)
+    SECTION("attributes: a mixed, non-assignable, non-Dirichlet patch " + execName)
     {
         REQUIRE(boundary->attributes().fixesValue == false);
         REQUIRE(boundary->attributes().mixed == true);
-        REQUIRE(boundary->attributes().assignable == true);
+        // as OpenFOAM's mixed patch fields: constrainHbyA sets HbyA to the patch value there
+        REQUIRE(boundary->attributes().assignable == false);
     }
 
     SECTION("valueFraction = 0.5 - 0.5 (U.nf)/|U| on every face " + execName)
@@ -220,11 +221,12 @@ TEST_CASE("freestreamPressure_volume")
     auto patches = makeBoundary("");
     auto& boundary = patches[0];
 
-    SECTION("attributes: a mixed, assignable, non-Dirichlet patch " + execName)
+    SECTION("attributes: a mixed, non-assignable, non-Dirichlet patch " + execName)
     {
         REQUIRE(boundary->attributes().fixesValue == false);
         REQUIRE(boundary->attributes().mixed == true);
-        REQUIRE(boundary->attributes().assignable == true);
+        // as OpenFOAM's mixed patch fields: constrainHbyA sets HbyA to the patch value there
+        REQUIRE(boundary->attributes().assignable == false);
     }
 
     SECTION("valueFraction = 0.5 + 0.5 (U.nf)/|U| from the velocity in the context " + execName)
