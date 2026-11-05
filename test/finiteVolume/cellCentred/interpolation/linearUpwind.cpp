@@ -258,4 +258,77 @@ TEST_CASE("linearUpwind is exact for a linear vector field")
     checkDirection(-1.0);
 }
 
+// "linearUpwind cellLimited Gauss ..." must build the scalar correction from the cell-limited
+// gradient, as OpenFOAM does. With a single-cell spike the unlimited gradient extrapolates past
+// the local data range; the limited one keeps every reconstructed face value inside the range
+// spanned by the upwind cell and its face neighbours. The two specs must also disagree somewhere,
+// which proves the limited path is taken instead of silently falling back to Gauss-Green.
+TEST_CASE("linearUpwind with a cellLimited spec bounds the scalar reconstruction")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    const localIdx n = 5;
+    auto mesh = create3DUniformMesh(exec, n, n, n, 1.0, 1.0, 1.0);
+
+    auto ownH = mesh.faceOwners().copyToHost();
+    auto neiH = mesh.faceNeighbors().copyToHost();
+    const auto own = ownH.view();
+    const auto nei = neiH.view();
+    const auto nCells = mesh.nCells();
+    const auto nInt = mesh.nInternalFaces();
+
+    const localIdx spike = toLocalIdx(nCells) / 2;
+    std::vector<scalar> values(nCells, 0.0);
+    values[static_cast<sizeType>(spike)] = 10.0;
+
+    auto src = VolumeField<scalar>(
+        exec, "src", mesh, fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh)
+    );
+    src.internalVector() = Vector<scalar>(exec, values);
+    src.correctBoundaryConditions();
+
+    std::vector<scalar> lo = values;
+    std::vector<scalar> hi = values;
+    for (localIdx facei = 0; facei < nInt; ++facei)
+    {
+        const auto o = static_cast<sizeType>(own[facei]);
+        const auto nb = static_cast<sizeType>(nei[facei]);
+        lo[o] = std::min(lo[o], values[nb]);
+        hi[o] = std::max(hi[o], values[nb]);
+        lo[nb] = std::min(lo[nb], values[o]);
+        hi[nb] = std::max(hi[nb], values[o]);
+    }
+
+    auto interpolateWith = [&](const std::string& gradName)
+    {
+        Input input = TokenList({std::string("linearUpwind"), gradName, std::string("Gauss")});
+        auto scheme = SurfaceInterpolation<scalar>(exec, mesh, input);
+        auto flux = SurfaceField<scalar>(
+            exec, "flux", mesh, fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh)
+        );
+        auto out = SurfaceField<scalar>(
+            exec, "out", mesh, fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh)
+        );
+        fill(flux.internalVector(), one<scalar>()); // upwind = owner on every internal face
+        scheme.interpolate(flux, src, out);
+        return out.internalVector().copyToHost();
+    };
+
+    auto limitedH = interpolateWith("cellLimited");
+    auto plainH = interpolateWith("Gauss");
+    const auto limited = limitedH.view();
+    const auto plain = plainH.view();
+
+    bool differs = false;
+    for (localIdx facei = 0; facei < nInt; ++facei)
+    {
+        const auto o = static_cast<sizeType>(own[facei]);
+        REQUIRE(limited[facei] >= lo[o] - 1e-10);
+        REQUIRE(limited[facei] <= hi[o] + 1e-10);
+        if (std::abs(limited[facei] - plain[facei]) > 1e-10) differs = true;
+    }
+    REQUIRE(differs);
+}
+
 }
