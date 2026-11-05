@@ -1,0 +1,206 @@
+\doxysection{NeoN\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::Freestream\+Velocity Class Reference}
+\hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity}{}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+
+
+{\ttfamily \#include $<$freestream\+Velocity.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::Freestream\+Velocity\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=0.963303cm]{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a1bc047edf3831d3e1b705ecda22a5481}{Freestream\+Velocity}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&dict, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}})
+\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a54474cd529b83d55db3a678af57d8a99}{correct\+Boundary\+Condition}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ \&domain\+Vector) final
+\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_aa061307ea3cac02aed58b1a2b7135970}{correct\+Boundary\+Condition}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{Boundary\+Context}} \&) final
+\item 
+std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_af9a7d34c2036dc529d0256062626338a}{get\+Name}} () const override
+\item 
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{Volume\+Boundary\+Factory}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a1ce1bdfde46228051250ae716b8c855a}{clone}} () const final
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::template Register$<$ Freestream\+Velocity $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{Volume\+Boundary\+Factory}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&dict, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}}, \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes}{Boundary\+Attributes}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a5c503a1e25c6fa991727e7e246130109}{attributes}})
+\item 
+virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a3ba452b07c8ab275d70445f936f6005b}{\texorpdfstring{$\sim$}{\string~}\+Volume\+Boundary\+Factory}} ()=default
+\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a159a7bfaf16963bf4acf4a73e2e42422}{set}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ \&domain\+Vector)
+\begin{DoxyCompactList}\small\item\em One-\/time patch initialisation, applied once per field before the first update(). \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a7447a0202cffe2b0ec1c0fdfc5494710}{update}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ \&domain\+Vector)
+\begin{DoxyCompactList}\small\item\em Per-\/iteration boundary update, applied on every correct\+Boundary\+Conditions() call. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes}{Boundary\+Attributes}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a5c503a1e25c6fa991727e7e246130109}{attributes}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Patch\+Mixin}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a2f25d5ddb8da863d82821cd0360307c9}{Boundary\+Patch\+Mixin}} ()
+\item 
+virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33e0e460fb4a0acdb198a0153ffd84f6}{\texorpdfstring{$\sim$}{\string~}\+Boundary\+Patch\+Mixin}} ()=default
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a3346a58e9b29984e6459d093592c9a21}{Boundary\+Patch\+Mixin}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}})
+\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a90f3092d2971c49e8c067dbdf4482ef6}{Boundary\+Patch\+Mixin}} (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} start, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} end, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}})
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a0585c196f28f070971c918bde2c034e9}{patch\+Start}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ad87db48a445a1b1b7536d74e0fd60c59}{patch\+End}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a152a639fe77a2a27df9a4ac9687b1cb5}{patch\+Size}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patch\+ID}} () const
+\item 
+std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a592e03a2e8d66c904ec6475b0850f2b6}{name}} ()
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_aba5f41ee9cfa48ba02cc285dead704ef}{doc}} ()
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a7b40268754b76e284ee886db19a8432c}{schema}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::template Register$<$ Freestream\+Velocity $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a248b803780efd47de2efb82e9082b93e}{name}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::template Register$<$ Freestream\+Velocity $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes}{Boundary\+Attributes}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_adad9d6655b500dd68e8fd74a55cbb081}{attributes\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The attributes of the patch. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Patch\+Mixin}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_adbf45e525a5c07ad1b0d9f6707806011}{patch\+ID\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The id of this patch. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a704e4f166091d177d272ad0e55186531}{start\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The start index of the patch in the boundary\+Vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a26175fdfa0ced8e1cb08e52298bcadf3}{end\+\_\+}}
+\begin{DoxyCompactList}\small\item\em The end index of the patch in the boundary\+Vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00095}{95}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+
+
+\label{doc-constructors}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a1bc047edf3831d3e1b705ecda22a5481}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!FreestreamVelocity@{FreestreamVelocity}}
+\index{FreestreamVelocity@{FreestreamVelocity}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{FreestreamVelocity()}{FreestreamVelocity()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a1bc047edf3831d3e1b705ecda22a5481} 
+Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::\+Freestream\+Velocity (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{dict}{, }\item[{\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}}}]{patch\+ID}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00108}{108}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a1ce1bdfde46228051250ae716b8c855a}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!clone@{clone}}
+\index{clone@{clone}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a1ce1bdfde46228051250ae716b8c855a} 
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{Volume\+Boundary\+Factory}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ $>$ Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::clone (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [final]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a06ed95a7e62e1faa3e6869eb9fb70a32}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::template Register$<$ Freestream\+Velocity $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00137}{137}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a54474cd529b83d55db3a678af57d8a99}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!correctBoundaryCondition@{correctBoundaryCondition}}
+\index{correctBoundaryCondition@{correctBoundaryCondition}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{correctBoundaryCondition()}{correctBoundaryCondition()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a54474cd529b83d55db3a678af57d8a99} 
+virtual void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::correct\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ \&}]{domain\+Vector}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [final]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a4096139369d9bd6502e50c56422052d2}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::template Register$<$ Freestream\+Velocity $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00113}{113}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_aa061307ea3cac02aed58b1a2b7135970}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!correctBoundaryCondition@{correctBoundaryCondition}}
+\index{correctBoundaryCondition@{correctBoundaryCondition}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{correctBoundaryCondition()}{correctBoundaryCondition()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_aa061307ea3cac02aed58b1a2b7135970} 
+virtual void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::correct\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ \&}]{domain\+Vector}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{Boundary\+Context}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [final]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_affd0ad639e269e701db4a736be8d06de}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::template Register$<$ Freestream\+Velocity $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00119}{119}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_aba5f41ee9cfa48ba02cc285dead704ef}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!doc@{doc}}
+\index{doc@{doc}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{doc()}{doc()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_aba5f41ee9cfa48ba02cc285dead704ef} 
+std\+::string Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::doc (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00128}{128}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_af9a7d34c2036dc529d0256062626338a}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!getName@{getName}}
+\index{getName@{getName}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{getName()}{getName()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_af9a7d34c2036dc529d0256062626338a} 
+std\+::string Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::get\+Name (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_ac59aad1b4745aaa76ffdd6008015b00b}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::template Register$<$ Freestream\+Velocity $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00126}{126}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a592e03a2e8d66c904ec6475b0850f2b6}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!name@{name}}
+\index{name@{name}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a592e03a2e8d66c904ec6475b0850f2b6} 
+std\+::string Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::name (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00124}{124}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a7b40268754b76e284ee886db19a8432c}\index{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}!schema@{schema}}
+\index{schema@{schema}!NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity@{NeoN::finiteVolume::cellCentred::volumeBoundary::FreestreamVelocity}}
+\doxysubsubsection{\texorpdfstring{schema()}{schema()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamVelocity_a7b40268754b76e284ee886db19a8432c} 
+std\+::string Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::\+Freestream\+Velocity\+::schema (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Definition at line \mbox{\hyperlink{freestreamVelocity_8hpp_source_l00135}{135}} of file \mbox{\hyperlink{freestreamVelocity_8hpp_source}{freestream\+Velocity.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/finite\+Volume/cell\+Centred/boundary/volume/\mbox{\hyperlink{freestreamVelocity_8hpp}{freestream\+Velocity.\+hpp}}\end{DoxyCompactItemize}

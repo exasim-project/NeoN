@@ -1,0 +1,170 @@
+\doxysection{freestream\+Pressure.\+hpp}
+\hypertarget{freestreamPressure_8hpp_source}{}\label{freestreamPressure_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/freestreamPressure.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/freestreamPressure.hpp}}
+\mbox{\hyperlink{freestreamPressure_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{traits_8hpp}{NeoN/core/primitives/traits.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryContext_8hpp}{NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{detail}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00023}00023\ \textcolor{comment}{//\ Kernel\ behind\ freestreamPressure,\ OpenFOAM's\ freestreamPressureFvPatchScalarField\ (a\ mixed\ BC}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00024}00024\ \textcolor{comment}{//\ with\ refValue\ =\ freestreamValue,\ refGrad\ =\ 0),\ the\ complement\ of\ freestreamVelocity:}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00025}00025\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00026}00026\ \textcolor{comment}{//\ \ \ valueFraction\ =\ 0.5\ +\ 0.5\ (Up\ .\ nf)\ /\ |Up|}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00027}00027\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00028}00028\ \textcolor{comment}{//\ with\ Up\ the\ patch\ value\ of\ the\ velocity\ field.\ Outflow\ (Up\ .\ nf\ >\ 0)\ fixes\ the\ pressure\ to}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00029}00029\ \textcolor{comment}{//\ freestreamValue\ (valueFraction\ -\/>\ 1),\ inflow\ (Up\ .\ nf\ <\ 0)\ is\ zero-\/gradient\ (valueFraction\ -\/>\ 0),}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00030}00030\ \textcolor{comment}{//\ and\ the\ blend\ is\ smooth\ in\ between.\ Without\ a\ velocity\ (hasU\ ==\ false)\ every\ face\ is}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00031}00031\ \textcolor{comment}{//\ zero-\/gradient,\ as\ the\ other\ flow-\/direction\ BCs\ degrade\ without\ their\ context.}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00032}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_abbbe50385efdfabc78fcb09012d594f7}{00032}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_abbbe50385efdfabc78fcb09012d594f7}{setFreestreamPressureValue}}(}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00033}00033\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00035}00035\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00036}00036\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ freestreamValue,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00037}00037\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ Vec3>}}\ boundaryU,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasU}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00039}00039\ )}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00040}00040\ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV,\ boundaryFaceOwnersV,\ faceAreaVectorV]\ =}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{faceOwners}}(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}{faceNormals}}()}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00051}00051\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ internal\ =\ internalV[owner];}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ valueFraction\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hasU)}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ up\ =\ boundaryU[i];}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ sf\ =\ faceAreaVectorV[i];}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ magSf\ =\ Kokkos::max(\mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{NeoN::mag}}(sf),\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1e-\/300));}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ upDotNf\ =}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (up[0]\ *\ sf[0]\ +\ up[1]\ *\ sf[1]\ +\ up[2]\ *\ sf[2])\ /\ magSf;}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0.5)}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0.5)\ *\ upDotNf}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ /\ Kokkos::max(\mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{NeoN::mag}}(up),\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1e-\/300));}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ valueFraction;}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ freestreamValue;}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{NeoN::zero<NeoN::scalar>}}();}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ freestreamValue\ *\ valueFraction\ +\ internal\ *\ (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1)\ -\/\ valueFraction);}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setFreestreamPressureValue"{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00078}00078\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00079}00079\ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00081}00081\ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00083}00083\ \textcolor{comment}{//\ freestreamPressure:\ far-\/field\ pressure\ that\ blends\ the\ freestream\ value\ with\ zero-\/gradient}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00084}00084\ \textcolor{comment}{//\ according\ to\ the\ direction\ of\ the\ velocity\ at\ the\ patch,\ mirroring\ OpenFOAM's}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00085}00085\ \textcolor{comment}{//\ freestreamPressure\ (a\ mixedFvPatchScalarField\ without\ the\ supersonic\ option).}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00086}00086\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00087}00087\ \textcolor{comment}{//\ The\ velocity\ is\ looked\ up\ by\ name\ (dict\ key\ "{}U"{},\ default\ "{}U"{})\ from\ the\ BoundaryContext\ of\ the}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00088}00088\ \textcolor{comment}{//\ context-\/aware\ correctBoundaryCondition\ overload;\ the\ plain\ overload\ has\ none\ and\ degenerates\ to}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00089}00089\ \textcolor{comment}{//\ zeroGradient.}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00090}00090\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00091}00091\ \textcolor{comment}{//\ Dictionary:\ freestreamValue\ (scalar,\ required),\ U\ (optional\ field\ name).}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00092}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure}{00092}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_aae879e2a2f1993c2cc9f06942958d512}{FreestreamPressure}}\ :}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{VolumeBoundaryFactory}}<NeoN::scalar>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<FreestreamPressure>}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00094}00094\ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{VolumeBoundaryFactory<NeoN::scalar>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<FreestreamPressure>}};}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00097}00097\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{//\ assignable\ =\ false,\ as\ OpenFOAM's\ mixed\ patch\ fields\ (constrainHbyA\ then\ sets\ HbyA\ to\ the}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ patch\ value).\ fixesValue\ =\ false\ and}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ mixed\ =\ true,\ as\ for\ freestreamVelocity.}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00104}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_aae879e2a2f1993c2cc9f06942958d512}{00104}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_aae879e2a2f1993c2cc9f06942958d512}{FreestreamPressure}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}})}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}},\ \{.assignable\ =\ \textcolor{keyword}{false},\ .fixesValue\ =\ \textcolor{keyword}{false},\ .mixed\ =\ \textcolor{keyword}{true}\}),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ mesh\_(mesh),\ freestreamValue\_(dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}freestreamValue"{}})),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ UName\_(dict.contains(\textcolor{stringliteral}{"{}U"{}})\ ?\ dict.get<std::string>(\textcolor{stringliteral}{"{}U"{}})\ :\ std::string(\textcolor{stringliteral}{"{}U"{}}))}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00108}00108\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{comment}{//\ No\ context\ =>\ no\ velocity:\ behave\ as\ zero-\/gradient.}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00111}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a54693ceab141e964e3c1c44c3ec1285b}{00111}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a54693ceab141e964e3c1c44c3ec1285b}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00112}00112\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_abbbe50385efdfabc78fcb09012d594f7}{detail::setFreestreamPressureValue}}(}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,\ mesh\_,\ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}}(),\ freestreamValue\_,\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ Vec3>}}\ \{\},\ false}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00116}00116\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00119}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a4b635d775d7a392e3775028e7dd35a24}{00119}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a4b635d775d7a392e3775028e7dd35a24}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{BoundaryContext}}\&\ ctx)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00120}00120\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ctx.hasVector(UName\_))}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ U\ =\ ctx.vectorFieldPtr(UName\_);}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_abbbe50385efdfabc78fcb09012d594f7}{detail::setFreestreamPressureValue}}(}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}}(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ freestreamValue\_,}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ U.boundaryData().value().view(),}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{true}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a54693ceab141e964e3c1c44c3ec1285b}{correctBoundaryCondition}}(domainVector);}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00137}00137\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00138}00138\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00139}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_aa5963b3746d47da490f3eb87b3a37147}{00139}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_aa5963b3746d47da490f3eb87b3a37147}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}freestreamPressure"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00141}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_ae94e90f1594fc6c1d6dc69475b0c35b1}{00141}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_ae94e90f1594fc6c1d6dc69475b0c35b1}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_aa5963b3746d47da490f3eb87b3a37147}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00142}00142\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00143}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_abcfa8271fd3946366395424bf906197a}{00143}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_abcfa8271fd3946366395424bf906197a}{doc}}()}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00144}00144\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Far-\/field\ pressure\ (OpenFOAM's\ freestreamPressure):\ valueFraction\ =\ 0.5\ +\ 0.5\ "{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(U.nf)/|U|\ from\ the\ patch\ velocity,\ so\ outflow\ takes\ freestreamValue\ and\ inflow\ "{}}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}is\ zero-\/gradient,\ blending\ smoothly\ in\ between."{}};}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00148}00148\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00149}00149\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00150}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a1ec1117390a44b3149cc70a86ed2e66e}{00150}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a1ec1117390a44b3149cc70a86ed2e66e}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00152}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a4456543205cda0beaecd6e1d6b3f6b66}{00152}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<NeoN::scalar>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FreestreamPressure_a4456543205cda0beaecd6e1d6b3f6b66}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00153}00153\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<FreestreamPressure>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00155}00155\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00156}00156\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00157}00157\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00158}00158\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00159}00159\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00160}00160\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ freestreamValue\_;}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00161}00161\ \ \ \ \ std::string\ UName\_;}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00162}00162\ \};}
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{freestreamPressure_8hpp_source_l00164}00164\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
+
+\end{DoxyCode}
