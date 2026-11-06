@@ -1,6 +1,59 @@
 Installation
 ============
 
+.. note::
+
+   If you only want to use NeoN from Python, the quickest way is ``pip install neon_pde``,
+   see :doc:`python_bindings`.
+
+Requirements
+^^^^^^^^^^^^
+
+Building NeoN from source requires
+
+* CMake >= 3.22
+* `Ninja <https://ninja-build.org/>`_ (required by the provided CMake presets)
+* gcc >= 13 or clang >= 19
+* Kokkos 5.0.2 (fetched automatically, see below)
+
+Optional dependencies:
+
+* MPI, enabled by default; disable it with ``-DNeoN_WITH_MPI=OFF`` if no MPI implementation is installed
+* PETSc, SUNDIALS and ADIOS2, enabled via ``NeoN_WITH_PETSC``, ``NeoN_WITH_SUNDIALS`` and ``NeoN_WITH_ADIOS2``
+
+For GPU support:
+
+* NVIDIA: CUDA 12+
+* AMD: ROCm 6.4.1
+* Intel: oneAPI Base Toolkit 2024.2
+
+C++ dependencies like Kokkos and Ginkgo are handled via `CPM <https://github.com/cpm-cmake/CPM.cmake>`_
+and are cloned at the configuration step. However, the CMake build process prefers system-wide
+installed C++ dependencies like Kokkos, cxxopts, etc. If you prefer to always clone, configure and
+build the dependencies yourself, set ``-DCPM_USE_LOCAL_PACKAGES=OFF``, see
+`CPM <https://github.com/cpm-cmake/CPM.cmake>`_ for more details.
+
+On Ubuntu 24.04 the required tools can be installed via
+
+.. code-block:: bash
+
+    sudo apt update
+    sudo apt install build-essential cmake ninja-build gcc-13 g++-13 python3 python3-dev
+    sudo apt install libopenmpi-dev  # optional, for MPI support
+
+Building the documentation additionally requires `Doxygen <https://www.doxygen.nl/>`_ and the
+Python packages listed in ``doc/requirements.txt``:
+
+.. code-block:: bash
+
+    sudo apt install doxygen
+    pip install -r doc/requirements.txt
+
+For development it is required to use `pre-commit <https://pre-commit.com/>`_.
+
+Building from source
+^^^^^^^^^^^^^^^^^^^^
+
 You can build NeoN by following these steps:
 
 Clone the NeoN repository:
@@ -164,33 +217,14 @@ Next, we add NeoN with the required dependencies.
      spack install
 
 
-Prerequisites
-^^^^^^^^^^^^^
+Executing Tests
+^^^^^^^^^^^^^^^
 
-The following tools are used in the development of this project:
-
-required tools for documentation:
+Configure with ``-DNeoN_BUILD_TESTS=ON`` (enabled in the ``develop`` preset) and run the unit tests via
 
 .. code-block:: bash
 
-    sudo apt install doxygen
-    pip install pre-commit sphinx furo breathe sphinx-sitemap
-
-
-required tools for compilation (ubuntu latest 24.04):
-
-.. code-block:: bash
-
-    sudo apt update
-    sudo apt install \
-    ninja-build \
-    clang-16 \
-    gcc-10 \
-    libomp-16-dev \
-    python3 \
-    python3-dev \
-    build-essential
-
+    ctest --preset develop
 
 Workflow with vscode
 ^^^^^^^^^^^^^^^^^^^^

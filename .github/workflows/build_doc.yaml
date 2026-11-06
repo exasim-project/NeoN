@@ -33,11 +33,19 @@ jobs:
     - name: Build docs
       run: |
         sphinx-build -b html ./doc ./docs_build/
+        # Furo renders a red ERROR banner over any `.. contents::` block
+        # unless the escape-hatch class is set; sphinx does not warn about it
+        if grep -roE 'class="contents( [^"]*)?"' docs_build --include='*.html' \
+            | grep -v this-will-duplicate-information-and-it-is-still-useful-here; then
+          echo "::error::Remove '.. contents::' directives, Furo shows a TOC in the sidebar"
+          exit 1
+        fi
         cp -r doc/_build/ docs_build/doxygen
         cd docs_build
         ls doxygen
         touch .nojekyll
     - name: Deploy PR Build
+      if: ${{ github.event.action != 'closed' }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: docs_build
@@ -80,3 +88,24 @@ jobs:
     - name: Echo Build PR URL
       run: |
         echo "Deploy to: https://exasim-project.com/NeoN/Build_PR_${{ env.PR_NUMBER }}"
+
+  remove-pr-preview:
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() && github.repository == 'exasim-project/NeoN' && github.event.action == 'closed' }}
+    needs: build
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout gh-pages
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+    - name: Remove PR preview
+      run: |
+        if [ -d "Build_PR_${PR_NUMBER}" ]; then
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -rq "Build_PR_${PR_NUMBER}"
+          git commit -m "Remove preview for PR #${PR_NUMBER}"
+          git push origin gh-pages
+        fi

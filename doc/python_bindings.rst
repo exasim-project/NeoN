@@ -16,10 +16,6 @@ the import package is ``neon``:
 
 The package supports CPython 3.9–3.13 and depends on NumPy.
 
-.. contents::
-   :local:
-   :depth: 1
-
 Installing
 ----------
 
@@ -99,7 +95,7 @@ The current CUDA wheel targets:
 
 * CUDA 12.8
 * CPython 3.12
-* Linux x86-64 (``manylinux_2_34``)
+* Linux x86-64 (``manylinux_2_35``, i.e. glibc 2.35 or newer: Ubuntu 22.04+, Debian 12+)
 * NVIDIA Ampere, compute capability ``sm_80``
 
 Download the wheel from the release page and install it, or install it directly
@@ -107,7 +103,7 @@ by URL:
 
 .. code-block:: bash
 
-   pip install https://github.com/exasim-project/NeoN/releases/download/v0.1.0/neon_pde-0.1.0+cuda128-cp312-cp312-manylinux_2_34_x86_64.whl
+   pip install https://github.com/exasim-project/NeoN/releases/download/v0.3.0rc2/neon_pde-0.3.0rc2+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl
 
 The CUDA wheel requires a host NVIDIA driver that provides ``libcuda.so.1``.
 That library is intentionally *not* bundled into the wheel, since it must match
