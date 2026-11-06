@@ -6,11 +6,11 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Python bindings (neon_pde)" href="python_bindings.html"><link rel="prev" title="Welcome to NeoN!" href="index.html">
         <link rel="canonical" href="https://exasim-project.com/NeoN/installation.html">
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
         <title>Installation - NeoN documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=acfd86a5" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6a4ff913" />
     
@@ -279,6 +279,52 @@
         <article role="main" id="furo-main-content">
           <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you only want to use NeoN from Python, the quickest way is <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">neon_pde</span></code>,
+see <a class="reference internal" href="python_bindings.html"><span class="doc">Python bindings (neon_pde)</span></a>.</p>
+</div>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
+<p>Building NeoN from source requires</p>
+<ul class="simple">
+<li><p>CMake &gt;= 3.22</p></li>
+<li><p><a class="reference external" href="https://ninja-build.org/">Ninja</a> (required by the provided CMake presets)</p></li>
+<li><p>gcc &gt;= 13 or clang &gt;= 19</p></li>
+<li><p>Kokkos 5.0 - 5.2 (fetched automatically, see below)</p></li>
+</ul>
+<p>Optional dependencies:</p>
+<ul class="simple">
+<li><p>MPI, enabled by default; disable it with <code class="docutils literal notranslate"><span class="pre">-DNeoN_WITH_MPI=OFF</span></code> if no MPI implementation is installed</p></li>
+<li><p>PETSc, SUNDIALS and ADIOS2, enabled via <code class="docutils literal notranslate"><span class="pre">NeoN_WITH_PETSC</span></code>, <code class="docutils literal notranslate"><span class="pre">NeoN_WITH_SUNDIALS</span></code> and <code class="docutils literal notranslate"><span class="pre">NeoN_WITH_ADIOS2</span></code></p></li>
+</ul>
+<p>For GPU support:</p>
+<ul class="simple">
+<li><p>NVIDIA: CUDA 12+</p></li>
+<li><p>AMD: ROCm 6.4.1</p></li>
+<li><p>Intel: oneAPI Base Toolkit 2024.2</p></li>
+</ul>
+<p>C++ dependencies like Kokkos and Ginkgo are handled via <a class="reference external" href="https://github.com/cpm-cmake/CPM.cmake">CPM</a>
+and are cloned at the configuration step. However, the CMake build process prefers system-wide
+installed C++ dependencies like Kokkos, cxxopts, etc. If you prefer to always clone, configure and
+build the dependencies yourself, set <code class="docutils literal notranslate"><span class="pre">-DCPM_USE_LOCAL_PACKAGES=OFF</span></code>, see
+<a class="reference external" href="https://github.com/cpm-cmake/CPM.cmake">CPM</a> for more details.</p>
+<p>On Ubuntu 24.04 the required tools can be installed via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>cmake<span class="w"> </span>ninja-build<span class="w"> </span>gcc-13<span class="w"> </span>g++-13<span class="w"> </span>python3<span class="w"> </span>python3-dev
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libopenmpi-dev<span class="w">  </span><span class="c1"># optional, for MPI support</span>
+</pre></div>
+</div>
+<p>Building the documentation additionally requires <a class="reference external" href="https://www.doxygen.nl/">Doxygen</a> and the
+Python packages listed in <code class="docutils literal notranslate"><span class="pre">doc/requirements.txt</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>doxygen
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>doc/requirements.txt
+</pre></div>
+</div>
+<p>For development it is required to use <a class="reference external" href="https://pre-commit.com/">pre-commit</a>.</p>
+</section>
+<section id="building-from-source">
+<h2>Building from source<a class="headerlink" href="#building-from-source" title="Link to this heading">¶</a></h2>
 <p>You can build NeoN by following these steps:</p>
 <p>Clone the NeoN repository:</p>
 <blockquote>
@@ -349,6 +395,7 @@ a <a class="reference external" href="https://pixi.sh">pixi</a> environment:</p>
 </div>
 <p>See <a class="reference internal" href="python_bindings.html"><span class="doc">Python bindings (neon_pde)</span></a> for the available platforms and GPU flavours.</p>
 </div>
+</section>
 <section id="building-for-gpus">
 <h2>Building for GPUs<a class="headerlink" href="#building-for-gpus" title="Link to this heading">¶</a></h2>
 <p>NeoN will automatically enable <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_CUDA</span></code> or <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_HIP</span></code> if either of this is available on
@@ -382,7 +429,7 @@ during the configure step.</p>
 <p>After configuring for GPU support, you can continue to build NeoN.</p>
 </section>
 <section id="building-with-cmake-presets">
-<span id="id1"></span><h2>Building with CMake Presets<a class="headerlink" href="#building-with-cmake-presets" title="Link to this heading">¶</a></h2>
+<span id="id2"></span><h2>Building with CMake Presets<a class="headerlink" href="#building-with-cmake-presets" title="Link to this heading">¶</a></h2>
 <p>Additionally, we provide several CMake presets to set commonly required flags if you compile NeoN in combination with Kokkos.</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>--list-presets<span class="w"> </span><span class="c1"># To list existing presets</span>
@@ -435,24 +482,10 @@ spack<span class="w"> </span>install
 </div>
 </div></blockquote>
 </section>
-<section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
-<p>The following tools are used in the development of this project:</p>
-<p>required tools for documentation:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>doxygen
-pip<span class="w"> </span>install<span class="w"> </span>pre-commit<span class="w"> </span>sphinx<span class="w"> </span>furo<span class="w"> </span>breathe<span class="w"> </span>sphinx-sitemap
-</pre></div>
-</div>
-<p>required tools for compilation (ubuntu latest 24.04):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span><span class="se">\</span>
-ninja-build<span class="w"> </span><span class="se">\</span>
-clang-16<span class="w"> </span><span class="se">\</span>
-gcc-10<span class="w"> </span><span class="se">\</span>
-libomp-16-dev<span class="w"> </span><span class="se">\</span>
-python3<span class="w"> </span><span class="se">\</span>
-python3-dev<span class="w"> </span><span class="se">\</span>
-build-essential
+<section id="executing-tests">
+<h2>Executing Tests<a class="headerlink" href="#executing-tests" title="Link to this heading">¶</a></h2>
+<p>Configure with <code class="docutils literal notranslate"><span class="pre">-DNeoN_BUILD_TESTS=ON</span></code> (enabled in the <code class="docutils literal notranslate"><span class="pre">develop</span></code> preset) and run the unit tests via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctest<span class="w"> </span>--preset<span class="w"> </span>develop
 </pre></div>
 </div>
 </section>
@@ -528,10 +561,12 @@ ms-vscode.cmake-tools
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#building-from-source">Building from source</a></li>
 <li><a class="reference internal" href="#building-for-gpus">Building for GPUs</a></li>
 <li><a class="reference internal" href="#building-with-cmake-presets">Building with CMake Presets</a></li>
 <li><a class="reference internal" href="#building-with-spack">Building with Spack</a></li>
-<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#executing-tests">Executing Tests</a></li>
 <li><a class="reference internal" href="#workflow-with-vscode">Workflow with vscode</a></li>
 </ul>
 </li>
@@ -545,7 +580,7 @@ ms-vscode.cmake-tools
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     </body>

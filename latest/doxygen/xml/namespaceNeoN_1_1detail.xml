@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="namespaceNeoN_1_1detail" kind="namespace" language="C++">
     <compoundname>NeoN::detail</compoundname>
-    <innerclass refid="structNeoN_1_1detail_1_1CellData" prot="public">NeoN::detail::CellData</innerclass>
-    <innerclass refid="structNeoN_1_1detail_1_1FaceData" prot="public">NeoN::detail::FaceData</innerclass>
+    <innerclass refid="structNeoN_1_1detail_1_1RefHolder" prot="public">NeoN::detail::RefHolder</innerclass>
     <innerclass refid="structNeoN_1_1detail_1_1IntervalOffsetScan" prot="public">NeoN::detail::IntervalOffsetScan</innerclass>
     <innerclass refid="structNeoN_1_1detail_1_1MeshParams" prot="public">NeoN::detail::MeshParams</innerclass>
-    <innerclass refid="structNeoN_1_1detail_1_1RefHolder" prot="public">NeoN::detail::RefHolder</innerclass>
+    <innerclass refid="structNeoN_1_1detail_1_1CellData" prot="public">NeoN::detail::CellData</innerclass>
+    <innerclass refid="structNeoN_1_1detail_1_1FaceData" prot="public">NeoN::detail::FaceData</innerclass>
     <sectiondef kind="func">
-      <memberdef kind="function" id="namespaceNeoN_1_1detail_1ac9fe2d7185e9fe7c36c8ea5f91886286" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1a570276ccacec9ecd6045104d92c68ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -16,12 +16,12 @@
         </templateparamlist>
         <type>auto</type>
         <definition>auto NeoN::detail::deepCopyVisitor</definition>
-        <argsstring>(localIdx ssize, const ValueType *srcPtr, ValueType *dstPtr)</argsstring>
+        <argsstring>(sizeType size, const ValueType *srcPtr, ValueType *dstPtr)</argsstring>
         <name>deepCopyVisitor</name>
         <qualifiedname>NeoN::detail::deepCopyVisitor</qualifiedname>
         <param>
-          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
-          <declname>ssize</declname>
+          <type><ref refid="namespaceNeoN_1aa1d29fb98b572a2872575e1dc7d7856a" kindref="member">sizeType</ref></type>
+          <declname>size</declname>
         </param>
         <param>
           <type>const ValueType *</type>
@@ -75,7 +75,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" line="31" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" bodystart="31" bodyend="40"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" line="32" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" bodystart="32" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1detail_1adb0e8d9530f26a7e984305284ea037d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::detail::visitExecutor</definition>
+        <argsstring>(const Executor &amp;exec, F &amp;&amp;f)</argsstring>
+        <name>visitExecutor</name>
+        <qualifiedname>NeoN::detail::visitExecutor</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp" line="61" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/parallelAlgorithms.hpp" bodystart="61" bodyend="75"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1detail_1ad0f7ee3320d8302617dc6bf5f86c779a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -186,11 +213,11 @@
           <declname>p</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <type>const <ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></type>
           <declname>nInternalFaces</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <type>const <ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></type>
           <declname>nFaces</declname>
         </param>
         <briefdescription>
@@ -244,7 +271,7 @@
         <name>generateBoundaryData</name>
         <qualifiedname>NeoN::detail::generateBoundaryData</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref></type>
           <declname>exec</declname>
         </param>
         <param>
@@ -260,15 +287,15 @@
           <declname>centers</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <type>const <ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></type>
           <declname>nInternalFaces</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <type>const <ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref></type>
           <declname>nBoundaryFaces</declname>
         </param>
         <param>
-          <type>const std::vector&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <type>const std::vector&lt; <ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref> &gt;</type>
           <declname>offset</declname>
         </param>
         <param>
@@ -359,6 +386,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" line="19" column="1"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/containerFreeFunctions.hpp" line="20" column="1"/>
   </compounddef>
 </doxygen>

@@ -114,11 +114,11 @@ The full communication between two ranks is thus given below:
         NeoN::mpi::MPIEnvironment mpiEnv;
 
         // create the buffers
-        std::vector<std::size_t> sendSize;      // per rank communication
-        std::vector<std::size_t> receiveSize;   // per rank communication
+        std::vector<sizeType> sendSize;      // per rank communication
+        std::vector<sizeType> receiveSize;   // per rank communication
         std::vector<double> allData = {1.0, 2.0, 3.0}; // the local data (could be a field or similar)
-        std::unordered_map<std::size_t, std::size_t> sendMap; // assumes single rank communication
-        std::unordered_map<std::size_t, std::size_t> receiveMap; // assumes single rank communication
+        std::unordered_map<sizeType, sizeType> sendMap; // assumes single rank communication
+        std::unordered_map<sizeType, sizeType> receiveMap; // assumes single rank communication
 
         // ...
         // populate above data
