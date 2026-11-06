@@ -12,6 +12,8 @@
 
 std::string NeoN::demangle(const char* name)
 {
+    // FIXME: this is an example
+    return name;
 #ifdef _MSC_VER
     return name; // For MSVC, return the name directly.
 #elif defined(__GNUC__)
