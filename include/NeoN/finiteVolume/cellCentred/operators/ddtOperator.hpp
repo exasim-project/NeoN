@@ -71,10 +71,14 @@ public:
     void read(const Input&);
 
     std::string getName() const { return "DdtOperator"; }
+    std::string getName() { return "DdtOperator"; }
+    std::string juliaOP() const { return juliaEvalString_; }
+    std::string juliaOP() { return juliaEvalString_; }
 
 private:
 
     // NOTE ddtOperator does not have a FactoryClass
+    std::string juliaEvalString_;
 
     DdtScheme scheme_ {DdtScheme::BDF1};
 

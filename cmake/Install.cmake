@@ -77,6 +77,10 @@ install(
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+if(NeoN_WITH_JULIA)
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindJulia.cmake"
+          DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+endif()
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)

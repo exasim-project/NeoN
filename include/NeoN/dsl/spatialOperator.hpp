@@ -103,6 +103,12 @@ public:
 
     std::string getName() const { return model_->getName(); }
 
+    // #ifdef NeoN_WITH_JULIA
+
+    std::string juliaOP() { return model_->juliaOP(); }
+
+    std::string juliaOP() const { return model_->juliaOP(); }
+    // #endif
     Coeff& getCoefficient() { return model_->getCoefficient(); }
 
     Coeff getCoefficient() const { return model_->getCoefficient(); }
@@ -141,6 +147,11 @@ private:
         /* returns the name of the operator */
         virtual std::string getName() const = 0;
 
+        virtual std::string juliaOP() = 0;
+
+        virtual std::string juliaOP() const = 0;
+
+
         /* returns the fundamental type of an operator, ie explicit, implicit */
         virtual Operator::Type getType() const = 0;
 
@@ -169,6 +180,10 @@ private:
 
         /* returns the name of the operator */
         std::string getName() const override { return concreteOp_.getName(); }
+
+        std::string juliaOP() { return concreteOp_.juliaOP(); }
+        std::string juliaOP() const { return concreteOp_.juliaOP(); }
+
 
         virtual void explicitOperation(Vector<ValueType>& source) const override
         {
