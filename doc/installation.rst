@@ -14,7 +14,7 @@ Building NeoN from source requires
 * CMake >= 3.22
 * `Ninja <https://ninja-build.org/>`_ (required by the provided CMake presets)
 * gcc >= 13 or clang >= 19
-* Kokkos 5.0.2 (fetched automatically, see below)
+* Kokkos 5.0 - 5.2 (fetched automatically, see below)
 
 Optional dependencies:
 
