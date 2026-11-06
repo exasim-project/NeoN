@@ -58,7 +58,7 @@ jobs:
         target-folder: ${{ github.ref_name }}
 
     - name: Deploy Latest Build
-      if: ${{ github.event.pull_request.merged && github.event.pull_request.base.ref == 'main' }}
+      if: ${{ github.event.pull_request.merged && github.event.pull_request.base.ref == 'develop' }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: docs_build
