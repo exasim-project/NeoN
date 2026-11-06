@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="mergedPgm_8hpp" kind="file" language="C++">
     <compoundname>mergedPgm.hpp</compoundname>
     <briefdescription>
@@ -201,7 +201,7 @@
 <codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t-&gt;copy_from(r);</highlight></codeline>
 <codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t-&gt;sub_scaled(one,<sp/>ad);<sp/></highlight><highlight class="comment">//<sp/>t<sp/>=<sp/>r<sp/>-<sp/>sf<sp/>A<sp/>d</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>d-&gt;scale(sf);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>d<sp/>=<sp/>sf<sp/>d</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>invDiag_-&gt;apply(one,<sp/>local(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">VecType*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(t)),<sp/><ref refid="namespaceNeoN_1a7ab23a6da54994291e4c183456fc75d8" kindref="member">one</ref>,<sp/>local(d));<sp/></highlight><highlight class="comment">//<sp/>d<sp/>+=<sp/>D^-1<sp/>t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>invDiag_-&gt;apply(one,<sp/>local(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">VecType*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(t)),<sp/>one,<sp/>local(d));<sp/></highlight><highlight class="comment">//<sp/>d<sp/>+=<sp/>D^-1<sp/>t</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="214"><highlight class="normal"></highlight></codeline>
 <codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x-&gt;scale(beta);</highlight></codeline>
 <codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x-&gt;add_scaled(alpha,<sp/>d);</highlight></codeline>
@@ -252,7 +252,7 @@
 <codeline lineno="292"><highlight class="normal"></highlight></codeline>
 <codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>get_system_matrix()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>system_matrix_;<sp/>}</highlight></codeline>
 <codeline lineno="294"><highlight class="normal"></highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/>GKO_CREATE_FACTORY_PARAMETERS(parameters,<sp/><ref refid="classFactory" kindref="compound">Factory</ref>)</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/>GKO_CREATE_FACTORY_PARAMETERS(parameters,<sp/>Factory)</highlight></codeline>
 <codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(merge_levels,<sp/>2u);</highlight></codeline>
 <codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(max_iterations,<sp/>15u);</highlight></codeline>
@@ -262,8 +262,8 @@
 <codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>GKO_FACTORY_PARAMETER_SCALAR(scale_correction,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">reuse_data_type;</highlight></codeline>
-<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/>GKO_ENABLE_LIN_OP_FACTORY_WITH_REUSE(MergedPgm,<sp/>parameters,<sp/><ref refid="classFactory" kindref="compound">Factory</ref>,<sp/>reuse_data_type);</highlight></codeline>
-<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/>GKO_ENABLE_BUILD_METHOD(<ref refid="classFactory" kindref="compound">Factory</ref>);</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/>GKO_ENABLE_LIN_OP_FACTORY_WITH_REUSE(MergedPgm,<sp/>parameters,<sp/>Factory,<sp/>reuse_data_type);</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/>GKO_ENABLE_BUILD_METHOD(Factory);</highlight></codeline>
 <codeline lineno="310"><highlight class="normal"></highlight></codeline>
 <codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">reuse_data_type<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>gko::LinOpFactory::ReuseData</highlight></codeline>
 <codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -292,12 +292,12 @@
 <codeline lineno="341"><highlight class="normal"></highlight></codeline>
 <codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/>MergedPgm(std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec)<sp/>:<sp/>gko::LinOp(std::move(exec))<sp/>{}</highlight></codeline>
 <codeline lineno="343"><highlight class="normal"></highlight></codeline>
-<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/>MergedPgm(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classFactory" kindref="compound">Factory</ref>*<sp/>factory,<sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>system_matrix)</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/>MergedPgm(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Factory*<sp/>factory,<sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>system_matrix)</highlight></codeline>
 <codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>MergedPgm(factory,<sp/>std::move(system_matrix),<sp/>nullptr)</highlight></codeline>
 <codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="347"><highlight class="normal"></highlight></codeline>
 <codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/>MergedPgm(</highlight></codeline>
-<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classFactory" kindref="compound">Factory</ref>*<sp/>factory,</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Factory*<sp/>factory,</highlight></codeline>
 <codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>system_matrix,</highlight></codeline>
 <codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reuse_data_type&amp;<sp/>reuse_data</highlight></codeline>
 <codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
@@ -305,7 +305,7 @@
 <codeline lineno="354"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
 <codeline lineno="355"><highlight class="normal"></highlight></codeline>
 <codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/>MergedPgm(</highlight></codeline>
-<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classFactory" kindref="compound">Factory</ref>*<sp/>factory,</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Factory*<sp/>factory,</highlight></codeline>
 <codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOp&gt;<sp/>system_matrix,</highlight></codeline>
 <codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reuse_data_type*<sp/>reuse_data</highlight></codeline>
 <codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
@@ -328,7 +328,7 @@
 <codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="378"><highlight class="normal"></highlight></codeline>
 <codeline lineno="380"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>check_reuse_consistent(</highlight></codeline>
-<codeline lineno="381"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classFactory" kindref="compound">Factory</ref>*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>input,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>reuse_data_type&amp;<sp/>reuse_data</highlight></codeline>
+<codeline lineno="381"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Factory*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>input,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>reuse_data_type&amp;<sp/>reuse_data</highlight></codeline>
 <codeline lineno="382"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
 <codeline lineno="383"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="384"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!reuse_data.initialized_)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
@@ -345,8 +345,8 @@
 <codeline lineno="395"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>----<sp/>localized<sp/>/<sp/>Schwarz<sp/>path:<sp/>fine<sp/>op<sp/>is<sp/>a<sp/>plain<sp/>Csr<sp/>on<sp/>this<sp/>rank<sp/>----</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="396"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>generateLocal(reuse_data_type*<sp/>reuseData)</highlight></codeline>
 <codeline lineno="397"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="398"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="classA" kindref="compound">A</ref><sp/>=<sp/>as_csr(system_matrix_);</highlight></codeline>
-<codeline lineno="399"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fineRows<sp/>=<sp/><ref refid="classA" kindref="compound">A</ref>-&gt;get_size()[0];</highlight></codeline>
+<codeline lineno="398"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>A<sp/>=<sp/>as_csr(system_matrix_);</highlight></codeline>
+<codeline lineno="399"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fineRows<sp/>=<sp/>A-&gt;get_size()[0];</highlight></codeline>
 <codeline lineno="400"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>reuseMerged<sp/>=<sp/>reuseData<sp/>&amp;&amp;<sp/>reuseData-&gt;initialized_;</highlight></codeline>
 <codeline lineno="401"><highlight class="normal"></highlight></codeline>
 <codeline lineno="402"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Run<sp/>Pgm<sp/>`merge_levels`<sp/>times,<sp/>composing<sp/>the<sp/>per-level<sp/>aggregations<sp/>BY<sp/>INDEX.<sp/>Each<sp/>inner</highlight><highlight class="normal"></highlight></codeline>
@@ -359,7 +359,7 @@
 <codeline lineno="409"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>and<sp/>only<sp/>the<sp/>coarse<sp/>operator<sp/>is<sp/>refreshed.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="410"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>pgmFactory<sp/>=<sp/>makePgm();</highlight></codeline>
 <codeline lineno="411"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;std::unique_ptr&lt;gko::LinOpFactory::ReuseData&gt;&gt;<sp/>newSlots;</highlight></codeline>
-<codeline lineno="412"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>csr&gt;<sp/>coarse<sp/>=<sp/><ref refid="classA" kindref="compound">A</ref>;</highlight></codeline>
+<codeline lineno="412"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>csr&gt;<sp/>coarse<sp/>=<sp/>A;</highlight></codeline>
 <codeline lineno="413"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;IndexType&gt;<sp/>mergedAgg;<sp/></highlight><highlight class="comment">//<sp/>fine<sp/>row<sp/>-&gt;<sp/>current<sp/>coarse<sp/>index<sp/>(host)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="414"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::size_type<sp/>coarseRows<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="415"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>parameters_.merge_levels;<sp/>++i)</highlight></codeline>
@@ -386,7 +386,7 @@
 <codeline lineno="436"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>restrict_<sp/>=<sp/>gko::share(gko::as&lt;csr&gt;(pCsr-&gt;transpose()));<sp/></highlight><highlight class="comment">//<sp/>Csr,<sp/>coarse<sp/>x<sp/>fine</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="437"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="438"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coarse<sp/>==<sp/>P_merged^T<sp/>A<sp/>P_merged<sp/>already<sp/>(last<sp/>Pgm<sp/>level&apos;s<sp/>coarse<sp/>op);<sp/>use<sp/>it<sp/>directly.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="439"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>setLevel(<ref refid="classA" kindref="compound">A</ref>,<sp/><ref refid="classA" kindref="compound">A</ref>.get(),<sp/>coarse);</highlight></codeline>
+<codeline lineno="439"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>setLevel(A,<sp/>A.get(),<sp/>coarse);</highlight></codeline>
 <codeline lineno="440"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recordReuse(reuseData,<sp/>std::move(newSlots),<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="441"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="442"><highlight class="normal"></highlight></codeline>

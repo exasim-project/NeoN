@@ -30,7 +30,7 @@
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ There\ is\ also\ an\ MPI\ environment\ value\ for\ that,\ but\ somehow\ it\ doesn't\ work\ using\ that}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ Also\ reserve\ 10\ tags\ for\ other\ uses}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ maxTagValue\ =\ 32767\ -\/\ 10;}
-\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ tag\ =\ std::hash<std::string>\ \{\}(str);}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ tag\ =\ std::hash<std::string>\ \{\}(str);}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00036}00036\ \ \ \ \ tag\ \&=\ 0x7FFFFFFF;\ \textcolor{comment}{//\ turn\ 'int'\ signed\ bit\ to\ 0,\ MPI\ does\ not\ like\ negative\ tags.}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(tag)\ \%\ maxTagValue)\ +\ 10;}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00038}00038\ \}}
@@ -119,7 +119,7 @@
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00201}00201\ }
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00202}00202\ \ \ \ \ \textcolor{keywordtype}{int}\ tag\_\ \{-\/1\};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*<\ The\ tag\ for\ the\ communication.\ */}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00203}00203\ \ \ \ \ std::string\ commName\_\ \{\textcolor{stringliteral}{"{}unassigned"{}}\};\ \textcolor{comment}{/*<\ The\ name\ of\ the\ communication.\ */}}
-\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00204}00204\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ typeSize\_\ \{\textcolor{keyword}{sizeof}(char)\};\ \ \ \ \textcolor{comment}{/*<\ The\ data\ type\ currently\ stored\ in\ the\ buffer.\ */}}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00204}00204\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ typeSize\_\ \{\textcolor{keyword}{sizeof}(char)\};\ \ \ \ \textcolor{comment}{/*<\ The\ data\ type\ currently\ stored\ in\ the\ buffer.\ */}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00205}00205\ \ \ \ \ Environment\ mpiEnviron\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*<\ The\ MPI\ environment.\ */}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00206}00206\ \ \ \ \ std::vector<MPI\_Request>\ request\_;\ \ \ \ \textcolor{comment}{/*<\ The\ MPI\ request\ for\ communication\ with\ each\ rank.\ */}}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00207}00207\ \ \ \ \ std::vector<char>\ rankBuffer\_;\ \ \ \ \ \ \ \ \textcolor{comment}{/*<\ The\ buffer\ data\ for\ all\ ranks.\ Never\ shrinks.\ */}}
@@ -144,7 +144,7 @@
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00236}00236\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ func>}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00237}00237\ \ \ \ \ \textcolor{keywordtype}{void}\ updateDataSize(func\ rankSize,\ sizeType\ newSize)}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00238}00238\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ dataSize\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ dataSize\ =\ 0;}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00240}00240\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (sizeType\ rank\ =\ 0;\ rank\ <\ mpiEnviron\_.sizeRank();\ ++rank)}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00241}00241\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{halfDuplexCommBuffer_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ rankOffset\_[rank]\ =\ dataSize;}

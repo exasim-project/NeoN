@@ -39,19 +39,19 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00035}00035\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00036}00036\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00037}00037\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00038}00038\ \textcolor{keyword}{class\ }Vector;}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00038}00038\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}};}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00039}00039\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00040}00040\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00041}00041\ \textcolor{comment}{//\ Concept\ to\ check\ if\ a\ callable\ is\ compatible\ with\ void(const\ NeoN::sizeType)}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00042}00042\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Kernel>}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00043}\mbox{\hyperlink{conceptNeoN_1_1parallelForKernel}{00043}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1parallelForKernel}{parallelForKernel}}\ =\ \textcolor{keyword}{requires}(Kernel\ t,\ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00043}\mbox{\hyperlink{conceptNeoN_1_1parallelForKernel}{00043}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1parallelForKernel}{parallelForKernel}}\ =\ \textcolor{keyword}{requires}(Kernel\ t,\ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ i)\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00044}00044\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ t(i)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00046}00046\ \ \ \ \ \}\ -\/>\ std::same\_as<void>;}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00047}00047\ \};}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00048}00048\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00049}00049\ }
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00050}00050\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00050}00050\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1detail}{detail}}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00051}00051\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00052}00052\ \textcolor{comment}{/*\ @brief\ call\ f\ with\ the\ concrete\ executor\ held\ by\ exec}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00053}00053\ \textcolor{comment}{\ *}}
@@ -62,7 +62,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00058}00058\ \textcolor{comment}{\ *\ DSO\ when\ it\ is\ linked\ with\ -\/Bsymbolic-\/functions.}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00059}00059\ \textcolor{comment}{\ */}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00060}00060\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ F>}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00061}\mbox{\hyperlink{namespaceNeoN_1_1detail_adb0e8d9530f26a7e984305284ea037d4}{00061}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1detail_adb0e8d9530f26a7e984305284ea037d4}{visitExecutor}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ F\&\&\ f)}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00061}\mbox{\hyperlink{namespaceNeoN_1_1detail_adb0e8d9530f26a7e984305284ea037d4}{00061}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1detail_adb0e8d9530f26a7e984305284ea037d4}{visitExecutor}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\&\ exec,\ F\&\&\ f)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00062}00062\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ serial\ =\ std::get\_if<SerialExecutor>(\&exec))}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00064}00064\ \ \ \ \ \{}
@@ -100,7 +100,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00096}00096\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same<std::remove\_reference\_t<ExecutorType>,\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{SerialExecutor}}>::value)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00098}00098\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ start;\ i\ <\ end;\ i++)}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i\ =\ start;\ i\ <\ end;\ i++)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ kernel(i);}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \}}
@@ -124,7 +124,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00120}00120\ \textcolor{comment}{/*\ @brief\ dispatch\ parallelFor\ based\ on\ executor\ variant\ type\ */}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00121}00121\ \textcolor{keyword}{template}<parallelForKernel\ Kernel>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00122}\mbox{\hyperlink{namespaceNeoN_ac7e76507c601efd317fa489b439c93b6}{00122}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{NeoN::Executor}}\&\ exec,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00124}00124\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00125}00125\ \ \ \ \ \textcolor{keyword}{const}\ Kernel\&\ kernel,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00126}00126\ \ \ \ \ std::string\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ =\ \textcolor{stringliteral}{"{}parallelFor"{}}}
@@ -135,20 +135,20 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00131}00131\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00132}00132\ \textcolor{comment}{//\ Concept\ to\ check\ if\ a\ callable\ is\ compatible\ with\ ValueType(const\ NeoN::sizeType)}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00133}00133\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Kernel,\ \textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00134}\mbox{\hyperlink{conceptNeoN_1_1parallelForContainerKernel}{00134}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1parallelForContainerKernel}{parallelForContainerKernel}}\ =\ \textcolor{keyword}{requires}(Kernel\ t,\ ValueType\ val,\ \mbox{\hyperlink{namespaceNeoN_a43f0805859cf059f7feeaf970df5c7b0}{sizeType}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00134}\mbox{\hyperlink{conceptNeoN_1_1parallelForContainerKernel}{00134}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1parallelForContainerKernel}{parallelForContainerKernel}}\ =\ \textcolor{keyword}{requires}(Kernel\ t,\ ValueType\ val,\ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ i)\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00135}00135\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ t(i)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00137}00137\ \ \ \ \ \}\ -\/>\ std::same\_as<ValueType>;}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00138}00138\ \};}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00139}00139\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00140}00140\ \textcolor{keyword}{template}<}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00141}00141\ \ \ \ \ \textcolor{keyword}{typename}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}},}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00141}00141\ \ \ \ \ \textcolor{keyword}{typename}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}},}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00142}00142\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00143}00143\ \ \ \ \ \textcolor{keyword}{class\ }ContType,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00144}00144\ \ \ \ \ \textcolor{keyword}{typename}\ ValueType,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00145}00145\ \ \ \ \ \mbox{\hyperlink{conceptNeoN_1_1parallelForContainerKernel}{parallelForContainerKernel<ValueType>}}\ Kernel>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00146}\mbox{\hyperlink{namespaceNeoN_a9614bc3d7163bb284d4a08dd13f76955}{00146}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&,}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\&,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00148}00148\ \ \ \ \ ContType<ValueType>\&\ container,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00149}00149\ \ \ \ \ \textcolor{keyword}{const}\ Kernel\&\ kernel,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00150}00150\ \ \ \ \ std::string\ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}\ =\ \textcolor{stringliteral}{"{}parallelFor"{}}}
@@ -158,7 +158,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00154}00154\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ viewSize\ =\ \mbox{\hyperlink{namespaceNeoN_a36ddf31a207ee99bcbae033086b44b9c}{toLocalIdx}}(view.size());}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00155}00155\ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same<std::remove\_reference\_t<Executor>,\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{SerialExecutor}}>::value)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00156}00156\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ viewSize;\ i++)}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i\ =\ 0;\ i\ <\ viewSize;\ i++)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ view[i]\ =\ kernel(i);}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \}}
@@ -169,7 +169,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ Kokkos::parallel\_for(}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}},}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<runOn>(0,\ viewSize),}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ view[i]\ =\ kernel(i);\ \}}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i)\ \{\ view[i]\ =\ kernel(i);\ \}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00170}00170\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00171}00171\ \}}
@@ -186,7 +186,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00182}00182\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00183}00183\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Executor,\ \textcolor{keyword}{typename}\ Kernel,\ \textcolor{keyword}{typename}\ T>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00184}\mbox{\hyperlink{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}{00184}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}{parallelReduce}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00185}00185\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00185}00185\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\&\ exec,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00186}00186\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00187}00187\ \ \ \ \ \textcolor{keyword}{const}\ Kernel\&\ kernel,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00188}00188\ \ \ \ \ T\&\ value}
@@ -195,7 +195,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00191}00191\ \ \ \ \ \textcolor{keyword}{auto}\ [start,\ end]\ =\ range;}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00192}00192\ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same<std::remove\_reference\_t<Executor>,\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{SerialExecutor}}>::value)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00193}00193\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ start;\ i\ <\ end;\ i++)}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i\ =\ start;\ i\ <\ end;\ i++)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (Kokkos::is\_reducer<T>::value)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
@@ -218,7 +218,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00214}00214\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00215}00215\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Kernel,\ \textcolor{keyword}{typename}\ T>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00216}\mbox{\hyperlink{namespaceNeoN_aa4eed5f6413813ad09bbee5861c1aa4a}{00216}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}{parallelReduce}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00217}00217\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,\ std::pair<localIdx,\ localIdx>\ range,\ \textcolor{keyword}{const}\ Kernel\&\ kernel,\ T\&\ value}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00217}00217\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{NeoN::Executor}}\&\ exec,\ std::pair<localIdx,\ localIdx>\ range,\ \textcolor{keyword}{const}\ Kernel\&\ kernel,\ T\&\ value}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00218}00218\ )}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00219}00219\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00220}00220\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1detail_adb0e8d9530f26a7e984305284ea037d4}{detail::visitExecutor}}(exec,\ [\&](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ e)\ \{\ \mbox{\hyperlink{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}{parallelReduce}}(e,\ range,\ kernel,\ value);\ \});}
@@ -227,13 +227,13 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00223}00223\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00224}00224\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Executor,\ \textcolor{keyword}{typename}\ ValueType,\ \textcolor{keyword}{typename}\ Kernel,\ \textcolor{keyword}{typename}\ T>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00225}\mbox{\hyperlink{namespaceNeoN_a1b708daddda357ab5c100c4046469d67}{00225}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}{parallelReduce}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00226}00226\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ field,\ \textcolor{keyword}{const}\ Kernel\&\ kernel,\ T\&\ value}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00226}00226\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\&\ exec,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ field,\ \textcolor{keyword}{const}\ Kernel\&\ kernel,\ T\&\ value}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00227}00227\ )}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00228}00228\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00229}00229\ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same<std::remove\_reference\_t<Executor>,\ \mbox{\hyperlink{classNeoN_1_1SerialExecutor}{SerialExecutor}}>::value)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00230}00230\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00231}00231\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ fieldSize\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_aa44dfb5c6c277e3711024cd97e1d4882}{size}}();}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00232}00232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ fieldSize;\ i++)}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00231}00231\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ fieldSize\ =\ field.\mbox{\hyperlink{classNeoN_1_1Vector_aa44dfb5c6c277e3711024cd97e1d4882}{size}}();}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00232}00232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i\ =\ 0;\ i\ <\ fieldSize;\ i++)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00233}00233\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (Kokkos::is\_reducer<T>::value)}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
@@ -264,7 +264,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00260}00260\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00261}00261\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Executor,\ \textcolor{keyword}{typename}\ Kernel>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00262}\mbox{\hyperlink{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}{00262}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}{parallelScan}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00263}00263\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ std::pair<localIdx,\ localIdx>\ range,\ \textcolor{keyword}{const}\ Kernel\&\ kernel}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00263}00263\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\&\ exec,\ std::pair<localIdx,\ localIdx>\ range,\ \textcolor{keyword}{const}\ Kernel\&\ kernel}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00264}00264\ )}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00265}00265\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00266}00266\ \ \ \ \ \textcolor{keyword}{auto}\ [start,\ end]\ =\ range;}
@@ -274,7 +274,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00270}00270\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00271}00271\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Kernel>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00272}\mbox{\hyperlink{namespaceNeoN_af62d86530b6207166514c6670aa3dca3}{00272}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}{parallelScan}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00273}00273\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,\ std::pair<localIdx,\ localIdx>\ range,\ \textcolor{keyword}{const}\ Kernel\&\ kernel}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00273}00273\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{NeoN::Executor}}\&\ exec,\ std::pair<localIdx,\ localIdx>\ range,\ \textcolor{keyword}{const}\ Kernel\&\ kernel}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00274}00274\ )}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00275}00275\ \{}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00276}00276\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1detail_adb0e8d9530f26a7e984305284ea037d4}{detail::visitExecutor}}(exec,\ [\&](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ e)\ \{\ \mbox{\hyperlink{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}{parallelScan}}(e,\ range,\ kernel);\ \});}
@@ -282,7 +282,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00278}00278\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00279}00279\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Executor,\ \textcolor{keyword}{typename}\ Kernel,\ \textcolor{keyword}{typename}\ ReturnType>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00280}\mbox{\hyperlink{namespaceNeoN_aa42b68031c74cf1c93d2239830375158}{00280}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}{parallelScan}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00281}00281\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00281}00281\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\&\ exec,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00282}00282\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00283}00283\ \ \ \ \ \textcolor{keyword}{const}\ Kernel\&\ kernel,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00284}00284\ \ \ \ \ ReturnType\&\ returnValue}
@@ -297,7 +297,7 @@
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00293}00293\ }
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00294}00294\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Kernel,\ \textcolor{keyword}{typename}\ ReturnType>}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00295}\mbox{\hyperlink{namespaceNeoN_a836c44d1716fced145932bf7e8f898d2}{00295}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}{parallelScan}}(}
-\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00296}00296\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00296}00296\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{NeoN::Executor}}\&\ exec,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00297}00297\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00298}00298\ \ \ \ \ \textcolor{keyword}{const}\ Kernel\&\ kernel,}
 \DoxyCodeLine{\Hypertarget{parallelAlgorithms_8hpp_source_l00299}00299\ \ \ \ \ ReturnType\&\ returnValue}

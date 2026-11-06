@@ -6,11 +6,11 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Installation" href="installation.html">
         <link rel="canonical" href="https://exasim-project.com/NeoN/index.html">
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
         <title>NeoN documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=acfd86a5" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6a4ff913" />
     
@@ -279,26 +279,60 @@
         <article role="main" id="furo-main-content">
           <section id="welcome-to-neon">
 <h1>Welcome to NeoN!<a class="headerlink" href="#welcome-to-neon" title="Link to this heading">¶</a></h1>
-<p>The NeoN project has set itself the goal of using modern software development methods for the development of open-source CFD software.
-It is:</p>
-<ul class="simple">
-<li><p>platform portable and GPU ready;</p></li>
-<li><p>compliant with modern C++20;</p></li>
-<li><p>extensively unit-tested;</p></li>
-<li><p>highly extensible via plugins</p></li>
+<p>NeoN is an open-source <code class="docutils literal notranslate"><span class="pre">C++20</span></code> library for developing high-performance computational fluid dynamics (CFD) software on heterogeneous computing systems, from multi-core CPUs to NVIDIA, AMD and Intel GPUs.
+It provides data structures, parallel algorithms and a domain-specific language (DSL) for the finite volume method (FVM).</p>
+<section id="statement-of-need">
+<h2>Statement of Need<a class="headerlink" href="#statement-of-need" title="Link to this heading">¶</a></h2>
+<p>Many widely used CFD codes were originally designed for single-core or moderately parallel CPUs.
+On modern high-performance computing systems, which increasingly rely on GPUs, CFD workloads are typically limited by memory bandwidth rather than by compute capability, and porting existing codes to accelerators often requires backend-specific rewrites.
+At the same time, the finite-volume abstractions of established frameworks are usually tied to a specific solver infrastructure and are difficult to reuse elsewhere.</p>
+<p>NeoN addresses this gap by providing a reusable, performance-portable finite-volume core:</p>
+<ul>
+<li><p><strong>Equation-level DSL:</strong> partial differential equations are written close to their mathematical form, for example</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">expr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">ddt</span><span class="p">(</span><span class="n">U</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">div</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dsl</span><span class="o">::</span><span class="n">imp</span><span class="o">::</span><span class="n">laplacian</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">imp</span></code> denotes implicit operators, which contribute coefficients to the system matrix, while <code class="docutils literal notranslate"><span class="pre">exp</span></code> denotes explicit operators, which contribute to the right-hand side.
+Expressions are evaluated lazily, deferring matrix assembly until it is needed and avoiding unnecessary temporaries.</p>
+</li>
+<li><p><strong>Discretisation and assembly:</strong> discretisation schemes generate stencil coefficients that are assembled into standard sparse matrix formats (e.g., CSR), with the resulting linear systems solved by external libraries such as <a class="reference external" href="https://github.com/ginkgo-project/ginkgo">Ginkgo</a>.</p></li>
+<li><p><strong>Performance portability:</strong> <a class="reference external" href="https://github.com/kokkos/kokkos">Kokkos</a> provides execution on serial CPUs, multi-threaded CPUs and GPUs from a single code base, while MPI supports distributed-memory parallelism.</p></li>
+<li><p><strong>Python access:</strong> the DSL can also be used from Python, see <a class="reference internal" href="python_bindings.html"><span class="doc">Python bindings (neon_pde)</span></a>.</p></li>
 </ul>
-<p>We aim for an easy integration other with CFD frameworks by providing a simple, yet powerful API.
-NeoN is a community-driven project and we welcome contributions from everyone.</p>
+</section>
+<section id="target-audience">
+<h2>Target Audience<a class="headerlink" href="#target-audience" title="Link to this heading">¶</a></h2>
+<p>NeoN is intended for</p>
+<ul class="simple">
+<li><p>developers of new CFD solvers that should run efficiently on CPUs and GPUs without architecture-specific code;</p></li>
+<li><p>researchers developing and testing discretisation schemes and numerical methods for the finite volume method;</p></li>
+<li><p>maintainers of existing CFD frameworks who want to modernise them incrementally. <a class="reference external" href="https://github.com/exasim-project/NeoFOAM">NeoFOAM</a> demonstrates this for OpenFOAM-based solvers;</p></li>
+<li><p>Python users who want to prototype finite-volume discretisations.</p></li>
+</ul>
+<p>NeoN is not a standalone CFD application.
+Time loops, solver control and I/O are handled by the application that uses NeoN; complete solvers built on NeoN are available in <a class="reference external" href="https://github.com/exasim-project/NeoFOAM">NeoFOAM</a>.</p>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>extensively unit-tested;</p></li>
+<li><p>extensible via runtime-selectable components (e.g., discretisation schemes and boundary conditions), see <a class="reference internal" href="basics/registerclass.html"><span class="doc">Derived class discovery at compile time</span></a>;</p></li>
+<li><p>designed to be integrated into other CFD frameworks through its API, as demonstrated by <a class="reference external" href="https://github.com/exasim-project/NeoFOAM">NeoFOAM</a>.</p></li>
+</ul>
+<p>NeoN is a community-driven project and we welcome contributions from everyone, see <a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a>.</p>
+</section>
 <section id="table-of-contents">
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#building-from-source">Building from source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#building-for-gpus">Building for GPUs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#building-with-cmake-presets">Building with CMake Presets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#building-with-spack">Building with Spack</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#executing-tests">Executing Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#workflow-with-vscode">Workflow with vscode</a></li>
 </ul>
 </li>
@@ -310,6 +344,7 @@ NeoN is a community-driven project and we welcome contributions from everyone.</
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#reporting-issues-and-getting-help">Reporting Issues and Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#neon-code-style-guide">NeoN Code Style Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#collaboration-via-pull-requests">Collaboration via Pull Requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#github-workflows-and-labels">Github Workflows and Labels</a></li>
@@ -430,6 +465,9 @@ NeoN is a community-driven project and we welcome contributions from everyone.</
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Welcome to NeoN!</a><ul>
+<li><a class="reference internal" href="#statement-of-need">Statement of Need</a></li>
+<li><a class="reference internal" href="#target-audience">Target Audience</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
 <li><a class="reference internal" href="#table-of-contents">Table of Contents</a><ul>
 </ul>
 </li>
@@ -446,7 +484,7 @@ NeoN is a community-driven project and we welcome contributions from everyone.</
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
