@@ -17,7 +17,8 @@ Its modular architecture enables performance-portable execution and solver backe
 
 > [!IMPORTANT]
 > The NeoN project needs you!
-> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
+> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoFOAM:gitter.im).
+> All participants are expected to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Key Features
 
@@ -69,3 +70,9 @@ Examples how to integrate NeoN into CFD frameworks and how to write applications
 ## Documentation
 
 The online documentation can be found [here](https://exasim-project.com/NeoN/latest). Since NeoN is evolving quickly, the documentation might not always reflect the latest state.
+
+## Contributing and Getting Help
+
+- **Contributing:** see the [contributing guide](https://exasim-project.com/NeoN/latest/contributing.html) for the code style, the pull request workflow and how to build the documentation.
+- **Reporting bugs and requesting features:** open an issue on the [GitHub issue tracker](https://github.com/exasim-project/NeoN/issues). The contributing guide lists [what to include in a bug report](https://exasim-project.com/NeoN/latest/contributing.html#reporting-issues-and-getting-help).
+- **Questions and help:** ask on [GitHub Discussions](https://github.com/exasim-project/NeoN/discussions) or in the [Gitter chat](https://matrix.to/#/#NeoFOAM:gitter.im).
