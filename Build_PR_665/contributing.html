@@ -280,13 +280,42 @@
           <section id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h1>
 <p>Contributions are highly welcome. Here is some information getting you started.</p>
+<p>All participants are expected to follow the <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/develop/CODE_OF_CONDUCT.md">NeoN Code of Conduct</a>.</p>
+<section id="reporting-issues-and-getting-help">
+<h2>Reporting Issues and Getting Help<a class="headerlink" href="#reporting-issues-and-getting-help" title="Link to this heading">¶</a></h2>
+<p><strong>Reporting bugs.</strong>
+If you encounter a bug, a build failure, or incorrect results, please open an issue on the
+<a class="reference external" href="https://github.com/exasim-project/NeoN/issues">GitHub issue tracker</a>.
+Before opening a new issue, search the existing issues to check whether the problem has already been reported.
+To help us reproduce the problem, please include the following where applicable:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Version information:</strong> NeoN version or commit hash</p></li>
+<li><p><strong>Installation details:</strong> installation method (source build, <code class="docutils literal notranslate"><span class="pre">pip</span></code>, conda/pixi, or Spack) and Python version (if applicable)</p></li>
+<li><p><strong>Environment:</strong> operating system and, for source builds, compiler and CMake version</p></li>
+<li><p><strong>Build configuration:</strong> CMake preset or configuration options used (e.g., <code class="docutils literal notranslate"><span class="pre">-DNeoN_WITH_MPI=OFF</span></code>) for source builds</p></li>
+<li><p><strong>Compute platform:</strong> Kokkos backend and hardware (e.g., CUDA on NVIDIA H100, HIP on AMD MI210, OpenMP on CPU), including GPU driver and toolkit version if applicable</p></li>
+<li><p><strong>Reproducible example:</strong> a minimal, self-contained example that reproduces the problem</p></li>
+<li><p><strong>Error details:</strong> the full error message or log output</p></li>
+<li><p><strong>Expected vs. observed behaviour:</strong> what you expected to happen and what happened instead</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Requesting features.</strong>
+Feature requests and suggestions for improvements are also welcome as GitHub issues.
+Please describe the intended use case and, if possible, sketch how the feature could look from a user’s perspective.</p>
+<p><strong>Asking questions and seeking help.</strong>
+For questions about using NeoN, integrating it into another CFD framework, or where to start contributing,
+please use <a class="reference external" href="https://github.com/exasim-project/NeoN/discussions">GitHub Discussions</a>
+or join the community chat on <a class="reference external" href="https://matrix.to/#/#NeoFOAM:gitter.im">Gitter</a>.
+Questions asked in public help other users as well, so we prefer these channels over private messages.</p>
+</section>
 <section id="neon-code-style-guide">
 <h2>NeoN Code Style Guide<a class="headerlink" href="#neon-code-style-guide" title="Link to this heading">¶</a></h2>
 <p>To simplify coding and code reviews you should adhere to the following code style. However, most
 of NeoNs code style guide is checked via automated tools.
 For example, formatting and non-format related code style is enforced via clang-format and clang-tidy.
-Corresponding configuration files are <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/.clang-format">.clang-format</a>
-and <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/main/.clang-format/.clang-tidy">.clang-tidy</a>.
+Corresponding configuration files are <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/develop/.clang-format">.clang-format</a>
+and <a class="reference external" href="https://github.com/exasim-project/NeoN/blob/develop/.clang-tidy">.clang-tidy</a>.
 Furthermore, adequate licensing of the source code is checked via the reuse linter and typos checks for obvious spelling issues.
 Thus, this style guide doesn’t list all stylistic rules explicitly but rather gives advice for ambiguous situations and mentions the rational for some decisions.</p>
 <blockquote>
@@ -329,13 +358,13 @@ i.e. a file <code class="docutils literal notranslate"><span class="pre">src/mod
 <li><p>Make sure that all required pipelines succeed.</p></li>
 <li><p>If you add new features, make sure to provide sufficient unit tests.
 Also at some point before merging you can add the <code class="docutils literal notranslate"><span class="pre">full-ci</span></code> label to include build and tests on GPU hardware.</p></li>
-<li><p>If you add a new feature or bug-fix, please add an entry to the <code class="docutils literal notranslate"><span class="pre">Changelog.md</span></code> file.
-For pure refactor PRs, the <code class="docutils literal notranslate"><span class="pre">Skip-Changelog</span></code> label can be set.</p></li>
+<li><p>If you add a new feature or bug-fix, please add an entry to the <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> file.
+For pure refactor PRs, the <code class="docutils literal notranslate"><span class="pre">skip-changelog</span></code> label can be set.</p></li>
 <li><p>If the PR should be merged in a specific order or if you don’t have the permission to merge, add the <code class="docutils literal notranslate"><span class="pre">ready-to-merge</span></code> label.</p></li>
-<li><p>Before merging, make sure to rebase your PR on to the latest state of <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
-<li><p>Make sure to add yourself to the <code class="docutils literal notranslate"><span class="pre">Authors.md</span></code> file.</p></li>
+<li><p>Before merging, make sure to rebase your PR on to the latest state of <code class="docutils literal notranslate"><span class="pre">develop</span></code>.</p></li>
+<li><p>Make sure to add yourself to the <code class="docutils literal notranslate"><span class="pre">AUTHORS.md</span></code> file.</p></li>
 <li><p>To simplify the review process, small to medium sized PRs are preferred.
-If your PR exceeds 1000 lines of code changes, consider to break the PR up into smaller PRs which can be merged via <a class="reference external" href="https://graphite.dev/blog/stacked-prs">stacked PRs</a>.</p></li>
+If your PR exceeds 1000 lines of code changes, consider to break the PR up into smaller PRs which can be merged via <a class="reference external" href="https://graphite.dev/guides/stacked-diffs">stacked PRs</a>.</p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -349,9 +378,11 @@ The following labels and their meaning are discussed here:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">ready-to-merge</span></code>: Signal that the work on this PR has been finished and can be merged.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">skip-changelog</span></code>: Don’t check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">skip-build</span></code>: Don’t run any build steps, including building the compile commands database.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Skip-cache</span></code>: Don’t cache the build folders. Forces to rebuild the build folder after every push to GitHub.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skip-cache</span></code>: Don’t cache the build folders. Forces to rebuild the build folder after every push to GitHub.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">full-ci</span></code>: Run tests on AWS and enable sanitizer workflows.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">auto-fix</span></code>: Apply changes from pre-commit and clang-tidy.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">benchmark</span></code>: Run the benchmark jobs on GPUs in the LRZ pipeline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skip-nvidia</span></code>, <code class="docutils literal notranslate"><span class="pre">skip-amd</span></code>, <code class="docutils literal notranslate"><span class="pre">skip-intel</span></code>: Skip the GPU tests on the respective vendor’s hardware in the LRZ pipeline.</p></li>
 </ul>
 </div></blockquote>
 <p>A full list of the labels can be found <a class="reference external" href="https://github.com/exasim-project/NeoN/labels">here</a>.</p>
@@ -434,6 +465,7 @@ sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Contributing</a><ul>
+<li><a class="reference internal" href="#reporting-issues-and-getting-help">Reporting Issues and Getting Help</a></li>
 <li><a class="reference internal" href="#neon-code-style-guide">NeoN Code Style Guide</a></li>
 <li><a class="reference internal" href="#collaboration-via-pull-requests">Collaboration via Pull Requests</a></li>
 <li><a class="reference internal" href="#github-workflows-and-labels">Github Workflows and Labels</a></li>
