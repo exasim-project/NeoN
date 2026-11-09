@@ -29,6 +29,7 @@
 #   NEON_THREADS     space-separated host thread counts      (1 2 4 8 16 32)
 #   NEON_RES         space-separated cube resolutions        (75 100 ... 275)
 #   RESULTS_DIR      directory for the generated csv files   (results)
+#   PYTHON           interpreter with foamlib and pandas     (python3)
 #
 # Writes ${RESULTS_DIR}/momentum_${NEON_DEVICE}.<threads>.csv, see plotPerformance.py.
 #----------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ PRESET="${NEOFOAM_PRESET:-profiling}"
 NEON_DEVICE="${NEON_DEVICE:-unknown}"
 THREADS="${NEON_THREADS:-1 2 4 8 16 32}"
 RES="${NEON_RES:-75 100 125 150 175 200 225 250 275}"
+PYTHON="${PYTHON:-python3}"
 
 command -v blockMesh >/dev/null || { echo "source OpenFOAM first (blockMesh not found)" >&2; exit 1; }
 mkdir -p "${RESULTS_DIR}"
@@ -78,7 +80,7 @@ fi
 
 # createStudies.py hard-codes its resolutions, so reuse its helpers with our own range
 suite() {
-    python3 - "$@" <<EOF
+    "${PYTHON}" - "$@" <<EOF
 import sys
 from pathlib import Path
 sys.path.insert(0, "${SUITE}")
