@@ -9,17 +9,19 @@ The data is produced by the ``momentum`` benchmark of NeoFOAM
 (benchmarks/momentum.cpp, registered via ``NeoN_benchmark``), which assembles
 ``imp::ddt(U) + imp::div(phi, U) - imp::laplacian(nu, U)`` on a unit cube. The
 benchmark suite (benchmarks/benchmarkSuite/createStudies.py) writes one
-momentum.csv per run, see runPerformance.sh.
+momentum.csv per run, see runPerformance.sh. The csv files used for the figure
+are stored in figures/data.
 
 Left:  assembly time per cell over the number of cells for every GPU file and
        for the CPUExecutor using 1 and --mt-threads threads.
 Right: CPUExecutor speedup relative to a single thread.
 
 Usage:
-    python3 plotPerformance.py \\
-        --gpu A100=momentum_nvidia_a100.1.csv --gpu H200=momentum_nvidia_h200.1.csv \\
-        --cpu momentum_nvidia_h200.{1,2,4,8,16,32}.csv \\
-        --output ../figures/neon_performance.png
+    cd doc/joss/figures
+    python3 ../scripts/plotPerformance.py \\
+        --gpu A100=data/momentum_nvidia_a100.1.csv --gpu H200=data/momentum_nvidia_h200.1.csv \\
+        --cpu data/momentum_nvidia_h200.{1,2,4,8,16,32}.csv \\
+        --output neon_performance.png
 
 CPU files must be named <prefix>.<threads>.csv.
 """
