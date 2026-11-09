@@ -86,6 +86,12 @@ public:
  */
 void setNeonDefaultPattern();
 
+/** Re-resolve the rank policy of setNeonDefaultPattern() on the rank in
+ * mpi::defaultCommunicator() (called by mpi::setDefaultCommunicator): the root
+ * of each communicator group logs, the other ranks only report errors.
+ */
+void updateRankPolicy();
+
 void logImpl(
     std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName = "NeoN"
 );

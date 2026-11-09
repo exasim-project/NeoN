@@ -27,7 +27,8 @@ inline void initialize(int argc, char* argv[])
     auto kokkosSettings = Kokkos::InitializationSettings();
 #ifdef NF_WITH_MPI_SUPPORT
     {
-        const NeoN::mpi::Environment mpiEnv;
+        // the device by the global rank: groups on sub-communicators share a node
+        const NeoN::mpi::Environment mpiEnv(MPI_COMM_WORLD);
         const int nDev = Kokkos::num_devices();
         if (nDev > 0) kokkosSettings.set_device_id(mpiEnv.rank() % nDev);
     }

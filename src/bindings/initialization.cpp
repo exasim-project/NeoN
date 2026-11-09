@@ -6,6 +6,9 @@
 #include <nanobind/stl/string.h>
 
 #include "NeoN/core/initialization.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/core/mpi/environment.hpp"
+#endif
 
 #include "bindings.hpp"
 
@@ -75,6 +78,52 @@ void registerInitialization(nanobind::module_& m)
                   neon.initialize()
           )doc"
     );
+
+#ifdef NF_WITH_MPI_SUPPORT
+    m.def(
+        "set_default_communicator",
+        [](nb::object comm)
+        {
+            if (comm.is_none())
+            {
+                NeoN::mpi::setDefaultCommunicator(MPI_COMM_NULL);
+                return;
+            }
+            // an mpi4py communicator, or its Fortran handle (comm.py2f())
+            auto handle = nb::hasattr(comm, "py2f") ? nb::cast<int>(comm.attr("py2f")())
+                                                    : nb::cast<int>(comm);
+            NeoN::mpi::setDefaultCommunicator(MPI_Comm_f2c(static_cast<MPI_Fint>(handle)));
+        },
+        "comm"_a.none(),
+        R"doc(
+              Set the communicator NeoN uses wherever it defaults to MPI_COMM_WORLD.
+
+              Call it before building a mesh, e.g. to run NeoN on part of the
+              processes. The ranks in it decide which rank logs.
+
+              Parameters:
+                  comm: an mpi4py communicator, its Fortran handle
+                      (``comm.py2f()``), or None for MPI_COMM_WORLD.
+          )doc"
+    );
+
+    m.def(
+        "default_communicator",
+        []() { return static_cast<int>(MPI_Comm_c2f(NeoN::mpi::defaultCommunicator())); },
+        R"doc(
+              The Fortran handle of NeoN's default communicator
+              (``mpi4py.MPI.Comm.f2py(handle)`` gives the communicator).
+          )doc"
+    );
+
+    m.def(
+        "has_default_communicator",
+        &NeoN::mpi::hasDefaultCommunicator,
+        R"doc(
+              Whether a default communicator other than MPI_COMM_WORLD is set.
+          )doc"
+    );
+#endif
 
     m.def(
         "finalize",

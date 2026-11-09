@@ -18,6 +18,9 @@
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/core/mpi/environment.hpp"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -114,6 +117,12 @@ public:
 
         // move all not necessary staff to outer most scope since matrix  has
         // to be preallocated only once every time the mesh changes
+        // PETSc's world is NeoN's default communicator (set before the first init)
+        PetscBool petscInitialized = PETSC_FALSE;
+        PetscInitialized(&petscInitialized);
+#ifdef NF_WITH_MPI_SUPPORT
+        if (!petscInitialized) PETSC_COMM_WORLD = mpi::defaultCommunicator();
+#endif
         PetscInitialize(NULL, NULL, 0, NULL);
 
         MatCreate(PETSC_COMM_WORLD, &Amat_);

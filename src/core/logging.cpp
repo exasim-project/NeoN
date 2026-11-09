@@ -49,6 +49,22 @@ void applyRankPolicy(sizeType rank)
 }
 }
 
+void updateRankPolicy()
+{
+#ifdef NF_WITH_MPI_SUPPORT
+    mpi::Environment environment;
+    if (!environment.isInitialized()) return;
+    applyRankPolicy(environment.rank());
+#if NF_WITH_SPDLOG
+    if (auto logger = spdlog::get("NeoN"))
+    {
+        logger->set_pattern(RANK_PREFIX + "%v");
+        logger->set_level(MIN_LEVEL == Level::Error ? spdlog::level::err : spdlog::level::info);
+    }
+#endif
+#endif
+}
+
 void setNeonDefaultPattern()
 {
     // Resolve the rank policy now. In serial (or before MPI is up) the permissive

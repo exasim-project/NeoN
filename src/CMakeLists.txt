@@ -82,9 +82,14 @@ set(NeoN_SRCS
     "timeIntegration/rungeKutta.cpp")
 
 if(NeoN_WITH_MPI)
-  list(APPEND NeoN_SRCS "core/mpi/halfDuplexCommBuffer.cpp" "mesh/unstructured/communicator.cpp"
-       "mesh/unstructured/distributedUnstructuredMesh.cpp"
-       "linearAlgebra/ginkgo/ginkgoDistributed.cpp")
+  list(
+    APPEND
+    NeoN_SRCS
+    "core/mpi/environment.cpp"
+    "core/mpi/halfDuplexCommBuffer.cpp"
+    "mesh/unstructured/communicator.cpp"
+    "mesh/unstructured/distributedUnstructuredMesh.cpp"
+    "linearAlgebra/ginkgo/ginkgoDistributed.cpp")
 endif()
 
 # Only mark sources as the CUDA language in cmake-language mode. In traditional Kokkos mode

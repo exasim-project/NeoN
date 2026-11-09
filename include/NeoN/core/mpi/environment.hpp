@@ -55,6 +55,36 @@ struct Init
 };
 
 
+//! Defined: this NeoN has defaultCommunicator() / setDefaultCommunicator().
+#define NF_MPI_DEFAULT_COMMUNICATOR 1
+
+/**
+ * @brief The communicator every default-constructed Environment uses.
+ *
+ * MPI_COMM_WORLD until setDefaultCommunicator() is called. A host that runs
+ * NeoN on part of the processes (e.g. one region of a coupled case on a
+ * sub-communicator) sets it once, before building a mesh; every place that
+ * defaults to it then communicates on that group only.
+ */
+MPI_Comm defaultCommunicator();
+
+/**
+ * @brief Sets the process-wide default communicator (see defaultCommunicator()).
+ *
+ * Also re-applies the rank policy of the logging to the rank in this
+ * communicator, so that the root of each group logs. MPI_Abort on a fatal error
+ * stays on MPI_COMM_WORLD: one failing group ends the whole job.
+ *
+ * @param comm The communicator; MPI_COMM_NULL resets it to MPI_COMM_WORLD.
+ */
+void setDefaultCommunicator(MPI_Comm comm);
+
+/**
+ * @brief Whether setDefaultCommunicator() set a communicator other than
+ * MPI_COMM_WORLD.
+ */
+bool hasDefaultCommunicator();
+
 /**
  * @class Environment
  * @brief Manages the MPI environment, including rank and rank size information.
@@ -66,9 +96,9 @@ public:
     /**
      * @brief Initializes the MPI environment using a parsed communicator group.
      *
-     * @param commGroup The communicator group, default is MPI_COMM_WORLD.
+     * @param commGroup The communicator group, default is defaultCommunicator().
      */
-    Environment(MPI_Comm commGroup = MPI_COMM_WORLD) : communicator(commGroup)
+    Environment(MPI_Comm commGroup = defaultCommunicator()) : communicator(commGroup)
     {
         MPI_Initialized(&mpiInitialized);
         updateRankData();
