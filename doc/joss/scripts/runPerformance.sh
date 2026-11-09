@@ -90,6 +90,7 @@ from foamlib.preprocessing.parameter_study import record_generator
 mode, target = sys.argv[1], Path(sys.argv[2])
 if mode == "generate":
     res = [int(r) for r in "${RES}".split()]
+    (target / "momentum").mkdir(parents=True, exist_ok=True)
     study = record_generator(
         records=cs.build_records("3DCube", res),
         template_case=Path("${SUITE}") / "templates/3DCube",
