@@ -6,18 +6,20 @@
 #----------------------------------------------------------------------------------------
 # Produce the data of figures/neon_performance.png with the NeoFOAM momentum benchmark.
 #
-# Requires a NeoFOAM build with benchmarks and a sourced OpenFOAM environment (blockMesh):
+# Requires a sourced OpenFOAM environment (blockMesh). Unless NEOFOAM_DIR is given, NeoFOAM
+# is cloned into ${RESULTS_DIR}/NeoFOAM. If bench_momentum is missing it is built with
 #
-#   cmake --preset profiling -DNEOFOAM_BUILD_BENCHMARKS=ON -DNeoN_WITH_THREADS=ON
-#   cmake --build --preset profiling
+#   cmake --preset ${NEOFOAM_PRESET} -DNEOFOAM_BUILD_BENCHMARKS=ON -DNeoN_WITH_THREADS=ON
 #
 # Run once per device, e.g. inside a SLURM allocation on a full node:
 #
-#   NEOFOAM_DIR=~/code/NeoFOAM NEON_DEVICE=nvidia_h200 ./runPerformance.sh
-#   NEOFOAM_DIR=~/code/NeoFOAM NEON_DEVICE=nvidia_a100 NEON_THREADS=1 ./runPerformance.sh
+#   NEON_DEVICE=nvidia_h200 ./runPerformance.sh
+#   NEON_DEVICE=nvidia_a100 NEON_THREADS=1 ./runPerformance.sh
 #
 # Environment variables (all optional, shown with defaults):
-#   NEOFOAM_DIR      path to the NeoFOAM source tree        (required)
+#   NEOFOAM_DIR      path to an existing NeoFOAM source tree (clone into RESULTS_DIR)
+#   NEOFOAM_URL      repository to clone NeoFOAM from        (exasim-project/NeoFOAM)
+#   NEOFOAM_BRANCH   NeoFOAM branch to clone                 (develop)
 #   NEOFOAM_PRESET   NeoFOAM build preset directory name     (profiling)
 #   NEON_DEVICE      label used in the output file names     (unknown)
 #   NEON_THREADS     space-separated host thread counts      (1 2 4 8 16 32)
@@ -31,20 +33,39 @@
 
 set -euo pipefail
 
-NEOFOAM_DIR="$(realpath "${NEOFOAM_DIR:?Must set NEOFOAM_DIR}")"
+RESULTS_DIR="$(realpath -m "${RESULTS_DIR:-results}")"
+NEOFOAM_URL="${NEOFOAM_URL:-https://github.com/exasim-project/NeoFOAM.git}"
+NEOFOAM_BRANCH="${NEOFOAM_BRANCH:-develop}"
 PRESET="${NEOFOAM_PRESET:-profiling}"
 NEON_DEVICE="${NEON_DEVICE:-unknown}"
 THREADS="${NEON_THREADS:-1 2 4 8 16 32}"
 RES="${NEON_RES:-75 100 125 150 175 200 225 250 275}"
-RESULTS_DIR="$(realpath -m "${RESULTS_DIR:-results}")"
+
+command -v blockMesh >/dev/null || { echo "source OpenFOAM first (blockMesh not found)" >&2; exit 1; }
+mkdir -p "${RESULTS_DIR}"
+
+if [[ -z "${NEOFOAM_DIR:-}" ]]; then
+    NEOFOAM_DIR="${RESULTS_DIR}/NeoFOAM"
+    if [[ ! -d "${NEOFOAM_DIR}" ]]; then
+        echo ">>> Cloning NeoFOAM (branch=${NEOFOAM_BRANCH})"
+        git clone --depth 1 --branch "${NEOFOAM_BRANCH}" "${NEOFOAM_URL}" "${NEOFOAM_DIR}"
+    fi
+fi
+NEOFOAM_DIR="$(realpath "${NEOFOAM_DIR}")"
 
 BENCH="${NEOFOAM_DIR}/build/${PRESET}/bin/benchmarks/bench_momentum"
 SUITE="${NEOFOAM_DIR}/benchmarks/benchmarkSuite"
 WORK_DIR="${RESULTS_DIR}/cases_${NEON_DEVICE}"
 
-[[ -x "${BENCH}" ]] || { echo "missing ${BENCH}" >&2; exit 1; }
-command -v blockMesh >/dev/null || { echo "source OpenFOAM first (blockMesh not found)" >&2; exit 1; }
-mkdir -p "${RESULTS_DIR}"
+if [[ ! -x "${BENCH}" ]]; then
+    echo ">>> Building NeoFOAM benchmarks (preset=${PRESET})"
+    (
+        cd "${NEOFOAM_DIR}"
+        # the NeoFOAM presets append $NEON_DEVICE to the build directory
+        env -u NEON_DEVICE cmake --preset "${PRESET}" -DNEOFOAM_BUILD_BENCHMARKS=ON -DNeoN_WITH_THREADS=ON
+        env -u NEON_DEVICE cmake --build --preset "${PRESET}" --target bench_momentum
+    )
+fi
 
 # createStudies.py hard-codes its resolutions, so reuse its helpers with our own range
 suite() {
