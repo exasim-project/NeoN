@@ -7,9 +7,11 @@
 # Produce the data of figures/neon_performance.png with the NeoFOAM momentum benchmark.
 #
 # Requires a sourced OpenFOAM environment (blockMesh). Unless NEOFOAM_DIR is given, NeoFOAM
-# is cloned into ${RESULTS_DIR}/NeoFOAM. If bench_momentum is missing it is built with
+# is cloned into ${RESULTS_DIR}/NeoFOAM. If bench_momentum is missing it is built against the
+# NeoN tree containing this script, using the OpenMP host backend:
 #
-#   cmake --preset ${NEOFOAM_PRESET} -DNEOFOAM_BUILD_BENCHMARKS=ON -DNeoN_WITH_THREADS=ON
+#   cmake --preset ${NEOFOAM_PRESET} -DNEOFOAM_BUILD_BENCHMARKS=ON -DNEOFOAM_NEON_DIR=${NEON_DIR} \
+#         -DNeoN_WITH_OMP=ON -DNeoN_WITH_THREADS=OFF ${NEOFOAM_CMAKE_ARGS}
 #
 # Run once per device, e.g. inside a SLURM allocation on a full node:
 #
@@ -21,6 +23,8 @@
 #   NEOFOAM_URL      repository to clone NeoFOAM from        (exasim-project/NeoFOAM)
 #   NEOFOAM_BRANCH   NeoFOAM branch to clone                 (develop)
 #   NEOFOAM_PRESET   NeoFOAM build preset directory name     (profiling)
+#   NEOFOAM_CMAKE_ARGS  additional NeoFOAM configure arguments (none)
+#   NEON_DIR         NeoN source tree NeoFOAM is built with  (this repository)
 #   NEON_DEVICE      label used in the output file names     (unknown)
 #   NEON_THREADS     space-separated host thread counts      (1 2 4 8 16 32)
 #   NEON_RES         space-separated cube resolutions        (75 100 ... 275)
@@ -33,6 +37,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+NEON_DIR="$(realpath "${NEON_DIR:-${SCRIPT_DIR}/../../..}")"
 RESULTS_DIR="$(realpath -m "${RESULTS_DIR:-results}")"
 NEOFOAM_URL="${NEOFOAM_URL:-https://github.com/exasim-project/NeoFOAM.git}"
 NEOFOAM_BRANCH="${NEOFOAM_BRANCH:-develop}"
@@ -62,7 +68,10 @@ if [[ ! -x "${BENCH}" ]]; then
     (
         cd "${NEOFOAM_DIR}"
         # the NeoFOAM presets append $NEON_DEVICE to the build directory
-        env -u NEON_DEVICE cmake --preset "${PRESET}" -DNEOFOAM_BUILD_BENCHMARKS=ON -DNeoN_WITH_THREADS=ON
+        # shellcheck disable=SC2086
+        env -u NEON_DEVICE cmake --preset "${PRESET}" -DNEOFOAM_BUILD_BENCHMARKS=ON \
+            -DNEOFOAM_NEON_DIR="${NEON_DIR}" -DNeoN_WITH_OMP=ON -DNeoN_WITH_THREADS=OFF \
+            ${NEOFOAM_CMAKE_ARGS:-}
         env -u NEON_DEVICE cmake --build --preset "${PRESET}" --target bench_momentum
     )
 fi
