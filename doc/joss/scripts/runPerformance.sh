@@ -85,6 +85,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, "${SUITE}")
 import createStudies as cs
+from foamlib import FoamFile
 from foamlib.preprocessing.parameter_study import record_generator
 
 mode, target = sys.argv[1], Path(sys.argv[2])
@@ -97,6 +98,12 @@ if mode == "generate":
         output_folder=target / "momentum" / "Cases",
     )
     study.create_study(study_base_folder=target / "momentum")
+    # the template only defines solvers for T, but the momentum benchmark looks up U
+    for case in (target / "momentum" / "Cases").iterdir():
+        fv_solution = FoamFile(case / "system" / "fvSolution")
+        for field, src in (("U", "T"), ("nfU", "nfT")):
+            if field not in fv_solution["solvers"]:
+                fv_solution["solvers", field] = fv_solution["solvers", src]
     cs.prepare_case(target, "momentum")
 else:
     cs.execute_case("${BENCH}", target, "momentum")
