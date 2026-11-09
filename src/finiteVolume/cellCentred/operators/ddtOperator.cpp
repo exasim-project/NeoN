@@ -32,37 +32,86 @@ void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar
     {
         return;
     }
-    const scalar dtInver = 1.0 / dt;
     const auto vol = this->getVector().mesh().cellVolumes().view();
+    const auto operatorScaling = this->getCoefficient();
+    auto& old = oldTime(this->field_);
     auto [sourceView, field, oldVector] =
-        views(source, this->field_.internalVector(), oldTime(this->field_).internalVector());
+        views(source, this->field_.internalVector(), old.internalVector());
 
+    // same startup rule as implicitOperation: BDF1 until phi^{n-1} exists
+    const bool bdf2 = scheme_ == DdtScheme::BDF2 && oldTimeLevel(this->field_) >= 2;
+
+    if (!bdf2)
+    {
+        const scalar a0 = 1.0 / dt;
+        const scalar a1 = -1.0 / dt;
+        if (rho_ == nullptr)
+        {
+            parallelFor(
+                source.exec(),
+                source.range(),
+                NEON_LAMBDA(const localIdx celli) {
+                    sourceView[celli] += operatorScaling[celli]
+                                       * (a0 * field[celli] + a1 * oldVector[celli]) * vol[celli];
+                },
+                "ddtOperator::explicitOperation<BDF1>"
+            );
+        }
+        else
+        {
+            const auto rhoNew = rho_->internalVector().view();
+            const auto rhoOld = oldTime(*rho_).internalVector().view();
+            parallelFor(
+                source.exec(),
+                source.range(),
+                NEON_LAMBDA(const localIdx celli) {
+                    sourceView[celli] += operatorScaling[celli]
+                                       * (a0 * rhoNew[celli] * field[celli]
+                                          + a1 * rhoOld[celli] * oldVector[celli])
+                                       * vol[celli];
+                },
+                "ddtOperator::explicitOperation<BDF1,rho>"
+            );
+        }
+        return;
+    }
+
+    // BDF2: (1.5*phi^{n+1} - 2*phi^{n} + 0.5*phi^{n-1})/dt
+    const scalar a0 = 1.5 / dt;
+    const scalar a1 = -2.0 / dt;
+    const scalar a2 = 0.5 / dt;
+    const auto oldOldVector = oldTime(old).internalVector().view();
     if (rho_ == nullptr)
     {
         parallelFor(
             source.exec(),
             source.range(),
             NEON_LAMBDA(const localIdx celli) {
-                sourceView[celli] += dtInver * (field[celli] - oldVector[celli]) * vol[celli];
+                sourceView[celli] +=
+                    operatorScaling[celli]
+                    * (a0 * field[celli] + a1 * oldVector[celli] + a2 * oldOldVector[celli])
+                    * vol[celli];
             },
-            "ddtOpertator::explicitOperation"
+            "ddtOperator::explicitOperation<BDF2>"
         );
     }
     else
     {
         const auto rhoNew = rho_->internalVector().view();
-        const auto rhoOld = oldTime(*rho_).internalVector().view();
-        const auto operatorScaling = this->getCoefficient();
+        auto& rhoOldF = oldTime(*rho_);
+        const auto [rhoOld, rhoOldOld] =
+            views(rhoOldF.internalVector(), oldTime(rhoOldF).internalVector());
         parallelFor(
             source.exec(),
             source.range(),
             NEON_LAMBDA(const localIdx celli) {
                 sourceView[celli] +=
-                    dtInver * operatorScaling[celli]
-                    * (rhoNew[celli] * field[celli] - rhoOld[celli] * oldVector[celli])
+                    operatorScaling[celli]
+                    * (a0 * rhoNew[celli] * field[celli] + a1 * rhoOld[celli] * oldVector[celli]
+                       + a2 * rhoOldOld[celli] * oldOldVector[celli])
                     * vol[celli];
             },
-            "ddtOpertator::explicitOperation<rho>"
+            "ddtOperator::explicitOperation<BDF2,rho>"
         );
     }
 }
