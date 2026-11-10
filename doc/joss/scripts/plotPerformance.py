@@ -21,6 +21,7 @@ Usage:
     python3 ../scripts/plotPerformance.py \\
         --gpu A100=data/momentum_nvidia_a100.1.csv --gpu H100=data/momentum_nvidia_h100.1.csv \\
         --gpu H200=data/momentum_nvidia_h200.1.csv --gpu MI210=data/momentum_amd_mi210.1.csv \\
+        --gpu PVC=data/momentum_intel_pvc.1.csv \\
         --cpu data/momentum_nvidia_h200.{1,2,4,8,16,32}.csv \\
         --output neon_performance.png
 
