@@ -7,8 +7,8 @@
 # Produce the data of figures/neon_performance.png with the NeoFOAM momentum benchmark.
 #
 # Requires a sourced OpenFOAM environment (blockMesh). Unless NEOFOAM_DIR is given, NeoFOAM
-# is cloned into ${RESULTS_DIR}/NeoFOAM. If bench_momentum is missing it is built against the
-# NeoN tree containing this script, using the OpenMP host backend:
+# is cloned into ${RESULTS_DIR}/NeoFOAM. bench_momentum is (re)built against the NeoN tree
+# containing this script, using the OpenMP host backend:
 #
 #   cmake --preset ${NEOFOAM_PRESET} -DNEOFOAM_BUILD_BENCHMARKS=ON -DNEOFOAM_NEON_DIR=${NEON_DIR} \
 #         -DNeoN_WITH_OMP=ON -DNeoN_WITH_THREADS=OFF ${NEOFOAM_CMAKE_ARGS}
@@ -65,18 +65,16 @@ BENCH="${NEOFOAM_DIR}/build/${PRESET}/bin/benchmarks/bench_momentum"
 SUITE="${NEOFOAM_DIR}/benchmarks/benchmarkSuite"
 WORK_DIR="${RESULTS_DIR}/cases_${NEON_DEVICE}"
 
-if [[ ! -x "${BENCH}" ]]; then
-    echo ">>> Building NeoFOAM benchmarks (preset=${PRESET})"
-    (
-        cd "${NEOFOAM_DIR}"
-        # the NeoFOAM presets append $NEON_DEVICE to the build directory
-        # shellcheck disable=SC2086
-        env -u NEON_DEVICE cmake --preset "${PRESET}" -DNEOFOAM_BUILD_BENCHMARKS=ON \
-            -DNEOFOAM_NEON_DIR="${NEON_DIR}" -DNeoN_WITH_OMP=ON -DNeoN_WITH_THREADS=OFF \
-            ${NEOFOAM_CMAKE_ARGS:-}
-        env -u NEON_DEVICE cmake --build --preset "${PRESET}" --target bench_momentum
-    )
-fi
+echo ">>> Building NeoFOAM benchmarks (preset=${PRESET})"
+(
+    cd "${NEOFOAM_DIR}"
+    # the NeoFOAM presets append $NEON_DEVICE to the build directory
+    # shellcheck disable=SC2086
+    env -u NEON_DEVICE cmake --preset "${PRESET}" -DNEOFOAM_BUILD_BENCHMARKS=ON \
+        -DNEOFOAM_NEON_DIR="${NEON_DIR}" -DNeoN_WITH_OMP=ON -DNeoN_WITH_THREADS=OFF \
+        ${NEOFOAM_CMAKE_ARGS:-}
+    env -u NEON_DEVICE cmake --build --preset "${PRESET}" --target bench_momentum
+)
 
 # createStudies.py hard-codes its resolutions, so reuse its helpers with our own range
 suite() {
