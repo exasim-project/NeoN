@@ -45,6 +45,7 @@ struct TrackingMeshView
     View<const label> faceOwners;
     View<const label> faceNeighbors; ///< internal faces only
     localIdx nInternalFaces;
+    localIdx nCells;
 };
 
 /** @class TrackingMesh
@@ -107,7 +108,8 @@ public:
             mesh_.faceNormals().view(),
             mesh_.faceOwners().view(),
             mesh_.faceNeighbors().view(),
-            static_cast<localIdx>(mesh_.nInternalFaces())
+            static_cast<localIdx>(mesh_.nInternalFaces()),
+            static_cast<localIdx>(mesh_.nCells())
         };
     }
 
@@ -170,8 +172,9 @@ label locateCell(Vec3& x, label c, const TrackingMeshView& m)
 
     Vec3 d = x - m.cellCenters[c];
     scalar nearestDistSqr = d & d;
-    constexpr int maxWalk = 1000;
-    for (int step = 0; step < maxWalk; step++)
+    // every step strictly decreases the distance to x, so no cell is visited twice and
+    // the walk ends after at most nCells steps (the -1 return below is the real exit)
+    for (localIdx step = 0; step < m.nCells; step++)
     {
         label nearestCell = -1;
         Vec3 nearestX = x;

@@ -15,4 +15,5 @@ Jakob Niessner <jabruniessner@gmail.com>, Technical University of Darmstadt\
 Marcel Koch <marcel.koch@kit.edu>, Karlsruhe Institute of Technology\
 Michael Alletto <michael.alletto@gmx.de>\
 Roman Mishchuk <roman.mishchuk@tum.de>, Technical University of Munich\
+Srey Pheak Sang <pheakcmsag@gmail.com>, University of Minho\
 Yu-Hsiang Tsai <yhmtsai@gmail.com>, Technical University of Munich
