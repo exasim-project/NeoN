@@ -125,4 +125,99 @@ private:
     Vector<Vec3> points_;
 };
 
+/** @brief Is x inside cell c? Face-plane test, as OpenFOAM primitiveMesh::pointInCell
+ * (FACE_PLANES): x is not in front of any (outward-oriented) face plane of c.
+ */
+KOKKOS_INLINE_FUNCTION
+bool pointInCell(const Vec3& x, const label c, const TrackingMeshView& m)
+{
+    const auto [start, end] = m.cellFaces.bounds(c);
+    for (localIdx k = start; k < end; k++)
+    {
+        const label f = m.cellFaces.values[k];
+        Vec3 normal = m.faceAreaVectors[f];
+        if (m.faceOwners[f] != c)
+        {
+            normal = scalar(-1) * normal;
+        }
+        if ((normal & (x - m.faceCenters[f])) > scalar(0))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+/** @brief Locate the cell containing x, starting from cell c.
+ *
+ * The walk of OpenFOAM meshSearch::findCellWalk: if x is not in the current cell, test
+ * the neighbour cells (pointInCell); otherwise move to the neighbour whose centre is
+ * nearest to x, as long as that decreases the distance. For periodic meshes a
+ * neighbour across a cyclic face is the partner cell, seen from the shifted position
+ * x + shift (OpenFOAM's translational cyclic transform); x is shifted when the walk
+ * goes through the cyclic face.
+ *
+ * @return the cell containing x (x possibly shifted), or -1 if the walk gets stuck,
+ *         i.e. x has left the domain through a non-periodic boundary.
+ */
+KOKKOS_INLINE_FUNCTION
+label locateCell(Vec3& x, label c, const TrackingMeshView& m)
+{
+    if (pointInCell(x, c, m))
+    {
+        return c;
+    }
+
+    Vec3 d = x - m.cellCenters[c];
+    scalar nearestDistSqr = d & d;
+    constexpr int maxWalk = 1000;
+    for (int step = 0; step < maxWalk; step++)
+    {
+        label nearestCell = -1;
+        Vec3 nearestX = x;
+        const auto [start, end] = m.cellFaces.bounds(c);
+        for (localIdx k = start; k < end; k++)
+        {
+            const label f = m.cellFaces.values[k];
+            label n;
+            Vec3 xn = x;
+            if (m.faceType[f] == label(TrackingFaceType::internal))
+            {
+                // internal faces have f < nInternalFaces, so faceNeighbors[f] exists
+                n = (m.faceOwners[f] == c) ? m.faceNeighbors[f] : m.faceOwners[f];
+            }
+            else if (m.faceType[f] == label(TrackingFaceType::cyclic))
+            {
+                n = m.cyclicPartnerCell[f];
+                xn = x + m.cyclicShift[f];
+            }
+            else
+            {
+                continue;
+            }
+
+            if (pointInCell(xn, n, m))
+            {
+                x = xn;
+                return n;
+            }
+            const Vec3 dn = xn - m.cellCenters[n];
+            const scalar distSqr = dn & dn;
+            if (distSqr < nearestDistSqr)
+            {
+                nearestDistSqr = distSqr;
+                nearestCell = n;
+                nearestX = xn;
+            }
+        }
+        if (nearestCell == -1)
+        {
+            return -1;
+        }
+        c = nearestCell;
+        x = nearestX;
+    }
+    return -1;
+}
+
 } // namespace NeoN
