@@ -19,6 +19,8 @@
 #include "boundary/volume/symmetry.hpp"
 #include "boundary/volume/slip.hpp"
 #include "boundary/volume/inletOutlet.hpp"
+#include "boundary/volume/freestreamPressure.hpp"
+#include "boundary/volume/freestreamVelocity.hpp"
 #include "boundary/volume/totalPressure.hpp"
 
 #include "boundary/surface/empty.hpp"
