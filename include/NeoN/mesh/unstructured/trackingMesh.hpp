@@ -150,7 +150,7 @@ bool pointInCell(const Vec3& x, const label c, const TrackingMeshView& m)
     return true;
 }
 
-/** @brief Locate the cell containing x, starting from cell c.
+/** @brief Locate the cell containing x, starting from cell hint.
  *
  * The walk of OpenFOAM meshSearch::findCellWalk: if x is not in the current cell, test
  * the neighbour cells (pointInCell); otherwise move to the neighbour whose centre is
@@ -163,8 +163,9 @@ bool pointInCell(const Vec3& x, const label c, const TrackingMeshView& m)
  *         i.e. x has left the domain through a non-periodic boundary.
  */
 KOKKOS_INLINE_FUNCTION
-label locateCell(Vec3& x, label c, const TrackingMeshView& m)
+label locateCell(Vec3& x, label hint, const TrackingMeshView& m)
 {
+    label c = hint;
     if (pointInCell(x, c, m))
     {
         return c;
