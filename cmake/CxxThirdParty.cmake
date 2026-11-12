@@ -378,5 +378,9 @@ if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
     VERSION
     ${NeoN_CATCH2_VERSION}
     SYSTEM
-    YES)
+    YES
+    # Static, like the test helper libraries: the installed test executables cannot find a shared
+    # Catch2, which is not installed (NeoN_WITH_UMPIRE forces BUILD_SHARED_LIBS=ON).
+    OPTIONS
+    "BUILD_SHARED_LIBS OFF")
 endif()
