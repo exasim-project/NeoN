@@ -65,6 +65,22 @@ public:
           nBoundaryFaces_(rhs.nBoundaryFaces_)
     {}
 
+    /**
+     * @brief Move constructor.
+     * @note The user-declared destructor and copy constructor suppress the implicit move
+     * constructor, so without this every move (e.g. Field's move constructor) copied all
+     * boundary vectors. Completes any in-flight processor-halo exchange of rhs first, so no
+     * pending MPI request refers to the moved buffers.
+     * @param rhs The boundaryVectors object to be moved from.
+     */
+    BoundaryData(BoundaryData<ValueType>&& rhs)
+        : exec_((rhs.waitAll(), rhs.exec_)), value_(std::move(rhs.value_)),
+          refValue_(std::move(rhs.refValue_)), valueFraction_(std::move(rhs.valueFraction_)),
+          refGrad_(std::move(rhs.refGrad_)), boundaryTypes_(std::move(rhs.boundaryTypes_)),
+          offset_(std::move(rhs.offset_)), nBoundaries_(rhs.nBoundaries_),
+          nBoundaryFaces_(rhs.nBoundaryFaces_)
+    {}
+
 
     /**
      * @brief Copy constructor.
@@ -204,8 +220,14 @@ public:
         return *this;
     }
 
-    BoundaryData<ValueType>& operator=(const BoundaryData<ValueType>&& rhs)
+    // Non-const rvalue: with `const BoundaryData&&` the std::move calls below bound to the Vector
+    // copy assignments, so a move assignment copied every boundary vector.
+    BoundaryData<ValueType>& operator=(BoundaryData<ValueType>&& rhs)
     {
+        // finish pending halo exchanges: ours would write into the replaced vectors, rhs's
+        // would refer to the moved buffers
+        waitAll();
+        rhs.waitAll();
 
         // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
         // but use them for a sanity check
