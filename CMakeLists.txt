@@ -88,6 +88,16 @@ option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
 option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support." OFF)
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
 option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
+
+# Umpire needs a shared build: NeoN and Ginkgo then share one Umpire ResourceManager, so Ginkgo can
+# allocate from NeoN's DEVICE_POOL (Ginkgo rejects Umpire in static builds, see CxxThirdParty.cmake).
+if(NeoN_WITH_UMPIRE AND NOT BUILD_SHARED_LIBS)
+  message(STATUS "NeoN_WITH_UMPIRE=ON: setting BUILD_SHARED_LIBS=ON")
+  set(BUILD_SHARED_LIBS
+      ON
+      CACHE BOOL "Build shared libraries" FORCE)
+endif()
+
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
