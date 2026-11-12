@@ -22,6 +22,9 @@
 #include <ginkgo/core/matrix/row_gatherer.hpp>
 #include <ginkgo/core/solver/multigrid.hpp>
 
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+
 #ifdef NF_WITH_MPI_SUPPORT
 #include <ginkgo/core/distributed/base.hpp>
 #include <ginkgo/core/distributed/matrix.hpp>
@@ -42,6 +45,45 @@ struct ScaleCorrectionState
 {
     const gko::LinOp* residual = nullptr;
 };
+
+/** @brief Run kernel(i) for i in [0, n) where @p exec's memory lives: as a Kokkos kernel for a
+ * CUDA/HIP executor, as a host loop otherwise. NeoN creates its Ginkgo device executors on the
+ * stream of the Kokkos default execution space (createGkoExecutor), so the kernel is
+ * stream-ordered with the surrounding Ginkgo operations and needs no fence. */
+template<typename Kernel>
+void forEachOn(const gko::Executor& exec, gko::size_type n, const Kernel& kernel)
+{
+    if (dynamic_cast<const gko::CudaExecutor*>(&exec) || dynamic_cast<const gko::HipExecutor*>(&exec))
+    {
+        parallelFor(GPUExecutor {}, {0, static_cast<localIdx>(n)}, kernel, "mergedPgm");
+    }
+    else
+    {
+        for (localIdx i = 0; i < static_cast<localIdx>(n); ++i)
+        {
+            kernel(i);
+        }
+    }
+}
+
+/** @brief Rayleigh scale factors sf = num / den per column (1 where den == 0), computed on the
+ * executor of the 1 x ncols operands instead of a host round trip. */
+template<typename ValueType>
+void rayleighScale(
+    const gko::matrix::Dense<ValueType>* num,
+    const gko::matrix::Dense<ValueType>* den,
+    gko::matrix::Dense<ValueType>* sf
+)
+{
+    const auto* n = num->get_const_values();
+    const auto* d = den->get_const_values();
+    auto* s = sf->get_values();
+    forEachOn(
+        *sf->get_executor(),
+        sf->get_size()[1],
+        NEON_LAMBDA(const localIdx c) { s[c] = d[c] != ValueType {} ? n[c] / d[c] : ValueType {1}; }
+    );
+}
 
 /** @brief Restriction that records the residual it restricts for ScaledProlongation. */
 class RecordingRestriction : public gko::LinOp
@@ -193,17 +235,10 @@ private:
         auto den = dense::create(exec, gko::dim<2> {1, ncols});
         d->compute_dot(r, num);
         d->compute_dot(ad, den);
-        auto host = exec->get_master();
-        auto numHost = gko::clone(host, num);
-        auto denHost = gko::clone(host, den);
-        auto sfHost = dense::create(host, gko::dim<2> {1, ncols});
-        for (gko::size_type c = 0; c < ncols; ++c)
-        {
-            const auto dn = denHost->at(0, c);
-            sfHost->at(0, c) =
-                dn != gko::zero<ValueType>() ? numHost->at(0, c) / dn : gko::one<ValueType>();
-        }
-        auto sf = gko::clone(exec, sfHost);
+        // on the executor: a host round trip here (two copies to the host, one back, each
+        // synchronising the stream) ran on every scaled prolongation of every V-cycle
+        auto sf = dense::create(exec, gko::dim<2> {1, ncols});
+        rayleighScale(num.get(), den.get(), sf.get());
 
         auto one = gko::initialize<dense>({gko::one<ValueType>()}, exec);
         ad->scale(sf); // ad = sf A d
@@ -230,15 +265,17 @@ template<typename ValueType, typename IndexType>
 std::shared_ptr<const gko::matrix::Diagonal<ValueType>>
 invertedDiagonal(const gko::matrix::Csr<ValueType, IndexType>* mtx)
 {
-    auto exec = mtx->get_executor();
-    auto diag = gko::clone(exec->get_master(), mtx->extract_diagonal());
+    // invert in place on mtx's executor (no copy of the diagonal to the host and back)
+    auto diag = gko::share(mtx->extract_diagonal());
     auto* v = diag->get_values();
-    for (gko::size_type i = 0; i < diag->get_size()[0]; ++i)
-    {
-        v[i] =
-            v[i] != gko::zero<ValueType>() ? gko::one<ValueType>() / v[i] : gko::zero<ValueType>();
-    }
-    return gko::share(gko::clone(exec, diag));
+    forEachOn(
+        *diag->get_executor(),
+        diag->get_size()[0],
+        NEON_LAMBDA(const localIdx i) {
+            v[i] = v[i] != ValueType {} ? ValueType {1} / v[i] : ValueType {};
+        }
+    );
+    return diag;
 }
 
 } // namespace detail
