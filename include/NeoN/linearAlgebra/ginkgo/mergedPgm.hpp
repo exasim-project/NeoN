@@ -47,13 +47,14 @@ struct ScaleCorrectionState
 };
 
 /** @brief Run kernel(i) for i in [0, n) where @p exec's memory lives: as a Kokkos kernel for a
- * CUDA/HIP executor, as a host loop otherwise. NeoN creates its Ginkgo device executors on the
- * stream of the Kokkos default execution space (createGkoExecutor), so the kernel is
- * stream-ordered with the surrounding Ginkgo operations and needs no fence. */
+ * device (CUDA/HIP/SYCL) executor, as a host loop otherwise. NeoN creates its Ginkgo device
+ * executors on the stream or queue of the Kokkos default execution space (createGkoExecutor), so
+ * the kernel is stream-ordered with the surrounding Ginkgo operations and needs no fence. */
 template<typename Kernel>
 void forEachOn(const gko::Executor& exec, gko::size_type n, const Kernel& kernel)
 {
-    if (dynamic_cast<const gko::CudaExecutor*>(&exec) || dynamic_cast<const gko::HipExecutor*>(&exec))
+    // Host executors are their own master.
+    if (exec.get_master().get() != &exec)
     {
         parallelFor(GPUExecutor {}, {0, static_cast<localIdx>(n)}, kernel, "mergedPgm");
     }
