@@ -277,6 +277,16 @@ if(${NeoN_WITH_GINKGO})
   find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
+    # An installed Ginkgo shares NeoN's Umpire pool only if it was built with Umpire.
+    if(NeoN_WITH_UMPIRE AND GINKGO_HAVE_UMPIRE)
+      set(NeoN_GINKGO_WITH_UMPIRE ON)
+    else()
+      set(NeoN_GINKGO_WITH_UMPIRE OFF)
+      if(NeoN_WITH_UMPIRE)
+        message(STATUS "System Ginkgo is built without Umpire: "
+                       "Ginkgo does not allocate from NeoN's Umpire pool")
+      endif()
+    endif()
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
     # Ginkgo shares NeoN's Umpire pool only in shared builds: it rejects Umpire in static builds,
