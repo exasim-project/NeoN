@@ -13,6 +13,7 @@ set(NeoN_WITH_SUNDIALS @NeoN_WITH_SUNDIALS@)
 set(NeoN_WITH_PETSC @NeoN_WITH_PETSC@)
 set(NeoN_WITH_SPDLOG @NeoN_WITH_SPDLOG@)
 set(NeoN_WITH_UMPIRE @NeoN_WITH_UMPIRE@)
+set(NeoN_WITH_JULIA @NeoN_WITH_JULIA@)
 
 find_dependency(Kokkos REQUIRED)
 find_dependency(cpptrace REQUIRED)
@@ -37,6 +38,11 @@ endif()
 
 if(${NeoN_WITH_UMPIRE})
 find_dependency(umpire REQUIRED)
+endif()
+
+if(${NeoN_WITH_JULIA})
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+find_dependency(Julia REQUIRED)
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/NeoNTargets.cmake")

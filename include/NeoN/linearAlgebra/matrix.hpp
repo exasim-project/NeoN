@@ -5,6 +5,11 @@
 #pragma once
 
 #include "NeoN/core/vector/vector.hpp"
+
+#include <type_traits>
+#ifdef NeoN_WITH_JULIA
+#include <julia.h>
+#endif
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
@@ -142,6 +147,13 @@ public:
      * @brief Default destructor.
      */
     ~Matrix() = default;
+#ifdef NeoN_WITH_JULIA
+    /**
+     * @brief Prepare the pointer to hand to Julia.
+     * @return Julia-friendly reference to the data.
+     */
+    jl_value_t* juliaPtr() { return values_.juliaPtr(); }
+#endif
 
     /**
      * @brief Get the executor associated with this matrix.

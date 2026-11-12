@@ -3,16 +3,18 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
-
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/view.hpp"
+#ifdef NeoN_WITH_JULIA
+#include <julia.h>
+#endif
 #include "NeoN/helpers/exceptions.hpp"
 
 #include <vector>
-
 
 namespace NeoN
 {
@@ -42,6 +44,57 @@ class Vector
 public:
 
     using VectorValueType = ValueType;
+#ifdef NeoN_WITH_JULIA
+
+    /**
+     * @brief Prepare pointer to pass to julia
+     */
+    jl_value_t* juliaPtr() const
+    {
+        if (std::holds_alternative<GPUExecutor>(exec_))
+        {
+            return jl_box_voidpointer((void*)data_);
+        }
+        else
+        {
+            if constexpr (std::is_same_v<VectorValueType, float>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, double>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, label>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, localIdx>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, NeoN::Vec3>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_ * 3, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else
+            {
+                NF_THROW("Vector::juliaPtr: no Julia array type for this value type");
+            }
+        }
+    }
+#endif
+
 
     /**
      * @brief Creates an uninitialized Vector with the given size on an executor.

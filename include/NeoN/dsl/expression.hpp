@@ -24,6 +24,10 @@
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
+#ifdef NeoN_WITH_JULIA
+#include "NeoN/dsl/june.hpp"
+#endif
 
 namespace NeoN::dsl
 {
@@ -437,6 +441,17 @@ public:
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
+#ifdef NeoN_JULIA_ASSEMBLY
+        // coupled Vec3 matrix: JuNe writes all three components of every entry
+        if constexpr (std::is_same_v<ValueType, Vec3> && std::is_same_v<AssemblyType, Vec3>)
+        {
+            if (june::canAssemble(*this))
+            {
+                june::assemble(*this, ls, dt);
+                return;
+            }
+        }
+#endif
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
 

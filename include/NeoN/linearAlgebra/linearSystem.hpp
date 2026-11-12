@@ -17,6 +17,10 @@
 #endif
 
 #include <string>
+#include <iostream>
+#ifdef NeoN_WITH_JULIA
+#include <julia.h>
+#endif
 #include <algorithm>
 #include <numeric>
 #include <vector>
@@ -168,6 +172,50 @@ public:
 
     [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
 
+    /**
+     * @brief Compare the system matrix and rhs against another linear system's.
+     *
+     * Matrix dimensions and sparsity indices must match exactly. Stored matrix values and rhs
+     * entries are compared component-wise with an absolute tolerance.
+     */
+    template<typename OtherRHSValueType, typename OtherBoundaryMatrixType>
+    [[nodiscard]] bool matrixEquals(
+        const LinearSystem<
+            MatrixValueType,
+            OtherRHSValueType,
+            SystemMatrixType,
+            OtherBoundaryMatrixType>& other,
+        scalar tolerance = static_cast<scalar>(1e-12)
+    ) const
+    {
+        static_assert(
+            std::is_same_v<OtherRHSValueType, RHSValueType>,
+            "matrixEquals compares the rhs, so both systems need the same rhs type"
+        );
+        const auto lhsDim = matrix_.sparsity()->dimension();
+        const auto rhsDim = other.matrix().sparsity()->dimension();
+        if (lhsDim.rows != rhsDim.rows || lhsDim.cols != rhsDim.cols)
+        {
+            return false;
+        }
+
+        if (!vectorsEqual(matrix_.colIdxs(), other.matrix().colIdxs()))
+        {
+            return false;
+        }
+
+        if (!vectorsEqual(matrix_.rowOffs(), other.matrix().rowOffs()))
+        {
+            return false;
+        }
+
+        // evaluate both so both error reports are printed
+        const bool matrixEqual =
+            valuesEqual("matrix", matrix_.values(), other.matrix().values(), tolerance);
+        const bool rhsEqual = valuesEqual("rhs", rhs_, other.rhs(), tolerance);
+        return matrixEqual && rhsEqual;
+    }
+
     // Optional per-internal-face deferred flux correction — the OpenFOAM
     // fvMatrix::faceFluxCorrectionPtr_ analogue. Populated by a corrected/limitedCorrected
     // Laplacian assembly with the SAME per-face correction it deferred to the RHS, so the flux
@@ -296,6 +344,87 @@ public:
     const Executor& exec() const { return matrix_.exec(); }
 
 private:
+
+    template<typename ValueType>
+    static bool vectorsEqual(const Vector<ValueType>& lhs, const Vector<ValueType>& rhs)
+    {
+        if (lhs.size() != rhs.size())
+        {
+            return false;
+        }
+
+        auto lhsHost = lhs.copyToHost();
+        auto rhsHost = rhs.copyToHost();
+        const auto lhsView = lhsHost.view();
+        const auto rhsView = rhsHost.view();
+        for (localIdx i = 0; i < lhsView.size(); ++i)
+        {
+            if (lhsView[i] != rhsView[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    template<typename ValueType>
+    static bool valuesEqual(
+        const std::string& name,
+        const Vector<ValueType>& lhs,
+        const Vector<ValueType>& rhs,
+        scalar tolerance
+    )
+    {
+        if (lhs.size() != rhs.size())
+        {
+            return false;
+        }
+
+        auto lhsHost = lhs.copyToHost();
+        auto rhsHost = rhs.copyToHost();
+        const auto lhsView = lhsHost.view();
+        const auto rhsView = rhsHost.view();
+        auto ret = true;
+        auto err = 0.0;
+        auto max = 0.0;
+        localIdx maxindex = 0;
+        for (localIdx i = 0; i < lhsView.size(); ++i)
+        {
+            scalar cur = 0.0;
+            if constexpr (std::is_same_v<ValueType, scalar>)
+            {
+                cur = std::abs(lhsView[i] - rhsView[i]);
+            }
+            else
+            {
+                for (int c = 0; c < 3; ++c)
+                {
+                    cur = std::max(cur, std::abs(lhsView[i][c] - rhsView[i][c]));
+                }
+            }
+
+            if (cur > max)
+            {
+                max = cur;
+                maxindex = i;
+            }
+            err += cur;
+            if (cur > tolerance)
+            {
+                // std::cout << "wrong: " <<i<< ": " << lhsView[i] << " ------  " << rhsView[i] <<
+                // std::endl;
+                ret = false;
+                // return false;
+            }
+        }
+        std::cout << name << " highest error: " << max << " at " << maxindex << std::endl;
+        std::cout << name << " neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex]
+                  << std::endl;
+
+        std::cout << name << " total error: " << err << std::endl;
+        std::cout << name << " total error per entry: " << err / lhsView.size() << std::endl;
+        return ret;
+    }
 
     static BoundaryMatrixType emptyMatrix(const Executor& exec)
     {

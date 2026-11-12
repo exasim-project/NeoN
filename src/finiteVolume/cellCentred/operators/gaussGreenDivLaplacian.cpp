@@ -513,6 +513,10 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
         divTokens.remove(0);
     }
     divTokens.remove(0);
+    if (divTokens.size() > 0 && divTokens.get<std::string>(0) == "Gauss")
+    {
+        divTokens.remove(0);
+    }
 
     // Accept the cell-limited vector variant `linearUpwindV` alongside `linearUpwind`; both map to
     // the linearUpwind interpolation (SurfaceInterpolation registers "linearUpwindV" for the
