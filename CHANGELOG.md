@@ -1,5 +1,6 @@
 # Version 0.3.0 (unreleased)
 ## Features
+- Add `TrackingMesh`, mesh walk (`pointInCell`, `locateCell`) and cellPoint interpolation (`pointToBarycentric`, `interpolateCellPoint`) for locating points in a mesh [#670](https://github.com/exasim-project/NeoN/pull/670)
 - Add `slip` and `inletOutlet` volume boundary conditions [#565](https://github.com/exasim-project/NeoN/pull/565)
 - Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)
 - Add experimental support for cell based assembly strategies [#471](https://github.com/exasim-project/NeoN/pull/471),[#517](https://github.com/exasim-project/NeoN/pull/517), [#473](https://github.com/exasim-project/NeoN/pull/473)
