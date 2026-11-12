@@ -33,7 +33,9 @@ Its modular architecture enables performance-portable execution and solver backe
 
 ---
 
+
 ## Quickstart
+
 
 To build the C++ library from source you need CMake ≥ 3.22, a C++20 compiler (_gcc >= 13_ or _clang >= 19_), [Ninja](https://ninja-build.org/) (only when using the CMake presets) and, optionally, MPI (disable with `-DNeoN_WITH_MPI=OFF`). Kokkos, Ginkgo and other C++ dependencies are managed through `CPM <https://github.com/cpm-cmake/CPM.cmake>` and fetched automatically when suitable system installations are unavailable.
 
