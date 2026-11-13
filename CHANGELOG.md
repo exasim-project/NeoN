@@ -21,6 +21,7 @@
 - With `UmpirePool`, Ginkgo allocates device memory from NeoN's Umpire pool, so both share one pool (shared builds only) [#634](https://github.com/exasim-project/NeoN/pull/634)
 
 ### Misc
+- Add a steady diffusion example showcasing the basic workflow, enabled with `NeoN_BUILD_EXAMPLES` [#XXX](https://github.com/exasim-project/NeoN/pull/XXX)
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)
 - Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
 - Build the distributed off-diagonal matrix with local row indices and widen non-local columns on the executor, removing host round-trips in the Ginkgo distributed matrix assembly

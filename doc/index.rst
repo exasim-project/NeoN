@@ -40,6 +40,8 @@ NeoN is intended for
 * maintainers of existing CFD frameworks who want to modernise them incrementally. `NeoFOAM <https://github.com/exasim-project/NeoFOAM>`_ demonstrates this for OpenFOAM-based solvers;
 * Python users who want to prototype finite-volume discretisations.
 
+To get a first impression of the library, have a look at the :doc:`examples`.
+
 NeoN is not a standalone CFD application.
 Time loops, solver control and I/O are handled by the application that uses NeoN; complete solvers built on NeoN are available in `NeoFOAM <https://github.com/exasim-project/NeoFOAM>`_.
 
@@ -59,6 +61,7 @@ Table of Contents
 
    self
    installation
+   examples
    python_bindings
    contributing
    basics/index
