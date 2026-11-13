@@ -99,6 +99,7 @@ jobs:
           source venv/bin/activate
           cmake --preset ${{matrix.preset}} \
             -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_BUILD_EXAMPLES=ON \
             -DNeoN_BUILD_PYTHON_BINDINGS=ON \
             -DNeoN_DEVEL_TOOLS=OFF \
             -DNeoN_WITH_GINKGO=OFF \
@@ -170,6 +171,7 @@ jobs:
           GINKGO_ARGS="$(./ci/ginkgo-cmake-args.sh)"
           cmake --preset ${{matrix.preset}} ${GINKGO_ARGS} \
             -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_BUILD_EXAMPLES=ON \
             -DNeoN_DEVEL_TOOLS=OFF \
             -DNeoN_WITH_GINKGO=ON \
             -DMPIEXEC_MAX_NUMPROCS=3 \
