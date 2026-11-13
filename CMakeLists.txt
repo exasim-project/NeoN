@@ -67,6 +67,7 @@ option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
 # Build components
 option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
+option(NeoN_BUILD_EXAMPLES "Build the examples" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
 option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 # Link _neon against a shared libnanobind instead of the default static one. Only needed when the
@@ -255,6 +256,11 @@ endif()
 if(NeoN_BUILD_BENCHMARKS)
   enable_testing()
   add_subdirectory(benchmarks)
+endif()
+
+if(NeoN_BUILD_EXAMPLES)
+  enable_testing()
+  add_subdirectory(examples)
 endif()
 
 if(NeoN_BUILD_DOC)

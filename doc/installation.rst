@@ -85,15 +85,17 @@ you can specify the number of CPU cores as shown above.
 The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake command.
 Most relevant build flags are:
 
-+------------------+--------------------------------+---------+
-| Flag             | Description                    | Default |
-+==================+================================+=========+
-| CMAKE_BUILD_TYPE | Build in debug or release mode | Debug   |
-+------------------+--------------------------------+---------+
-| NeoN_BUILD_DOC   | Build NeoN with documentation  | ON      |
-+------------------+--------------------------------+---------+
-| NeoN_BUILD_TESTS | Build NeoN with tests          | OFF     |
-+------------------+--------------------------------+---------+
++---------------------+--------------------------------+---------+
+| Flag                | Description                    | Default |
++=====================+================================+=========+
+| CMAKE_BUILD_TYPE    | Build in debug or release mode | Debug   |
++---------------------+--------------------------------+---------+
+| NeoN_BUILD_DOC      | Build NeoN with documentation  | ON      |
++---------------------+--------------------------------+---------+
+| NeoN_BUILD_TESTS    | Build NeoN with tests          | OFF     |
++---------------------+--------------------------------+---------+
+| NeoN_BUILD_EXAMPLES | Build the examples             | OFF     |
++---------------------+--------------------------------+---------+
 
 To browse the full list of build options it is recommended to use a build tool like ``ccmake``.
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
