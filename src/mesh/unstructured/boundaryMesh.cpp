@@ -38,10 +38,6 @@ BoundaryMesh::BoundaryMesh(
     computeRowOrderWriteIndex();
 };
 
-// Accessor methods
-const labelVector& BoundaryMesh::faceOwners() const { return faceOwners_; }
-
-
 template<typename ValueType>
 View<const ValueType>
 extractSubView(const Vector<ValueType>& vec, const std::vector<localIdx>& offs, localIdx i)

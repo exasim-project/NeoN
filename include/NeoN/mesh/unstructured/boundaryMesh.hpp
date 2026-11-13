@@ -71,11 +71,18 @@ public:
 
 
     /**
+     * @brief Get the list of read-only labels of owner cells of boundary faces.
+     *
+     * @return A constant reference to the field of owner cells.
+     */
+    const labelVector& faceOwners() const { return faceOwners_; }
+
+    /**
      * @brief Get the list of labels of owner cells of boundary faces.
      *
      * @return A constant reference to the field of owner cells.
      */
-    const labelVector& faceOwners() const;
+    labelVector& faceOwners() { return faceOwners_; }
 
     // TODO either dont mix return types, ie dont use view and Vector
     // for functions with same name
