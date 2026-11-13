@@ -21,7 +21,7 @@ Usage:
     python3 ../scripts/plotPerformance.py \\
         --gpu A100=data/momentum_nvidia_a100.1.csv --gpu H100=data/momentum_nvidia_h100.1.csv \\
         --gpu H200=data/momentum_nvidia_h200.1.csv --gpu MI210=data/momentum_amd_mi210.1.csv \\
-        --gpu PVC=data/momentum_intel_pvc.1.csv \\
+        --gpu GB200=data/momentum_nvidia_gb200.1.csv --gpu PVC=data/momentum_intel_pvc.1.csv \\
         --cpu "EPYC 9555=data/momentum_nvidia_h200" \\
         --cpu "Xeon Gold 6438Y+=data/momentum_intel_xeon6438y" \\
         --cpu "Xeon Platinum 8480+=data/momentum_intel_xeon8480" \\
