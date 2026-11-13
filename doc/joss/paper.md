@@ -18,17 +18,19 @@ authors:
     affiliation: 2
   - name: Andrei Maftei
     affiliation: 1
-  - name: Bevan Jones
+  - name: Jakob Niessner
     affiliation: 3
-  - name: Gregor Weiss
+  - name: Bevan Jones
     affiliation: 4
-  - name: Marcel Koch
+  - name: Gregor Weiss
     affiliation: 5
+  - name: Marcel Koch
+    affiliation: 6
   - name: Yu-Hsiang Tsai
     orcid: 0000-0001-5229-3739
     affiliation: 1
   - name: Henning Scheufler
-    affiliation: 3
+    affiliation: 4
   - name: Gregor Olenik
     orcid: 0000-0002-0128-3933
     affiliation: 1
@@ -38,14 +40,16 @@ affiliations:
    index: 1
  - name: Upstream CFD GmbH, Germany
    index: 2
- - name: Independent Researcher, Germany
+ - name: Technical University of Darmstadt, Germany
    index: 3
- - name: High-Performance Computing Center Stuttgart (HLRS), Germany
+ - name: Independent Researcher, Germany
    index: 4
- - name: Karlsruhe Institute of Technology, Germany
+ - name: High-Performance Computing Center Stuttgart (HLRS), Germany
    index: 5
+ - name: Karlsruhe Institute of Technology, Germany
+   index: 6
 
-date: 04th November, 2026.
+date: 13th November, 2026.
 
 bibliography: paper.bib
 
