@@ -33,6 +33,7 @@
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
 
 ## Fixes
+- Fix a null-pointer call (segfault) with nvcc when `fill`, `map`, `setContainer` or the container `parallelFor` are used from several translation units of one library: their kernels are now named functors instead of extended lambdas [#676](https://github.com/exasim-project/NeoN/pull/676)
 - Fix citation metadata and publish releases on Zenodo automatically [#610](https://github.com/exasim-project/NeoN/pull/610)
 - Fix an intermittent segfault in the MPI unit tests: the IO serialization thread called MPI concurrently with the main thread even when the library only provided `MPI_THREAD_SINGLE` [#602](https://github.com/exasim-project/NeoN/pull/602)
 - Fix umpire/camp RPATH and macOS install names so wheels stay relocatable, and check relocatability on the unrepaired wheel in CI [#559](https://github.com/exasim-project/NeoN/pull/559)
