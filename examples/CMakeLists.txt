@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Unlicense
 
 # every example is also added as a test, which fails if the results are wrong
-function(NeoN_example EXAMPLE)
+function(neon_example EXAMPLE)
   add_executable(neon_example_${EXAMPLE} "${EXAMPLE}.cpp")
   target_link_libraries(neon_example_${EXAMPLE} PRIVATE NeoN_warnings NeoN_options NeoN)
   set(EXAMPLE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples)

@@ -22,14 +22,14 @@ which prints
 
     Running on CPUExecutor
 
-      nCells    L2 error    order
-      10        0.0125
-      20        0.003125    2
-      40        0.00078125  2
-      80        0.000195312 2
+      nCells     L2 error  order
+          10       0.0125
+          20     0.003125      2
+          40   0.00078125      2
+          80  0.000195312      2
 
 The examples require Ginkgo (`NeoN_WITH_GINKGO=ON`, the default).
-All examples are registered with CTest, so `ctest -R example_` runs them and checks their results.
+All examples are registered with CTest, so `ctest --preset production -R example_ --output-on-failure` runs them and checks their results.
 
 To run on a GPU, configure NeoN with the matching Kokkos backend (e.g. `-DKokkos_ENABLE_CUDA=ON`);
 the examples then pick the GPU executor automatically, without changes to the code.

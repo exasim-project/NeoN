@@ -10,6 +10,7 @@
 // The problem is solved on refined meshes to check that the L2 error converges with second order.
 
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <vector>
 
@@ -38,10 +39,14 @@ scalar solveSteadyDiffusion(const NeoN::Executor& exec, localIdx nCells)
     // fixed temperature at both ends
     std::vector<fvcc::VolumeBoundary<scalar>> bcs;
     bcs.emplace_back(
-        mesh, NeoN::Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", 0.0}}), 0
+        mesh,
+        NeoN::Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", scalar(0.0)}}),
+        0
     );
     bcs.emplace_back(
-        mesh, NeoN::Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", 1.0}}), 1
+        mesh,
+        NeoN::Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", scalar(1.0)}}),
+        1
     );
 
     fvcc::VolumeField<scalar> T(exec, "T", mesh, bcs);
@@ -100,26 +105,30 @@ int main(int argc, char* argv[])
         NeoN::Executor exec = NeoN::createDefaultExecutor();
         std::cout << "Running on " << NeoN::executorName(exec) << "\n\n";
 
-        std::cout << "  nCells    L2 error    order\n";
+        std::cout << "  nCells     L2 error  order\n";
         scalar prevErr = 0.0;
-        scalar order = 0.0;
         for (localIdx nCells : {10, 20, 40, 80})
         {
             const scalar err = solveSteadyDiffusion(exec, nCells);
-            std::cout << "  " << nCells << "\t    " << err;
+            std::cout << std::setw(8) << nCells << std::setw(13) << err;
+            if (!std::isfinite(err))
+            {
+                std::cerr << "\nInvalid L2 error " << err << "\n";
+                result = 1;
+                break;
+            }
             if (prevErr > 0.0)
             {
-                order = std::log2(prevErr / err);
-                std::cout << "    " << order;
+                const scalar order = std::log2(prevErr / err);
+                std::cout << std::setw(7) << order;
+                if (order < 1.8)
+                {
+                    std::cerr << "\nUnexpected convergence order " << order << "\n";
+                    result = 1;
+                }
             }
             std::cout << "\n";
             prevErr = err;
-        }
-
-        if (order < 1.8)
-        {
-            std::cerr << "\nUnexpected convergence order " << order << "\n";
-            result = 1;
         }
     }
     NeoN::finalize();
