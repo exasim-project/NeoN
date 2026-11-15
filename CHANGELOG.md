@@ -13,6 +13,7 @@
 - Add `mag_sqr` for Vec3 `VolumeField` to the Python bindings [#619](https://github.com/exasim-project/NeoN/pull/619)
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
 - Add arithmetic between scalar and Vec3 `SurfaceField`s (`scalar * Vec3`, `Vec3 + Vec3`, `Vec3 - Vec3`) in C++ and the Python bindings [#623](https://github.com/exasim-project/NeoN/pull/623)
+- Add Python bindings to create volume and surface boundary conditions from a dictionary, `Dictionary.insert_vec3`/`get_vec3`, `boundary_data_value` for Vec3 fields and `__has_ginkgo__` [#677](https://github.com/exasim-project/NeoN/pull/677)
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
@@ -34,6 +35,7 @@
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
 
 ## Fixes
+- Fix the Python `solve`, which raised a `TypeError` after every solve, and the `VolumeField` and `SurfaceField` constructors taking boundary conditions, which could not be called. Volume and surface boundaries now throw on an invalid patch id or an unknown or missing `type` instead of crashing [#677](https://github.com/exasim-project/NeoN/pull/677)
 - Fix citation metadata and publish releases on Zenodo automatically [#610](https://github.com/exasim-project/NeoN/pull/610)
 - Fix an intermittent segfault in the MPI unit tests: the IO serialization thread called MPI concurrently with the main thread even when the library only provided `MPI_THREAD_SINGLE` [#602](https://github.com/exasim-project/NeoN/pull/602)
 - Fix umpire/camp RPATH and macOS install names so wheels stay relocatable, and check relocatability on the unrepaired wheel in CI [#559](https://github.com/exasim-project/NeoN/pull/559)

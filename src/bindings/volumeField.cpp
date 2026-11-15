@@ -4,6 +4,7 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/variant.h>
 #include <nanobind/stl/vector.h>
 
 #include <stdexcept>
@@ -462,12 +463,28 @@ void registerVolumeField(nb::module_& m)
     nb::class_<fvcc::VolumeBoundary<NeoN::scalar>>(
         m, "ScalarVolumeBoundary", "Volume boundary for scalar fields"
     )
+        .def(
+            nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            "mesh"_a,
+            "dict"_a,
+            "patch_id"_a,
+            "Create the boundary condition selected by dict[\"type\"], e.g. \"fixedValue\", "
+            "for the patch"
+        )
         .def("patch_id", &fvcc::VolumeBoundary<NeoN::scalar>::patchID)
         .def("patch_size", &fvcc::VolumeBoundary<NeoN::scalar>::patchSize);
 
     nb::class_<fvcc::VolumeBoundary<NeoN::Vec3>>(
         m, "VectorVolumeBoundary", "Volume boundary for Vec3 fields"
     )
+        .def(
+            nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            "mesh"_a,
+            "dict"_a,
+            "patch_id"_a,
+            "Create the boundary condition selected by dict[\"type\"], e.g. \"fixedValue\", "
+            "for the patch"
+        )
         .def("patch_id", &fvcc::VolumeBoundary<NeoN::Vec3>::patchID)
         .def("patch_size", &fvcc::VolumeBoundary<NeoN::Vec3>::patchSize);
 
@@ -700,6 +717,13 @@ void registerVolumeField(nb::module_& m)
         .def("mesh", &fvcc::VolumeField<NeoN::Vec3>::mesh, nb::rv_policy::reference_internal)
         .def("exec", &fvcc::VolumeField<NeoN::Vec3>::exec, nb::rv_policy::reference_internal)
         .def("size", &fvcc::VolumeField<NeoN::Vec3>::size)
+        .def(
+            "boundary_data_value",
+            [](fvcc::VolumeField<NeoN::Vec3>& field) -> NeoN::Vector<NeoN::Vec3>&
+            { return field.boundaryData().value(); },
+            nb::rv_policy::reference_internal,
+            "Get the boundary data value vector"
+        )
         .def(
             "correct_boundary_conditions",
             static_cast<void (fvcc::VolumeField<NeoN::Vec3>::*)()>(

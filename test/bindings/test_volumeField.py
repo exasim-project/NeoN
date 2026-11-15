@@ -21,6 +21,59 @@ def test_scalar_volume_field_and_bcs(executor):
     assert neon.equal(field.internal_vector(), 2.0)
 
 
+
+def _fixed_value(mesh, patch, value):
+    d = neon.Dictionary()
+    d.insert_string("type", "fixedValue")
+    d.insert_double("fixedValue", value)
+    return neon.ScalarVolumeBoundary(mesh, d, patch)
+
+
+def test_scalar_volume_field_with_fixed_value_bcs(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    bcs = [_fixed_value(mesh, 0, 1.0), _fixed_value(mesh, 1, 2.0)]
+    assert [bc.patch_id() for bc in bcs] == [0, 1]
+
+    field = neon.ScalarVolumeField(exec, "T", mesh, bcs)
+    neon.fill(field.internal_vector(), 0.0)
+    field.correct_boundary_conditions()
+
+    assert np.allclose(np.asarray(field.boundary_data_value().copy_to_host()), [1.0, 2.0])
+    assert field.exec().name() == exec.name()
+
+
+def test_vector_volume_field_with_fixed_value_bcs(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    bcs = []
+    for patch, value in enumerate([neon.Vec3(1.0, 2.0, 3.0), neon.Vec3(4.0, 5.0, 6.0)]):
+        d = neon.Dictionary()
+        d.insert_string("type", "fixedValue")
+        d.insert_vec3("fixedValue", value)
+        bcs.append(neon.VectorVolumeBoundary(mesh, d, patch))
+    field = neon.VectorVolumeField(exec, "U", mesh, bcs)
+    neon.fill(field.internal_vector(), neon.Vec3(0.0, 0.0, 0.0))
+    field.correct_boundary_conditions()
+
+    boundary = np.asarray(field.boundary_data_value().copy_to_host())
+    np.testing.assert_allclose(boundary, [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+
+
+def test_volume_boundary_rejects_invalid_input(executor):
+    """The C++ validation error arrives as a Python exception."""
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)  # two patches
+
+    d = neon.Dictionary()
+    d.insert_string("type", "calculated")
+    with pytest.raises(RuntimeError, match="invalid patch id"):
+        neon.ScalarVolumeBoundary(mesh, d, 2)
+
 def _filled(exec, mesh, value):
     """A scalar volume field of the given uniform value (helper for the op tests)."""
     field = neon.ScalarVolumeField(exec, "f", mesh)
