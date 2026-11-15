@@ -12,7 +12,7 @@ Build them by adding ``-DNeoN_BUILD_EXAMPLES=ON`` when configuring NeoN (see :do
     cmake --build --preset production
     ./build/production/bin/examples/neon_example_steadyDiffusion
 
-All examples are also registered with CTest and can be run with ``ctest -R example_``.
+All examples are also registered with CTest and can be run with ``ctest --preset production -R example_ --output-on-failure``.
 The examples require Ginkgo (``NeoN_WITH_GINKGO=ON``, the default).
 
 Steady diffusion
@@ -29,11 +29,11 @@ Repeating the solve on refined meshes shows second-order convergence:
 
 .. code-block:: text
 
-      nCells    L2 error    order
-      10        0.0125
-      20        0.003125    2
-      40        0.00078125  2
-      80        0.000195312 2
+      nCells     L2 error  order
+          10       0.0125
+          20     0.003125      2
+          40   0.00078125      2
+          80  0.000195312      2
 
 .. literalinclude:: ../examples/steadyDiffusion.cpp
    :language: cpp
@@ -42,7 +42,7 @@ Repeating the solve on refined meshes shows second-order convergence:
 .. note::
 
    Once the discretisation has cached the geometric quantities it needs, the mesh releases its points, face centres and cell centres to save (device) memory.
-   Copy them beforehand if you need them later, as the examples do for evaluating the exact solution.
+   Copy them beforehand if you need them later, as this example does for evaluating the exact solution.
 
 Further examples
 ----------------
