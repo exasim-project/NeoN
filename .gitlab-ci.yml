@@ -10,19 +10,19 @@
 # Pinned by digest: the runner caches SIF images by name, so a rebuilt tag would not be pulled again.
 .gpu-nvidia:
   tags: ["nvidia-gpus"]
-  image: ghcr.io/exasim-project/ginkgo-cuda@sha256:595d504da674874a17794a45a47528e6109e82d6fd4cf3273eb984db3f67cf87 # nightly-20261107
+  image: ghcr.io/exasim-project/ginkgo-cuda@sha256:1abfff63da2d6dcfc0ec55602e08dce787f0f051634a8d29f7a9e3133fa68c5a # nightly-20261115
   variables:
     GPU_VENDOR: nvidia
 
 .gpu-amd:
   tags: ["amd-gpus"]
-  image: ghcr.io/exasim-project/ginkgo-rocm@sha256:7235c9a0bdf2802e37100570d6aa7f56c0fefc53a26fc91bc3233968069d8509 # nightly-20261107
+  image: ghcr.io/exasim-project/ginkgo-rocm@sha256:7e8f1909a027899a9ebee7da69bcc18fcc809cdfa7ce4db0894aa7010af3c876 # nightly-20261115
   variables:
     GPU_VENDOR: amd
 
 .gpu-intel:
   tags: ["intel-gpus"]
-  image: ghcr.io/exasim-project/ginkgo-sycl@sha256:2167471178efee56364aaf0ac8d9200a9375aefc81d4987365e7e4fbbf54462c # nightly-20261107
+  image: ghcr.io/exasim-project/ginkgo-sycl@sha256:88ac6fdb13a80a6394d6a3da09a93a5223a206bd4e754231bcd433a9110a9be8 # nightly-20261115
   variables:
     GPU_VENDOR: intel
 
