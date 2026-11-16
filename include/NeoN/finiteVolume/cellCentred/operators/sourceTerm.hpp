@@ -52,6 +52,11 @@ public:
 
     Dictionary getConfig() const { return {}; }
 
+    std::string juliaOP() { return ""; }
+
+    std::string juliaOP() const { return ""; }
+
+
 private:
 
     // Non-null for Sp mode. Null for Su mode (field_ from mixin IS the coefficient).

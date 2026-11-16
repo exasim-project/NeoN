@@ -37,7 +37,6 @@ public:
             (std::holds_alternative<NeoN::Dictionary>(inputs))
                 ? std::get<NeoN::Dictionary>(inputs).get<std::string>("faceNormalGradient")
                 : std::get<NeoN::TokenList>(inputs).next<std::string>();
-
         FaceNormalGradientFactory<ValueType>::keyExistsOrError(key);
         return FaceNormalGradientFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
     }

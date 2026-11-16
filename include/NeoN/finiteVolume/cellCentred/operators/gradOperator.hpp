@@ -193,6 +193,8 @@ public:
 
     std::string getName() const { return "GradOperator"; }
 
+    std::string juliaOP() { return getName(); }
+    std::string juliaOP() const { return getName(); }
     Dictionary getConfig() const
     {
         // Expose the operand like DivOperator does, so scheme-default expansion
@@ -202,6 +204,8 @@ public:
     }
 
 private:
+
+    std::string juliaEvalString_;
 
     std::unique_ptr<GradOperatorFactory<ValueType>> gradOperatorStrategy_;
 };

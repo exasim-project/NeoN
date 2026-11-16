@@ -17,7 +17,6 @@
 namespace NeoN
 {
 
-
 template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
     requires requires(ValueType a, scalar b) { a* b; }

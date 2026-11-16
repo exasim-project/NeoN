@@ -5,7 +5,6 @@
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
-
 # has to be first since it adds the main target
 add_subdirectory(catch2)
 set(TEST_CATCH2_DIR ${CMAKE_CURRENT_LIST_DIR}/catch2)
@@ -85,6 +84,7 @@ function(NeoN_unit_test TEST)
       set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
     endif()
   endif()
+
 endfunction()
 
 add_subdirectory(core)

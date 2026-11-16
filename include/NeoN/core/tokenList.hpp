@@ -197,6 +197,22 @@ public:
 
     [[nodiscard]] std::vector<std::any>& tokens();
 
+    std::string firstAfterGauss()
+    {
+        auto toks = tokens();
+        for (std::size_t i = 0; i + 1 < toks.size(); ++i)
+        {
+            if (toks[i].type() == typeid(std::string)
+                && std::any_cast<const std::string&>(toks[i]) == "Gauss"
+                && toks[i + 1].type() == typeid(std::string))
+            {
+                return std::any_cast<const std::string&>(toks[i + 1]);
+            }
+        }
+
+        return "";
+    }
+
 
 private:
 

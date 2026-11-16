@@ -5,6 +5,9 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
+// #ifdef NeoN_WITH_JULIA
+// #include <julia.h>
+// #endif
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -269,10 +272,13 @@ void computeDivIntImp(
 {
     const auto& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nCells = mesh.nCells();
     const auto exec = phi.exec();
 
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
-
+    // const auto [rows, diags ] = views(
+    //     ma.rowOffs(), ma.diagOffset()
+    // );
     const auto [fluxV, weightsV, ownV, neiV, surfFaceCells] = views(
         faceFlux.internalVector(),
         weights.internalVector(),
@@ -281,7 +287,6 @@ void computeDivIntImp(
         mesh.boundaryMesh().faceOwners()
     );
     auto values = ls.matrix().values().view();
-
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -304,13 +309,12 @@ void computeDivIntImp(
             auto ownFluxContrib = -fluxV[facei] * weightsV[facei] * one<AssemblyType>();
             auto neiFluxContrib = +fluxV[facei] * (1.0 - weightsV[facei]) * one<AssemblyType>();
 
-            // triangular coefficients - neighbor -> lower, owner -> upper
-            values[ma.lowerIdx(neiRow, facei)] += ownFluxContrib * neiCoeff;
-            values[ma.upperIdx(ownRow, facei)] += neiFluxContrib * ownCoeff;
-
-            // diagonal contribution is negative sum of offdiagonal coefficients
-            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], ownFluxContrib * ownCoeff);
-            Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], neiFluxContrib * neiCoeff);
+            const auto ownDiagContrib = ownFluxContrib * ownCoeff;
+            const auto neiDiagContrib = neiFluxContrib * neiCoeff;
+            values[ma.lowerIdx(neiRow, facei)] += ownDiagContrib;
+            values[ma.upperIdx(ownRow, facei)] += neiDiagContrib;
+            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], ownDiagContrib);
+            Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], neiDiagContrib);
         },
         "computeLocalGaussGreenDivCoefficients"
     );
@@ -429,6 +433,115 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     computeDivExp<FieldValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
 }
 
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeGlobalFace(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<FieldValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff coeff
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nTotalFaces = mesh.nTotalFaces();
+    const auto nCells = mesh.nCells();
+    const auto exec = phi.exec();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto [fluxV, weightsV, ownV, neiV, surfFaceCells] = views(
+        faceFlux.internalVector(),
+        weights.internalVector(),
+        mesh.faceOwners(),
+        mesh.faceNeighbors(),
+        mesh.boundaryMesh().faceOwners()
+    );
+    auto values = ls.matrix().values().view();
+
+    const auto [bownV, deltaCoeffs] =
+        views(mesh.boundaryMesh().faceOwners(), mesh.boundaryMesh().deltaCoeffs());
+
+    auto [bFaceFluxV, bweights, refGradient, valueFraction, refValue] = views(
+        faceFlux.boundaryData().value(),
+        weights.boundaryData().value(),
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
+    );
+
+    auto rhs = ls.rhs().view();
+    auto bRhs = ls.boundaryRhs().view();
+    auto bValues = ls.boundaryMatrix().values().view();
+
+    parallelFor(
+        exec,
+        {0, nTotalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            if (facei < nInternalFaces)
+            {
+                // row and column indices
+                auto ownRow = ownV[facei];
+                auto neiRow = neiV[facei];
+
+                // operator sign coefficient  handles: = +/- div
+                auto ownCoeff = coeff[ownRow];
+                auto neiCoeff = coeff[neiRow];
+
+                // Conservative Gauss-Green divergence assembly.
+                // S_f points from owner to neighbor by construction, so F_f < 0 means
+                // flux leaves the owner cell and enters the neighbor cell.
+                //
+                // Decompose face flux via linear interpolation:
+                //   ownFluxContrib = w * F_f     — part attributed to the owner cell value
+                //   neiFluxContrib = (1-w) * F_f — part attributed to the neighbor cell value
+                auto ownFluxContrib = -fluxV[facei] * weightsV[facei] * one<AssemblyType>();
+                auto neiFluxContrib = +fluxV[facei] * (1.0 - weightsV[facei]) * one<AssemblyType>();
+
+                // triangular coefficients - neighbor -> lower, owner -> upper
+                values[ma.lowerIdx(neiRow, facei)] += ownFluxContrib * neiCoeff;
+                values[ma.upperIdx(ownRow, facei)] += neiFluxContrib * ownCoeff;
+
+                // diagonal contribution is negative sum of offdiagonal coefficients
+                Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], ownFluxContrib * ownCoeff);
+                Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], neiFluxContrib * neiCoeff);
+            }
+            else
+            {
+                auto bfi = facei - nInternalFaces;
+                auto ownRow = bownV[bfi];
+
+                auto ownCoeff = coeff[ownRow];
+
+                auto refValFrac = valueFraction[bfi];
+                auto refGradFrac = 1.0 - refValFrac;
+
+                auto flux =
+                    bFaceFluxV[bfi] * -bweights[bfi] * ownCoeff * refGradFrac * one<AssemblyType>();
+
+                // since upper triangular value is "outside" of system matrix
+                // it is stored separately in bMatrix
+                bValues[bfi] += flux;
+                // diagonal contribution
+                Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux);
+
+                // Explicit RHS contribution from the mixed BC:
+                //   φ_f = refValFrac * refValue               (Dirichlet part)
+                //       + refGradFrac * (φ_C + refGradient/δ)  (Neumann part)
+                // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
+                // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
+                // the Neumann gradient correction (refGradient/δ) enters directly as a known
+                // increment.
+                auto valueRhs =
+                    (bweights[bfi] * bFaceFluxV[bfi] * ownCoeff * (refValFrac * refValue[bfi]))
+                    + refGradFrac * refGradient[bfi] * (1 / deltaCoeffs[bfi]);
+                Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
+                bRhs[bfi] += valueRhs;
+            }
+        },
+        "computeDivImpGlobalFaceBased"
+    );
+};
 /* @brief adds the deferred gradient correction of a corrected scheme (e.g. linearUpwind) to the
 ** linear-system rhs, i.e. the discrete -operatorScaling * sum_f F_f corr_f per cell. This mirrors
 ** OpenFOAM's `fvm += fvc::surfaceIntegrate(faceFlux*correction)`: interpolate()=weighted value +
@@ -525,6 +638,7 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     else
     {
         computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
     }
     computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);

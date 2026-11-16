@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
-
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
@@ -78,6 +77,8 @@ public:
     {
         return std::make_unique<GaussGreenLaplacian<FieldValueType, AssemblyType>>(*this);
     };
+
+    FaceNormalGradient<FieldValueType> faceNormalGradient() const { return faceNormalGradient_; };
 
 private:
 
