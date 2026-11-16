@@ -29,6 +29,14 @@ std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);
 
 gko::config::pnode parse(const Dictionary& dict);
 
+/** @brief A copy of a solver config whose ILU and IC preconditioners generate their triangular
+ *  solvers for @p numRhs right-hand sides.
+ *
+ * Ginkgo's LowerTrs/UpperTrs are generated for one right-hand side unless num_rhs says otherwise,
+ * and their CUDA kernels reject a multivector of another width. The three-column solve of the
+ * segregated Vec3 system therefore needs a factory parsed from this config. */
+gko::config::pnode withNumRhs(const gko::config::pnode& config, std::int64_t numRhs);
+
 /** @brief create a ginkgo matrix by creating views */
 template<typename NeoNMatrixType>
 std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx);
@@ -302,6 +310,11 @@ public:
         }
         factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
                        .on(gkoExec_);
+        // for the three-column solve of the segregated Vec3 system, see withNumRhs
+        factoryVec3_ = gko::config::parse(
+                           withNumRhs(config_, 3), reg, gko::config::make_type_descriptor<scalar>()
+        )
+                           .on(gkoExec_);
     }
 
     static std::string name() { return "Ginkgo"; }
@@ -354,6 +367,7 @@ private:
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
+    std::shared_ptr<const gko::LinOpFactory> factoryVec3_; ///< factory_ for 3 right-hand sides
     // L1-scaled residual criterion registered into the config registry (l1Control_ set).
     std::shared_ptr<gko::stop::CriterionFactory> l1CritFactory_;
     // True when config_ names the L1 criterion, so it is built into factory_'s solver and

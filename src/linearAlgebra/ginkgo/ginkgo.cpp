@@ -13,6 +13,72 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 
+namespace
+{
+
+// the triangular-solver node of an ILU/IC preconditioner with num_rhs set: an existing node keeps
+// its other settings, a missing one becomes Ginkgo's default solver of that type
+gko::config::pnode trsWithNumRhs(
+    const gko::config::pnode::map_type& preconditioner,
+    const std::string& key,
+    const std::string& defaultType,
+    std::int64_t numRhs
+)
+{
+    using tag = gko::config::pnode::tag_t;
+    gko::config::pnode::map_type trs;
+    if (auto it = preconditioner.find(key);
+        it != preconditioner.end() && it->second.get_tag() == tag::map)
+    {
+        trs = it->second.get_map();
+    }
+    if (!trs.count("type"))
+    {
+        trs.emplace("type", gko::config::pnode(defaultType));
+    }
+    trs["num_rhs"] = gko::config::pnode(numRhs);
+    return gko::config::pnode(trs);
+}
+
+}
+
+gko::config::pnode NeoN::la::ginkgo::withNumRhs(const gko::config::pnode& config, std::int64_t numRhs)
+{
+    using tag = gko::config::pnode::tag_t;
+    if (config.get_tag() == tag::array)
+    {
+        gko::config::pnode::array_type array;
+        for (const auto& child : config.get_array())
+        {
+            array.push_back(withNumRhs(child, numRhs));
+        }
+        return gko::config::pnode(array);
+    }
+    if (config.get_tag() != tag::map)
+    {
+        return config;
+    }
+    gko::config::pnode::map_type map;
+    for (const auto& [key, child] : config.get_map())
+    {
+        map.emplace(key, withNumRhs(child, numRhs));
+    }
+    const auto typeIt = map.find("type");
+    const std::string type =
+        typeIt != map.end() && typeIt->second.get_tag() == tag::string ? typeIt->second.get_string()
+                                                                       : "";
+    if (type == "preconditioner::Ilu")
+    {
+        map["l_solver"] = trsWithNumRhs(map, "l_solver", "solver::LowerTrs", numRhs);
+        map["u_solver"] = trsWithNumRhs(map, "u_solver", "solver::UpperTrs", numRhs);
+    }
+    else if (type == "preconditioner::Ic")
+    {
+        map["l_solver"] = trsWithNumRhs(map, "l_solver", "solver::LowerTrs", numRhs);
+    }
+    return gko::config::pnode(map);
+}
+
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
@@ -639,7 +705,9 @@ SolverStats GinkgoSolver::solve(
         label nrows = sys.rhs().size();
         const auto b = gkoVecView(gkoExec_, sys.rhs().data(), nrows); // [nrows x 3]
         auto xView = gkoVecView(gkoExec_, x.data(), nrows);           // [nrows x 3]
-        auto solver = factory_->generate(gkoMtx);
+        // the solver is applied to all three columns at once: triangular solvers of an ILU/IC
+        // preconditioner have to be generated for three right-hand sides
+        auto solver = factoryVec3_->generate(gkoMtx);
         auto l1Res = solveWithL1Stop(gkoExec_, gkoMtx, b, xView, solver.get(), *l1Control);
 
         gkoExec_->synchronize();
