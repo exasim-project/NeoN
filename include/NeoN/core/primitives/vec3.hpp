@@ -10,7 +10,9 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/traits.hpp"
 
-
+#ifdef NeoN_WITH_JULIA
+#include "julia.h"
+#endif
 namespace NeoN
 {
 
@@ -23,6 +25,15 @@ namespace NeoN
 class Vec3
 {
 public:
+
+#ifdef NeoN_WITH_JULIA
+    jl_value_t* julia_type(jl_module_t* mod) { 
+        return jl_get_global(
+            mod,
+            jl_symbol("Vec3")
+        );
+    }
+#endif
 
     KOKKOS_INLINE_FUNCTION
     Vec3()

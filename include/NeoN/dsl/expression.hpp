@@ -441,19 +441,32 @@ public:
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-#ifdef NeoN_JULIA_ASSEMBLY
-        // coupled Vec3 matrix: JuNe writes all three components of every entry
-        if constexpr (std::is_same_v<ValueType, Vec3> && std::is_same_v<AssemblyType, Vec3>)
+        bool assembled = false;
+#ifdef NeoN_WITH_JULIA
+        if constexpr (std::is_same_v<ValueType, Vec3>)
         {
-            if (june::canAssemble(*this))
+            if (june::enabled() && june::canAssemble(*this))
             {
-                june::assemble(*this, ls, dt);
-                return;
+                // coupled Vec3 matrix: JuNe writes all three components of every entry
+                if constexpr (std::is_same_v<AssemblyType, Vec3>)
+                {
+                    june::assemble(*this, ls, dt);
+                    assembled = true;
+                }
+                // segregated scalar matrix: JuNe writes one component per entry
+                else if constexpr (std::is_same_v<AssemblyType, scalar>)
+                {
+                    june::assemble(*this, ls, dt);
+                    assembled = true;
+                }
             }
         }
 #endif
-        assembleSpatialOperator(ls);         // add spatial operator
-        assembleTemporalOperator(ls, t, dt); // add temporal operators
+        if (!assembled)
+        {
+            assembleSpatialOperator(ls);         // add spatial operator
+            assembleTemporalOperator(ls, t, dt); // add temporal operators
+        }
 
         // Post-assembly functors apply on the same-type form via operator(); the segregated
         // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.

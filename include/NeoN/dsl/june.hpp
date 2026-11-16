@@ -7,13 +7,18 @@
 // included by the generated umbrella header NeoN/NeoN.hpp regardless of the build options
 #ifdef NeoN_WITH_JULIA
 
+#include <chrono>
+#include <cstdlib>
+#include <memory>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include <julia.h>
 
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/error.hpp"
+#include "NeoN/core/logging.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -37,13 +42,37 @@ namespace june
 
 enum class Strategy
 {
-    FromIterator, // CellBasedIterator on the linear system -> Cell, anything else -> Face
+    FromIterator, // CellBasedIterator -> Cell, BatchedFaceIterator -> Batched,
+                  // GlobalFaceBasedIterator -> GlobalFace, else -> Face
     Face,
     GlobalFace,
-    Cell
+    Cell,
+    Batched, // face-based batch by batch (la::BatchedFaceIterator), no atomics on internal faces
+    BatchedCUDA // Batched with JuNe's CUDA.jl kernels instead of KernelAbstractions (GPU only)
 };
 
 /* @brief whether JuNe implements every implicit operator of the expression */
+/* @brief Whether JuNe takes over Expression::assemble: initially when NeoN_JULIA_ASSEMBLY was
+ * compiled in or the environment variable NEON_JUNE_ASSEMBLY is set to anything but 0, and
+ * switchable at run time with setEnabled(). */
+inline bool& enabledFlag()
+{
+    static bool on = []
+    {
+#ifdef NeoN_JULIA_ASSEMBLY
+        return true;
+#else
+        const char* value = std::getenv("NEON_JUNE_ASSEMBLY");
+        return value != nullptr && *value != '\0' && std::string_view(value) != "0";
+#endif
+    }();
+    return on;
+}
+
+inline bool enabled() { return enabledFlag(); }
+
+inline void setEnabled(bool on) { enabledFlag() = on; }
+
 template<typename ValueType, typename IndexType>
 bool canAssemble(const Expression<ValueType, IndexType>& expr)
 {
@@ -129,10 +158,10 @@ const HoldType* findConfig(
  *
  * Only valid if canAssemble(expr). JuNe adds to the existing coefficients, so ls must be reset.
  */
-template<typename ValueType, typename IndexType>
+template<typename ValueType, typename IndexType, typename MatrixValueType = ValueType>
 void assemble(
     const Expression<ValueType, IndexType>& expr,
-    la::LinearSystem<ValueType, ValueType>& ls,
+    la::LinearSystem<MatrixValueType, ValueType>& ls,
     scalar dt,
     Strategy strategy = Strategy::FromIterator
 )
@@ -158,42 +187,82 @@ void assemble(
     const auto fusedOPString = opString(expr);
     const bool hasDdt = fusedOPString.starts_with("Ddt{");
 
-    const auto ifaceFluxV = faceFlux ? faceFlux->internalVector().juliaPtr() : empty.juliaPtr();
-    const auto bfaceFluxV =
-        faceFlux ? faceFlux->boundaryData().value().juliaPtr() : empty.juliaPtr();
-    const auto iGamma = gamma ? gamma->internalVector().juliaPtr() : empty.juliaPtr();
-    const auto bGamma = gamma ? gamma->boundaryData().value().juliaPtr() : empty.juliaPtr();
-    const auto oldVector =
-        hasDdt ? fvcc::oldTime(phi).internalVector().juliaPtr() : emptyOld.juliaPtr();
+    // The GC does not scan C++ locals: every Julia object created below (array wrappers, boxes,
+    // the VectorType objects) is rooted in this frame until the call, else the allocations of the
+    // later ones can collect the earlier ones (Julia embedding docs, "Memory Management").
+    jl_value_t** roots;
+    JL_GC_PUSHARGS(roots, 48);
+    size_t nRoots = 0;
+    auto root = [&](auto* value)
+    {
+        NF_ASSERT(nRoots < 48, "JuNe assembly: GC root frame too small");
+        roots[nRoots++] = (jl_value_t*)value;
+        return value;
+    };
+    try
+    {
+
+    const auto ifaceFluxV = root(faceFlux ? faceFlux->internalVector().juliaPtr() : empty.juliaPtr());
+    const auto bfaceFluxV = root(faceFlux ? faceFlux->boundaryData().value().juliaPtr() : empty.juliaPtr());
+    const auto iGamma = root(gamma ? gamma->internalVector().juliaPtr() : empty.juliaPtr());
+    const auto bGamma = root(gamma ? gamma->boundaryData().value().juliaPtr() : empty.juliaPtr());
+    const auto oldVector = root(hasDdt ? fvcc::oldTime(phi).internalVector().juliaPtr() : emptyOld.juliaPtr());
 
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nTotalFaces = mesh.nTotalFaces();
     const auto nCells = mesh.nCells();
     bool useGPU = std::holds_alternative<GPUExecutor>(mesh.exec());
+    // NeoN's pending kernels, e.g. the reset of the system, run on Kokkos' stream, which the
+    // CUDA.jl stream of the JuNe kernels does not wait for
+    fence(mesh.exec());
 
     // the cached geometry-scheme coefficients: the mesh centres they are computed from are
     // released after the first geometry read
     const auto& nonOrthDeltaCoeffs = fvcc::GeometryScheme::readOrCreate(mesh)->nonOrthDeltaCoeffs();
-    const auto ideltaCoeffs = nonOrthDeltaCoeffs.internalVector().juliaPtr();
-    const auto bdeltaCoeffs = nonOrthDeltaCoeffs.boundaryData().value().juliaPtr();
+    const auto ideltaCoeffs = root(nonOrthDeltaCoeffs.internalVector().juliaPtr());
+    const auto bdeltaCoeffs = root(nonOrthDeltaCoeffs.boundaryData().value().juliaPtr());
 
-    const auto magFaceAreas = mesh.faceAreas().juliaPtr();
-    const auto boundaryFaceOwners = mesh.boundaryMesh().faceOwners().juliaPtr();
-    const auto vol = mesh.cellVolumes().juliaPtr();
-    auto refGrad = phi.boundaryData().refGrad().juliaPtr();
-    auto valueFraction = phi.boundaryData().valueFraction().juliaPtr();
-    auto refValue = phi.boundaryData().refValue().juliaPtr();
-    auto rhsPtr = ls.rhs().juliaPtr();
-    auto bRhs = ls.boundaryRhs().juliaPtr();
+    const auto magFaceAreas = root(mesh.faceAreas().juliaPtr());
+    const auto boundaryFaceOwners = root(mesh.boundaryMesh().faceOwners().juliaPtr());
+    const auto vol = root(mesh.cellVolumes().juliaPtr());
+    auto refGrad = root(phi.boundaryData().refGrad().juliaPtr());
+    auto valueFraction = root(phi.boundaryData().valueFraction().juliaPtr());
+    auto refValue = root(phi.boundaryData().refValue().juliaPtr());
+    auto rhsPtr = root(ls.rhs().juliaPtr());
+    auto bRhs = root(ls.boundaryRhs().juliaPtr());
 
     auto iterator = std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get());
+    auto batchedIterator =
+        std::dynamic_pointer_cast<la::BatchedFaceIterator>(ls.getMeshIterator()->get());
     if (strategy == Strategy::FromIterator)
     {
-        strategy = iterator ? Strategy::Cell : Strategy::Face;
+        const bool globalIterator =
+            std::dynamic_pointer_cast<la::GlobalFaceBasedIterator>(ls.getMeshIterator()->get())
+            != nullptr;
+        strategy = iterator          ? Strategy::Cell
+                 : batchedIterator   ? Strategy::Batched
+                 : globalIterator    ? Strategy::GlobalFace
+                                     : Strategy::Face;
     }
 
     jl_module_t* mod = (jl_module_t*)jl_eval_string("JuNe");
+    jl_value_t* vectorType = root(jl_get_global(
+        mod,
+        jl_symbol("VectorType")
+    ));
+    // the matrix value type: NeoN's coupled Vec3 matrix or the segregated scalar one
+    jl_value_t* vectorValueType = root(jl_get_global(
+        mod,
+        jl_symbol(std::is_same_v<MatrixValueType, NeoN::Vec3> ? "Vec3" : "Scalar")
+    ));
+    jl_value_t* params[] = { vectorValueType };
+    jl_value_t* concrete_type = root(jl_apply_type(
+        vectorType,
+        params,
+        1
+    ));
 
+    
     if (strategy == Strategy::Cell)
     {
         NF_ASSERT(iterator, "JuNe cell-based assembly needs a CellBasedIterator");
@@ -205,25 +274,33 @@ void assemble(
         auto cellBasedData = iterator->getCellBasedData();
 
         auto [cellFacesValues, cellFacesSegments] = cellBasedData->cellFaces.juliaPtrs();
-        auto faceSignV = cellBasedData->faceSign.juliaPtr();
-        auto matrixColumnIdxV = cellBasedData->matrixColumnIdx.juliaPtr();
-        const auto diagOffs = matIt->diagOffset().juliaPtr();
-        const auto rowOffs = ls.matrix().sparsity()->rowOffs().juliaPtr();
-        const auto jowners = mesh.faceOwners().juliaPtr();
-        auto valPtr = ls.matrix().juliaPtr();
-        auto bValues = ls.boundaryMatrix().juliaPtr();
+        root(cellFacesValues);
+        root(cellFacesSegments);
+        auto faceSignV = root(cellBasedData->faceSign.juliaPtr());
+        auto matrixColumnIdxV = root(cellBasedData->matrixColumnIdx.juliaPtr());
+        const auto diagOffs = root(matIt->diagOffset().juliaPtr());
+        const auto rowOffs = root(ls.matrix().sparsity()->rowOffs().juliaPtr());
+        const auto jowners = root(mesh.faceOwners().juliaPtr());
+        auto valPtr = root(ls.matrix().juliaPtr());
+        jl_value_t* bValues =
+            root(jl_call1((jl_function_t*)concrete_type, (jl_value_t*)ls.boundaryMatrix().juliaPtr()));
+        jl_value_t* wrapped = root(jl_call1(
+            (jl_function_t*)concrete_type,
+            (jl_value_t*)valPtr
+        ));
 
         size_t nbinputs = useGPU ? 29 : 27;
         jl_value_t* args[29];
-        args[0] = jl_box_int32(iterator->size());
+        args[0] = root(jl_box_int32(iterator->size()));
         args[1] = (jl_value_t*)jowners;
         args[2] = (jl_value_t*)cellFacesSegments;
         args[3] = (jl_value_t*)diagOffs;
         args[4] = (jl_value_t*)rowOffs;
         args[5] = (jl_value_t*)cellFacesValues;
         args[6] = (jl_value_t*)faceSignV;
-        args[7] = (jl_value_t*)valPtr;
-        args[8] = jl_cstr_to_string(fusedOPString.c_str());
+        // args[7] = (jl_value_t*)valPtr;
+        args[7] = (jl_value_t*)wrapped;
+        args[8] = root(jl_cstr_to_string(fusedOPString.c_str()));
         args[9] = (jl_value_t*)ifaceFluxV;
         args[10] = (jl_value_t*)bfaceFluxV;
         args[11] = (jl_value_t*)iGamma;
@@ -241,39 +318,60 @@ void assemble(
         args[23] = (jl_value_t*)refValue;
         args[24] = (jl_value_t*)refGrad;
         args[25] = (jl_value_t*)rhsPtr;
-        args[26] = jl_box_float64(dt);
+        args[26] = root(jl_box_float64(dt));
         if (useGPU)
         {
-            args[27] = jl_box_int32(nInternalFaces);
-            args[28] = jl_box_int32(nTotalFaces);
+            args[27] = root(jl_box_int32(nInternalFaces));
+            args[28] = root(jl_box_int32(nTotalFaces));
         }
         auto funcName = useGPU ? "cellBased_gpu" : "cellBased_";
         jl_function_t* func = jl_get_function(mod, funcName);
         jl_call(func, args, static_cast<uint32_t>(nbinputs));
         detail::checkJuliaException();
+        JL_GC_POP();
         return;
     }
 
-    const auto JUowner = mesh.faceOwners().juliaPtr();
-    const auto JUneighbour = mesh.faceNeighbors().juliaPtr();
-    const auto JUdiagOffs = ls.faceToMatrixAddress()->diagOffset().juliaPtr();
-    const auto JUownOffs = ls.faceToMatrixAddress()->ownerOffset().juliaPtr();
-    const auto JUneiOffs = ls.faceToMatrixAddress()->neighbourOffset().juliaPtr();
-    const auto JUrowOffs = ls.matrix().sparsity()->rowOffs().juliaPtr();
-    auto valPtr = ls.matrix().values().juliaPtr();
-    auto bValues = ls.boundaryMatrix().values().juliaPtr();
+    const auto JUowner = root(mesh.faceOwners().juliaPtr());
+    const auto JUneighbour = root(mesh.faceNeighbors().juliaPtr());
+    const auto JUdiagOffs = root(ls.faceToMatrixAddress()->diagOffset().juliaPtr());
+    const auto JUownOffs = root(ls.faceToMatrixAddress()->ownerOffset().juliaPtr());
+    const auto JUneiOffs = root(ls.faceToMatrixAddress()->neighbourOffset().juliaPtr());
+    const auto JUrowOffs = root(ls.matrix().sparsity()->rowOffs().juliaPtr());
+    auto valPtr = root(ls.matrix().values().juliaPtr());
+    jl_value_t* bValues = root(jl_call1(
+        (jl_function_t*)concrete_type, (jl_value_t*)ls.boundaryMatrix().values().juliaPtr()
+    ));
+    jl_value_t* wrapped = root(jl_call1(
+        (jl_function_t*)concrete_type,
+        (jl_value_t*)valPtr
+    ));
+    // the batched strategy appends the batch segments of the BatchedFaceIterator
+    const bool batched = strategy == Strategy::Batched || strategy == Strategy::BatchedCUDA;
+    NF_ASSERT(strategy != Strategy::BatchedCUDA || useGPU, "BatchedCUDA needs a GPU executor");
+    std::shared_ptr<la::BatchedFaceIterator::BatchedFaceData> batchedData;
+    if (batched)
+    {
+        NF_ASSERT(batchedIterator, "JuNe batched assembly needs a BatchedFaceIterator");
+        if (!batchedIterator->getBatchedFaceData())
+        {
+            batchedIterator->setComputeBatchedFaceData(mesh);
+        }
+        batchedData = batchedIterator->getBatchedFaceData();
+    }
 
-    size_t nbinputs = useGPU ? 28 : 26;
-    jl_value_t* args[28];
-    args[0] = jl_box_int32(nInternalFaces);
+    size_t nbinputs = 26 + (batched ? 3 : 0) + (useGPU ? 2 : 0);
+    jl_value_t* args[31];
+    args[0] = root(jl_box_int32(nInternalFaces));
     args[1] = (jl_value_t*)JUowner;
     args[2] = (jl_value_t*)JUneighbour;
     args[3] = (jl_value_t*)JUdiagOffs;
     args[4] = (jl_value_t*)JUownOffs;
     args[5] = (jl_value_t*)JUneiOffs;
     args[6] = (jl_value_t*)JUrowOffs;
-    args[7] = (jl_value_t*)valPtr;
-    args[8] = jl_cstr_to_string(fusedOPString.c_str());
+    // args[7] = (jl_value_t*)valPtr;
+    args[7] = (jl_value_t*)wrapped;
+    args[8] = root(jl_cstr_to_string(fusedOPString.c_str()));
     args[9] = (jl_value_t*)ifaceFluxV;
     args[10] = (jl_value_t*)bfaceFluxV;
     args[11] = (jl_value_t*)iGamma;
@@ -290,26 +388,53 @@ void assemble(
     args[22] = (jl_value_t*)bRhs;
     args[23] = (jl_value_t*)vol;
     args[24] = (jl_value_t*)oldVector;
-    args[25] = jl_box_float64(dt);
+    args[25] = root(jl_box_float64(dt));
+    size_t next = 26;
+    if (batched)
+    {
+        auto [batchFaces, batchSegments] = batchedData->batchFaces.juliaPtrs();
+        root(batchFaces);
+        root(batchSegments);
+        args[next++] = root(jl_box_int32(batchedData->nBatches));
+        args[next++] = batchSegments;
+        args[next++] = batchFaces;
+    }
     if (useGPU)
     {
-        args[26] = jl_box_int32(nCells);
-        args[27] = jl_box_int32(nTotalFaces);
+        args[next++] = root(jl_box_int32(nCells));
+        args[next++] = root(jl_box_int32(nTotalFaces));
     }
     const bool global = strategy == Strategy::GlobalFace;
-    auto funcName = useGPU ? (global ? "globalassemble_gpu" : "assemble_gpu")
-                           : (global ? "globalassemble" : "assemble");
+    const char* funcName = strategy == Strategy::BatchedCUDA ? "assemble_batched_cuda"
+                         : batched ? (useGPU ? "assemble_batched_gpu" : "assemble_batched")
+                         : useGPU  ? (global ? "globalassemble_gpu" : "assemble_gpu")
+                                   : (global ? "globalassemble" : "assemble");
     jl_function_t* func = jl_get_function(mod, funcName);
     jl_call(func, args, static_cast<uint32_t>(nbinputs));
     detail::checkJuliaException();
+    }
+    catch (...)
+    {
+        JL_GC_POP();
+        throw;
+    }
+    JL_GC_POP();
 }
 
 /* @brief compile the JuNe face-based kernels for the operators of expr ahead of timing */
 template<typename ValueType, typename IndexType>
 void warmup(const Expression<ValueType, IndexType>& expr)
 {
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
+    // the GPU kernels are compiled on a two-cell mesh when the equation lives on the GPU
+    const auto* divPhi =
+        detail::findConfig<fvcc::VolumeField<ValueType>>(expr, "DivOperator", "field");
+    const auto* lapPhi =
+        detail::findConfig<fvcc::VolumeField<ValueType>>(expr, "LaplacianOperator", "field");
+    NF_ASSERT(divPhi || lapPhi, "JuNe assembly needs a div or laplacian operator");
+    const bool useGPU = std::holds_alternative<GPUExecutor>((divPhi ? *divPhi : *lapPhi).exec());
     jl_module_t* mod = (jl_module_t*)jl_eval_string("JuNe");
-    jl_function_t* func = jl_get_function(mod, "warmup");
+    jl_function_t* func = jl_get_function(mod, useGPU ? "warmup_gpu" : "warmup");
     jl_call1(func, jl_cstr_to_string(opString(expr).c_str()));
     detail::checkJuliaException();
 }

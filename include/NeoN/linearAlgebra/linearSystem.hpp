@@ -417,12 +417,12 @@ private:
                 // return false;
             }
         }
-        std::cout << name << " highest error: " << max << " at " << maxindex << std::endl;
-        std::cout << name << " neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex]
-                  << std::endl;
+        // std::cout << name << " highest error: " << max << " at " << maxindex << std::endl;
+        // std::cout << name << " neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex]
+        //           << std::endl;
 
-        std::cout << name << " total error: " << err << std::endl;
-        std::cout << name << " total error per entry: " << err / lhsView.size() << std::endl;
+        // std::cout << name << " total error: " << err << std::endl;
+        // std::cout << name << " total error per entry: " << err / lhsView.size() << std::endl;
         return ret;
     }
 
