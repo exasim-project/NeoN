@@ -233,7 +233,7 @@ TEMPLATE_TEST_CASE("laplacianOperator boundary contributions are accumulated", "
 }
 
 TEMPLATE_TEST_CASE(
-    "Face based and cellbased iteration give same results", "[template]", NeoN::scalar
+    "Face based, cell based and batched iteration give same results", "[template]", NeoN::scalar
 )
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -266,6 +266,14 @@ TEMPLATE_TEST_CASE(
 
     REQUIRE_THAT(
         lsFaceBased.matrix().values(), Equals(lsCellBased.matrix().values(), Approx {1e-12})
+    );
+
+    // batched: internal faces batch by batch without atomics
+    auto batchedIterator = std::make_shared<la::BatchedFaceIterator>();
+    auto lsBatched = la::createEmptyLinearSystem<TestType>(mesh, batchedIterator);
+    lapOp.implicitOperation(lsBatched);
+    REQUIRE_THAT(
+        lsFaceBased.matrix().values(), Equals(lsBatched.matrix().values(), Approx {1e-12})
     );
 }
 

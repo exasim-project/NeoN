@@ -8,6 +8,7 @@ neon_unit_test(linearSystem)
 neon_unit_test(cooSparsityPattern)
 neon_unit_test(csrSparsityPattern)
 neon_unit_test(faceToMatrixAddress)
+neon_unit_test(batchedFaceIterator)
 neon_unit_test(sharedSparsity)
 neon_unit_test(utilities)
 

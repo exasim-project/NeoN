@@ -387,6 +387,60 @@ void computeDivIntCellBasedImp(
     );
 }
 
+// Internal faces batch by batch: no two faces of one batch share a cell, so the diagonal
+// updates need no atomics.
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeDivIntBatchedImp(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<FieldValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff coeff,
+    const la::BatchedFaceIterator::BatchedFaceData& batched
+)
+{
+    const auto& mesh = phi.mesh();
+    const auto exec = phi.exec();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto [fluxV, weightsV, ownV, neiV, batchFaces] = views(
+        faceFlux.internalVector(),
+        weights.internalVector(),
+        mesh.faceOwners(),
+        mesh.faceNeighbors(),
+        batched.batchFaces.values()
+    );
+    auto values = ls.matrix().values().view();
+
+    const auto segments = batched.batchFaces.segments().copyToHost();
+    const auto segmentsV = segments.view();
+    for (localIdx batch = 0; batch < batched.nBatches; ++batch)
+    {
+        parallelFor(
+            exec,
+            {segmentsV[batch], segmentsV[batch + 1]},
+            NEON_LAMBDA(const localIdx i) {
+                const auto facei = batchFaces[i];
+                const auto ownRow = ownV[facei];
+                const auto neiRow = neiV[facei];
+
+                // same decomposition of the face flux as computeDivIntImp
+                const auto ownFluxContrib = -fluxV[facei] * weightsV[facei] * one<AssemblyType>();
+                const auto neiFluxContrib =
+                    +fluxV[facei] * (1.0 - weightsV[facei]) * one<AssemblyType>();
+
+                const auto ownDiagContrib = ownFluxContrib * coeff[ownRow];
+                const auto neiDiagContrib = neiFluxContrib * coeff[neiRow];
+                values[ma.lowerIdx(neiRow, facei)] += ownDiagContrib;
+                values[ma.upperIdx(ownRow, facei)] += neiDiagContrib;
+                values[ma.diagIdx(ownRow)] -= ownDiagContrib;
+                values[ma.diagIdx(neiRow)] -= neiDiagContrib;
+            },
+            "computeBatchedGaussGreenDivCoefficients"
+        );
+    }
+}
+
 template<typename FieldValueType, typename AssemblyType>
 VolumeField<FieldValueType> GaussGreenDiv<FieldValueType, AssemblyType>::div(
     const SurfaceField<scalar>& faceFlux,
@@ -635,12 +689,23 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
         }
         computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
     }
+    else if (auto batched = la::batchedFaceData(ls.getMeshIterator()->get(), phi.mesh()))
+    {
+        computeDivIntBatchedImp(ls, faceFlux, phi, weights, operatorScaling, *batched);
+    }
+    else if (dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        // internal and boundary faces in one kernel
+        computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
+    }
     else
     {
         computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-        // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
     }
-    computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    if (!dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    }
     computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
 
     // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the

@@ -14,6 +14,8 @@
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
 - Add experimental Julia matrix assembly (JuNe) behind `NeoN_WITH_JULIA` / `NeoN_JULIA_ASSEMBLY` with `FindJulia.cmake` [#632](https://github.com/exasim-project/NeoN/pull/632)
+- Add `GlobalFaceBasedIterator`: the div, laplacian and fused div-laplacian operators assemble internal and boundary faces in one kernel, the JuNe `GlobalFace` strategy is selected from it
+- Add `BatchedFaceIterator`, face batches from an edge colouring for atomic-free batched face-based assembly, used by the div and laplacian operators and the JuNe `Batched` strategy
 
 ### Misc
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)

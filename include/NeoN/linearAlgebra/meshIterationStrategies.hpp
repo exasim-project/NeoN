@@ -80,6 +80,24 @@ public:
 };
 
 
+/** @brief Iteration strategy that traverses all faces, internal and boundary, in one sweep.
+ *
+ * Like @ref FaceBasedIterator, but the operators assemble the boundary faces in the same kernel
+ * as the internal faces instead of a separate boundary kernel.
+ */
+class GlobalFaceBasedIterator : public MeshIterationStrategy
+{
+
+public:
+
+    std::string name() const override { return "GlobalFaceBased"; }
+
+    sizeType size() const override { return 0; }
+
+    ~GlobalFaceBasedIterator() override {}
+};
+
+
 /** @brief Iteration strategy that traverses cells and their face stencils.
  *
  * Pre-computes a cell-centric connectivity table (@ref CellBasedData) so that
@@ -199,5 +217,70 @@ public:
 
     std::shared_ptr<CellBasedData> cellBasedIteratorData_;
 };
+
+/** @brief Iteration strategy that traverses the internal faces batch by batch.
+ *
+ * Pre-computes the batches from an edge colouring of the cell graph (@ref BatchedFaceData): no
+ * two faces of one cell share a batch, so the faces of one batch can be assembled in parallel
+ * without atomic updates of the diagonal. Boundary faces are not batched: they see a single cell
+ * and are assembled like in the face-based strategy. The iteration elements are the batches.
+ */
+class BatchedFaceIterator : public MeshIterationStrategy
+{
+public:
+
+    BatchedFaceIterator();
+
+    /** @brief Pre-computed face batches required for the batched face-based assembly.
+     *
+     * The segments of a SegmentedVector are the batches, its values the face indices of that
+     * batch in ascending face order.
+     */
+    struct BatchedFaceData
+    {
+        BatchedFaceData() = delete;
+
+        /** @brief Construct from pre-computed batch segments (user-declared for the same nvcc
+         *  reason as CellBasedData). */
+        template<typename Faces>
+        BatchedFaceData(localIdx nBatchesIn, Faces&& batchFacesIn)
+            : nBatches(nBatchesIn), batchFaces(std::forward<Faces>(batchFacesIn))
+        {}
+
+        localIdx nBatches;                              ///< Number of internal-face batches.
+        SegmentedVector<localIdx, localIdx> batchFaces; ///< Internal faces by batch.
+    };
+
+    std::string name() const override;
+
+    /** @brief Returns the number of internal-face batches. */
+    sizeType size() const override;
+
+    ~BatchedFaceIterator() override {}
+
+    /** @brief Returns the pre-computed batches, or nullptr if not yet initialised. */
+    std::shared_ptr<BatchedFaceData> getBatchedFaceData();
+
+    /** @brief Computes and stores the face batches of the given mesh. */
+    void setComputeBatchedFaceData(const UnstructuredMesh& mesh);
+
+    /** @brief Builds and returns the face batches without storing them.
+     *
+     * A sequential greedy edge colouring on the host, O(nFaces), run once per mesh: every face
+     * takes the lowest colour that neither of its cells has used yet, which gives at most
+     * 2 * maxCellDegree - 1 batches.
+     */
+    std::shared_ptr<BatchedFaceData> computeBatchedFaceData(const UnstructuredMesh& mesh);
+
+private:
+
+    std::shared_ptr<BatchedFaceData> batchedFaceData_;
+};
+
+/** @brief The batches of a BatchedFaceIterator, computed on first use; nullptr for any other
+ * strategy. */
+std::shared_ptr<const BatchedFaceIterator::BatchedFaceData> batchedFaceData(
+    const std::shared_ptr<MeshIterationStrategy>& strategy, const UnstructuredMesh& mesh
+);
 
 }

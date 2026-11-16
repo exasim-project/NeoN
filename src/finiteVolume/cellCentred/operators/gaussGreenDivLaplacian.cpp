@@ -16,6 +16,68 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename FieldValueType, typename AssemblyType>
+static void computeDivLaplacianIntBatchedFaceBasedImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& /*U*/,
+    const SurfaceField<scalar>& phi,
+    const SurfaceField<scalar>& gamma,
+    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    const dsl::Coeff coeffA,
+    const dsl::Coeff coeffB,
+    const la::BatchedFaceIterator::BatchedFaceData& batched
+)
+{
+    const auto& mesh = phi.mesh();
+    const auto exec = phi.exec();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto [ownV, neiV, batchFaces] =
+        views(mesh.faceOwners(), mesh.faceNeighbors(), batched.batchFaces.values());
+    const auto [phiV, magFaceAreaV] = views(phi.internalVector(), mesh.faceAreas());
+    const auto [gammaV, deltaV] =
+        views(gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector());
+    auto values = ls.matrix().values().view();
+
+    const auto segments = batched.batchFaces.segments().copyToHost();
+    const auto segmentsV = segments.view();
+    for (localIdx batch = 0; batch < batched.nBatches; ++batch)
+    {
+        parallelFor(
+            exec,
+            {segmentsV[batch], segmentsV[batch + 1]},
+            NEON_LAMBDA(const localIdx i) {
+                const auto facei = batchFaces[i];
+                const auto own = ownV[facei];
+                const auto nei = neiV[facei];
+
+                auto fluxDiv = phiV[facei];
+                const auto weight = (phiV[facei] >= 0) ? 1.0 : 0.0;
+                auto fluxLap = deltaV[facei] * gammaV[facei] * magFaceAreaV[facei];
+
+                auto coeffNeiA = coeffA[nei];
+                auto coeffOwnA = coeffA[own];
+                auto coeffNeiB = coeffB[nei];
+                auto coeffOwnB = coeffB[own];
+
+                // lower triangular (nei row, own col)
+                auto valueA =
+                    (-weight * coeffNeiA * fluxDiv + coeffNeiB * fluxLap) * one<AssemblyType>();
+                values[ma.lowerIdx(nei, facei)] += valueA;
+                values[ma.diagIdx(own)] -= valueA;
+
+                // upper triangular (own row, nei col)
+                auto valueB = ((1.0 - weight) * coeffOwnA * fluxDiv + coeffOwnB * fluxLap)
+                            * one<AssemblyType>();
+                values[ma.upperIdx(own, facei)] += valueB;
+                values[ma.diagIdx(nei)] -= valueB;
+            },
+            "computeLocalBatchedGaussGreenDivLaplacianCoefficients"
+        );
+    }
+}
+
+template<typename FieldValueType, typename AssemblyType>
 static void computeDivLaplacianIntImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const VolumeField<FieldValueType>& /*U*/,
@@ -209,7 +271,9 @@ static void computeDivLaplacianBoundImpl(
             auto valFrac1 = valueFraction[bfi];
             auto valFrac2 = 1.0 - valFrac1;
 
-            const auto bweights = (fluxDiv >= 0) ? scalar(1) : scalar(0);
+            // the upwind weight of a physical boundary face is 1 whatever the flux sign, as in
+            // computeUpwindInterpolationWeights: a zeroGradient face always takes the cell value
+            const auto bweights = scalar(1);
 
             auto valueDiv = -bweights * coeffAOwn * fluxDiv * valFrac2;
             auto valueLap = bDeltaV[bfi] * coeffBOwn * fluxLap * valFrac1;
@@ -231,6 +295,119 @@ static void computeDivLaplacianBoundImpl(
             bRhs[bfi] = valueRhsA + valueRhsB;
         },
         "computeInterfaceGaussGreenDivLaplacianCoefficients"
+    );
+}
+
+// Global face-based: internal and boundary faces in one kernel, i.e. computeDivLaplacianIntImpl
+// and computeDivLaplacianBoundImpl fused into a single launch over all faces.
+template<typename FieldValueType, typename AssemblyType>
+static void computeDivLaplacianGlobalFaceImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& u,
+    const SurfaceField<scalar>& phi,
+    const SurfaceField<scalar>& gamma,
+    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    const dsl::Coeff coeffA,
+    const dsl::Coeff coeffB
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nTotalFaces = mesh.nTotalFaces();
+    const auto exec = phi.exec();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto [gammaV, deltaV] =
+        views(gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector());
+    const auto [phiV, ownV, neiV, magFaceAreaV] =
+        views(phi.internalVector(), mesh.faceOwners(), mesh.faceNeighbors(), mesh.faceAreas());
+
+    const auto [bPhiV, bGammaV, bDeltaV, bMagSf, surfFaceCells] = views(
+        phi.boundaryData().value(),
+        gamma.boundaryData().value(),
+        faceNormalGradient.deltaCoeffs().boundaryData().value(),
+        mesh.boundaryMesh().faceAreas(),
+        mesh.boundaryMesh().faceOwners()
+    );
+    const auto [refGradient, valueFraction, refValue, deltaCoeffsA] = views(
+        u.boundaryData().refGrad(),
+        u.boundaryData().valueFraction(),
+        u.boundaryData().refValue(),
+        mesh.boundaryMesh().deltaCoeffs()
+    );
+
+    auto values = ls.matrix().values().view();
+    auto rhs = ls.rhs().view();
+    auto bRhs = ls.boundaryRhs().view();
+    auto bValues = ls.boundaryMatrix().values().view();
+
+    parallelFor(
+        exec,
+        {0, nTotalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            if (facei < nInternalFaces)
+            {
+                auto own = ownV[facei];
+                auto nei = neiV[facei];
+
+                auto fluxDiv = phiV[facei];
+                const auto weight = (phiV[facei] >= 0) ? 1.0 : 0.0;
+                auto fluxLap = deltaV[facei] * gammaV[facei] * magFaceAreaV[facei];
+
+                auto coeffNeiA = coeffA[nei];
+                auto coeffOwnA = coeffA[own];
+                auto coeffNeiB = coeffB[nei];
+                auto coeffOwnB = coeffB[own];
+
+                // lower triangular (nei row, own col)
+                auto valueA =
+                    (-weight * coeffNeiA * fluxDiv + coeffNeiB * fluxLap) * one<AssemblyType>();
+                values[ma.lowerIdx(nei, facei)] += valueA;
+                Kokkos::atomic_sub(&values[ma.diagIdx(own)], valueA);
+
+                // upper triangular (own row, nei col)
+                auto valueB = ((1.0 - weight) * coeffOwnA * fluxDiv + coeffOwnB * fluxLap)
+                            * one<AssemblyType>();
+                values[ma.upperIdx(own, facei)] += valueB;
+                Kokkos::atomic_sub(&values[ma.diagIdx(nei)], valueB);
+            }
+            else
+            {
+                const auto bfi = facei - nInternalFaces;
+                auto own = surfFaceCells[bfi];
+                auto coeffAOwn = coeffA[own];
+                auto coeffBOwn = coeffB[own];
+
+                auto fluxDiv = bPhiV[bfi];
+                auto fluxLap = bGammaV[bfi] * bMagSf[bfi];
+
+                auto valFrac1 = valueFraction[bfi];
+                auto valFrac2 = 1.0 - valFrac1;
+
+                // the upwind weight of a physical boundary face is 1 whatever the flux sign, see
+                // computeDivLaplacianBoundImpl
+                const auto bweights = scalar(1);
+
+                auto valueDiv = -bweights * coeffAOwn * fluxDiv * valFrac2;
+                auto valueLap = bDeltaV[bfi] * coeffBOwn * fluxLap * valFrac1;
+                auto valueA = (valueDiv + valueLap) * one<AssemblyType>();
+
+                Kokkos::atomic_sub(&values[ma.diagIdx(own)], valueA);
+                bValues[bfi] = valueA * (-1.0);
+
+                auto valueRhsA = (fluxDiv * coeffAOwn * (valFrac1 * refValue[bfi]))
+                               + valFrac2 * refGradient[bfi] * (1.0 / deltaCoeffsA[bfi]);
+                auto valueRhsB =
+                    fluxLap * coeffBOwn
+                    * (valFrac1 * refValue[bfi] * bDeltaV[bfi] + valFrac2 * refGradient[bfi]);
+
+                Kokkos::atomic_sub(&rhs[own], valueRhsA);
+                Kokkos::atomic_sub(&rhs[own], valueRhsB);
+                bRhs[bfi] = valueRhsA + valueRhsB;
+            }
+        },
+        "computeGlobalGaussGreenDivLaplacianCoefficients"
     );
 }
 
@@ -343,6 +520,34 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
             coeffB_
         );
     }
+    else if (auto batched = la::batchedFaceData(ls.getMeshIterator()->get(), flux_.mesh()))
+    {
+        computeDivLaplacianIntBatchedFaceBasedImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_,
+            *batched
+        );
+    }
+    else if (dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        // internal and boundary faces in one kernel, the boundary kernel below is skipped
+        computeDivLaplacianGlobalFaceImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
     else
     {
         computeDivLaplacianIntImpl(
@@ -357,16 +562,19 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
         );
     }
     computeLaplacianNonOrthCorrImpl(ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_);
-    computeDivLaplacianBoundImpl(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
+    if (!dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        computeDivLaplacianBoundImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
     computeDivLaplacianProcBoundImpl(
         ls,
         this->getVector(),
@@ -424,6 +632,34 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
             coeffB_
         );
     }
+    else if (auto batched = la::batchedFaceData(ls.getMeshIterator()->get(), flux_.mesh()))
+    {
+        computeDivLaplacianIntBatchedFaceBasedImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_,
+            *batched
+        );
+    }
+    else if (dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        // internal and boundary faces in one kernel, the boundary kernel below is skipped
+        computeDivLaplacianGlobalFaceImpl<ValueType, scalar>(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
     else
     {
         computeDivLaplacianIntImpl<ValueType, scalar>(
@@ -440,16 +676,19 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
     computeLaplacianNonOrthCorrImpl<ValueType, scalar>(
         ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
     );
-    computeDivLaplacianBoundImpl<ValueType, scalar>(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
+    if (!dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        computeDivLaplacianBoundImpl<ValueType, scalar>(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
     computeDivLaplacianProcBoundImpl<ValueType, scalar>(
         ls,
         this->getVector(),

@@ -594,6 +594,53 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
     computeLaplacianExp<FieldValueType>(faceNormalGradient_, gamma, phi, lapPhi, coeff);
 }
 
+// Internal faces batch by batch: no two faces of one batch share a cell, so the diagonal
+// updates need no atomics.
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeLaplacianIntBatchedImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    const la::BatchedFaceIterator::BatchedFaceData& batched
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto exec = phi.exec();
+    const auto [ownV, neiV, batchFaces] =
+        views(mesh.faceOwners(), mesh.faceNeighbors(), batched.batchFaces.values());
+    const auto [gammaV, deltaCoeffs, magFaceArea] = views(
+        gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector(), mesh.faceAreas()
+    );
+    auto values = ls.matrix().values().view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto segments = batched.batchFaces.segments().copyToHost();
+    const auto segmentsV = segments.view();
+    for (localIdx batch = 0; batch < batched.nBatches; ++batch)
+    {
+        parallelFor(
+            exec,
+            {segmentsV[batch], segmentsV[batch + 1]},
+            NEON_LAMBDA(const localIdx i) {
+                const auto facei = batchFaces[i];
+                const auto ownRow = ownV[facei];
+                const auto neiRow = neiV[facei];
+
+                // same face coefficient as computeLaplacianIntImpl
+                const auto flux =
+                    deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<AssemblyType>();
+                values[ma.lowerIdx(neiRow, facei)] += flux * coeff[neiRow];
+                values[ma.upperIdx(ownRow, facei)] += flux * coeff[ownRow];
+                values[ma.diagIdx(ownRow)] -= flux * coeff[ownRow];
+                values[ma.diagIdx(neiRow)] -= flux * coeff[neiRow];
+            },
+            "computeBatchedLaplacianCoefficients"
+        );
+    }
+}
+
 template<typename FieldValueType, typename AssemblyType>
 void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
@@ -612,12 +659,23 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
         }
         computeLaplacianIntCellBasedImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     }
+    else if (auto batched = la::batchedFaceData(ls.getMeshIterator()->get(), phi.mesh()))
+    {
+        computeLaplacianIntBatchedImpl(ls, gamma, phi, coeff, faceNormalGradient_, *batched);
+    }
+    else if (dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        // internal and boundary faces in one kernel
+        computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
+    }
     else
     {
         computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-        // computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
     }
-    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    if (!dynamic_cast<la::GlobalFaceBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    }
     computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
 }
