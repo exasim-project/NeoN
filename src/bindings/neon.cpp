@@ -23,6 +23,7 @@ NB_MODULE(_neon, m)
     NeoN::bindings::registerBoundaryMesh(m);
     NeoN::bindings::registerUnstructuredMesh(m);
     NeoN::bindings::registerSurfaceField(m);
+    NeoN::bindings::registerBoundaryContext(m);
     NeoN::bindings::registerVolumeField(m);
     NeoN::bindings::registerSurfaceInterpolation(m);
     NeoN::bindings::registerInputs(m);

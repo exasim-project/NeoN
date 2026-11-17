@@ -37,6 +37,7 @@ set(NeoN_PYTHON_BINDING_SRCS
     boundaryMesh.cpp
     unstructuredMesh.cpp
     surfaceField.cpp
+    boundaryContext.cpp
     volumeField.cpp
     surfaceInterpolation.cpp
     inputs.cpp
