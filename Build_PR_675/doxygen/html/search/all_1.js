@@ -38,8 +38,9 @@ var searchData=
   ['boundarypatchmixin_2ehpp_35',['boundaryPatchMixin.hpp',['../boundaryPatchMixin_8hpp.html',1,'']]],
   ['boundaryrhs_36',['boundaryRhs',['../structNeoN_1_1la_1_1LinearSystemView.html#a31fcb34ed3652af47e403442d01f56ff',1,'NeoN::la::LinearSystemView::boundaryRhs'],['../classNeoN_1_1la_1_1LinearSystem.html#a3fa12df5ce6c1325185a299a51b54968',1,'NeoN::la::LinearSystem::boundaryRhs()'],['../classNeoN_1_1la_1_1LinearSystem.html#adc4b8a52b00ab52af61370ec938dbb0f',1,'NeoN::la::LinearSystem::boundaryRhs() const']]],
   ['boundarysparsity_37',['boundarySparsity',['../structNeoN_1_1la_1_1SharedSparsityBundle.html#a71f4a7fd41e4aed9a297024732a4fc72',1,'NeoN::la::SharedSparsityBundle']]],
-  ['boundarytypes_38',['boundaryTypes',['../classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70',1,'NeoN::BoundaryData']]],
-  ['boundeddiv_39',['BoundedDiv',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv.html',1,'NeoN::finiteVolume::cellCentred::BoundedDiv&lt; FieldValueType, AssemblyType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv.html#a7b1848ff0f9d74820b5f331a4f5e8927',1,'NeoN::finiteVolume::cellCentred::BoundedDiv::BoundedDiv()']]],
-  ['boundeddiv_2ehpp_40',['boundedDiv.hpp',['../boundedDiv_8hpp.html',1,'']]],
-  ['bounds_41',['bounds',['../classNeoN_1_1SegmentedVectorView.html#ae951634d8f5ebd5fb95d7e165af78ccc',1,'NeoN::SegmentedVectorView']]]
+  ['boundarytype_38',['boundaryType',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a6d1fb79ea149bcc59f86c1609d5681ac',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
+  ['boundarytypes_39',['boundaryTypes',['../classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70',1,'NeoN::BoundaryData']]],
+  ['boundeddiv_40',['BoundedDiv',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv.html',1,'NeoN::finiteVolume::cellCentred::BoundedDiv&lt; FieldValueType, AssemblyType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv.html#a7b1848ff0f9d74820b5f331a4f5e8927',1,'NeoN::finiteVolume::cellCentred::BoundedDiv::BoundedDiv()']]],
+  ['boundeddiv_2ehpp_41',['boundedDiv.hpp',['../boundedDiv_8hpp.html',1,'']]],
+  ['bounds_42',['bounds',['../classNeoN_1_1SegmentedVectorView.html#ae951634d8f5ebd5fb95d7e165af78ccc',1,'NeoN::SegmentedVectorView']]]
 ];
