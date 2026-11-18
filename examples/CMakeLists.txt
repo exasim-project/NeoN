@@ -5,6 +5,10 @@
 # every example is also added as a test, which fails if the results are wrong
 function(neon_example EXAMPLE)
   add_executable(neon_example_${EXAMPLE} "${EXAMPLE}.cpp")
+  # in cmake-language mode, sources including Kokkos are compiled as CUDA, see src/CMakeLists.txt
+  if(NeoN_ENABLE_CUDA AND Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
+    set_source_files_properties("${EXAMPLE}.cpp" PROPERTIES LANGUAGE CUDA)
+  endif()
   target_link_libraries(neon_example_${EXAMPLE} PRIVATE NeoN_warnings NeoN_options NeoN)
   set(EXAMPLE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples)
   set_target_properties(neon_example_${EXAMPLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_DIR})

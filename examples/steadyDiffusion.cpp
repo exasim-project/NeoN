@@ -49,19 +49,27 @@ scalar solveSteadyDiffusion(const NeoN::Executor& exec, localIdx nCells)
         1
     );
 
+    // create field named "T" on the mesh and executor with the defined boundary conditions
     fvcc::VolumeField<scalar> T(exec, "T", mesh, bcs);
+    // fill the field with a given value
     NeoN::fill(T.internalVector(), 0.0);
+    // ensure the boundary values are up to date
     T.correctBoundaryConditions();
 
+    // create surface field named "gamma" for the diffusivity on the faces
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     fvcc::SurfaceField<scalar> gammaF(exec, "gamma", mesh, surfaceBCs);
+    // fill the internal and the boundary faces with the diffusivity
     NeoN::fill(gammaF.internalVector(), diffusivity);
     NeoN::fill(gammaF.boundaryData().value(), diffusivity);
 
+    // create field named "S" for the heat source
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
     fvcc::VolumeField<scalar> source(exec, "S", mesh, volumeBCs);
+    // fill the field with the heat source
     NeoN::fill(source.internalVector(), heatSource);
 
+    // discretisation schemes
     NeoN::Dictionary fvSchemes {
         {{"laplacianSchemes",
           NeoN::Dictionary {
@@ -73,15 +81,18 @@ scalar solveSteadyDiffusion(const NeoN::Executor& exec, localIdx nCells)
          {"timeIntegration", NeoN::Dictionary {{{"type", std::string("steadyState")}}}}}
     };
 
+    // linear solver settings, conjugate gradient solver from Ginkgo
     NeoN::Dictionary fvSolution {
         {{"solver", std::string("Ginkgo")},
          {"type", std::string("solver::Cg")},
          {"criteria", NeoN::Dictionary {{{"iteration", 1000}, {"relative_residual_norm", 1e-12}}}}}
     };
 
-    // imp:: terms are assembled into the matrix, exp:: terms into the rhs
+    // implicit (imp::) terms are assembled into the matrix, explicit (exp::) terms into the rhs
     dsl::Expression<scalar> eqn = dsl::imp::laplacian(gammaF, T) + dsl::exp::source(source);
 
+    // solve(equation, unknown field, time, time step, schemes, solver settings)
+    // the solution is written to T, time and time step have no effect for a steady problem
     dsl::solve(eqn, T, 0.0, 1.0, fvSchemes, fvSolution);
 
     // L2 error
