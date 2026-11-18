@@ -92,8 +92,8 @@ void computeLinearUpwindCorrection(
 
 // @tparam CellLimited when true the gradient correction is built from the cell-limited (minmod,
 // k=1) gradient rather than the unlimited Gauss-Green gradient — this is the "linearUpwindV"
-// scheme, a directionally-bounded vector reconstruction. Only meaningful for Vec3 fields; the
-// scalar path ignores it.
+// scheme, a directionally-bounded vector reconstruction. A scalar field uses the slope-limited
+// scalar gradient when the spec names "cellLimited", as OpenFOAM's linearUpwind does.
 template<typename ValueType, bool CellLimited = false>
 class LinearUpwind :
     public SurfaceInterpolationFactory<ValueType>::template Register<

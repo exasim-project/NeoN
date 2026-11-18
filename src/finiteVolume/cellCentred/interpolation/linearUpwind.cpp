@@ -216,13 +216,27 @@ void computeLinearUpwind(
 
     if constexpr (std::is_same_v<ValueType, scalar>)
     {
-        // grad(scalar) -> Vec3. Cell limiting is a vector-field concept (linearUpwindV); the scalar
-        // path always uses the unlimited Gauss-Green gradient.
-        GaussGreenGrad gradOp(exec, mesh);
-        const VolumeField<GradType> gradPhi = gradOp.grad(src);
-        applyLinearUpwind<ValueType, GradType>(
-            src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
-        );
+        // grad(scalar) -> Vec3. OpenFOAM builds the deferred correction from the gradient scheme
+        // the spec names ("linearUpwind cellLimited Gauss linear 1"), so a cell-limited spec must
+        // use the slope-limited scalar gradient too; falling back to the unlimited Gauss-Green
+        // gradient leaves the reconstruction unclipped, a systematically more aggressive
+        // convection term for k, omega and the energy.
+        if (cellLimitedGradient)
+        {
+            auto limitedGrad = linearUpwindLimitedGrad(exec, mesh);
+            const VolumeField<GradType> gradPhi = limitedGrad->grad(src);
+            applyLinearUpwind<ValueType, GradType>(
+                src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+            );
+        }
+        else
+        {
+            GaussGreenGrad gradOp(exec, mesh);
+            const VolumeField<GradType> gradPhi = gradOp.grad(src);
+            applyLinearUpwind<ValueType, GradType>(
+                src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+            );
+        }
     }
     else
     {
