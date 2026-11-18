@@ -326,11 +326,18 @@ void DdtOperator<ValueType>::read(const Input& input)
 
     std::string schemeName;
 
-    // Per-field override: ddt(fieldName)
+    // The entry of the field, ddt(fieldName), else the default entry, as in OpenFOAM. Without the
+    // fallback an operator on a field that has no entry of its own, e.g. the explicit ddt(rho, K)
+    // of the energy equation, stopped with "Unknown ddt scheme ''" although ddtSchemes names a
+    // default.
     const std::string fieldKey = std::string("ddt(") + this->field_.name + ")";
     if (ddtSchemes.contains(fieldKey))
     {
         schemeName = ddtSchemes.get<std::string>(fieldKey);
+    }
+    else if (ddtSchemes.contains("default") && ddtSchemes.isType<std::string>("default"))
+    {
+        schemeName = ddtSchemes.get<std::string>("default");
     }
 
     if (schemeName == "steadyState")
