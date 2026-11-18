@@ -25,6 +25,7 @@ authors:
   - name: Bevan Jones
     affiliation: 4
   - name: Gregor Weiss
+    orcid: 0000-0002-4345-4091
     affiliation: 5
   - name: Marcel Koch
     orcid: 0009-0004-8333-9313
@@ -53,7 +54,7 @@ affiliations:
  - name: Karlsruhe Institute of Technology, Germany
    index: 6
 
-date: 13th November, 2026.
+date: 18th November, 2026.
 
 bibliography: paper.bib
 
