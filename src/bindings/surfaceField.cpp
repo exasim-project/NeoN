@@ -61,6 +61,8 @@ void registerSurfaceField(nb::module_& m)
     )
         .def(
             nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            // the boundary condition can keep a reference to the mesh
+            nb::keep_alive<1, 2>(),
             "mesh"_a,
             "dict"_a,
             "patch_id"_a,
@@ -75,6 +77,7 @@ void registerSurfaceField(nb::module_& m)
     )
         .def(
             nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            nb::keep_alive<1, 2>(),
             "mesh"_a,
             "dict"_a,
             "patch_id"_a,
@@ -99,6 +102,8 @@ void registerSurfaceField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            // the field keeps a reference to the mesh
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -116,6 +121,7 @@ void registerSurfaceField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -133,6 +139,7 @@ void registerSurfaceField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -144,6 +151,7 @@ void registerSurfaceField(nb::module_& m)
                 std::string,
                 const NeoN::UnstructuredMesh&,
                 const std::vector<fvcc::SurfaceBoundary<NeoN::scalar>>&>(),
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -263,6 +271,7 @@ void registerSurfaceField(nb::module_& m)
                 new (&field
                 ) fvcc::SurfaceField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -279,6 +288,7 @@ void registerSurfaceField(nb::module_& m)
                 new (&field
                 ) fvcc::SurfaceField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -295,6 +305,7 @@ void registerSurfaceField(nb::module_& m)
                 new (&field
                 ) fvcc::SurfaceField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -306,6 +317,7 @@ void registerSurfaceField(nb::module_& m)
                 std::string,
                 const NeoN::UnstructuredMesh&,
                 const std::vector<fvcc::SurfaceBoundary<NeoN::Vec3>>&>(),
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,

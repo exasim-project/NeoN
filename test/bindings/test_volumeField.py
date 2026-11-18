@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+import gc
+
 import pytest
 
 import neon
@@ -73,6 +75,32 @@ def test_volume_boundary_rejects_invalid_input(executor):
     d.insert_string("type", "calculated")
     with pytest.raises(RuntimeError, match="invalid patch id"):
         neon.ScalarVolumeBoundary(mesh, d, 2)
+
+
+def test_field_keeps_mesh_alive(executor):
+    """A field returned from a function keeps working after its mesh went out of scope."""
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+
+    def make_field():
+        mesh = neon.create_1d_uniform_mesh(exec, 4)
+        # fixedGradient keeps a reference to the mesh
+        d = neon.Dictionary()
+        d.insert_string("type", "fixedGradient")
+        d.insert_double("fixedGradient", 2.0)
+        bcs = [neon.ScalarVolumeBoundary(mesh, d, 0), _fixed_value(mesh, 1, 3.0)]
+        return neon.ScalarVolumeField(exec, "T", mesh, bcs)
+
+    field = make_field()
+    gc.collect()
+
+    assert field.mesh().n_cells() == 4
+    neon.fill(field.internal_vector(), 1.0)
+    field.correct_boundary_conditions()
+    # T_b = T_P + gradient * dx / 2
+    boundary = np.asarray(field.boundary_data_value().copy_to_host())
+    np.testing.assert_allclose(boundary, [1.0 + 2.0 * 0.125, 3.0])
+
 
 def _filled(exec, mesh, value):
     """A scalar volume field of the given uniform value (helper for the op tests)."""
