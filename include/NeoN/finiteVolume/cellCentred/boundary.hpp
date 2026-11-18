@@ -13,6 +13,8 @@
 #include "boundary/volume/empty.hpp"
 #include "boundary/volume/calculated.hpp"
 #include "boundary/volume/extrapolated.hpp"
+#include "boundary/volume/fixedMean.hpp"
+#include "boundary/volume/flowRateInletVelocity.hpp"
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
 #include "boundary/volume/fixedFluxPressure.hpp"
