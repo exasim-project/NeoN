@@ -39,6 +39,39 @@ auto deepCopyVisitor(sizeType size, const ValueType* srcPtr, ValueType* dstPtr)
     };
 };
 
+/* Kernels of map, fill and setContainer. Named functors rather than NEON_LAMBDAs, see the note
+ * at NEON_LAMBDA's definition in parallelAlgorithms.hpp.
+ */
+template<typename ViewType, typename Inner>
+struct MapKernel
+{
+    ViewType view;
+    Inner inner;
+
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const localIdx i) const { view[i] = inner(i); }
+};
+
+template<typename ViewType, typename ValueType>
+struct FillKernel
+{
+    ViewType view;
+    ValueType value;
+
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const localIdx i) const { view[i] = value; }
+};
+
+template<typename ViewType, typename SrcViewType>
+struct SetContainerKernel
+{
+    ViewType view;
+    SrcViewType src;
+
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const localIdx i) const { view[i] = src[i]; }
+};
+
 }
 
 
@@ -61,7 +94,7 @@ void map(ContType<ValueType>& cont, const Inner inner, std::pair<localIdx, local
     parallelFor(
         cont.exec(),
         {start, end},
-        NEON_LAMBDA(const localIdx i) { contView[i] = inner(i); },
+        detail::MapKernel<decltype(contView), Inner> {contView, inner},
         "mapField"
     );
 }
@@ -89,7 +122,10 @@ void fill(
     }
     auto viewA = cont.view();
     parallelFor(
-        cont.exec(), {start, end}, NEON_LAMBDA(const localIdx i) { viewA[i] = value; }, "fill"
+        cont.exec(),
+        {start, end},
+        detail::FillKernel<decltype(viewA), ValueType> {viewA, value},
+        "fill"
     );
 }
 
@@ -117,7 +153,7 @@ void setContainer(
     parallelFor(
         cont.exec(),
         {start, end},
-        NEON_LAMBDA(const localIdx i) { contView[i] = view[i]; },
+        detail::SetContainerKernel<decltype(contView), decltype(view)> {contView, view},
         "setContainer"
     );
 }

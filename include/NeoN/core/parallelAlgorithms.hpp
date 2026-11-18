@@ -12,6 +12,11 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/helpers/exceptions.hpp"
 
+// Do not use NEON_LAMBDA inside function templates or inline functions defined in headers; use a
+// named functor instead (see detail::ContainerAssignKernel). Under nvcc the host-side call slots of
+// an extended lambda are TU-local (anonymous namespace), while the surrounding template code is
+// weak and merged once per DSO; if the copy that builds the lambda and the copy that calls it come
+// from different TUs, the call goes through an unset slot to 0x0.
 #ifdef NN_WITH_KOKKOS
 #define NEON_LAMBDA KOKKOS_LAMBDA
 #define NEON_INLINE_FUNCTION KOKKOS_INLINE_FUNCTION
@@ -73,6 +78,20 @@ void visitExecutor(const Executor& exec, F&& f)
         f(std::get<GPUExecutor>(exec));
     }
 }
+
+/* @brief kernel of the container parallelFor: view[i] = kernel(i)
+ *
+ * A named functor rather than a NEON_LAMBDA, see the note at NEON_LAMBDA's definition.
+ */
+template<typename ViewType, typename Kernel>
+struct ContainerAssignKernel
+{
+    ViewType view;
+    Kernel kernel;
+
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const localIdx i) const { view[i] = kernel(i); }
+};
 }
 
 /* @brief calls fence if a logger is set */
@@ -165,7 +184,7 @@ void parallelFor(
         Kokkos::parallel_for(
             name,
             Kokkos::RangePolicy<runOn>(0, viewSize),
-            NEON_LAMBDA(const localIdx i) { view[i] = kernel(i); }
+            detail::ContainerAssignKernel<decltype(view), Kernel> {view, kernel}
         );
     }
 }
