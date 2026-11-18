@@ -191,6 +191,7 @@ them to confirm which executors a wheel supports:
    print(neon.__has_serial__)   # serial executor available
    print(neon.__has_cpu__)      # CPU (OpenMP) executor available
    print(neon.__has_gpu__)      # GPU (CUDA/HIP) executor available
+   print(neon.__has_ginkgo__)   # Ginkgo linear solvers, needed by neon.solve
 
 The repository ships an equivalent smoke test at ``ci/check_installed_wheel.py``
 that CI runs against every repaired CPU wheel.

@@ -322,3 +322,61 @@ def test_dsl_susp_scaling_is_linear(executor):
         else:
             assert np.allclose(plain, 0.0)
             assert np.allclose(plain_rhs, -c * vol * 10.0)
+
+
+
+def _steady_schemes(laplacian_scheme):
+    """fvSchemes for a steady solve with the given laplacian(gamma,T) scheme."""
+    time_integration = neon.Dictionary()
+    time_integration.insert_string("type", "steadyState")
+    laplacian_schemes = neon.Dictionary()
+    laplacian_schemes.insert_token_list("laplacian(gamma,T)", neon.TokenList(laplacian_scheme))
+    schemes = neon.Dictionary()
+    schemes.insert_dict("timeIntegration", time_integration)
+    schemes.insert_dict("laplacianSchemes", laplacian_schemes)
+    return schemes
+
+
+def _cg_solver():
+    """fvSolution for the Ginkgo CG solver."""
+    criteria = neon.Dictionary()
+    criteria.insert_int("iteration", 100)
+    criteria.insert_double("relative_residual_norm", 1e-12)
+    solution = neon.Dictionary()
+    solution.insert_string("solver", "Ginkgo")
+    solution.insert_string("type", "solver::Cg")
+    solution.insert_dict("criteria", criteria)
+    return solution
+
+
+@pytest.mark.skipif(not neon.__has_ginkgo__, reason="requires Ginkgo")
+def test_solve_laplacian_with_fixed_value_bcs(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10)
+    # the mesh frees its cell centres after the first solve, so copy them here
+    x = np.asarray(mesh.cell_centers.copy_to_host())[:, 0].copy()
+
+    bcs = []
+    for patch, value in enumerate([0.0, 1.0]):
+        d = neon.Dictionary()
+        d.insert_string("type", "fixedValue")
+        d.insert_double("fixedValue", value)
+        bcs.append(neon.ScalarVolumeBoundary(mesh, d, patch))
+    T = neon.ScalarVolumeField(exec, "T", mesh, bcs)
+    neon.fill(T.internal_vector(), 0.0)
+    T.correct_boundary_conditions()
+
+    gamma = neon.ScalarSurfaceField(exec, "gamma", mesh)
+    neon.fill(gamma.internal_vector(), 1.0)
+    neon.fill(gamma.boundary_data_value(), 1.0)
+
+    # a single operator has to be added to an expression to be solved
+    eqn = neon.ExpressionScalar(exec) + imp.laplacian(gamma, T)
+    schemes = _steady_schemes(["Gauss", "linear", "uncorrected"])
+    stats = neon.solve(eqn, T, 0.0, 1.0, schemes, _cg_solver())
+
+    assert isinstance(stats, neon.SolverStats)
+    assert stats.entries[0].num_iter > 0
+    # T'' = 0 with T(0) = 0 and T(1) = 1 gives T = x, which is reproduced exactly
+    assert np.allclose(np.asarray(T.internal_vector().copy_to_host()), x)

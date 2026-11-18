@@ -75,3 +75,45 @@ def test_vec3_surface_field_arithmetic_rejects_mismatched_operands(executor):
         a - c
     with pytest.raises(ValueError):
         s_other * a
+
+
+def _surface_bc(mesh, patch, bc_type, value=None):
+    d = neon.Dictionary()
+    d.insert_string("type", bc_type)
+    if isinstance(value, neon.Vec3):
+        d.insert_vec3("fixedValue", value)
+        return neon.VectorSurfaceBoundary(mesh, d, patch)
+    if value is not None:
+        d.insert_double("fixedValue", value)
+    return neon.ScalarSurfaceBoundary(mesh, d, patch)
+
+
+def test_vector_surface_field_with_fixed_value_bcs(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    bcs = [
+        _surface_bc(mesh, 0, "fixedValue", neon.Vec3(1.0, 2.0, 3.0)),
+        _surface_bc(mesh, 1, "fixedValue", neon.Vec3(4.0, 5.0, 6.0)),
+    ]
+    field = neon.VectorSurfaceField(exec, "Uf", mesh, bcs)
+    neon.fill(field.internal_vector(), neon.Vec3(0.0, 0.0, 0.0))
+    field.correct_boundary_conditions()
+
+    boundary = np.asarray(field.boundary_data_value().copy_to_host())
+    np.testing.assert_allclose(boundary, [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+
+
+def test_scalar_surface_field_with_fixed_value_bcs(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    bcs = [_surface_bc(mesh, 0, "fixedValue", 1.0), _surface_bc(mesh, 1, "fixedValue", 2.0)]
+    field = neon.ScalarSurfaceField(exec, "phi", mesh, bcs)
+    neon.fill(field.internal_vector(), 0.0)
+    field.correct_boundary_conditions()
+
+    assert np.allclose(np.asarray(field.boundary_data_value().copy_to_host()), [1.0, 2.0])
+    assert field.exec().name() == exec.name()

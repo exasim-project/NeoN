@@ -7,6 +7,7 @@
 #include <nanobind/stl/vector.h>
 #include <nanobind/stl/unordered_map.h>
 
+#include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/tokenList.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/input.hpp"
@@ -128,6 +129,13 @@ void registerInputs(nb::module_& m)
             "Get double value for key"
         )
         .def(
+            "get_vec3",
+            [](NeoN::Dictionary& self, const std::string& key) -> NeoN::Vec3
+            { return self.get<NeoN::Vec3>(key); },
+            "key"_a,
+            "Get Vec3 value for key"
+        )
+        .def(
             "get_string",
             [](NeoN::Dictionary& self, const std::string& key) -> std::string
             { return self.get<std::string>(key); },
@@ -157,6 +165,14 @@ void registerInputs(nb::module_& m)
             "key"_a,
             "value"_a,
             "Insert double value"
+        )
+        .def(
+            "insert_vec3",
+            [](NeoN::Dictionary& self, const std::string& key, const NeoN::Vec3& value)
+            { self.insert(key, std::any(value)); },
+            "key"_a,
+            "value"_a,
+            "Insert Vec3 value, e.g. the fixedValue of a vector boundary condition"
         )
         .def(
             "insert_string",

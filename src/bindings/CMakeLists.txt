@@ -133,7 +133,7 @@ __version__ = \"${NeoN_PACKAGE_VERSION}\"
 try:
     from ._neon import *
     # Explicitly import module attributes that aren't exported by *
-    from ._neon import __has_serial__, __has_cpu__, __has_gpu__
+    from ._neon import __has_serial__, __has_cpu__, __has_gpu__, __has_ginkgo__
 except ImportError as e:
     raise ImportError(
         \"Failed to import NeoN C++ extension module. \"
@@ -141,7 +141,9 @@ except ImportError as e:
         f\"Error: {e}\"
     ) from e
 
-__all__ = [\"__version__\", \"__has_serial__\", \"__has_cpu__\", \"__has_gpu__\"]
+__all__ = [
+    \"__version__\", \"__has_serial__\", \"__has_cpu__\", \"__has_gpu__\", \"__has_ginkgo__\"
+]
 ")
 
 # Copy Python package files to build directory
