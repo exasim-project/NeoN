@@ -39,6 +39,17 @@ Repeating the solve on refined meshes shows second-order convergence:
    :language: cpp
    :lines: 12-
 
+The same example written with the :doc:`python_bindings` is in ``examples/python/steady_diffusion.py``.
+It needs the bindings (``-DNeoN_BUILD_PYTHON_BINDINGS=ON``) and prints the same table:
+
+.. code-block:: bash
+
+    PYTHONPATH=build/production/bindings python examples/python/steady_diffusion.py
+
+.. literalinclude:: ../examples/python/steady_diffusion.py
+   :language: python
+   :lines: 13-
+
 .. note::
 
    Once the discretisation has cached the geometric quantities it needs, the mesh releases its points, face centres and cell centres to save (device) memory.
