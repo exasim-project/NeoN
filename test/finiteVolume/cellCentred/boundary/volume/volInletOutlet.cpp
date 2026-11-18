@@ -38,6 +38,7 @@ TEST_CASE("inletOutlet_volume")
         // SIMPLE (see the rationale on InletOutlet's ctor). The per-face refValue/valueFraction
         // still drive the operators via the mixed-BC kernels.
         REQUIRE(boundary->attributes().fixesValue == false);
+        REQUIRE(boundary->attributes().mixed == true);
 
         // === inflow (phi < 0): Dirichlet inletValue ============================
         {
