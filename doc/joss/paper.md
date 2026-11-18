@@ -17,19 +17,23 @@ authors:
   - name: Hendrik Hetmann
     affiliation: 2
   - name: Andrei Maftei
+    orcid: 0009-0008-4946-9842
     affiliation: 1
   - name: Jakob Niessner
+    orcid: 0000-0002-4352-3368
     affiliation: 3
   - name: Bevan Jones
     affiliation: 4
   - name: Gregor Weiss
     affiliation: 5
   - name: Marcel Koch
+    orcid: 0009-0004-8333-9313
     affiliation: 6
   - name: Yu-Hsiang Tsai
     orcid: 0000-0001-5229-3739
     affiliation: 1
   - name: Henning Scheufler
+    orcid: 0000-0003-1578-9772
     affiliation: 4
   - name: Gregor Olenik
     orcid: 0000-0002-0128-3933
