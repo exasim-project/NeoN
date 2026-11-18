@@ -14,7 +14,20 @@ function(neon_example EXAMPLE)
     WORKING_DIRECTORY ${EXAMPLE_DIR})
 endfunction()
 
+# same as neon_example, for an example in python/
+function(neon_python_example EXAMPLE)
+  add_test(
+    NAME example_${EXAMPLE}_py
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/${EXAMPLE}.py
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bindings)
+  set_tests_properties(example_${EXAMPLE}_py PROPERTIES ENVIRONMENT
+                                                        "PYTHONPATH=${CMAKE_BINARY_DIR}/bindings")
+endfunction()
+
 # needs a linear solver
 if(NeoN_WITH_GINKGO)
   neon_example(steadyDiffusion)
+  if(NeoN_BUILD_PYTHON_BINDINGS)
+    neon_python_example(steady_diffusion)
+  endif()
 endif()
