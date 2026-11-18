@@ -209,4 +209,161 @@ TEST_CASE("limitedLinear rejects an unknown gradient marker")
     REQUIRE_THROWS_AS(SurfaceInterpolation<scalar>(exec, mesh, bogus), NeoN::NeoNException);
 }
 
+namespace
+{
+
+// Face values of limitedLinearV on a 1D uniform mesh (unit cells, unit faces) for the given vector
+// cell values and a uniform face flux of `flux`, with a fixedValue boundary of `boundaryValue`.
+Vector<Vec3> interpolateVectorOnLine(
+    const Executor& exec,
+    const std::vector<Vec3>& cellValues,
+    const Vec3& boundaryValue,
+    const scalar k,
+    const scalar flux
+)
+{
+    auto mesh = create1DUniformMesh(exec, static_cast<localIdx>(cellValues.size()));
+    Input input = TokenList({std::string("limitedLinearV"), k});
+    auto scheme = SurfaceInterpolation<Vec3>(exec, mesh, input);
+
+    std::vector<fvcc::VolumeBoundary<Vec3>> vbcs {};
+    std::vector<fvcc::SurfaceBoundary<Vec3>> sbcs {};
+    for (auto patchi : I<localIdx> {0, 1})
+    {
+        Dictionary dict;
+        dict.insert("type", std::string("fixedValue"));
+        dict.insert("fixedValue", boundaryValue);
+        vbcs.push_back(fvcc::VolumeBoundary<Vec3>(mesh, dict, patchi));
+        sbcs.push_back(fvcc::SurfaceBoundary<Vec3>(mesh, dict, patchi));
+    }
+
+    auto in = VolumeField<Vec3>(exec, "in", mesh, vbcs);
+    auto faceFlux = SurfaceField<scalar>(exec, "flux", mesh, {});
+    auto out = SurfaceField<Vec3>(exec, "out", mesh, sbcs);
+
+    in.internalVector() = Vector<Vec3>(exec, cellValues);
+    in.correctBoundaryConditions();
+    fill(faceFlux.internalVector(), flux);
+
+    scheme.interpolate(faceFlux, in, out);
+    return out.internalVector().copyToHost();
+}
+
+// OpenFOAM's limitedLinear limiter for a ratio r: max(min(2/k * r, 1), 0), with r from the slopes
+// gradf along the face and gradcf of the upwind cell (the 1000 cap of NVDTVD / NVDVTVDV).
+scalar referenceLimiter(const scalar k, const scalar gradf, const scalar gradcf)
+{
+    const scalar sign = [](scalar x) { return x >= 0 ? scalar(1) : scalar(-1); }(gradcf) *
+                        [](scalar x) { return x >= 0 ? scalar(1) : scalar(-1); }(gradf);
+    const scalar r =
+        std::abs(gradcf) >= 1000 * std::abs(gradf) ? 2 * 1000 * sign - 1 : 2 * (gradcf / gradf) - 1;
+    return std::max(std::min(2 / k * r, scalar(1)), scalar(0));
+}
+
+} // namespace
+
+// limitedLinearV is OpenFOAM's NVDVTVDV: the TVD ratio is formed along the face difference of the
+// whole vector, gradf = dU & dU and gradcf = dU & (d & grad(U)_upwind), so ONE limiter serves the
+// three components. The expectation is written out by hand for interior faces of a 1D line, where
+// the Gauss gradient of an interior cell is (U[i+1] - U[i-1]) / 2, and it is checked against the
+// per-component limiter to prove the test can tell the two apart.
+TEST_CASE("limitedLinearV limits the vector along its face difference")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    const std::vector<Vec3> cells {
+        {0.0, 0.0, 0.0},
+        {1.0, 0.5, 0.0},
+        {1.5, -1.0, 0.2},
+        {1.0, -1.2, 0.1},
+        {2.5, 0.3, -0.4},
+        {3.0, 1.1, 0.0},
+        {2.2, 1.3, 0.6},
+        {2.0, 0.4, 0.5},
+        {2.1, 0.2, 0.4},
+        {0.0, 0.0, 0.0},
+    };
+    const auto n = static_cast<localIdx>(cells.size());
+
+    for (const scalar flux : {1.0, -1.0})
+    {
+        for (const scalar k : {1.0, 0.5})
+        {
+            INFO("flux " << flux << ", k " << k);
+            auto out = interpolateVectorOnLine(exec, cells, Vec3 {0.0, 0.0, 0.0}, k, flux);
+
+            bool differsFromPerComponent = false;
+            bool limiterStrictlyBetween = false;
+            // faces whose upwind cell is an interior cell and whose neighbour gradient needs no BC
+            for (localIdx i = 1; i < n - 2; i++)
+            {
+                const auto own = static_cast<sizeType>(i);
+                const auto nei = own + 1;
+                const auto up = flux > 0 ? own : nei;
+                const Vec3 gradUp = (cells[up + 1] - cells[up - 1]) * 0.5;
+                const Vec3 dU = cells[nei] - cells[own];
+
+                const scalar limiter = referenceLimiter(k, dU & dU, dU & gradUp);
+                const scalar upwindW = flux >= 0 ? 1.0 : 0.0;
+                const scalar w = limiter * 0.5 + (1.0 - limiter) * upwindW;
+                const Vec3 expected = cells[own] * w + cells[nei] * (1.0 - w);
+                for (int c = 0; c < 3; c++)
+                {
+                    REQUIRE(out.view()[i][c] == Catch::Approx(expected[c]).margin(1e-12));
+                }
+
+                limiterStrictlyBetween =
+                    limiterStrictlyBetween || (limiter > 0.05 && limiter < 0.95);
+                for (int c = 0; c < 3; c++)
+                {
+                    const scalar lc = referenceLimiter(k, dU[c], gradUp[c]);
+                    const scalar wc = lc * 0.5 + (1.0 - lc) * upwindW;
+                    const scalar perComponent = cells[own][c] * wc + cells[nei][c] * (1.0 - wc);
+                    differsFromPerComponent =
+                        differsFromPerComponent || std::abs(perComponent - expected[c]) > 1e-6;
+                }
+            }
+            // The profile has to exercise a partial limiter and one a per-component limiter gets
+            // wrong, or the checks above would also pass for the wrong scheme.
+            REQUIRE(limiterStrictlyBetween);
+            REQUIRE(differsFromPerComponent);
+        }
+    }
+}
+
+// A constant vector has a zero face difference and a zero gradient: the ratio saturates, the
+// limiter is 1 and the scheme is central differencing, which reproduces the constant.
+TEST_CASE("limitedLinearV preserves a constant vector field")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    const Vec3 value {1.0, -2.0, 0.5};
+    const std::vector<Vec3> cells(10, value);
+    auto out = interpolateVectorOnLine(exec, cells, value, 1.0, 1.0);
+
+    for (localIdx i = 0; i < toLocalIdx(out.size()); i++)
+    {
+        for (int c = 0; c < 3; c++)
+        {
+            REQUIRE(out.view()[i][c] == Catch::Approx(value[c]).margin(1e-12));
+        }
+    }
+}
+
+// The cell-limited gradient exists for the scalar limiter only: asking limitedLinearV for it is a
+// spec error rather than a silent fallback to the unlimited gradient.
+TEST_CASE("limitedLinearV rejects the cellLimited marker")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    auto mesh = create1DUniformMesh(exec, 10);
+    Input marked = TokenList(
+        {std::string("limitedLinearV"), static_cast<scalar>(1.0), std::string("cellLimited")}
+    );
+    REQUIRE_THROWS_AS(SurfaceInterpolation<Vec3>(exec, mesh, marked), NeoN::NeoNException);
+}
+
 } // namespace NeoN

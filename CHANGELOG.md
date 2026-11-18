@@ -32,6 +32,7 @@
 - Build shared libraries when `NeoN_WITH_UMPIRE=ON`, so that Ginkgo shares NeoN's Umpire pool [#672](https://github.com/exasim-project/NeoN/pull/672)
 - Bump Kokkos to 5.0.2 [#476](https://github.com/exasim-project/NeoN/pull/476)
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
+- Add the `limitedLinearV` surface interpolation scheme for vector fields, which limits the whole vector with one limiter along its face difference, as OpenFOAM does [#643](https://github.com/exasim-project/NeoN/pull/643)
 
 ## Fixes
 - Fix citation metadata and publish releases on Zenodo automatically [#610](https://github.com/exasim-project/NeoN/pull/610)
