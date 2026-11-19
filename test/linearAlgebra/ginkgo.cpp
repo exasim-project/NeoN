@@ -82,6 +82,49 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
         );
         CHECK(node == expected);
     }
+    SECTION("Nested solver::Ir keeps its inner solver")
+    {
+        // Ir names its inner solver 'solver'; inside a sub-dictionary that is not the backend key.
+        NeoN::Dictionary dict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"preconditioner",
+              NeoN::Dictionary {
+                  {{"type", "solver::Ir"},
+                   {"solver", NeoN::Dictionary {{{"type", "preconditioner::Jacobi"}}}}}
+              }}}
+        };
+
+        auto node = NeoN::la::ginkgo::parse(dict);
+
+        gko::config::pnode expected(
+            {{"type", gko::config::pnode {"solver::Cg"}},
+             {"preconditioner",
+              gko::config::pnode(
+                  {{"type", gko::config::pnode {"solver::Ir"}},
+                   {"solver",
+                    gko::config::pnode({{"type", gko::config::pnode {"preconditioner::Jacobi"}}})}}
+              )}}
+        );
+        CHECK(node == expected);
+    }
+    SECTION("Top-level solver::Ir takes its inner solver from 'preconditioner'")
+    {
+        NeoN::Dictionary dict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", std::string {"solver::Ir"}},
+             {"preconditioner", NeoN::Dictionary {{{"type", "preconditioner::Jacobi"}}}}}
+        };
+
+        auto node = NeoN::la::ginkgo::parse(dict);
+
+        gko::config::pnode expected(
+            {{"type", gko::config::pnode {"solver::Ir"}},
+             {"solver",
+              gko::config::pnode({{"type", gko::config::pnode {"preconditioner::Jacobi"}}})}}
+        );
+        CHECK(node == expected);
+    }
     SECTION("Throws")
     {
         NeoN::Dictionary dict({{"key", std::pair<int*, std::vector<double>> {}}});
@@ -237,6 +280,40 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         REQUIRE(numIter == 3);
         REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
         REQUIRE(finalResNorm < 1.0e-04);
+    }
+
+    SECTION("Solve linear system scalar with solver::Ir " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+
+        Vector<scalar> bValues(exec, {});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
+
+        auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        // Richardson iteration with a Jacobi inner solver, given under 'preconditioner' because
+        // 'solver' selects the Ginkgo backend. Unlike the Krylov solvers, Ginkgo's Ir only takes
+        // typed criteria, not the short form {iteration: ..., relative_residual_norm: ...}.
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Ir"},
+             {"preconditioner", Dictionary {{{"type", "preconditioner::Jacobi"}}}},
+             {"criteria", Dictionary {{{"type", "Iteration"}, {"max_iters", 100}}}}}
+        };
+
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        solver.solve(linearSystem, x);
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
     }
 
     SECTION("Solve linear system vector " + execName)
