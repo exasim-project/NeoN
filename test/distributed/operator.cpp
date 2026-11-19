@@ -713,6 +713,71 @@ TEST_CASE("Distributed Operator - linearUpwind deferred correction (fused)")
     }
 }
 
+// The linearUpwindV counterpart for a vector field: the directional limiter must also be applied on
+// processor faces, so the partitioned correction matches the global serial correction on every
+// rank. On a random field the limiter is active on some faces, including faces cut by the
+// decomposition.
+TEST_CASE("Distributed Operator - linearUpwindV deferred correction (fused)")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const auto nCells = 12;
+    auto meshGlobal = create1DUniformMesh(exec, nCells);
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    auto u = finiteVolume::cellCentred::VolumeField<Vec3>(
+        exec, "U", mesh, Vector<Vec3>(exec, nCells, 2.0 * one<Vec3>()), volBCs
+    );
+    srand(42);
+    randomizeVector(u);
+    u.correctBoundaryConditions();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    fill(phi.internalVector(), 1.0);
+    srand(42);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    auto assembleRhsHost =
+        [&](UnstructuredMesh& m, auto& uF, auto& phiF, auto& gammaF, const NeoN::Dictionary& inp)
+    {
+        auto e = dsl::imp::div(phiF, uF) - dsl::imp::laplacian(gammaF, uF);
+        e.read(inp);
+        return e.assemble(m, 1.0, 1.0, {}).rhs().copyToHost();
+    };
+
+    auto rhsUpw = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("upwind", ""));
+    auto rhsLin = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("linearUpwindV", ""));
+
+    NeoN::mpi::Environment mpiEnviron;
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto rhsUpwP =
+        assembleRhsHost(meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("upwind", "Part"));
+    auto rhsLinP = assembleRhsHost(
+        meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("linearUpwindV", "Part")
+    );
+
+    const auto localCells = nCells / mpiEnviron.sizeRank();
+    const localIdx offset = static_cast<localIdx>(mpiEnviron.rank()) * localCells;
+    for (localIdx i = 0; i < localCells; ++i)
+    {
+        const Vec3 globalCorr = rhsLin.view()[offset + i] - rhsUpw.view()[offset + i];
+        const Vec3 partCorr = rhsLinP.view()[i] - rhsUpwP.view()[i];
+        INFO("rank " << mpiEnviron.rank() << " local cell " << i);
+        for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
+        {
+            REQUIRE(partCorr[cmpt] == Catch::Approx(globalCorr[cmpt]).margin(1e-9));
+        }
+    }
+}
+
 // The relaxation sign is taken from the diagonal summed over all ranks. The last rank's diagonal is
 // positive while the system's is negative, so with a rank-local sum the last rank would keep its
 // rows positive; with the global sum every row is relaxed with the negative sign, as in serial.

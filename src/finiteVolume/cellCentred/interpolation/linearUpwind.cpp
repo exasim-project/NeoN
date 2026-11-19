@@ -62,7 +62,7 @@ Vec3 limitLinearUpwindV(const Vec3& corr, const Vec3& maxCorr)
 **        runtime flag is used rather than a template/`if constexpr`, since nvcc forbids
 **        first-capturing a variable inside an `if constexpr` block in an extended device lambda.
 ** @param limiterWeights central-differencing weights when linearUpwindV's directional limiter
-**        applies (limitLinearUpwindV, internal faces), null for plain linearUpwind
+**        applies (limitLinearUpwindV), null for plain linearUpwind
 **
 ** For both ranks the correction is `grad & d`: with NeoN's row-major tensor convention
 ** (gradTensor(i,j) = d U_i / d x_j) the matrix-vector product `Tensor & Vec3` reproduces
@@ -86,6 +86,7 @@ void applyLinearUpwind(
     // linearUpwindV limits the correction of internal faces; without weights the view is unused.
     const bool directional = limiterWeights != nullptr;
     const auto wS = (directional ? *limiterWeights : flux).internalVector().view();
+    const auto wB = (directional ? *limiterWeights : flux).boundaryData().value().view();
 
     auto dstS = dst.internalVector().view();
     auto dstB = dst.boundaryData().value().view();
@@ -162,10 +163,6 @@ void applyLinearUpwind(
         }
         else
         {
-            // TODO: linearUpwindV's directional limiter is not applied on processor faces yet: it
-            // needs the face's interpolation weight, which the boundary mesh does not hold for
-            // them (its weights() carry the normal sign there).
-            //
             // correction(): a proc face is a cut internal face. Whichever rank owns the upwind
             // cell can compute its correction locally as grad[own] & (Cf - C[own]); the neighbour
             // rank's owner-side correction is exactly this face's neighbour-side correction. So
@@ -213,7 +210,18 @@ void applyLinearUpwind(
                     // owner is upwind when the flux leaves it: normalSign * F >= 0. dstB now holds
                     // the neighbour's owner-side correction (corrNei) from the exchange.
                     const scalar outwardFlux = bNormalSignV[bcfacei] * bFluxV[bcfacei];
-                    dstB[bcfacei] = outwardFlux >= 0 ? corrOwnV[procFacei] : dstB[bcfacei];
+                    ValueType corr = outwardFlux >= 0 ? corrOwnV[procFacei] : dstB[bcfacei];
+                    if (directional)
+                    {
+                        // As on internal faces, with the local cell as owner and the neighbour
+                        // rank's cell value in the patch value; wB is the local cell's weight.
+                        const auto own = bfOwners[bcfacei];
+                        const ValueType maxCorr =
+                            outwardFlux >= 0 ? (1.0 - wB[bcfacei]) * (boundS[bcfacei] - srcS[own])
+                                             : wB[bcfacei] * (srcS[own] - boundS[bcfacei]);
+                        corr = limitLinearUpwindV(corr, maxCorr);
+                    }
+                    dstB[bcfacei] = corr;
                 },
                 "computeLinearUpwindProcCorrectionSelect"
             );
