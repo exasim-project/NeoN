@@ -119,7 +119,7 @@ concept \mbox{\hyperlink{conceptNeoN_1_1hasView}{has\+View}}
 \doxysubsubsection*{Typedefs}
 \begin{DoxyCompactItemize}
 \item 
-using \mbox{\hyperlink{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}{Document\+Validator}} = std\+::function$<$bool(\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}})$>$
+using \mbox{\hyperlink{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}{Document\+Validator}} = std\+::function$<$bool(const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&)$>$
 \begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} type alias for a function that validates a \doxylink{classNeoN_1_1Dictionary}{Dictionary} object. \end{DoxyCompactList}\item 
 using \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} = std\+::variant$<$\mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}, \mbox{\hyperlink{classNeoN_1_1CPUExecutor}{CPUExecutor}}, \mbox{\hyperlink{classNeoN_1_1GPUExecutor}{GPUExecutor}}$>$
 \item 
@@ -186,7 +186,7 @@ bool \mbox{\hyperlink{namespaceNeoN_ab20832c5733e69df50d84b27fc9702a4}{has\+Gpu\
 \item 
 {\footnotesize template$<$typename Type$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1cdf9da8729a96756e0784e572829977}{validate\+Registration}} (const Type \&field, const std\+::string \&error\+Message)
 \begin{DoxyCompactList}\small\item\em Validates that a field is registered in the database. \end{DoxyCompactList}\item 
-bool \mbox{\hyperlink{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b}{has\+Id}} (\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} doc)
+bool \mbox{\hyperlink{namespaceNeoN_ab78d8a6f87e97323bf4f4a68b6b475c7}{has\+Id}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&doc)
 \begin{DoxyCompactList}\small\item\em Checks if a \doxylink{classNeoN_1_1Dictionary}{Dictionary} object has an "{}id"{} key. \end{DoxyCompactList}\item 
 const std\+::string \& \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}} (const \mbox{\hyperlink{classNeoN_1_1Document}{Neo\+N\+::\+Document}} \&doc)
 \begin{DoxyCompactList}\small\item\em Retrieves the name of a \doxylink{classNeoN_1_1Document}{Document}. \end{DoxyCompactList}\item 
@@ -423,11 +423,11 @@ using \mbox{\hyperlink{namespaceNeoN_a50df138959e457a4ed27f66898c17096}{Neo\+N\+
 
 Definition at line \mbox{\hyperlink{kokkos_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{kokkos_8hpp_source}{kokkos.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}\index{NeoN@{NeoN}!DocumentValidator@{DocumentValidator}}
+\Hypertarget{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}\index{NeoN@{NeoN}!DocumentValidator@{DocumentValidator}}
 \index{DocumentValidator@{DocumentValidator}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{DocumentValidator}{DocumentValidator}}
-{\footnotesize\ttfamily \label{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8} 
-using \mbox{\hyperlink{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}{Neo\+N\+::\+Document\+Validator}} = std\+::function$<$bool(\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}})$>$}
+{\footnotesize\ttfamily \label{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018} 
+using \mbox{\hyperlink{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}{Neo\+N\+::\+Document\+Validator}} = std\+::function$<$bool(const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&)$>$}
 
 
 
@@ -437,7 +437,7 @@ This type alias represents a function that takes a \doxylink{classNeoN_1_1Dictio
 
 Example usage\+: 
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\mbox{\hyperlink{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}{DocumentValidator}}\ validator\ =\ [](\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ dict)\ -\/>\ \textcolor{keywordtype}{bool}\ \{}
+\DoxyCodeLine{\mbox{\hyperlink{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}{DocumentValidator}}\ validator\ =\ [](\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict)\ -\/>\ \textcolor{keywordtype}{bool}\ \{}
 \DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Validation\ logic\ here}}
 \DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \textcolor{comment}{//\ or\ false\ based\ on\ validation}}
 \DoxyCodeLine{\};}
@@ -878,11 +878,11 @@ bool Neo\+N\+::has\+Cpu\+Backend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCapt
 {\footnotesize\ttfamily \label{namespaceNeoN_ab20832c5733e69df50d84b27fc9702a4} 
 bool Neo\+N\+::has\+Gpu\+Backend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [nodiscard]}, {\ttfamily [noexcept]}}
 
-\Hypertarget{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b}\index{NeoN@{NeoN}!hasId@{hasId}}
+\Hypertarget{namespaceNeoN_ab78d8a6f87e97323bf4f4a68b6b475c7}\index{NeoN@{NeoN}!hasId@{hasId}}
 \index{hasId@{hasId}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{hasId()}{hasId()}}
-{\footnotesize\ttfamily \label{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b} 
-bool Neo\+N\+::has\+Id (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}}]{doc}{}\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \label{namespaceNeoN_ab78d8a6f87e97323bf4f4a68b6b475c7} 
+bool Neo\+N\+::has\+Id (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{doc}{}\end{DoxyParamCaption})}
 
 
 

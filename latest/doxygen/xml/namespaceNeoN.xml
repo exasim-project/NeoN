@@ -122,9 +122,9 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="namespaceNeoN_1ae66b818e811f6d3d43911f7241cbacc8" prot="public" static="no">
-        <type>std::function&lt; bool(<ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>)&gt;</type>
-        <definition>using NeoN::DocumentValidator =  std::function&lt;bool(Dictionary)&gt;</definition>
+      <memberdef kind="typedef" id="namespaceNeoN_1a406d5c8ce9f8f72f54a5b17d930a3018" prot="public" static="no">
+        <type>std::function&lt; bool(const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;)&gt;</type>
+        <definition>using NeoN::DocumentValidator =  std::function&lt;bool(const Dictionary&amp;)&gt;</definition>
         <argsstring></argsstring>
         <name>DocumentValidator</name>
         <qualifiedname>NeoN::DocumentValidator</qualifiedname>
@@ -133,7 +133,7 @@
         </briefdescription>
         <detaileddescription>
 <para>This type alias represents a function that takes a <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> object as an argument and returns a boolean value indicating whether the <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> is valid or not.</para>
-<para>Example usage: <programlisting><codeline><highlight class="normal"><ref refid="namespaceNeoN_1ae66b818e811f6d3d43911f7241cbacc8" kindref="member">DocumentValidator</ref><sp/>validator<sp/>=<sp/>[](<ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/>dict)<sp/>-&gt;<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<para>Example usage: <programlisting><codeline><highlight class="normal"><ref refid="namespaceNeoN_1a406d5c8ce9f8f72f54a5b17d930a3018" kindref="member">DocumentValidator</ref><sp/>validator<sp/>=<sp/>[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict)<sp/>-&gt;<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Validation<sp/>logic<sp/>here</highlight><highlight class="normal"></highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>or<sp/>false<sp/>based<sp/>on<sp/>validation</highlight><highlight class="normal"></highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
@@ -822,14 +822,14 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/database.hpp" line="121" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/database.hpp" bodystart="121" bodyend="127"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1a1515bc3e21ebafd40f42151ea50ed85b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1ab78d8a6f87e97323bf4f4a68b6b475c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
         <definition>bool NeoN::hasId</definition>
-        <argsstring>(Dictionary doc)</argsstring>
+        <argsstring>(const Dictionary &amp;doc)</argsstring>
         <name>hasId</name>
         <qualifiedname>NeoN::hasId</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref></type>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
           <declname>doc</declname>
         </param>
         <briefdescription>
@@ -884,7 +884,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="110" column="19" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="110" declcolumn="19"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="118" column="19" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="118" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a508e5c2b8bf931a8a0921707f98b19e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string &amp;</type>
@@ -916,7 +916,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="121" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="121" declcolumn="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="129" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="129" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a6ad7f4df2e8cf0dacc1c7262cc93f9e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -1019,7 +1019,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" line="221" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" declline="221" declcolumn="1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" line="228" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" declline="228" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a3457b41aba26d227a5cfa86d052abbfb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
