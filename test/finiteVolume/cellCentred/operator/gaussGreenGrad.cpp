@@ -99,4 +99,93 @@ TEST_CASE("gaussGreenGrad tensor gradient on symmetry planes")
     }
 }
 
+// gradVolIntegrated accumulates operatorScaling * V * grad(phi), i.e. the explicit gradient before
+// the division by the cell volume, into its target. It must equal grad() times V cell by cell,
+// with a per-cell operator scaling, and add to what the target already holds.
+TEST_CASE("gaussGreenGrad volume-integrated gradient")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    const localIdx n = 3;
+    auto mesh = create3DUniformMesh(exec, n, n, n, 2.0, 1.0, 0.5);
+    const auto nCells = mesh.nCells();
+
+    auto bcs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    auto ccH = mesh.cellCenters().copyToHost();
+    std::vector<scalar> phiValues(static_cast<sizeType>(nCells));
+    std::vector<scalar> scaling(static_cast<sizeType>(nCells));
+    for (localIdx i = 0; i < nCells; ++i)
+    {
+        const Vec3 p = ccH.view()[i];
+        phiValues[static_cast<sizeType>(i)] = 1.5 * p[0] * p[0] - 2.0 * p[1] + 0.75 * p[2] + 0.3;
+        scaling[static_cast<sizeType>(i)] = 1.0 + 0.1 * static_cast<scalar>(i);
+    }
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, Vector<scalar>(exec, phiValues), bcs);
+    phi.correctBoundaryConditions();
+    const Vector<scalar> scalingField(exec, scaling); // dsl::Coeff only views the field
+    const dsl::Coeff coeff(scalingField);
+
+    fvcc::GaussGreenGrad gradOp(exec, mesh);
+
+    Vector<Vec3> grad(exec, nCells, Vec3(0.0, 0.0, 0.0));
+    gradOp.grad(phi, coeff, grad);
+
+    const Vec3 offset(1.0, -2.0, 3.0);
+    Vector<Vec3> volIntegrated(exec, nCells, offset);
+    gradOp.gradVolIntegrated(phi, coeff, volIntegrated);
+
+    auto [gradH, volIntegratedH, volH] = copyToHosts(grad, volIntegrated, mesh.cellVolumes());
+    for (localIdx i = 0; i < nCells; ++i)
+    {
+        INFO("cell " << i);
+        const Vec3 expected = gradH.view()[i] * volH.view()[i];
+        REQUIRE(std::abs(expected[0]) + std::abs(expected[1]) > 1e-6);
+        for (sizeType d = 0; d < 3; ++d)
+        {
+            REQUIRE(
+                volIntegratedH.view()[i][d] - offset[d] == Catch::Approx(expected[d]).margin(1e-12)
+            );
+        }
+    }
+}
+
+// GaussGreenGrad reuses one face-interpolation buffer across calls; a second gradient of a
+// different field must not see values left from the first.
+TEST_CASE("gaussGreenGrad reuses its face buffer without stale values")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    auto mesh = create3DUniformMesh(exec, 3, 3, 3, 1.0, 1.0, 1.0);
+    auto bcs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    auto ccH = mesh.cellCenters().copyToHost();
+    std::vector<scalar> a(static_cast<sizeType>(mesh.nCells()));
+    std::vector<scalar> b(static_cast<sizeType>(mesh.nCells()));
+    for (localIdx i = 0; i < mesh.nCells(); ++i)
+    {
+        const Vec3 p = ccH.view()[i];
+        a[static_cast<sizeType>(i)] = 3.0 * p[0] + p[1];
+        b[static_cast<sizeType>(i)] = -p[1] + 2.0 * p[2] * p[2];
+    }
+    fvcc::VolumeField<scalar> phiA(exec, "a", mesh, Vector<scalar>(exec, a), bcs);
+    fvcc::VolumeField<scalar> phiB(exec, "b", mesh, Vector<scalar>(exec, b), bcs);
+    phiA.correctBoundaryConditions();
+    phiB.correctBoundaryConditions();
+
+    fvcc::GaussGreenGrad reused(exec, mesh);
+    auto first = reused.grad(phiA);
+    auto second = reused.grad(phiB);
+    auto fresh = fvcc::GaussGreenGrad(exec, mesh).grad(phiB);
+
+    auto [secondH, freshH] = copyToHosts(second.internalVector(), fresh.internalVector());
+    for (localIdx i = 0; i < mesh.nCells(); ++i)
+    {
+        for (sizeType d = 0; d < 3; ++d)
+        {
+            REQUIRE(secondH.view()[i][d] == Catch::Approx(freshH.view()[i][d]).margin(1e-12));
+        }
+    }
+}
+
 }

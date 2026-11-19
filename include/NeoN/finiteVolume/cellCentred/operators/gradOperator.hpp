@@ -5,7 +5,6 @@
 #pragma once
 
 #include "NeoN/fields/field.hpp"
-#include "NeoN/core/error.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/error.hpp"
