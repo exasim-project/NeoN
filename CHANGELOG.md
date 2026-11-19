@@ -1,4 +1,5 @@
 # Version 0.3.0 (unreleased)
+- Relax every row of an equation with the system's sign, as `fvMatrix::relax()` does (D = max(|D|, sumOff), positive for an OpenFOAM-convention system): a row whose diagonal came out negative -- e.g. a bounded-convection cell with more outflow than inflow -- was relaxed as a negative one, i.e. a different equation
 ## Features
 - Add `TrackingMesh`, mesh walk (`pointInCell`, `locateCell`) and cellPoint interpolation (`pointToBarycentric`, `interpolateCellPoint`) for locating points in a mesh [#670](https://github.com/exasim-project/NeoN/pull/670)
 - Add `slip` and `inletOutlet` volume boundary conditions [#565](https://github.com/exasim-project/NeoN/pull/565)
