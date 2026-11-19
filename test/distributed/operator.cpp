@@ -713,4 +713,47 @@ TEST_CASE("Distributed Operator - linearUpwind deferred correction (fused)")
     }
 }
 
+// The relaxation sign is taken from the diagonal summed over all ranks. The last rank's diagonal is
+// positive while the system's is negative, so with a rank-local sum the last rank would keep its
+// rows positive; with the global sum every row is relaxed with the negative sign, as in serial.
+TEST_CASE("Distributed relaxation uses the global sign of the system")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    NeoN::mpi::Environment mpiEnviron;
+    REQUIRE(mpiEnviron.sizeRank() > 1);
+
+    const localIdx nCellsLocal = 4;
+    auto meshPart = create1DUniformMeshPart(exec, nCellsLocal);
+    auto ls = la::createEmptyLinearSystem<scalar>(meshPart);
+    const localIdx n = ls.rhs().size();
+
+    const bool lastRank = mpiEnviron.rank() == mpiEnviron.sizeRank() - 1;
+    const scalar d = lastRank ? 1.0 : -4.0;
+    {
+        auto values = ls.matrix().values().view();
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().rowOffs().view());
+        parallelFor(
+            exec, {0, n}, NEON_LAMBDA(const localIdx c) { values[ma.diagIdx(c)] = d; }, "setDiag"
+        );
+    }
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
+    fvcc::VolumeField<scalar> psi(exec, "psi", meshPart, Vector<scalar>(exec, n, 1.0), volBCs);
+
+    dsl::applyMatrixRelaxation(ls, psi, 0.5);
+
+    // The off-diagonals are zero, so the non-zero values are exactly the n diagonals.
+    auto valuesH = ls.matrix().values().copyToHost();
+    localIdx nDiag = 0;
+    for (localIdx i = 0; i < valuesH.size(); ++i)
+    {
+        const scalar v = valuesH.view()[i];
+        if (v == 0.0) continue;
+        INFO("rank " << mpiEnviron.rank() << " value " << i);
+        REQUIRE(v == Catch::Approx(-2.0 * std::abs(d)));
+        ++nDiag;
+    }
+    REQUIRE(nDiag == n);
+}
+
 }
