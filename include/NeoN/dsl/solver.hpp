@@ -21,6 +21,9 @@
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/core/mpi/operators.hpp"
+#endif
 
 
 namespace NeoN::dsl
@@ -238,7 +241,19 @@ void applyMatrixRelaxation(
     // and not diagonally dominant, e.g. a bounded-convection cell with more outflow than inflow --
     // is relaxed as a positive one. NeoN also relaxes systems assembled with the opposite overall
     // sign, so the sign is taken from the summed diagonal rather than assumed, and every relaxed
-    // row gets it; copying each row's own sign would keep such a negative row negative.
+    // row gets it; copying each row's own sign would keep such a negative row negative. The sum
+    // is taken over all ranks, so the sign does not depend on the decomposition.
+    auto globalSum = [&](scalar& sum)
+    {
+#ifdef NF_WITH_MPI_SUPPORT
+        if (solution.mesh().boundaryMesh().isDistributed())
+        {
+            mpi::allReduce(sum, mpi::ReduceOp::Sum, ls.commPattern().env.comm());
+        }
+#else
+        (void)sum;
+#endif
+    };
     auto convention = one<MatrixValueType>();
     if constexpr (std::is_same_v<MatrixValueType, scalar>)
     {
@@ -251,6 +266,7 @@ void applyMatrixRelaxation(
             },
             sumDiag
         );
+        globalSum(sumDiag);
         convention = sumDiag >= 0 ? scalar(1) : scalar(-1);
     }
     else
@@ -266,6 +282,7 @@ void applyMatrixRelaxation(
                 },
                 sumDiag
             );
+            globalSum(sumDiag);
             convention[cmpt] = sumDiag >= 0 ? scalar(1) : scalar(-1);
         }
     }
