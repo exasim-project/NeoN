@@ -109,13 +109,13 @@ public:
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& domainVector,
+        Field<ValueType> domainVector,
         const std::vector<SurfaceBoundary<ValueType>>& boundaryConditions,
         Database& db,
         std::string dbKey,
         std::string collectionName
     )
-        : DomainMixin<ValueType>(exec, fieldName, mesh, domainVector),
+        : DomainMixin<ValueType>(exec, fieldName, mesh, std::move(domainVector)),
           FieldDatabaseMixin(db, std::move(dbKey), std::move(collectionName)),
           boundaryConditions_(boundaryConditions)
     {}
@@ -128,6 +128,17 @@ public:
     SurfaceField(const SurfaceField& other)
         : DomainMixin<ValueType>(other), FieldDatabaseMixin(other),
           boundaryConditions_(other.boundaryConditions_)
+    {}
+
+    /**
+     * @brief Move constructor. Without it, moving a SurfaceField would copy its data, since the
+     * user-declared copy constructor suppresses the implicit move constructor.
+     *
+     * @param other The surface field to move from.
+     */
+    SurfaceField(SurfaceField&& other)
+        : DomainMixin<ValueType>(std::move(other)), FieldDatabaseMixin(std::move(other)),
+          boundaryConditions_(std::move(other.boundaryConditions_))
     {}
 
     /**

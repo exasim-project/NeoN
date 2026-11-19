@@ -64,6 +64,13 @@ public:
     void insert(const std::string& key, const std::any& value);
 
     /**
+     * @brief Inserts a key-value pair into the dictionary, moving the value.
+     * @param key The key to insert.
+     * @param value The value to insert.
+     */
+    void insert(const std::string& key, std::any&& value);
+
+    /**
      * @brief Checks if the given key is present in the dictionary.
      * @param key The key to check.
      * @return True if the key is present, false otherwise.

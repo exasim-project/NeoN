@@ -8,13 +8,15 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 // Initialize the static member
-bool validateVectorDoc(const Document& doc)
+bool validateVectorDoc(const Dictionary& doc)
 {
     return doc.contains("name") && doc.contains("timeIndex") && doc.contains("iterationIndex")
         && doc.contains("subCycleIndex") && hasId(doc) && doc.contains("field");
 }
 
 VectorDocument::VectorDocument(const Document& doc) : doc_(doc, validateVectorDoc) {}
+
+VectorDocument::VectorDocument(Document&& doc) : doc_(std::move(doc), validateVectorDoc) {}
 
 std::string VectorDocument::id() const { return doc_.id(); }
 
@@ -61,6 +63,17 @@ std::string VectorCollection::insert(const VectorDocument& cc)
         return "";
     }
     docs_.emplace(id, cc);
+    return id;
+}
+
+std::string VectorCollection::insert(VectorDocument&& cc)
+{
+    std::string id = cc.id();
+    if (contains(id))
+    {
+        return "";
+    }
+    docs_.emplace(id, std::move(cc));
     return id;
 }
 

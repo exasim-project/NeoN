@@ -7,7 +7,7 @@
 namespace NeoN
 {
 
-bool hasId(Dictionary doc) { return doc.contains("id"); }
+bool hasId(const Dictionary& doc) { return doc.contains("id"); }
 
 Document::Document() : Dictionary(), id_(generateID()), validator_(hasId)
 {
@@ -19,6 +19,16 @@ Document::Document() : Dictionary(), id_(generateID()), validator_(hasId)
 
 Document::Document(const Dictionary& dict, DocumentValidator validator)
     : Dictionary(dict), id_(generateID()), validator_(validator)
+{
+    if (!contains("id"))
+    {
+        insert("id", id_);
+    }
+    validate();
+}
+
+Document::Document(Dictionary&& dict, DocumentValidator validator)
+    : Dictionary(std::move(dict)), id_(generateID()), validator_(std::move(validator))
 {
     if (!contains("id"))
     {
