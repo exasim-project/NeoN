@@ -9,6 +9,7 @@
 #include "NeoN/NeoN.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 using NeoN::finiteVolume::cellCentred::SurfaceField;
 using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
@@ -149,10 +150,24 @@ TEST_CASE("linearUpwindV limits the correction directionally at a sharp extremum
     const auto nCells = mesh.nCells();
     const auto nInt = mesh.nInternalFaces();
 
-    // A single-cell spike: zero everywhere except one interior cell.
-    const localIdx spike = toLocalIdx(nCells) / 2;
+    // A single-cell spike, zero everywhere except one interior cell, and an oscillating field.
+    // The oscillating field gives corrections that point against maxCorr and ones that are
+    // aligned with it but longer, which the spike alone does not.
+    const auto fieldName = GENERATE(std::string("spike"), std::string("oscillating"));
+    INFO("field: " << fieldName);
     std::vector<Vec3> values(nCells, Vec3 {0.0, 0.0, 0.0});
-    values[static_cast<sizeType>(spike)] = Vec3 {10.0, -8.0, 6.0};
+    if (fieldName == "spike")
+    {
+        values[static_cast<sizeType>(toLocalIdx(nCells) / 2)] = Vec3 {10.0, -8.0, 6.0};
+    }
+    else
+    {
+        for (sizeType i = 0; i < values.size(); ++i)
+        {
+            const auto x = static_cast<scalar>(i);
+            values[i] = Vec3 {std::sin(1.7 * x), std::cos(2.3 * x), std::sin(0.9 * x + 1.0)};
+        }
+    }
 
     auto src = VolumeField<Vec3>(
         exec, "src", mesh, fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh)
@@ -181,6 +196,8 @@ TEST_CASE("linearUpwindV limits the correction directionally at a sharp extremum
     const auto plain = plainH.view();
 
     bool differs = false;
+    localIdx nOpposing = 0;
+    localIdx nRescaled = 0;
     for (localIdx facei = 0; facei < nInt; ++facei)
     {
         const auto o = static_cast<sizeType>(own[facei]);
@@ -190,9 +207,16 @@ TEST_CASE("linearUpwindV limits the correction directionally at a sharp extremum
         Vec3 expected = plain[facei] - values[o];
         const scalar sfCorrs = expected & expected;
         const scalar maxCorrs = expected & maxCorr;
-        if (sfCorrs > 0 && maxCorrs < 0) expected = Vec3 {0.0, 0.0, 0.0};
+        if (sfCorrs > 0 && maxCorrs < 0)
+        {
+            expected = Vec3 {0.0, 0.0, 0.0};
+            ++nOpposing;
+        }
         else if (sfCorrs > maxCorrs)
+        {
             expected = expected * (maxCorrs / sfCorrs);
+            if (maxCorrs > 0) ++nRescaled;
+        }
         const Vec3 corr = limited[facei] - values[o];
         INFO("face " << facei);
         REQUIRE((corr & maxCorr) >= -1e-10);
@@ -205,6 +229,11 @@ TEST_CASE("linearUpwindV limits the correction directionally at a sharp extremum
     }
     // The limiter must actually bite somewhere on this field.
     REQUIRE(differs);
+    if (fieldName == "oscillating")
+    {
+        REQUIRE(nOpposing > 0);
+        REQUIRE(nRescaled > 0);
+    }
 }
 
 }
