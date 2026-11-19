@@ -17,12 +17,12 @@ using NeoN::finiteVolume::cellCentred::VolumeField;
 namespace NeoN
 {
 
-// linearUpwindV is linearUpwind whose deferred gradient correction is built from the
-// cell-limited (minmod, k=1) gradient instead of the unlimited Gauss-Green one. Two properties
-// follow, and both are pinned below:
+// linearUpwindV is linearUpwind whose face correction is limited by OpenFOAM's directional
+// limiter: with maxCorr the jump from the upwind cell to the central-differencing face value, a
+// correction pointing against maxCorr is dropped and one longer than its projection on maxCorr is
+// scaled back. Two properties follow, and both are pinned below:
 //   * where the limiter is inactive (a linear field) it must agree with linearUpwind exactly;
-//   * where it is active it must keep the reconstructed face value inside the value range
-//     spanned by the upwind cell and its neighbours -- that bound is the point of the scheme.
+//   * where it is active the correction must neither point against nor overshoot maxCorr.
 
 // The scheme is a vector reconstruction, so it is registered only for Vec3. A missing
 // registration aborts the process at lookup rather than throwing, so assert on the factory
@@ -37,13 +37,13 @@ TEST_CASE("linearUpwindV is registered for vector fields only")
 
     REQUIRE(has(vectorEntries, "linearUpwindV"));
     REQUIRE(has(vectorEntries, "linearUpwind"));
-    // Cell limiting is a vector-field concept; the scalar factory must not offer it.
+    // Directional limiting is a vector-field concept; the scalar factory must not offer it.
     REQUIRE_FALSE(has(scalarEntries, "linearUpwindV"));
 }
 
-// A field whose gradient is constant is monotone across every cell, so the minmod limiter never
-// clips: linearUpwindV must reproduce the analytic face value exactly, just like linearUpwind.
-// Only interior-interior faces are checked, where the Gauss gradient itself is exact.
+// A field whose gradient is constant gives every face a correction equal to maxCorr, so the
+// limiter never clips: linearUpwindV must reproduce the analytic face value exactly, just like
+// linearUpwind. Only interior-interior faces are checked, where the Gauss gradient itself is exact.
 TEST_CASE("linearUpwindV is exact for a linear vector field")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -127,12 +127,13 @@ TEST_CASE("linearUpwindV is exact for a linear vector field")
     checkDirection(-1.0); // upwind = neighbour
 }
 
-// With a sharp peak the unlimited gradient extrapolates past the local data range. The
-// cell-limited gradient clips it, so every reconstructed face value must stay inside the range
-// spanned by the upwind cell and its face neighbours. The test also asserts that the two schemes
-// actually disagree somewhere, which is what proves the cell-limited path is being taken rather
-// than silently falling through to plain linearUpwind.
-TEST_CASE("linearUpwindV bounds the reconstruction at a sharp extremum")
+// With a sharp peak the unlimited gradient correction points against, or overshoots, the jump
+// to the central-differencing face value on the faces around the peak. The directional limiter
+// must remove both on every face, exactly as OpenFOAM limits linearUpwind's correction, with
+// maxCorr = (1 - w)(phi_N - phi_P) for an upwind owner and w = 1/2 on the uniform mesh. The test
+// also asserts that the two schemes actually disagree somewhere, which proves the limiter is
+// applied rather than falling through to linearUpwind.
+TEST_CASE("linearUpwindV limits the correction directionally at a sharp extremum")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
     INFO("executor: " << execName);
@@ -159,23 +160,6 @@ TEST_CASE("linearUpwindV bounds the reconstruction at a sharp extremum")
     src.internalVector() = Vector<Vec3>(exec, values);
     src.correctBoundaryConditions();
 
-    // Per-cell min/max over the cell itself and its face neighbours -- the range the cell-limited
-    // reconstruction is allowed to produce on that cell's faces.
-    std::vector<Vec3> lo = values;
-    std::vector<Vec3> hi = values;
-    for (localIdx facei = 0; facei < nInt; ++facei)
-    {
-        const auto o = static_cast<sizeType>(own[facei]);
-        const auto nb = static_cast<sizeType>(nei[facei]);
-        for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
-        {
-            lo[o][cmpt] = std::min(lo[o][cmpt], values[nb][cmpt]);
-            hi[o][cmpt] = std::max(hi[o][cmpt], values[nb][cmpt]);
-            lo[nb][cmpt] = std::min(lo[nb][cmpt], values[o][cmpt]);
-            hi[nb][cmpt] = std::max(hi[nb][cmpt], values[o][cmpt]);
-        }
-    }
-
     auto interpolateWith = [&](const std::string& schemeName)
     {
         Input input = TokenList({schemeName, std::string("Gauss")});
@@ -200,10 +184,22 @@ TEST_CASE("linearUpwindV bounds the reconstruction at a sharp extremum")
     for (localIdx facei = 0; facei < nInt; ++facei)
     {
         const auto o = static_cast<sizeType>(own[facei]);
+        const auto nb = static_cast<sizeType>(nei[facei]);
+        const Vec3 maxCorr = 0.5 * (values[nb] - values[o]);
+        // linearUpwind's correction, limited as OpenFOAM's linearUpwindV does.
+        Vec3 expected = plain[facei] - values[o];
+        const scalar sfCorrs = expected & expected;
+        const scalar maxCorrs = expected & maxCorr;
+        if (sfCorrs > 0 && maxCorrs < 0) expected = Vec3 {0.0, 0.0, 0.0};
+        else if (sfCorrs > maxCorrs)
+            expected = expected * (maxCorrs / sfCorrs);
+        const Vec3 corr = limited[facei] - values[o];
+        INFO("face " << facei);
+        REQUIRE((corr & maxCorr) >= -1e-10);
+        REQUIRE((corr & corr) <= (corr & maxCorr) + 1e-10);
         for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
         {
-            REQUIRE(limited[facei][cmpt] >= lo[o][cmpt] - 1e-10);
-            REQUIRE(limited[facei][cmpt] <= hi[o][cmpt] + 1e-10);
+            REQUIRE(corr[cmpt] == Catch::Approx(expected[cmpt]).margin(1e-10));
             if (std::abs(limited[facei][cmpt] - plain[facei][cmpt]) > 1e-10) differs = true;
         }
     }
