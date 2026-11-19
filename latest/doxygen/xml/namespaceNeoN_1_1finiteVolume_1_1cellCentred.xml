@@ -948,7 +948,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linear.hpp" line="32" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linear.hpp" declline="32" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a81b9410ce90e1bd8e6666140a8893a6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af18de616ea2cf54396fc2e24366f27d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -956,7 +956,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::computeLinearUpwindInterpolation</definition>
-        <argsstring>(const VolumeField&lt; ValueType &gt; &amp;src, const SurfaceField&lt; scalar &gt; &amp;flux, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaOwner, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaNeighbour, SurfaceField&lt; ValueType &gt; &amp;dst, const bool cellLimitedGradient=false)</argsstring>
+        <argsstring>(const VolumeField&lt; ValueType &gt; &amp;src, const SurfaceField&lt; scalar &gt; &amp;flux, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaOwner, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaNeighbour, SurfaceField&lt; ValueType &gt; &amp;dst, const bool cellLimitedGradient=false, const SurfaceField&lt; scalar &gt; *limiterWeights=nullptr)</argsstring>
         <name>computeLinearUpwindInterpolation</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::computeLinearUpwindInterpolation</qualifiedname>
         <param>
@@ -984,15 +984,20 @@
           <declname>cellLimitedGradient</declname>
           <defval>false</defval>
         </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; *</type>
+          <declname>limiterWeights</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="66" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" declline="66" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="68" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" declline="68" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aadcf276aad95b11276bd39da07cdf8bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a80e27af4add7143ad6dca84c12b57818" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -1000,7 +1005,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::computeLinearUpwindCorrection</definition>
-        <argsstring>(const VolumeField&lt; ValueType &gt; &amp;src, const SurfaceField&lt; scalar &gt; &amp;flux, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaOwner, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaNeighbour, SurfaceField&lt; ValueType &gt; &amp;dst, const bool cellLimitedGradient=false)</argsstring>
+        <argsstring>(const VolumeField&lt; ValueType &gt; &amp;src, const SurfaceField&lt; scalar &gt; &amp;flux, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaOwner, const SurfaceField&lt; Vec3 &gt; &amp;faceDeltaNeighbour, SurfaceField&lt; ValueType &gt; &amp;dst, const bool cellLimitedGradient=false, const SurfaceField&lt; scalar &gt; *limiterWeights=nullptr)</argsstring>
         <name>computeLinearUpwindCorrection</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::computeLinearUpwindCorrection</qualifiedname>
         <param>
@@ -1028,13 +1033,18 @@
           <declname>cellLimitedGradient</declname>
           <defval>false</defval>
         </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; *</type>
+          <declname>limiterWeights</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="84" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" declline="84" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="87" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" declline="87" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1aa9d7a25056cb046afef32003276efb73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
