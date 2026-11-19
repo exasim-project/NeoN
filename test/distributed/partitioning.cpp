@@ -118,8 +118,8 @@ TEST_CASE("Distributed")
             };
             REQUIRE_THAT(uPart.internalVector(), Equals(uPartExp));
             REQUIRE_THAT(uVecPart.internalVector(), Equals(uVecPartExp, Approx {1e-32}));
-            auto uPartBoundExp = std::vector<scalar> {0.0, 5.0};
-            auto uVecPartBoundExp = std::vector<Vec3> {0.0 * one<Vec3>(), 5.0 * one<Vec3>()};
+            auto uPartBoundExp = std::vector<scalar> {1.0, 5.0};
+            auto uVecPartBoundExp = std::vector<Vec3> {1.0 * one<Vec3>(), 5.0 * one<Vec3>()};
             REQUIRE_THAT(uPart.boundaryData().value(), Equals(uPartBoundExp));
             REQUIRE_THAT(uVecPart.boundaryData().value(), Equals(uVecPartBoundExp, Approx {1e-32}));
         }
@@ -144,8 +144,8 @@ TEST_CASE("Distributed")
             };
             REQUIRE_THAT(uPart.internalVector(), Equals(uPartExp));
             REQUIRE_THAT(uVecPart.internalVector(), Equals(uVecPartExp, Approx {1e-32}));
-            auto uPartBoundExp = std::vector<scalar> {0.0, 8.0};
-            auto uVecPartBoundExp = std::vector<Vec3> {0.0 * one<Vec3>(), 8.0 * one<Vec3>()};
+            auto uPartBoundExp = std::vector<scalar> {12.0, 8.0};
+            auto uVecPartBoundExp = std::vector<Vec3> {12.0 * one<Vec3>(), 8.0 * one<Vec3>()};
             REQUIRE_THAT(uPart.boundaryData().value(), Equals(uPartBoundExp));
             REQUIRE_THAT(uVecPart.boundaryData().value(), Equals(uVecPartBoundExp, Approx {1e-32}));
         }

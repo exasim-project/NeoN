@@ -54,6 +54,9 @@ public:
     /**
      * @brief Constructor for a VolumeField with a given internal field
      *
+     * The boundary values are set to the owner cell values (zero gradient). Call
+     * correctBoundaryConditions() to evaluate the boundary conditions.
+     *
      * @param exec The executor
      * @param name The name of the field
      * @param mesh The underlying mesh

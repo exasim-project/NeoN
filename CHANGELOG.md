@@ -36,6 +36,7 @@
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
 
 ## Fixes
+- Initialize the boundary values of a `VolumeField` constructed from an internal `Vector` to the owner cell values (zero gradient) instead of zero [#679](https://github.com/exasim-project/NeoN/pull/679)
 - Fix the Python `solve`, which raised a `TypeError` after every solve, and the `VolumeField` and `SurfaceField` constructors taking boundary conditions, which could not be called. Volume and surface boundaries now throw on an invalid patch id or an unknown or missing `type` instead of crashing, and fields and boundaries created from Python keep their mesh alive [#677](https://github.com/exasim-project/NeoN/pull/677)
 - Fix citation metadata and publish releases on Zenodo automatically [#610](https://github.com/exasim-project/NeoN/pull/610)
 - Fix an intermittent segfault in the MPI unit tests: the IO serialization thread called MPI concurrently with the main thread even when the library only provided `MPI_THREAD_SINGLE` [#602](https://github.com/exasim-project/NeoN/pull/602)
