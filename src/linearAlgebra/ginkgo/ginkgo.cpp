@@ -575,6 +575,9 @@ void solveComponent(
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
     auto values = getComponent<I>(sys.matrix().values());
+    // Ensure the Kokkos getComponent kernels have completed before Ginkgo reads the data, which
+    // may use a different SYCL queue on Intel GPU.
+    Kokkos::fence();
     auto sparsity = sys.matrix().sparsity();
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
     auto gkoMtx = createGkoMtx(mtx);
@@ -678,6 +681,9 @@ void solveImplicitTransformComponent(
 
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
+    // gkoExec->synchronize() above waits for Ginkgo's queue only; also wait for the Kokkos
+    // getComponent kernels before Ginkgo reads rhs/xcopy (different SYCL queues on Intel GPU).
+    Kokkos::fence();
     stats.entries.push_back(solve_impl(gkoExec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
     setComponent<I>(xcopy, x);
 
