@@ -394,6 +394,7 @@ void computeLinearUpwindCorrection(
     );
 }
 
+// clang-format off
 #define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                \
     template void computeLinearUpwindInterpolation<TYPENAME>(                                      \
         const VolumeField<TYPENAME>&,                                                              \
@@ -413,6 +414,7 @@ void computeLinearUpwindCorrection(
         const bool,                                                                                \
         const SurfaceField<scalar>*                                                                \
     )
+// clang-format on
 
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(Vec3);
