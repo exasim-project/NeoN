@@ -17,10 +17,30 @@
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
-    // remove 'solver Ginkgo;' entry
-    if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
+    // Whether the entry key holds the string value, stored as std::string or const char*.
+    auto holdsString = [&dict](const std::string& key, const std::string& value)
+    {
+        if (!dict.contains(key)) return false;
+        const auto& entry = dict[key];
+        if (entry.type() == typeid(std::string)) return std::any_cast<std::string>(entry) == value;
+        if (entry.type() == typeid(const char*)) return std::any_cast<const char*>(entry) == value;
+        return false;
+    };
+
+    // remove 'solver Ginkgo;' entry. Only a string is the backend key: solver::Ir carries its inner
+    // solver as a sub-dictionary under 'solver'.
+    if (holdsString("solver", "Ginkgo"))
     {
         dict.remove("solver");
+    }
+
+    // At the top level 'solver' selects the backend, so a top-level solver::Ir gives its inner
+    // solver under 'preconditioner', which Ginkgo's Ir rejects; rename it to Ir's 'solver' key.
+    if (holdsString("type", "solver::Ir") && dict.contains("preconditioner")
+        && !dict.contains("solver"))
+    {
+        dict.insert("solver", dict["preconditioner"]);
+        dict.remove("preconditioner");
     }
 
     if (dict.contains("coupled"))
