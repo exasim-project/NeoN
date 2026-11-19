@@ -1,5 +1,7 @@
 # Version 0.3.0 (unreleased)
 ## Features
+- Compute the scalar Gauss gradient cell by cell, without atomics, using a cell-to-face stencil cached in `mesh.stencilDB()` [#547](https://github.com/exasim-project/NeoN/pull/547)
+- Compute the tensor Gauss gradient grad(U) cell by cell, without atomics, with the same cached cell-to-face stencil
 - Add `TrackingMesh`, mesh walk (`pointInCell`, `locateCell`) and cellPoint interpolation (`pointToBarycentric`, `interpolateCellPoint`) for locating points in a mesh [#670](https://github.com/exasim-project/NeoN/pull/670)
 - Add `slip` and `inletOutlet` volume boundary conditions [#565](https://github.com/exasim-project/NeoN/pull/565)
 - Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)

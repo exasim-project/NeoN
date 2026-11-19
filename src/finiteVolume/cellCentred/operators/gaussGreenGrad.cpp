@@ -4,6 +4,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
@@ -11,6 +12,26 @@
 
 namespace NeoN::finiteVolume::cellCentred
 {
+
+/* @brief returns the internal cell-to-face stencil of the mesh, built once and cached in
+** mesh.stencilDB()
+*/
+std::shared_ptr<const SegmentedVector<localIdx, localIdx>>
+readOrCreateCellFaces(const UnstructuredMesh& mesh)
+{
+    using CellFaces = SegmentedVector<localIdx, localIdx>;
+    auto& db = mesh.stencilDB();
+    if (!db.contains("GaussGreenGradCellFaces"))
+    {
+        db.insert(
+            std::string("GaussGreenGradCellFaces"),
+            std::shared_ptr<const CellFaces>(
+                std::make_shared<CellFaces>(CellToFaceStencil(mesh).computeInternalStencil())
+            )
+        );
+    }
+    return db.get<std::shared_ptr<const CellFaces>>("GaussGreenGradCellFaces");
+}
 
 /* @brief free standing function implementation of the explicit gradient operator
 ** ie computes \sum_f \phi_f
@@ -34,17 +55,12 @@ void computeGrad(
 
     auto surfGradPhi = out.view();
 
-    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceNormals, surfV] = views(
-        mesh.boundaryMesh().faceOwners(),
-        mesh.faceOwners(),
-        mesh.faceNeighbors(),
-        mesh.faceNormals(),
-        mesh.cellVolumes()
+    const auto [boundaryFaceOwners, faceOwners, faceNormals, surfV] = views(
+        mesh.boundaryMesh().faceOwners(), mesh.faceOwners(), mesh.faceNormals(), mesh.cellVolumes()
     );
     const auto surfPhif = phif.internalVector().view();
     const auto surfPhifB = phif.boundaryData().value().view();
 
-    auto nInternalFaces = mesh.nInternalFaces();
     auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss gradient theorem: ∇φ_C = (1/V_C) * sum_f S_f * φ_f
@@ -52,14 +68,29 @@ void computeGrad(
     // S_f points from owner to neighbour by construction (valid for all internal faces).
     //   owner cell:     S_f is the outward area vector  →  +S_f * φ_f  (add)
     //   neighbour cell: S_f points inward to neighbour  → −S_f * φ_f  (subtract)
-    // TODO use NeoN::atomic_
+    // Each cell sums its own internal faces, so no atomics are needed.
+    const auto cellFaces = readOrCreateCellFaces(mesh);
+    const auto [cellFacesValues, cellFacesSegments] =
+        views(cellFaces->values(), cellFaces->segments());
     parallelFor(
         exec,
-        {0, nInternalFaces},
-        NEON_LAMBDA(const localIdx i) {
-            Vec3 flux = faceNormals[i] * surfPhif[i];
-            Kokkos::atomic_add(&surfGradPhi[faceOwners[i]], flux);    // +S_f * φ_f
-            Kokkos::atomic_sub(&surfGradPhi[faceNeighbors[i]], flux); // −S_f * φ_f
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx celli) {
+            Vec3 grad = zero<Vec3>();
+            for (auto i = cellFacesSegments[celli]; i < cellFacesSegments[celli + 1]; ++i)
+            {
+                const auto fi = cellFacesValues[i];
+                const Vec3 flux = faceNormals[fi] * surfPhif[fi];
+                if (faceOwners[fi] == celli)
+                {
+                    grad += flux; // +S_f * φ_f
+                }
+                else
+                {
+                    grad -= flux; // −S_f * φ_f
+                }
+            }
+            surfGradPhi[celli] += grad;
         },
         "computeGradInternal"
     );
@@ -245,12 +276,6 @@ void atomicAddTensor(Tensor* target, sizeType row, sizeType col, scalar value)
     Kokkos::atomic_add(&(*target)(row, col), value);
 }
 
-KOKKOS_INLINE_FUNCTION
-void atomicSubTensor(Tensor* target, sizeType row, sizeType col, scalar value)
-{
-    Kokkos::atomic_sub(&(*target)(row, col), value);
-}
-
 void computeGradTensor(
     const VolumeField<Vec3>& u,
     const SurfaceInterpolation<Vec3>& surfInterpVec,
@@ -266,37 +291,39 @@ void computeGradTensor(
 
     auto gT = gradU.view();
 
-    const auto [owner, nei, SfAll, V, bFaceCells] = views(
-        mesh.faceOwners(),
-        mesh.faceNeighbors(),
-        mesh.faceNormals(),
-        mesh.cellVolumes(),
-        mesh.boundaryMesh().faceOwners()
+    const auto [owner, SfAll, V, bFaceCells] = views(
+        mesh.faceOwners(), mesh.faceNormals(), mesh.cellVolumes(), mesh.boundaryMesh().faceOwners()
     );
     const auto ufInt = uf.internalVector().view();
     const auto ufBound = uf.boundaryData().value().view();
 
-    const localIdx nInt = mesh.nInternalFaces();
     const localIdx nBnd = mesh.nBoundaryFaces();
 
+    // Each cell sums its own internal faces (cached cell-to-face stencil), so no atomics are
+    // needed: gradU(row,col) += Sf[col] * U[row] for the owner, -= for the neighbour.
+    const auto cellFaces = readOrCreateCellFaces(mesh);
+    const auto [cellFacesValues, cellFacesSegments] =
+        views(cellFaces->values(), cellFaces->segments());
     parallelFor(
         exec,
-        {0, nInt},
-        NEON_LAMBDA(const localIdx f) {
-            const Vec3 sf = SfAll[f];
-            const Vec3 faceU = ufInt[f];
-            const auto o = owner[f];
-            const auto n = nei[f];
-            // gradU(row,col) += Sf[col] * U[row]  (Gauss-Green)
-            for (sizeType row = 0; row < 3; ++row)
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx celli) {
+            Tensor g = zero<Tensor>();
+            for (auto i = cellFacesSegments[celli]; i < cellFacesSegments[celli + 1]; ++i)
             {
-                for (sizeType col = 0; col < 3; ++col)
+                const auto f = cellFacesValues[i];
+                const Vec3 sf = SfAll[f];
+                const Vec3 faceU = ufInt[f];
+                const scalar sign = owner[f] == celli ? 1.0 : -1.0;
+                for (sizeType row = 0; row < 3; ++row)
                 {
-                    const scalar c = sf[col] * faceU[row];
-                    atomicAddTensor(&gT[o], row, col, c);
-                    atomicSubTensor(&gT[n], row, col, c);
+                    for (sizeType col = 0; col < 3; ++col)
+                    {
+                        g(row, col) += sign * sf[col] * faceU[row];
+                    }
                 }
             }
+            gT[celli] += g;
         },
         "computeGradTensorInternal"
     );

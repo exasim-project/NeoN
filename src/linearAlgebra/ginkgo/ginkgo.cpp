@@ -5,6 +5,7 @@
 #if NF_WITH_GINKGO
 
 #include <array>
+#include <cstdlib>
 #include <mutex>
 #include <sstream>
 #include <stdexcept>
@@ -287,6 +288,26 @@ auto gkoCopyArray(std::shared_ptr<const gko::Executor> exec, std::span<T> values
     return gko::make_const_array_view(exec, values.size(), values.data()).copy_to_array();
 }
 
+// shortcut: experiment switch NEON_GKO_SPMV=automatic|classical|load_balance|merge_path|sparselib for
+// the CSR SpMV kernel (Ginkgo's automatic picks load_balance above 1e6 nonzeros on NVIDIA); make it a
+// solver dictionary option once a default is chosen
+inline gko::matrix::csr::spmv_strategy spmvStrategy()
+{
+    using S = gko::matrix::csr::spmv_strategy;
+    static const S strategy = []
+    {
+        const char* env = std::getenv("NEON_GKO_SPMV");
+        const std::string v = env ? env : "automatic";
+        if (v == "classical") return S::classical;
+        if (v == "load_balance") return S::load_balance;
+        if (v == "merge_path") return S::merge_path;
+        if (v == "sparselib") return S::sparselib;
+        if (v != "automatic") throw std::invalid_argument("NEON_GKO_SPMV: unknown strategy " + v);
+        return S::automatic;
+    }();
+    return strategy;
+}
+
 /* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
 std::shared_ptr<const gko::LinOp>
@@ -307,7 +328,12 @@ createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scal
 
     auto nrows = static_cast<gko::size_type>(mtx.nRows());
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-        exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+        exec,
+        gko::dim<2> {nrows, nrows},
+        std::move(vals),
+        std::move(col),
+        std::move(row),
+        spmvStrategy()
     ));
 }
 
@@ -333,7 +359,12 @@ createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const COOMatrix<scal
 
     auto nrows = static_cast<gko::size_type>(csrRowOffs.size() - 1);
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-        exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+        exec,
+        gko::dim<2> {nrows, nrows},
+        std::move(vals),
+        std::move(col),
+        std::move(row),
+        spmvStrategy()
     ));
 }
 
