@@ -36,7 +36,22 @@ VolumeField<ValueType>::VolumeField(
         exec, nameIn, mesh, Field<ValueType>(exec, internalVector, mesh.boundaryMesh().offset())
     ),
       FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
-{}
+{
+    // Give the boundary values a defined state, zero gradient, instead of zero. This only reads
+    // the owner cells, so unlike correctBoundaryConditions() it needs no communication and no
+    // boundary context.
+    auto [boundaryValue, faceOwners, internalValue] = views(
+        this->boundaryData().value(), mesh.boundaryMesh().faceOwners(), this->internalVector()
+    );
+    parallelFor(
+        exec,
+        {0, boundaryValue.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            boundaryValue[facei] = internalValue[faceOwners[facei]];
+        },
+        "volumeFieldZeroGradientBoundary"
+    );
+}
 
 template<typename ValueType>
 VolumeField<ValueType>::VolumeField(

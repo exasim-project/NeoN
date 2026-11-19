@@ -81,3 +81,34 @@ TEST_CASE("volumeVector")
         }
     }
 }
+
+// A VolumeField built from an internal Vector starts with zero-gradient boundary values, i.e. each
+// boundary face holds its owner cell's value, until correctBoundaryConditions() is called.
+TEST_CASE("volumeVector from internal Vector has zero-gradient boundary values")
+{
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    const NeoN::localIdx nCells = 5;
+    auto mesh = NeoN::create1DUniformMesh(exec, nCells);
+    auto bcs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(mesh);
+
+    std::vector<NeoN::scalar> values(static_cast<std::size_t>(nCells));
+    for (std::size_t i = 0; i < values.size(); ++i)
+    {
+        values[i] = 1.0 + static_cast<NeoN::scalar>(i);
+    }
+    NeoN::Vector<NeoN::scalar> internalVector(exec, values);
+
+    fvcc::VolumeField<NeoN::scalar> vf(exec, "vf", mesh, internalVector, bcs);
+
+    auto boundaryValues = vf.boundaryData().value().copyToHost();
+    auto faceOwners = mesh.boundaryMesh().faceOwners().copyToHost();
+    REQUIRE(boundaryValues.size() == 2);
+    for (NeoN::localIdx i = 0; i < boundaryValues.size(); ++i)
+    {
+        const auto owner = static_cast<std::size_t>(faceOwners.view()[i]);
+        REQUIRE(boundaryValues.view()[i] == values[owner]);
+    }
+}
