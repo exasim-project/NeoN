@@ -124,7 +124,7 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00154}00154\ \ \ \ \ MPI\_Allreduce(}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ MPI\_IN\_PLACE,}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(vector.data()),}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\textcolor{keyword}{>}(vector.size()),}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\textcolor{keyword}{>}(vector.size()),}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ getType<scalar>(),}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ getOp(op),}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ comm}
@@ -141,7 +141,7 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00183}00183\ \ \ \ \ MPI\_Request*\ request}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00184}00184\ )}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00185}00185\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00186}00186\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00186}00186\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\ err\ =}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ MPI\_Isend(buffer,\ size,\ getType<valueType>(),\ rankReceive,\ tag,\ comm,\ request);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00188}00188\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Isend\ failed."{}});}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00189}00189\ \}}
@@ -156,14 +156,14 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00210}00210\ \ \ \ \ MPI\_Request*\ request}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00211}00211\ )}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00212}00212\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00213}00213\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Irecv(buffer,\ size,\ getType<valueType>(),\ rankSend,\ tag,\ comm,\ request);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00213}00213\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\ err\ =\ MPI\_Irecv(buffer,\ size,\ getType<valueType>(),\ rankSend,\ tag,\ comm,\ request);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00214}00214\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Irecv\ failed."{}});}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00215}00215\ \}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00216}00216\ }
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00224}00224\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ test(MPI\_Request*\ request)}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00225}00225\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00226}00226\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ flag;}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00227}00227\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Test(request,\ \&flag,\ MPI\_STATUS\_IGNORE);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00226}00226\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\ flag;}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00227}00227\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\ err\ =\ MPI\_Test(request,\ \&flag,\ MPI\_STATUS\_IGNORE);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00228}00228\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Test\ failed."{}});}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00229}00229\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{bool}\textcolor{keyword}{>}(flag);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00230}00230\ \}}
@@ -171,13 +171,13 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00239}00239\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ waitAll(MPI\_Request*\ requests,\ \textcolor{keyword}{const}\ mpi\_label\_t\ count)}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00240}00240\ \{}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00241}00241\ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ ==\ 0)\ \textcolor{keywordflow}{return};}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00242}00242\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Waitall(count,\ requests,\ MPI\_STATUSES\_IGNORE);}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00242}00242\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\ err\ =\ MPI\_Waitall(count,\ requests,\ MPI\_STATUSES\_IGNORE);}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00243}00243\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Waitall\ failed."{}});}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00244}00244\ \}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00245}00245\ }
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00252}00252\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ waitAll(std::vector<MPI\_Request>\&\ requests)}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00253}00253\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00254}00254\ \ \ \ \ waitAll(requests.data(),\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\textcolor{keyword}{>}(requests.size()));}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00254}00254\ \ \ \ \ waitAll(requests.data(),\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\textcolor{keyword}{>}(requests.size()));}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00255}00255\ \}}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00256}00256\ }
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00268}00268\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ valueType>}
@@ -189,7 +189,7 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00274}00274\ \ \ \ \ MPI\_Comm\ comm}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00275}00275\ )}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00276}00276\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00277}00277\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Alltoall(}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00277}00277\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\ err\ =\ MPI\_Alltoall(}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00278}00278\ \ \ \ \ \ \ \ \ sendBuf,\ sendCount,\ getType<valueType>(),\ recvBuf,\ recvCount,\ getType<valueType>(),\ comm}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00279}00279\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00280}00280\ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(err\ ==\ MPI\_SUCCESS,\ \textcolor{stringliteral}{"{}MPI\_Alltoall\ failed."{}});}
@@ -206,7 +206,7 @@
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00304}00304\ \ \ \ \ MPI\_Comm\ comm}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00305}00305\ )}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00306}00306\ \{}
-\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00307}00307\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ err\ =\ MPI\_Alltoallv(}
+\DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00307}00307\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a86425c0427292b258d939177d01a92a0}{mpi\_label\_t}}\ err\ =\ MPI\_Alltoallv(}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00308}00308\ \ \ \ \ \ \ \ \ sendBuf,}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00309}00309\ \ \ \ \ \ \ \ \ sendCounts,}
 \DoxyCodeLine{\Hypertarget{operators_8hpp_source_l00310}00310\ \ \ \ \ \ \ \ \ sendDispls,}

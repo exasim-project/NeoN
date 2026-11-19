@@ -1,23 +1,33 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="namespaceNeoN_1_1dsl" kind="namespace" language="C++">
     <compoundname>NeoN::dsl</compoundname>
     <innerclass refid="classNeoN_1_1dsl_1_1Coeff" prot="public">NeoN::dsl::Coeff</innerclass>
-    <innerclass refid="classNeoN_1_1dsl_1_1DivLapOptimizer" prot="public">NeoN::dsl::DivLapOptimizer</innerclass>
+    <innerclass refid="structNeoN_1_1dsl_1_1PostAssemblyBase" prot="public">NeoN::dsl::PostAssemblyBase</innerclass>
+    <innerclass refid="classNeoN_1_1dsl_1_1SetReference" prot="public">NeoN::dsl::SetReference</innerclass>
+    <innerclass refid="classNeoN_1_1dsl_1_1FixedValueConstraints" prot="public">NeoN::dsl::FixedValueConstraints</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1Expression" prot="public">NeoN::dsl::Expression</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1Operator" prot="public">NeoN::dsl::Operator</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1OperatorMixin" prot="public">NeoN::dsl::OperatorMixin</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1Optimizer" prot="public">NeoN::dsl::Optimizer</innerclass>
-    <innerclass refid="structNeoN_1_1dsl_1_1PostAssemblyBase" prot="public">NeoN::dsl::PostAssemblyBase</innerclass>
-    <innerclass refid="classNeoN_1_1dsl_1_1SetReference" prot="public">NeoN::dsl::SetReference</innerclass>
+    <innerclass refid="classNeoN_1_1dsl_1_1DivLapOptimizer" prot="public">NeoN::dsl::DivLapOptimizer</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1SpatialOperator" prot="public">NeoN::dsl::SpatialOperator</innerclass>
     <innerclass refid="classNeoN_1_1dsl_1_1TemporalOperator" prot="public">NeoN::dsl::TemporalOperator</innerclass>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasExplicitOperator">NeoN::dsl::HasExplicitOperator</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasImplicitOperator">NeoN::dsl::HasImplicitOperator</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasImplicitOperatorScalarMtx">NeoN::dsl::HasImplicitOperatorScalarMtx</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasImplicitRhsRefresh">NeoN::dsl::HasImplicitRhsRefresh</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1IsSpatialOperator">NeoN::dsl::IsSpatialOperator</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasTemporalExplicitOperator">NeoN::dsl::HasTemporalExplicitOperator</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperator">NeoN::dsl::HasTemporalImplicitOperator</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperatorScalarMtx">NeoN::dsl::HasTemporalImplicitOperatorScalarMtx</innerconcept>
+    <innerconcept refid="conceptNeoN_1_1dsl_1_1HasTemporalOperator">NeoN::dsl::HasTemporalOperator</innerconcept>
     <innernamespace refid="namespaceNeoN_1_1dsl_1_1detail">NeoN::dsl::detail</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1dsl_1_1temporal">NeoN::dsl::temporal</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1dsl_1_1exp">NeoN::dsl::exp</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1dsl_1_1imp">NeoN::dsl::imp</innernamespace>
-    <innernamespace refid="namespaceNeoN_1_1dsl_1_1temporal">NeoN::dsl::temporal</innernamespace>
     <sectiondef kind="func">
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a65e72931514ea50f7a85aa2942454cee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a65e72931514ea50f7a85aa2942454cee" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">Coeff</ref></type>
         <definition>Coeff NeoN::dsl::operator*</definition>
         <argsstring>(const Coeff &amp;lhs, const Coeff &amp;rhs)</argsstring>
@@ -39,7 +49,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" line="61" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/coeff.hpp" bodystart="61" bodyend="66"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a00d1322453ebe36185dac060845db358" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -64,9 +74,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="494" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="494" bodyend="498"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="624" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="624" bodyend="628"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a03a2b36294837ab1965156992fe10ccd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a03a2b36294837ab1965156992fe10ccd" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -91,9 +101,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="502" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="502" bodyend="506"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="632" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="632" bodyend="636"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a191f28ba2eb12e6ca3fdc7c25929048f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a191f28ba2eb12e6ca3fdc7c25929048f" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename leftOperator</type>
@@ -121,9 +131,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="510" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="510" bodyend="517"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="640" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="640" bodyend="647"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a619c9712731a205faddf7f7b88457909" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a619c9712731a205faddf7f7b88457909" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -148,9 +158,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="520" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="520" bodyend="532"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="650" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="650" bodyend="662"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ac3cf7631c2fa8589c6cafa380621827b" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -175,9 +185,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="537" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="537" bodyend="541"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="667" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="667" bodyend="671"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ac6ecc9a0fd680f9e8504a39a5a0ca629" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ac6ecc9a0fd680f9e8504a39a5a0ca629" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -202,9 +212,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="545" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="545" bodyend="549"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="675" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="675" bodyend="679"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a590fbdffc01dc7fad7632c70e36a42a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a590fbdffc01dc7fad7632c70e36a42a8" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename leftOperator</type>
@@ -232,7 +242,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="553" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="553" bodyend="560"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="683" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="683" bodyend="690"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1dsl_1adb5a54395037066d03de9d1f34471450" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -338,7 +348,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/optimizer.hpp" line="131" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/optimizer.hpp" bodystart="131" bodyend="143"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1abab926565f9bac963ac87c73de1805e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ae82a72e4ff7e775f25af51e0e8d7099b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename VectorType</type>
@@ -347,8 +357,8 @@
             <type>typename IndexType</type>
           </param>
         </templateparamlist>
-        <type><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref></type>
-        <definition>la::SolverStats NeoN::dsl::solve</definition>
+        <type>std::optional&lt; <ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">la::SolverStats</ref> &gt;</type>
+        <definition>std::optional&lt; la::SolverStats &gt; NeoN::dsl::solve</definition>
         <argsstring>(Expression&lt; typename VectorType::ElementType, IndexType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, std::vector&lt; const PostAssemblyBase&lt; typename VectorType::ElementType, IndexType &gt; * &gt; p={})</argsstring>
         <name>solve</name>
         <qualifiedname>NeoN::dsl::solve</qualifiedname>
@@ -387,7 +397,257 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="92" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="92" bodyend="121"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="98" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="98" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1aa8c4bbbd2314b97f5b320603d3944bd5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar NeoN::dsl::copySign</definition>
+        <argsstring>(const scalar mag, const scalar s)</argsstring>
+        <name>copySign</name>
+        <qualifiedname>NeoN::dsl::copySign</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>mag</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Returns |mag| carrying the sign of s (scalar overload). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="134" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="134" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1aefc1ea1369d0aa731dade6398306a704" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar NeoN::dsl::componentCopySign</definition>
+        <argsstring>(const scalar mag, const scalar s)</argsstring>
+        <name>componentCopySign</name>
+        <qualifiedname>NeoN::dsl::componentCopySign</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>mag</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Componentwise sign-copy (scalar overload). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="140" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="140" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a81ab21f0056f9e062cae72b33cfd5576" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION Vec3 NeoN::dsl::componentCopySign</definition>
+        <argsstring>(const Vec3 &amp;mag, const Vec3 &amp;s)</argsstring>
+        <name>componentCopySign</name>
+        <qualifiedname>NeoN::dsl::componentCopySign</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>mag</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Componentwise sign-copy (<ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> overload — all 3 components). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="146" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="146" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a7716d28ec754e7ddc3fb47373f600ea5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar NeoN::dsl::componentMag</definition>
+        <argsstring>(const scalar value)</argsstring>
+        <name>componentMag</name>
+        <qualifiedname>NeoN::dsl::componentMag</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Componentwise magnitude (scalar overload). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="152" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="152" bodyend="152"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1adebc143d47e3d4b3fcd9331b155c2c98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION Vec3 NeoN::dsl::componentMag</definition>
+        <argsstring>(const Vec3 &amp;value)</argsstring>
+        <name>componentMag</name>
+        <qualifiedname>NeoN::dsl::componentMag</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Componentwise magnitude (<ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> overload — keeps all 3 components, does NOT collapse to the L2 norm that the global mag(Vec3) returns). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="156" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="156" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a9c676ccb03ef3bdb99e5e966e02682ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar NeoN::dsl::componentMax</definition>
+        <argsstring>(const scalar lhs, const scalar rhs)</argsstring>
+        <name>componentMax</name>
+        <qualifiedname>NeoN::dsl::componentMax</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Componentwise max (scalar overload). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="162" column="31" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="162" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1acc1d1676ec9101b1d7149b1fb993af25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION Vec3 NeoN::dsl::componentMax</definition>
+        <argsstring>(const Vec3 &amp;lhs, const Vec3 &amp;rhs)</argsstring>
+        <name>componentMax</name>
+        <qualifiedname>NeoN::dsl::componentMax</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Componentwise max (<ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> overload — per component). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="168" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="168" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1acb4a1670448315e4420fc6bca058fdc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename VectorType</type>
+          </param>
+          <param>
+            <type>typename MatrixValueType</type>
+          </param>
+          <param>
+            <type>typename RHSValueType</type>
+          </param>
+          <param>
+            <type>typename SystemMatrixType</type>
+          </param>
+          <param>
+            <type>typename BoundaryMatrixType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::dsl::applyMatrixRelaxation</definition>
+        <argsstring>(la::LinearSystem&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt; &amp;ls, const VectorType &amp;solution, scalar alpha)</argsstring>
+        <name>applyMatrixRelaxation</name>
+        <qualifiedname>NeoN::dsl::applyMatrixRelaxation</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <param>
+          <type>const VectorType &amp;</type>
+          <declname>solution</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>alpha</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="214" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="214" bodyend="327"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a15bc014f2770ea7255fa1e0c2870f020" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename VectorType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::dsl::applyFieldRelaxation</definition>
+        <argsstring>(VectorType &amp;solution, const Vector&lt; typename VectorType::ElementType &gt; &amp;previous, scalar alpha)</argsstring>
+        <name>applyFieldRelaxation</name>
+        <qualifiedname>NeoN::dsl::applyFieldRelaxation</qualifiedname>
+        <param>
+          <type>VectorType &amp;</type>
+          <declname>solution</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; typename VectorType::ElementType &gt; &amp;</type>
+          <declname>previous</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>alpha</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="356" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="356" bodyend="378"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1dsl_1ab83523772e0d4f96349392ea3d980c7c" prot="public" static="no" nodiscard="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename VectorType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto NeoN::dsl::fieldRelaxationSnapshot</definition>
+        <argsstring>(const VectorType &amp;field)</argsstring>
+        <name>fieldRelaxationSnapshot</name>
+        <qualifiedname>NeoN::dsl::fieldRelaxationSnapshot</qualifiedname>
+        <param>
+          <type>const VectorType &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" line="389" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp" bodystart="389" bodyend="392"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1dsl_1a45b8dbfdb03a75f2198ec9fc1146d424" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
