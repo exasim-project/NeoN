@@ -13,6 +13,7 @@ authors:
     orcid: 0009-0003-4854-6328
     affiliation: 1
   - name: Chih-Ta Wang
+    orcid: 0009-0005-0721-7274
     affiliation: 1
   - name: Hendrik Hetmann
     affiliation: 2
