@@ -1,4 +1,5 @@
 # Version 0.3.0 (unreleased)
+- Take the normal derivative of the Gauss gradient's boundary correction from the patch value, deltaCoeffs*(value - cell value), as OpenFOAM's `fvPatchField::snGrad()` does, for every patch type: it used `refGrad` unless the BC fixes the value, which dropped the normal derivative on symmetry planes (implicit mode) and on the inflow faces of `inletOutlet`; through grad(U) this put a spurious explicit viscous stress next to such patches
 - Relax every row of an equation with the system's sign, as `fvMatrix::relax()` does (D = max(|D|, sumOff), positive for an OpenFOAM-convention system): a row whose diagonal came out negative -- e.g. a bounded-convection cell with more outflow than inflow -- was relaxed as a negative one, i.e. a different equation
 ## Features
 - Add `TrackingMesh`, mesh walk (`pointInCell`, `locateCell`) and cellPoint interpolation (`pointToBarycentric`, `interpolateCellPoint`) for locating points in a mesh [#670](https://github.com/exasim-project/NeoN/pull/670)

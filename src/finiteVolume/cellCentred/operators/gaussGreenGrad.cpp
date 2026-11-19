@@ -112,25 +112,20 @@ void computeBoundaryGrad(
 {
     const UnstructuredMesh& mesh = phi.mesh();
     const auto exec = gradPhi.exec();
-    const auto boundaryConditions = phi.boundaryConditions();
 
     auto gradInternal = gradPhi.internalVector().view();
     auto gradBoundary = gradPhi.boundaryData().value().view();
-    const auto
-        [phiInternal, phiBoundaryValue, phiBoundaryRefGrad, faceCells, deltaCoeffs, normals] =
-            views(
-                phi.internalVector(),
-                phi.boundaryData().value(),
-                phi.boundaryData().refGrad(),
-                mesh.boundaryMesh().faceOwners(),
-                mesh.boundaryMesh().deltaCoeffs(),
-                mesh.boundaryMesh().faceUnitNormals()
-            );
+    const auto [phiInternal, phiBoundaryValue, faceCells, deltaCoeffs, normals] = views(
+        phi.internalVector(),
+        phi.boundaryData().value(),
+        mesh.boundaryMesh().faceOwners(),
+        mesh.boundaryMesh().deltaCoeffs(),
+        mesh.boundaryMesh().faceUnitNormals()
+    );
 
     const auto nBoundaries = toLocalIdx(mesh.nBoundaries());
     for (localIdx patchID = 0; patchID < nBoundaries; ++patchID)
     {
-        const auto attrs = boundaryConditions[static_cast<sizeType>(patchID)].attributes();
         const auto [start, end] = phi.boundaryData().range(patchID);
 
         if (start == end)
@@ -138,58 +133,33 @@ void computeBoundaryGrad(
             continue;
         }
 
-        if (attrs.fixesValue)
-        {
-            parallelFor(
-                exec,
-                {start, end},
-                NEON_LAMBDA(const localIdx i) {
-                    const auto owner = faceCells[i];
+        // The normal derivative is the patch's own snGrad, deltaCoeffs*(value - cell value), as
+        // OpenFOAM's gaussGrad::correctBoundaryConditions takes it from fvPatchField::snGrad().
+        // That holds for every patch type: fixedGradient's value is cell + refGrad/delta, a mixed
+        // patch's (inletOutlet) blends to the inlet value on inflow faces, and a symmetry plane's
+        // is the tangential projection. refGrad alone is wrong for the latter two.
+        parallelFor(
+            exec,
+            {start, end},
+            NEON_LAMBDA(const localIdx i) {
+                const auto owner = faceCells[i];
 
-                    // Extrapolate internal gradient
-                    Vec3 g = gradInternal[owner];
+                // Extrapolate internal gradient
+                Vec3 g = gradInternal[owner];
 
-                    // Compute snGrad
-                    const scalar snGrad =
-                        (phiBoundaryValue[i] - phiInternal[owner]) * deltaCoeffs[i];
-                    const Vec3 n = normals[i];
+                // Compute snGrad
+                const scalar snGrad = (phiBoundaryValue[i] - phiInternal[owner]) * deltaCoeffs[i];
+                const Vec3 n = normals[i];
 
-                    // Normal reconstruction
-                    const scalar nDotG = n[0] * g[0] + n[1] * g[1] + n[2] * g[2];
+                // Normal reconstruction
+                const scalar nDotG = n[0] * g[0] + n[1] * g[1] + n[2] * g[2];
 
-                    g += n * (snGrad - nDotG);
+                g += n * (snGrad - nDotG);
 
-                    gradBoundary[i] = g;
-                },
-                "computeGradBoundaryFixedValue"
-            );
-        }
-        else
-        {
-            parallelFor(
-                exec,
-                {start, end},
-                NEON_LAMBDA(const localIdx i) {
-                    const auto owner = faceCells[i];
-
-                    // Extrapolate internal gradient
-                    Vec3 g = gradInternal[owner];
-
-                    const Vec3 n = normals[i];
-
-                    // snGrad from BC
-                    const scalar snGrad = phiBoundaryRefGrad[i];
-
-                    // 2) Normal reconstruction
-                    const scalar nDotG = n[0] * g[0] + n[1] * g[1] + n[2] * g[2];
-
-                    g += n * (snGrad - nDotG);
-
-                    gradBoundary[i] = g;
-                },
-                "computeGradBoundaryRefGrad"
-            );
-        }
+                gradBoundary[i] = g;
+            },
+            "computeGradBoundaryFixedValue"
+        );
     }
 }
 
@@ -372,10 +342,9 @@ void computeBoundaryGradTensor(const VolumeField<Vec3>& u, VolumeField<Tensor>& 
     auto gTInt = gradU.internalVector().view();
     auto gTB = gradU.boundaryData().value().view();
 
-    const auto [UInt, UB, URefGradB, faceCells, deltaCoeffs, nHat] = views(
+    const auto [UInt, UB, faceCells, deltaCoeffs, nHat] = views(
         u.internalVector(),
         u.boundaryData().value(),
-        u.boundaryData().refGrad(),
         mesh.boundaryMesh().faceOwners(),
         mesh.boundaryMesh().deltaCoeffs(),
         mesh.boundaryMesh().faceUnitNormals()
@@ -387,8 +356,6 @@ void computeBoundaryGradTensor(const VolumeField<Vec3>& u, VolumeField<Tensor>& 
         const localIdx end = offsets[static_cast<sizeType>(patchID + 1)];
         if (start == end) continue;
 
-        const auto attrs = bcs[static_cast<sizeType>(patchID)].attributes();
-
         parallelFor(
             exec,
             {static_cast<sizeType>(start), static_cast<sizeType>(end)},
@@ -397,10 +364,8 @@ void computeBoundaryGradTensor(const VolumeField<Vec3>& u, VolumeField<Tensor>& 
                 const Vec3 n = nHat[i];
                 Tensor g = gTInt[owner];
 
-                Vec3 snGrad;
-                if (attrs.fixesValue) snGrad = (UB[i] - UInt[owner]) * deltaCoeffs[i];
-                else
-                    snGrad = URefGradB[i];
+                // The patch's own snGrad (see computeBoundaryGrad).
+                const Vec3 snGrad = (UB[i] - UInt[owner]) * deltaCoeffs[i];
 
                 // Reconstruct each row: g(row,:) += n * (snGrad[row] - n · g(row,:))
                 for (sizeType row = 0; row < 3; ++row)
