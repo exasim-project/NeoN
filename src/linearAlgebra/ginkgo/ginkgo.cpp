@@ -345,6 +345,10 @@ createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<Vec3
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
 
+    // Ensure the Kokkos unpack kernels have completed before Ginkgo reads the data via
+    // gkoCopyArray, which may use a different SYCL queue on Intel GPU.
+    Kokkos::fence();
+
     auto nrows = static_cast<gko::size_type>(3 * mtx.nRows());
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec,
@@ -548,6 +552,10 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
 
+    // Ensure the Kokkos unpack kernels have completed before Ginkgo reads the data via
+    // gkoCopyArray, which may use a different SYCL queue on Intel GPU.
+    Kokkos::fence();
+
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
         exec,
@@ -567,6 +575,9 @@ void solveComponent(
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
     auto values = getComponent<I>(sys.matrix().values());
+    // Ensure the Kokkos getComponent kernels have completed before Ginkgo reads the data, which
+    // may use a different SYCL queue on Intel GPU.
+    Kokkos::fence();
     auto sparsity = sys.matrix().sparsity();
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
     auto gkoMtx = createGkoMtx(mtx);
@@ -588,6 +599,10 @@ SolverStats GinkgoSolver::solve(
         const auto gkoMtx = createGkoMtx(sys.matrix());
         auto rhsCopy = unpackVecValues(sys.rhs());
         auto xCopy = unpackVecValues(x);
+
+        // Ensure the Kokkos unpack kernels have completed before Ginkgo reads rhsCopy/xCopy,
+        // which may use a different SYCL queue on Intel GPU.
+        Kokkos::fence();
 
         auto stats =
             solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, generateSolver(gkoMtx), l1Control);
@@ -666,6 +681,9 @@ void solveImplicitTransformComponent(
 
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
+    // gkoExec->synchronize() above waits for Ginkgo's queue only; also wait for the Kokkos
+    // getComponent kernels before Ginkgo reads rhs/xcopy (different SYCL queues on Intel GPU).
+    Kokkos::fence();
     stats.entries.push_back(solve_impl(gkoExec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
     setComponent<I>(xcopy, x);
 
