@@ -356,6 +356,15 @@ void computeBoundaryGradTensor(const VolumeField<Vec3>& u, VolumeField<Tensor>& 
         const localIdx end = offsets[static_cast<sizeType>(patchID + 1)];
         if (start == end) continue;
 
+        // On a symmetry plane OpenFOAM's gradient is itself a symmetry field (a constraint patch
+        // keeps its type whatever type the field asks for): its boundary value is the reflection
+        // average (g + R g R)/2, R = I - 2 n n, before the snGrad correction. That removes the
+        // components odd under the reflection, e.g. the tangential derivatives of the normal
+        // velocity. (A vector gradient needs no such step: the correction replaces its normal
+        // component anyway.)
+        const auto bcName = bcs[static_cast<sizeType>(patchID)].name();
+        const bool symmetryPlane = bcName == "symmetry" || bcName == "symmetryPlane";
+
         parallelFor(
             exec,
             {static_cast<sizeType>(start), static_cast<sizeType>(end)},
@@ -363,6 +372,30 @@ void computeBoundaryGradTensor(const VolumeField<Vec3>& u, VolumeField<Tensor>& 
                 const auto owner = faceCells[i];
                 const Vec3 n = nHat[i];
                 Tensor g = gTInt[owner];
+
+                if (symmetryPlane)
+                {
+                    // (R g R)_ij = g_ij - 2 n_i (n.g)_j - 2 (g.n)_i n_j + 4 n_i n_j (n.g.n)
+                    Vec3 ng(0, 0, 0), gn(0, 0, 0);
+                    for (sizeType a = 0; a < 3; ++a)
+                    {
+                        for (sizeType b = 0; b < 3; ++b)
+                        {
+                            ng[b] += n[a] * g(a, b);
+                            gn[a] += g(a, b) * n[b];
+                        }
+                    }
+                    const scalar ngn = n[0] * gn[0] + n[1] * gn[1] + n[2] * gn[2];
+                    for (sizeType a = 0; a < 3; ++a)
+                    {
+                        for (sizeType b = 0; b < 3; ++b)
+                        {
+                            const scalar rgr = g(a, b) - 2 * n[a] * ng[b] - 2 * gn[a] * n[b]
+                                             + 4 * n[a] * n[b] * ngn;
+                            g(a, b) = scalar(0.5) * (g(a, b) + rgr);
+                        }
+                    }
+                }
 
                 // The patch's own snGrad (see computeBoundaryGrad).
                 const Vec3 snGrad = (UB[i] - UInt[owner]) * deltaCoeffs[i];
