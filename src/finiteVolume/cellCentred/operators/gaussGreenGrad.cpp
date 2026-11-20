@@ -4,6 +4,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
@@ -11,6 +12,26 @@
 
 namespace NeoN::finiteVolume::cellCentred
 {
+
+/* @brief returns the internal cell-to-face stencil of the mesh, built once and cached in
+** mesh.stencilDB()
+*/
+std::shared_ptr<const SegmentedVector<localIdx, localIdx>>
+readOrCreateCellFaces(const UnstructuredMesh& mesh)
+{
+    using CellFaces = SegmentedVector<localIdx, localIdx>;
+    auto& db = mesh.stencilDB();
+    if (!db.contains("GaussGreenGradCellFaces"))
+    {
+        db.insert(
+            std::string("GaussGreenGradCellFaces"),
+            std::shared_ptr<const CellFaces>(
+                std::make_shared<CellFaces>(CellToFaceStencil(mesh).computeInternalStencil())
+            )
+        );
+    }
+    return db.get<std::shared_ptr<const CellFaces>>("GaussGreenGradCellFaces");
+}
 
 /* @brief free standing function implementation of the explicit gradient operator
 ** ie computes \sum_f \phi_f
@@ -34,17 +55,12 @@ void computeGrad(
 
     auto surfGradPhi = out.view();
 
-    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceNormals, surfV] = views(
-        mesh.boundaryMesh().faceOwners(),
-        mesh.faceOwners(),
-        mesh.faceNeighbors(),
-        mesh.faceNormals(),
-        mesh.cellVolumes()
+    const auto [boundaryFaceOwners, faceOwners, faceNormals, surfV] = views(
+        mesh.boundaryMesh().faceOwners(), mesh.faceOwners(), mesh.faceNormals(), mesh.cellVolumes()
     );
     const auto surfPhif = phif.internalVector().view();
     const auto surfPhifB = phif.boundaryData().value().view();
 
-    auto nInternalFaces = mesh.nInternalFaces();
     auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss gradient theorem: ∇φ_C = (1/V_C) * sum_f S_f * φ_f
@@ -52,14 +68,29 @@ void computeGrad(
     // S_f points from owner to neighbour by construction (valid for all internal faces).
     //   owner cell:     S_f is the outward area vector  →  +S_f * φ_f  (add)
     //   neighbour cell: S_f points inward to neighbour  → −S_f * φ_f  (subtract)
-    // TODO use NeoN::atomic_
+    // Each cell sums its own internal faces, so no atomics are needed.
+    const auto cellFaces = readOrCreateCellFaces(mesh);
+    const auto [cellFacesValues, cellFacesSegments] =
+        views(cellFaces->values(), cellFaces->segments());
     parallelFor(
         exec,
-        {0, nInternalFaces},
-        NEON_LAMBDA(const localIdx i) {
-            Vec3 flux = faceNormals[i] * surfPhif[i];
-            Kokkos::atomic_add(&surfGradPhi[faceOwners[i]], flux);    // +S_f * φ_f
-            Kokkos::atomic_sub(&surfGradPhi[faceNeighbors[i]], flux); // −S_f * φ_f
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx celli) {
+            Vec3 grad = zero<Vec3>();
+            for (auto i = cellFacesSegments[celli]; i < cellFacesSegments[celli + 1]; ++i)
+            {
+                const auto fi = cellFacesValues[i];
+                const Vec3 flux = faceNormals[fi] * surfPhif[fi];
+                if (faceOwners[fi] == celli)
+                {
+                    grad += flux; // +S_f * φ_f
+                }
+                else
+                {
+                    grad -= flux; // −S_f * φ_f
+                }
+            }
+            surfGradPhi[celli] += grad;
         },
         "computeGradInternal"
     );
