@@ -125,6 +125,32 @@ std::shared_ptr<const gko::LinOp> createLocalGkoMtx(
     ));
 }
 
+/* @brief create the local block as a zero-copy ell view, the matrix must outlive it.
+ * the padding and the column major layout of the NeoN ell matrix are the same as in ginkgo */
+template<typename IndexType>
+std::shared_ptr<const gko::LinOp> createLocalGkoMtx(
+    std::shared_ptr<const gko::Executor> exec, const ELLMatrix<scalar, IndexType>& mtx
+)
+{
+    static_assert(std::is_signed_v<IndexType>, "Ginkgo ELL requires a signed index type");
+    const auto [coeffsV, sparsityV] = mtx.view();
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(coeffsV.size()), coeffsV.data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(sparsityV.colIdxs.size()), sparsityV.colIdxs.data()
+    );
+    const auto nrows = static_cast<gko::size_type>(mtx.nRows());
+    return gko::share(gko::matrix::Ell<scalar, IndexType>::create_const(
+        exec,
+        gko::dim<2> {nrows, nrows},
+        std::move(vals),
+        std::move(col),
+        static_cast<gko::size_type>(sparsityV.numStoredElementsPerRow),
+        static_cast<gko::size_type>(sparsityV.stride)
+    ));
+}
+
 template<typename LocalMatrixType, typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
@@ -623,6 +649,35 @@ SolverStats GinkgoSolver::solveDist(
 }
 
 SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+) const
+{
+    const CommunicationPattern& commPattern = sys.commPattern();
+    auto comm = gko::experimental::mpi::communicator(
+        commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+    );
+    auto gkoMtx = createGkoMtxDist(
+        gkoExec_,
+        comm,
+        sys.matrix(),
+        sys.offDiagonalMatrix(),
+        commPattern,
+        cachedImap_,
+        cachedNonLocalMtx_,
+        cachedDistMtx_,
+        cachedLocalValPtr_
+    );
+    auto solver = gko::share(generateSolver(gkoMtx));
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
+    l1Report_.fired = false;
+    auto entry = solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
+    const auto b = gkoConstVecViewDist(gkoExec_, comm, sys.rhs().data(), sys.rhs().size());
+    const auto xView = gkoVecViewDist(gkoExec_, comm, x.data(), x.size());
+    return {withL1Report(entry, gkoMtx.get(), b.get(), xView.get())};
+}
+
+SolverStats GinkgoSolver::solveDist(
     const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
@@ -737,6 +792,8 @@ SolverStats GinkgoSolver::solveDist(
 }
 
 template std::shared_ptr<const gko::LinOp> createGkoMtxDist(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
+
+template std::shared_ptr<const gko::LinOp> createGkoMtxDist(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const ELLMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
 
 }
 
