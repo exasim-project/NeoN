@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="structNeoN_1_1la_1_1EllSparsityView" kind="struct" language="C++" prot="public">
     <compoundname>NeoN::la::EllSparsityView</compoundname>
     <includes refid="sparsityView_8hpp" local="no">sparsityView.hpp</includes>
@@ -217,7 +217,7 @@
         <name>invalidIndex</name>
         <qualifiedname>NeoN::la::EllSparsityView::invalidIndex</qualifiedname>
         <briefdescription>
-<para>Sentinel column index marking an unused (padding) slot. For a signed IndexType this matches gko::invalid_index&lt;IndexType&gt;() (-1) <ndash/> Ginkgo&apos;s own ELL kernels skip padding by checking a slot&apos;s column index against exactly this value, so this is what lets colIdxs be handed to gko::matrix::Ell::create_const() unmodified. localIdx is signed unless built with NeoN_US_IDX; for an unsigned IndexType this is still a valid NeoN-internal sentinel (all bits set) but Ginkgo itself rejects unsigned index types outright. </para>
+<para>Sentinel column index marking an unused (padding) slot. For a signed IndexType this matches gko::invalid_index&lt;IndexType&gt;() (-1) <ndash/> Ginkgo&apos;s own ELL kernels skip padding by checking a slot&apos;s column index against exactly this value, so this is what lets colIdxs be handed to gko::matrix::Ell::create_const() unmodified. <ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref> is signed unless built with NeoN_US_IDX; for an unsigned IndexType this is still a valid NeoN-internal sentinel (all bits set) but Ginkgo itself rejects unsigned index types outright. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -230,7 +230,7 @@
 <para><ref refid="classA" kindref="compound">A</ref> view struct to allow easy read/write on all executors for the ELLPACK (fixed-width, padded) sparsity pattern. </para>
     </briefdescription>
     <detaileddescription>
-<para>Column indices are stored column-major across the padded row slots, i.e. slot <computeroutput>s</computeroutput> of row <computeroutput>i</computeroutput> lives at flat offset <computeroutput>i + stride * s</computeroutput>. Rows with fewer nonzeros than <computeroutput>numStoredElementsPerRow</computeroutput> are padded with <computeroutput><ref refid="structNeoN_1_1la_1_1EllSparsityView_1ade7595799f2b0ed3da6d82fb98b1e243" kindref="member">invalidIndex()</ref></computeroutput>.</para>
+<para>Column indices are stored column-major across the padded row slots, i.e. slot <computeroutput>s</computeroutput> of row <computeroutput>i</computeroutput> lives at flat offset <computeroutput>i + <ref refid="structNeoN_1_1la_1_1EllSparsityView_1a4465a04c7f1eabe14884d56606685042" kindref="member">stride</ref> * s</computeroutput>. Rows with fewer nonzeros than <computeroutput><ref refid="structNeoN_1_1la_1_1EllSparsityView_1afcc48e17c8a7706a69a0962d492363bd" kindref="member">numStoredElementsPerRow</ref></computeroutput> are padded with <computeroutput><ref refid="structNeoN_1_1la_1_1EllSparsityView_1ade7595799f2b0ed3da6d82fb98b1e243" kindref="member">invalidIndex()</ref></computeroutput>.</para>
 <para><parameterlist kind="templateparam"><parameteritem>
 <parameternamelist>
 <parametername>IndexType</parametername>
@@ -244,17 +244,17 @@
 </xrefdescription></xrefsect></para>
     </detaileddescription>
     <collaborationgraph>
+      <node id="2">
+        <label>NeoN::View&lt; const IndexType &gt;</label>
+        <link refid="classNeoN_1_1View"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::la::EllSparsityView&lt; IndexType &gt;</label>
         <link refid="structNeoN_1_1la_1_1EllSparsityView"/>
         <childnode refid="2" relation="usage">
           <edgelabel>colIdxs</edgelabel>
-        </childnode>
-      </node>
-      <node id="2">
-        <label>NeoN::View&lt; const IndexType &gt;</label>
-        <link refid="classNeoN_1_1View"/>
-        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="3">

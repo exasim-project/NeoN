@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory</compoundname>
     <basecompoundref refid="classNeoN_1_1RuntimeSelectionFactory" prot="public" virt="non-virtual">NeoN::RuntimeSelectionFactory&lt; SurfaceInterpolationFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</basecompoundref>
@@ -27,7 +27,7 @@
     </sectiondef>
     <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory_1aca24ce3e10250a6db14030f7a6bf37a2" prot="protected" static="no" mutable="no">
-        <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+        <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref></type>
         <definition>const Executor NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory&lt; ValueType &gt;::exec_</definition>
         <argsstring></argsstring>
         <name>exec_</name>
@@ -57,13 +57,13 @@
     </sectiondef>
     <sectiondef kind="public-static-func">
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory_1a930edfef1b586a3061ba9a59a6ca08fd" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory" kindref="compound">SurfaceInterpolationFactory</ref>&lt; ValueType &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory_1a915199bd02c582df9e407d59cad7d859" kindref="member">SurfaceInterpolationFactory</ref>&lt; ValueType &gt; &gt;</type>
         <definition>static std::unique_ptr&lt; SurfaceInterpolationFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory&lt; ValueType &gt;::create</definition>
         <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;uMesh, const Input &amp;inputs)</argsstring>
         <name>create</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::create</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
           <declname>exec</declname>
         </param>
         <param>
@@ -71,7 +71,7 @@
           <declname>uMesh</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a7832dfa5a418fe87dc2e3de60259dfbf" kindref="member">Input</ref> &amp;</type>
           <declname>inputs</declname>
         </param>
         <briefdescription>
@@ -105,7 +105,7 @@
         <name>SurfaceInterpolationFactory</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::SurfaceInterpolationFactory</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
           <declname>exec</declname>
         </param>
         <param>
@@ -140,6 +140,9 @@
         <argsstring>(const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; ValueType &gt; &amp;dst) const =0</argsstring>
         <name>interpolate</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::interpolate</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_1a84b6ab19ad34c2aa4a262a8a1540d98f">interpolate</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_1a9afb3f1399f1ebdce7d96642306e95f1">interpolate</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind_1ad0c865669e152bc98ba7fd7b09307755">interpolate</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
           <declname>src</declname>
@@ -162,6 +165,9 @@
         <argsstring>(const SurfaceField&lt; scalar &gt; &amp;flux, const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; ValueType &gt; &amp;dst) const =0</argsstring>
         <name>interpolate</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::interpolate</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_1a9222f8d5d31bd74dbe3a6eb43a0c6fef">interpolate</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_1afb530a9bf2b6fc82d8a754e6a9025b5b">interpolate</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind_1af8a7120e242839d26ae0c61cf3d36259">interpolate</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>flux</declname>
@@ -188,6 +194,9 @@
         <argsstring>(const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; scalar &gt; &amp;weight) const =0</argsstring>
         <name>weight</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::weight</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_1adb4d220073a02c89e2ec5e2ac7f60406">weight</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_1acda49c4524c0eacdaa6a4a703586e2e3">weight</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind_1a4e81dc06c47bf05d392e0068f75ce162">weight</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
           <declname>src</declname>
@@ -210,6 +219,9 @@
         <argsstring>(const SurfaceField&lt; scalar &gt; &amp;flux, const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; scalar &gt; &amp;weight) const =0</argsstring>
         <name>weight</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::weight</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_1a20da3da2ba2f35f42d716dce06655cba">weight</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_1a6b662d0fb14f45293bb61551dbcc1b3c">weight</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind_1a2dc07cd55d0949c1c56359ed17d30681">weight</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>flux</declname>
@@ -271,11 +283,14 @@
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp" line="84" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp" bodystart="84" bodyend="92"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory_1afcd8197b1ca0297006d6332dd4d75c6d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory" kindref="compound">SurfaceInterpolationFactory</ref>&lt; ValueType &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory_1a915199bd02c582df9e407d59cad7d859" kindref="member">SurfaceInterpolationFactory</ref>&lt; ValueType &gt; &gt;</type>
         <definition>virtual std::unique_ptr&lt; SurfaceInterpolationFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory&lt; ValueType &gt;::clone</definition>
         <argsstring>() const =0</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory::clone</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_1ac4b1942dbb9276660171a7df5384de75">clone</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear_1a0fb2a0ef645417b2f45c71a5e3274d3f">clone</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind_1a9e41ec6b974f6bac70147ae3efb9102e">clone</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -290,18 +305,22 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>NeoN::RuntimeSelectionFactory&lt; SurfaceInterpolationFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::SurfaceInterpolationFactory&lt; ValueType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>NeoN::RuntimeSelectionFactory&lt; SurfaceInterpolationFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
         <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="3">
         <label>NeoN::UnstructuredMesh</label>
         <link refid="classNeoN_1_1UnstructuredMesh"/>
@@ -314,10 +333,6 @@
         <childnode refid="3" relation="usage">
           <edgelabel>mesh_</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>NeoN::RuntimeSelectionFactory&lt; SurfaceInterpolationFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
-        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp" line="27" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp" bodystart="31" bodyend="101"/>
