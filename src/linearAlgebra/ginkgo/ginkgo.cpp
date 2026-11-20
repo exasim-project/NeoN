@@ -600,15 +600,21 @@ std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const g
     return solver;
 }
 
-SolverStatsEntry GinkgoSolver::withL1Report(SolverStatsEntry entry) const
+SolverStatsEntry GinkgoSolver::withL1Report(
+    SolverStatsEntry entry, const gko::LinOp* mtx, const gko::LinOp* b, const gko::LinOp* x
+) const
 {
     // The in-config criterion decides convergence but only reports through l1Report_; the
-    // generic solve path returns unscaled norms.
+    // generic solve path returns unscaled norms. Its iteration count is kept: another criterion
+    // of the config may stop the solve, and the logger counts every iteration.
     if (l1InConfig_ && l1Report_.fired)
     {
-        entry.numIter = l1Report_.numIter;
         entry.initResNorm = l1Report_.initResNorm;
-        entry.finalResNorm = l1Report_.finalResNorm;
+        // The criterion skips its report between checkFrequency checks and before minIter, so
+        // if another criterion stopped the solve there the report predates the last iteration.
+        entry.finalResNorm = l1Report_.numIter == entry.numIter
+                               ? l1Report_.finalResNorm
+                               : scaledL1Residual(mtx, b, x, l1Report_.normFactor);
     }
     return entry;
 }
@@ -624,9 +630,10 @@ SolverStats GinkgoSolver::solve(
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     l1Report_.fired = false;
-    return {
-        withL1Report(solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control))
-    };
+    auto entry = solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control);
+    const auto b = gkoVecView(gkoExec_, sys.rhs().data(), sys.rhs().size());
+    const auto xView = gkoVecView(gkoExec_, x.data(), x.size());
+    return {withL1Report(entry, gkoMtx.get(), b.get(), xView.get())};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */

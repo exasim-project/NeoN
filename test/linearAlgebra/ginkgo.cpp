@@ -4,6 +4,7 @@
 
 #include "catch2_common.hpp"
 
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include "NeoN/NeoN.hpp"
@@ -320,6 +321,49 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         REQUIRE(numIter > 0);
         auto hostX = x.copyToHost();
         REQUIRE(hostX.view()[0] == Catch::Approx(1.24489796).margin(1e-8));
+    }
+
+    SECTION("configFile with the L1 criterion reports another criterion's stop " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+        Vector<scalar> bValues(exec, {});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
+        auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        // The Iteration cap stops after 2 iterations, between the L1 criterion's checks (every
+        // 3rd iteration), so its report still describes iteration 0.
+        const auto configFile =
+            (std::filesystem::temp_directory_path() / "neon_test_l1_config_cap.json").string();
+        std::ofstream(configFile) << R"({"type": "solver::Cg", "criteria": [)"
+                                  << R"({"type": "Iteration", "max_iters": 2}, )"
+                                  << R"("neon::l1ScaledResidual"]})";
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"configFile", configFile},
+             {"l1ScaledResidual", true},
+             {"checkFrequency", 3},
+             {"tolerance", 1e-12},
+             {"relTol", 0.0}}
+        };
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        std::filesystem::remove(configFile);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+        // sum|b - A x| / normFactor, with normFactor = sum|b| = 6 at x = 0.
+        auto hostX = x.copyToHost();
+        auto xs = hostX.view();
+        const scalar l1Residual = std::abs(1.0 - (xs[0] - 0.1 * xs[1]))
+                                + std::abs(2.0 - (-0.1 * xs[0] + xs[1] - 0.1 * xs[2]))
+                                + std::abs(3.0 - (-0.1 * xs[1] + xs[2]));
+        REQUIRE(numIter == 2);
+        REQUIRE(initResNorm == Catch::Approx(1.0).margin(1e-12));
+        REQUIRE(finalResNorm == Catch::Approx(l1Residual / 6.0).margin(1e-12));
+        REQUIRE(finalResNorm < 0.1);
     }
 
     SECTION("Solve linear system scalar with solver::Ir " + execName)
