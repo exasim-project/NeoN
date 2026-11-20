@@ -9,6 +9,7 @@
 #if NF_WITH_GINKGO
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
 #include <numeric>
 #include <stdexcept>
@@ -135,6 +136,61 @@ void setIdentity(gko::matrix::Dense<ValueType>* m)
     const localIdx stride = static_cast<localIdx>(m->get_stride());
     forEachOn(*m->get_executor(), m->get_size()[0], NEON_LAMBDA(const localIdx i) { v[i * stride + i] = ValueType {1}; });
 }
+
+#ifdef NF_WITH_MPI_SUPPORT
+/**
+ * @brief Rank-local (block-diagonal) operator applied to distributed vectors WITHOUT communication.
+ *
+ * MergedPgm's distributed prolong/restrict have an empty off-diagonal block (aggregation is rank-local), but
+ * as gko::experimental::distributed::Matrix every apply still runs the halo machinery: an event sync, an
+ * MPI_Ialltoallv with zero counts (a collective over all ranks) and MPI_Wait. This wrapper applies the local
+ * block to the local parts of the vectors instead: a plain local SpMV.
+ */
+template<typename ValueType>
+class LocalBlockOp : public gko::LinOp
+{
+    using dense = gko::matrix::Dense<ValueType>;
+    using dist_vec = gko::experimental::distributed::Vector<ValueType>;
+
+public:
+
+    LocalBlockOp(std::shared_ptr<const gko::LinOp> localBlock, gko::dim<2> globalSize)
+        : gko::LinOp(localBlock->get_executor(), globalSize), local_ {std::move(localBlock)}
+    {}
+
+protected:
+
+    void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
+    {
+        local_->apply(gko::as<dist_vec>(b)->get_local_vector(), localView(gko::as<dist_vec>(x)).get());
+    }
+
+    void apply_impl(
+        const gko::LinOp* alpha, const gko::LinOp* b, const gko::LinOp* beta, gko::LinOp* x
+    ) const override
+    {
+        local_->apply(
+            alpha, gko::as<dist_vec>(b)->get_local_vector(), beta, localView(gko::as<dist_vec>(x)).get()
+        );
+    }
+
+private:
+
+    // mutable view of the rank-local part (distributed::Vector only exposes it read-only)
+    static std::unique_ptr<dense> localView(dist_vec* v)
+    {
+        const auto* l = v->get_local_vector();
+        return dense::create(
+            l->get_executor(),
+            l->get_size(),
+            gko::make_array_view(l->get_executor(), l->get_size()[0] * l->get_stride(), v->get_local_values()),
+            l->get_stride()
+        );
+    }
+
+    std::shared_ptr<const gko::LinOp> local_;
+};
+#endif
 
 /** @brief Restriction that records the residual it restricts for ScaledProlongation. */
 class RecordingRestriction : public gko::LinOp
@@ -452,6 +508,9 @@ public:
         bool GKO_FACTORY_PARAMETER_SCALAR(skip_sorting, false);
         /** Scale the coarse correction like OpenFOAM's GAMG scaleCorrection. */
         bool GKO_FACTORY_PARAMETER_SCALAR(scale_correction, false);
+        /** Distributed: apply the (block-diagonal) prolong/restrict as rank-local SpMVs without the empty
+         * halo exchange of a distributed::Matrix (same result; default off). */
+        bool GKO_FACTORY_PARAMETER_SCALAR(local_transfer, false);
     };
     class reuse_data_type;
     GKO_ENABLE_LIN_OP_FACTORY_WITH_REUSE(MergedPgm, parameters, Factory, reuse_data_type);
@@ -667,18 +726,44 @@ private:
         std::shared_ptr<const gko::LinOp> coarse
     )
     {
+        std::shared_ptr<const gko::LinOp> P = prolong_;
+        std::shared_ptr<const gko::LinOp> R = restrict_;
+#ifdef NF_WITH_MPI_SUPPORT
+        if (parameters_.local_transfer)
+        {
+            auto dp = std::dynamic_pointer_cast<const dist_mtx>(prolong_);
+            auto dr = std::dynamic_pointer_cast<const dist_mtx>(restrict_);
+            auto emptyOffDiag = [](const dist_mtx* m)
+            {
+                const auto od = m->get_off_diag_matrix();
+                if (od->get_size()[1] == 0 || od->get_size()[0] == 0) return true;
+                auto odCsr = std::dynamic_pointer_cast<const csr>(od);
+                return odCsr && odCsr->get_num_stored_elements() == 0;
+            };
+            if (dp && dr && emptyOffDiag(dp.get()) && emptyOffDiag(dr.get()))
+            {
+                P = std::make_shared<detail::LocalBlockOp<ValueType>>(dp->get_diag_matrix(), dp->get_size());
+                R = std::make_shared<detail::LocalBlockOp<ValueType>>(dr->get_diag_matrix(), dr->get_size());
+            }
+            else
+            {
+                std::cerr << "NeoN MergedPgm: local_transfer requested but the transfer operators are not "
+                             "block-diagonal distributed matrices; keeping them\n";
+            }
+        }
+#endif
         if (!parameters_.scale_correction)
         {
-            this->set_multigrid_level(prolong_, std::move(coarse), restrict_);
+            this->set_multigrid_level(P, std::move(coarse), R);
             return;
         }
         auto state = std::make_shared<detail::ScaleCorrectionState>();
         this->set_multigrid_level(
             std::make_shared<detail::ScaledProlongation<ValueType, IndexType>>(
-                prolong_, std::move(fineOp), detail::invertedDiagonal(diagBlock), state
+                P, std::move(fineOp), detail::invertedDiagonal(diagBlock), state
             ),
             std::move(coarse),
-            std::make_shared<detail::RecordingRestriction>(restrict_, state)
+            std::make_shared<detail::RecordingRestriction>(R, state)
         );
     }
 
@@ -958,6 +1043,8 @@ inline gko::config::configuration_map mergedPgmConfigMap()
                      params.with_skip_sorting(value.get_boolean());
                  else if (key == "scale_correction")
                      params.with_scale_correction(value.get_boolean());
+                 else if (key == "local_transfer")
+                     params.with_local_transfer(value.get_boolean());
                  else
                      throw std::invalid_argument("neon::MergedPgm: unknown key '" + key + "'");
              }
