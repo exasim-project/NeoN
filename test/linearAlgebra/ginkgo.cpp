@@ -4,6 +4,8 @@
 
 #include "catch2_common.hpp"
 
+#include <filesystem>
+#include <fstream>
 #include "NeoN/NeoN.hpp"
 
 
@@ -280,6 +282,44 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         REQUIRE(numIter == 3);
         REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
         REQUIRE(finalResNorm < 1.0e-04);
+    }
+
+    SECTION("configFile with the L1 criterion reports the scaled residual " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+        Vector<scalar> bValues(exec, {});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
+        auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        // The criterion is named in the config, so it runs inside the solver; the stats must
+        // carry its scaled L1 residual, not the unscaled L2 norm of the generic solve path.
+        const auto configFile =
+            (std::filesystem::temp_directory_path() / "neon_test_l1_config.json").string();
+        std::ofstream(configFile) << R"({"type": "solver::Cg", "criteria": [)"
+                                  << R"({"type": "Iteration", "max_iters": 20}, )"
+                                  << R"("neon::l1ScaledResidual"]})";
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"configFile", configFile},
+             {"l1ScaledResidual", true},
+             {"tolerance", 1e-12},
+             {"relTol", 0.0}}
+        };
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        std::filesystem::remove(configFile);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+        // From x = 0 the scaled residual is |b| / |b| = 1; the unscaled L2 norm would be 3.74.
+        REQUIRE(initResNorm == Catch::Approx(1.0).margin(1e-12));
+        REQUIRE(finalResNorm < 1e-10);
+        REQUIRE(numIter > 0);
+        auto hostX = x.copyToHost();
+        REQUIRE(hostX.view()[0] == Catch::Approx(1.24489796).margin(1e-8));
     }
 
     SECTION("Solve linear system scalar with solver::Ir " + execName)
