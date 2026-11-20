@@ -276,6 +276,9 @@ public:
         if (useGpuPath)
         {
             buf.deviceRecvBuf = Vector<ValueType>(exec_, patchSize, ValueType {});
+            // The zero-fill above is an asynchronous kernel and MPI does not order against it:
+            // without a fence it can overwrite halo data that already arrived through irecv.
+            fence(exec_);
             mpi::isend<char>(
                 reinterpret_cast<const char*>(value_.data() + rangeStart),
                 byteCount,
@@ -359,6 +362,9 @@ public:
                     KOKKOS_LAMBDA(const localIdx k) { dstView[start + k] = srcView[k]; }
                 );
             }
+            // The copy kernels read deviceRecvBuf, which commBuffers_.clear() below frees; with a
+            // memory pool a later irecv could reuse that memory while they still run.
+            fence(exec_);
         }
         else if (std::holds_alternative<GPUExecutor>(exec_))
         {

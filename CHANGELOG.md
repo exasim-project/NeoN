@@ -1,4 +1,5 @@
 # Version 0.3.0 (unreleased)
+- Fence around the device receive buffer of the GPU-aware halo exchange in `BoundaryData`: its asynchronous zero-fill could overwrite halo data that already arrived through `MPI_Irecv`, and `waitAll()` freed the buffers while the copy kernels still read them; multi-node GPU runs got corrupted processor-boundary values
 - Take the normal derivative of the Gauss gradient's boundary correction from the patch value, deltaCoeffs*(value - cell value), as OpenFOAM's `fvPatchField::snGrad()` does, for every patch type: it used `refGrad` unless the BC fixes the value, which dropped the normal derivative on symmetry planes (implicit mode) and on the inflow faces of `inletOutlet`; through grad(U) this put a spurious explicit viscous stress next to such patches
 - Relax every row of an equation with the system's sign, as `fvMatrix::relax()` does (D = max(|D|, sumOff), positive for an OpenFOAM-convention system): a row whose diagonal came out negative -- e.g. a bounded-convection cell with more outflow than inflow -- was relaxed as a negative one, i.e. a different equation
 ## Features
