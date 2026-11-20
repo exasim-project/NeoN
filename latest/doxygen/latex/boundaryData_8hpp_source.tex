@@ -199,173 +199,179 @@
 \DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00276}00276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (useGpuPath)}
 \DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00277}00277\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ buf.deviceRecvBuf\ =\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}(exec\_,\ patchSize,\ ValueType\ \{\});}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::isend<char>(}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(value\_.data()\ +\ rangeStart),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&sendReq}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00286}00286\ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00287}00287\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::irecv<char>(}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(buf.deviceRecvBuf-\/>data()),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00289}00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&recvReq}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00295}00295\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00296}00296\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00297}00297\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00298}00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ valH\ =\ value\_.copyToHost();}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00299}00299\ \ \ \ \ \ \ \ \ \ \ \ \ buf.sendBuf.resize(\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(patchSize));}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00300}00300\ \ \ \ \ \ \ \ \ \ \ \ \ buf.recvBuf.resize(\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(patchSize));}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k\ =\ 0;\ k\ <\ patchSize;\ k++)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00302}00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buf.sendBuf[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(k)]\ =\ valH.view()[rangeStart\ +\ k];}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00303}00303\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::isend<char>(}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00304}00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(buf.sendBuf.data()),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00305}00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00308}00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&sendReq}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::irecv<char>(}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00312}00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(buf.recvBuf.data()),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&recvReq}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00319}00319\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00320}00320\ \ \ \ \ \ \ \ \ communicating\_\ =\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00321}00321\ \ \ \ \ \ \ \ \ requests\_.push\_back(sendReq);}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00322}00322\ \ \ \ \ \ \ \ \ requests\_.push\_back(recvReq);}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00323}00323\ \ \ \ \ \ \ \ \ commBuffers\_.push\_back(std::move(buf));}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00324}00324\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00325}00325\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00326}00326\ \ \ \ \ \textcolor{keywordtype}{bool}\ isComplete()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00327}00327\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00328}00328\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (requests\_.empty()\ ||\ !communicating\_)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00329}00329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ req\ :\ requests\_)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00330}00330\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!mpi::test(\&req))\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00332}00332\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00333}00333\ \ \ \ \ \ \ \ \ communicating\_\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00334}00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00335}00335\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00336}00336\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00337}00337\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00338}00338\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ zero-\/fill\ above\ is\ an\ asynchronous\ kernel\ and\ MPI\ does\ not\ order\ against\ it:}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ without\ a\ fence\ it\ can\ overwrite\ halo\ data\ that\ already\ arrived\ through\ irecv.}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(exec\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::isend<char>(}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(value\_.data()\ +\ rangeStart),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00286}00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00287}00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&sendReq}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00289}00289\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::irecv<char>(}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(buf.deviceRecvBuf-\/>data()),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&recvReq}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00297}00297\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00298}00298\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00299}00299\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00300}00300\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ valH\ =\ value\_.copyToHost();}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00302}00302\ \ \ \ \ \ \ \ \ \ \ \ \ buf.sendBuf.resize(\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(patchSize));}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00303}00303\ \ \ \ \ \ \ \ \ \ \ \ \ buf.recvBuf.resize(\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(patchSize));}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00304}00304\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k\ =\ 0;\ k\ <\ patchSize;\ k++)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00305}00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buf.sendBuf[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(k)]\ =\ valH.view()[rangeStart\ +\ k];}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::isend<char>(}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(buf.sendBuf.data()),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00308}00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00312}00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&sendReq}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ mpi::irecv<char>(}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(buf.recvBuf.data()),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byteCount,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neighborRankLabel,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairTag,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&recvReq}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00322}00322\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00323}00323\ \ \ \ \ \ \ \ \ communicating\_\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00324}00324\ \ \ \ \ \ \ \ \ requests\_.push\_back(sendReq);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00325}00325\ \ \ \ \ \ \ \ \ requests\_.push\_back(recvReq);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00326}00326\ \ \ \ \ \ \ \ \ commBuffers\_.push\_back(std::move(buf));}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00327}00327\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00328}00328\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00329}00329\ \ \ \ \ \textcolor{keywordtype}{bool}\ isComplete()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00330}00330\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00331}00331\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (requests\_.empty()\ ||\ !communicating\_)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00332}00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ req\ :\ requests\_)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00333}00333\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00334}00334\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!mpi::test(\&req))\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00335}00335\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00336}00336\ \ \ \ \ \ \ \ \ communicating\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00337}00337\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00338}00338\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00339}00339\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00340}\mbox{\hyperlink{classNeoN_1_1BoundaryData_abe68f27d45b391253709669681e40528}{00340}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_abe68f27d45b391253709669681e40528}{waitAll}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00341}00341\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00342}00342\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00343}00343\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (requests\_.empty()\ ||\ !communicating\_)\ \textcolor{keywordflow}{return};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00344}00344\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!isComplete())}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00345}00345\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00346}00346\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00347}00347\ \ \ \ \ \ \ \ \ mpi::Environment\ mpiEnv;}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00348}00348\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ useGpuPath\ =\ mpiEnv.gpuAwareMpi()\ \&\&\ std::holds\_alternative<GPUExecutor>(exec\_);}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00349}00349\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (useGpuPath)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00350}00350\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00351}00351\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buf\ :\ commBuffers\_)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00352}00352\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ srcView\ =\ buf.deviceRecvBuf-\/>view();}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00354}00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dstView\ =\ value\_.view();}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ start\ =\ buf.rangeStart;}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00357}00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ exec\_,}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ buf.patchSize\},}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k)\ \{\ dstView[start\ +\ k]\ =\ srcView[k];\ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00362}00362\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00363}00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (std::holds\_alternative<GPUExecutor>(exec\_))}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00364}00364\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ GPU\ executor\ but\ not\ GPU-\/aware\ MPI:\ data\ was\ staged\ through\ host\ buffers.}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00366}00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Copy\ received\ host\ data\ back\ to\ the\ device\ in-\/place\ (via\ copy-\/assign,\ not}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ move-\/assign)\ so\ that\ value\_.data()\ stays\ the\ same\ pointer\ and\ any\ View}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00368}00368\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ obtained\ from\ value()\ before\ the\ exchange\ remains\ valid.}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00369}00369\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ valH\ =\ value\_.copyToHost();}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buf\ :\ commBuffers\_)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k\ =\ 0;\ k\ <\ buf.patchSize;\ k++)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valH.view()[buf.rangeStart\ +\ k]\ =\ buf.recvBuf[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(k)];}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00374}00374\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00375}00375\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ backToDevice\ =\ valH.\mbox{\hyperlink{classNeoN_1_1Vector_a2dc3e53a2f9cd9f1f5401bde925374fa}{copyToExecutor}}(exec\_);}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00376}00376\ \ \ \ \ \ \ \ \ \ \ \ \ value\_\ =\ backToDevice;\ \textcolor{comment}{//\ operator=(const\ Vector\&):\ setContainer\ dispatches\ async\ kernel}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00377}00377\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Fence\ before\ backToDevice\ goes\ out\ of\ scope:\ the\ setContainer\ kernel\ reads\ from}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00378}00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ backToDevice.data\_;\ freeing\ it\ while\ the\ kernel\ runs\ is\ a\ GPU\ page\ fault.}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00379}00379\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(exec\_);}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00380}00380\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00381}00381\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00382}00382\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00383}00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ SerialExecutor\ or\ CPUExecutor:\ value\_\ lives\ in\ host-\/accessible\ memory;}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00384}00384\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ write\ received\ data\ directly\ without\ any\ intermediate\ allocation.}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00385}00385\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buf\ :\ commBuffers\_)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00386}00386\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00387}00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ValueType*\ dst\ =\ value\_.data()\ +\ buf.rangeStart;}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00388}00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k\ =\ 0;\ k\ <\ buf.patchSize;\ k++)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dst[k]\ =\ buf.recvBuf[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(k)];}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00390}00390\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00391}00391\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00392}00392\ \ \ \ \ \ \ \ \ requests\_.clear();}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00393}00393\ \ \ \ \ \ \ \ \ communicating\_\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00394}00394\ \ \ \ \ \ \ \ \ commBuffers\_.clear();}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00395}00395\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00396}00396\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00397}00397\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00402}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a042d7cb636be0e41666eb0b1d28c202a}{00402}}\ \ \ \ \ std::pair<localIdx,\ localIdx>\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a042d7cb636be0e41666eb0b1d28c202a}{range}}(\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ patchId)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00403}00403\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00404}00404\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{offset\_.data()[patchId],\ offset\_.data()[patchId\ +\ 1]\};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00405}00405\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00406}00406\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00407}00407\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00408}00408\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00410}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a6292f13eb1d2535f1e3197b25498e92b}{00410}}\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{classNeoN_1_1BoundaryData_a6292f13eb1d2535f1e3197b25498e92b}{NoWaitAccess}};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00411}00411\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00425}00425\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ valueNoWait()\ \{\ \textcolor{keywordflow}{return}\ value\_;\ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00426}00426\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00427}00427\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\ exec\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00428}00428\ \ \ \ \ \textcolor{keyword}{mutable}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ value\_;\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00430}00430\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ refValue\_;\ \ \ \ \ \ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00431}00431\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00432}00432\ \ \ \ \ \ \ \ \ valueFraction\_;\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00433}00433\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ refGrad\_;\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00434}00434\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<int>}}\ boundaryTypes\_;\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00435}00435\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ offset\_;\ \ \ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00436}00436\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ nBoundaries\_;\ \ \ \ \ \ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00437}00437\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ nBoundaryFaces\_;\ \ \ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00438}00438\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00439}00439\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00440}00440\ \ \ \ \ \textcolor{keyword}{struct\ }CommBuffer}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00441}00441\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00442}00442\ \ \ \ \ \ \ \ \ std::vector<ValueType>\ sendBuf;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ host\ staging,\ used\ when\ !gpuAwareMpi}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00443}00443\ \ \ \ \ \ \ \ \ std::vector<ValueType>\ recvBuf;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ host\ staging,\ used\ when\ !gpuAwareMpi}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00444}00444\ \ \ \ \ \ \ \ \ std::optional<Vector<ValueType>>\ deviceRecvBuf;\ \textcolor{comment}{//\ device\ buffer,\ used\ when\ gpuAwareMpi}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00445}00445\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ rangeStart;}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00446}00446\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ patchSize;}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00447}00447\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00448}00448\ \ \ \ \ \textcolor{keyword}{mutable}\ std::vector<MPI\_Request>}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00449}00449\ \ \ \ \ \ \ \ \ requests\_;\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00450}00450\ \ \ \ \ \textcolor{keyword}{mutable}\ std::vector<CommBuffer>}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00451}00451\ \ \ \ \ \ \ \ \ commBuffers\_;\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00452}00452\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{bool}\ communicating\_\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00453}00453\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00454}00454\ \};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00455}00455\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00464}\mbox{\hyperlink{structNeoN_1_1NoWaitAccess}{00464}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1NoWaitAccess}{NoWaitAccess}}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00465}00465\ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00466}00466\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00467}\mbox{\hyperlink{structNeoN_1_1NoWaitAccess_a0514f326b93ffc870cc49dfdf6c03de5}{00467}}\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{structNeoN_1_1NoWaitAccess_a0514f326b93ffc870cc49dfdf6c03de5}{value}}(\mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<ValueType>}}\&\ in)}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00468}00468\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00469}00469\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ in.valueNoWait();}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00470}00470\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00471}00471\ \};}
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00472}00472\ }
-\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00473}00473\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00340}00340\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00341}00341\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00342}00342\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00343}\mbox{\hyperlink{classNeoN_1_1BoundaryData_abe68f27d45b391253709669681e40528}{00343}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_abe68f27d45b391253709669681e40528}{waitAll}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00344}00344\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00345}00345\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00346}00346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (requests\_.empty()\ ||\ !communicating\_)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00347}00347\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!isComplete())}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00348}00348\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00349}00349\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00350}00350\ \ \ \ \ \ \ \ \ mpi::Environment\ mpiEnv;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00351}00351\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ useGpuPath\ =\ mpiEnv.gpuAwareMpi()\ \&\&\ std::holds\_alternative<GPUExecutor>(exec\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00352}00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (useGpuPath)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00353}00353\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00354}00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buf\ :\ commBuffers\_)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ srcView\ =\ buf.deviceRecvBuf-\/>view();}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00357}00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dstView\ =\ value\_.view();}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ start\ =\ buf.rangeStart;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ exec\_,}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ buf.patchSize\},}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k)\ \{\ dstView[start\ +\ k]\ =\ srcView[k];\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ copy\ kernels\ read\ deviceRecvBuf,\ which\ commBuffers\_.clear()\ below\ frees;\ with\ a}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00366}00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ memory\ pool\ a\ later\ irecv\ could\ reuse\ that\ memory\ while\ they\ still\ run.}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(exec\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00368}00368\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00369}00369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (std::holds\_alternative<GPUExecutor>(exec\_))}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00370}00370\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ GPU\ executor\ but\ not\ GPU-\/aware\ MPI:\ data\ was\ staged\ through\ host\ buffers.}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Copy\ received\ host\ data\ back\ to\ the\ device\ in-\/place\ (via\ copy-\/assign,\ not}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ move-\/assign)\ so\ that\ value\_.data()\ stays\ the\ same\ pointer\ and\ any\ View}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00374}00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ obtained\ from\ value()\ before\ the\ exchange\ remains\ valid.}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00375}00375\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ valH\ =\ value\_.copyToHost();}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00376}00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buf\ :\ commBuffers\_)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00377}00377\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00378}00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k\ =\ 0;\ k\ <\ buf.patchSize;\ k++)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00379}00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valH.view()[buf.rangeStart\ +\ k]\ =\ buf.recvBuf[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(k)];}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00380}00380\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00381}00381\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ backToDevice\ =\ valH.\mbox{\hyperlink{classNeoN_1_1Vector_a2dc3e53a2f9cd9f1f5401bde925374fa}{copyToExecutor}}(exec\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00382}00382\ \ \ \ \ \ \ \ \ \ \ \ \ value\_\ =\ backToDevice;\ \textcolor{comment}{//\ operator=(const\ Vector\&):\ setContainer\ dispatches\ async\ kernel}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00383}00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Fence\ before\ backToDevice\ goes\ out\ of\ scope:\ the\ setContainer\ kernel\ reads\ from}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00384}00384\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ backToDevice.data\_;\ freeing\ it\ while\ the\ kernel\ runs\ is\ a\ GPU\ page\ fault.}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00385}00385\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(exec\_);}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00386}00386\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00387}00387\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00388}00388\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ SerialExecutor\ or\ CPUExecutor:\ value\_\ lives\ in\ host-\/accessible\ memory;}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00390}00390\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ write\ received\ data\ directly\ without\ any\ intermediate\ allocation.}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00391}00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buf\ :\ commBuffers\_)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00392}00392\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00393}00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ValueType*\ dst\ =\ value\_.data()\ +\ buf.rangeStart;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00394}00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k\ =\ 0;\ k\ <\ buf.patchSize;\ k++)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00395}00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dst[k]\ =\ buf.recvBuf[\textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\textcolor{keyword}{>}(k)];}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00397}00397\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00398}00398\ \ \ \ \ \ \ \ \ requests\_.clear();}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00399}00399\ \ \ \ \ \ \ \ \ communicating\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00400}00400\ \ \ \ \ \ \ \ \ commBuffers\_.clear();}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00401}00401\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00402}00402\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00403}00403\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00408}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a042d7cb636be0e41666eb0b1d28c202a}{00408}}\ \ \ \ \ std::pair<localIdx,\ localIdx>\ \mbox{\hyperlink{classNeoN_1_1BoundaryData_a042d7cb636be0e41666eb0b1d28c202a}{range}}(\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ patchId)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00409}00409\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00410}00410\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{offset\_.data()[patchId],\ offset\_.data()[patchId\ +\ 1]\};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00411}00411\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00412}00412\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00413}00413\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00414}00414\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00416}\mbox{\hyperlink{classNeoN_1_1BoundaryData_a6292f13eb1d2535f1e3197b25498e92b}{00416}}\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{classNeoN_1_1BoundaryData_a6292f13eb1d2535f1e3197b25498e92b}{NoWaitAccess}};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00417}00417\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00431}00431\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ valueNoWait()\ \{\ \textcolor{keywordflow}{return}\ value\_;\ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00432}00432\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00433}00433\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}}\ exec\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00434}00434\ \ \ \ \ \textcolor{keyword}{mutable}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ value\_;\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00436}00436\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ refValue\_;\ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00437}00437\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00438}00438\ \ \ \ \ \ \ \ \ valueFraction\_;\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00439}00439\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\ refGrad\_;\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00440}00440\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<int>}}\ boundaryTypes\_;\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00441}00441\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ offset\_;\ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00442}00442\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ nBoundaries\_;\ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00443}00443\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ nBoundaryFaces\_;\ \ \ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00444}00444\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00445}00445\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00446}00446\ \ \ \ \ \textcolor{keyword}{struct\ }CommBuffer}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00447}00447\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00448}00448\ \ \ \ \ \ \ \ \ std::vector<ValueType>\ sendBuf;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ host\ staging,\ used\ when\ !gpuAwareMpi}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00449}00449\ \ \ \ \ \ \ \ \ std::vector<ValueType>\ recvBuf;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ host\ staging,\ used\ when\ !gpuAwareMpi}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00450}00450\ \ \ \ \ \ \ \ \ std::optional<Vector<ValueType>>\ deviceRecvBuf;\ \textcolor{comment}{//\ device\ buffer,\ used\ when\ gpuAwareMpi}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00451}00451\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ rangeStart;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00452}00452\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1d29fb98b572a2872575e1dc7d7856a}{sizeType}}\ patchSize;}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00453}00453\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00454}00454\ \ \ \ \ \textcolor{keyword}{mutable}\ std::vector<MPI\_Request>}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00455}00455\ \ \ \ \ \ \ \ \ requests\_;\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00456}00456\ \ \ \ \ \textcolor{keyword}{mutable}\ std::vector<CommBuffer>}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00457}00457\ \ \ \ \ \ \ \ \ commBuffers\_;\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00458}00458\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{bool}\ communicating\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00459}00459\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00460}00460\ \};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00461}00461\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00470}\mbox{\hyperlink{structNeoN_1_1NoWaitAccess}{00470}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1NoWaitAccess}{NoWaitAccess}}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00471}00471\ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00472}00472\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00473}\mbox{\hyperlink{structNeoN_1_1NoWaitAccess_a0514f326b93ffc870cc49dfdf6c03de5}{00473}}\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ \mbox{\hyperlink{structNeoN_1_1NoWaitAccess_a0514f326b93ffc870cc49dfdf6c03de5}{value}}(\mbox{\hyperlink{classNeoN_1_1BoundaryData}{BoundaryData<ValueType>}}\&\ in)}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00474}00474\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00475}00475\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ in.valueNoWait();}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00476}00476\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00477}00477\ \};}
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00478}00478\ }
+\DoxyCodeLine{\Hypertarget{boundaryData_8hpp_source_l00479}00479\ \}}
 
 \end{DoxyCode}
