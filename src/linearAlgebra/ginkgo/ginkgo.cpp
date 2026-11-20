@@ -5,6 +5,7 @@
 #if NF_WITH_GINKGO
 
 #include <array>
+#include <map>
 #include <mutex>
 #include <sstream>
 #include <stdexcept>
@@ -13,6 +14,57 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/memory/umpire.hpp"
+
+namespace
+{
+
+// Translate Ginkgo's short-form stopping criteria ({iteration: 100, initial_residual_norm: 0.1})
+// into the typed list ([{type: Iteration, max_iters: 100}, {type: ResidualNorm, ...}]), with the
+// mapping of Ginkgo's own parse_minimal_criteria. The Krylov solvers accept both forms; solver::Ir
+// only takes the typed one.
+gko::config::pnode typedCriteria(const gko::config::pnode& shortForm)
+{
+    using pnode = gko::config::pnode;
+    static const std::map<std::string, std::pair<std::string, std::string>> residualCriteria = {
+        {"relative_residual_norm", {"ResidualNorm", "rhs_norm"}},
+        {"initial_residual_norm", {"ResidualNorm", "initial_resnorm"}},
+        {"absolute_residual_norm", {"ResidualNorm", "absolute"}},
+        {"relative_implicit_residual_norm", {"ImplicitResidualNorm", "rhs_norm"}},
+        {"initial_implicit_residual_norm", {"ImplicitResidualNorm", "initial_resnorm"}},
+        {"absolute_implicit_residual_norm", {"ImplicitResidualNorm", "absolute"}}
+    };
+    pnode::array_type typed;
+    for (const auto& [key, value] : shortForm.get_map())
+    {
+        if (key == "iteration")
+        {
+            typed.emplace_back(
+                pnode::map_type {{"type", pnode {std::string("Iteration")}}, {"max_iters", value}}
+            );
+        }
+        else if (key == "time")
+        {
+            typed.emplace_back(
+                pnode::map_type {{"type", pnode {std::string("Time")}}, {"time_limit", value}}
+            );
+        }
+        else if (auto it = residualCriteria.find(key); it != residualCriteria.end())
+        {
+            typed.emplace_back(pnode::map_type {
+                {"type", pnode {it->second.first}},
+                {"baseline", pnode {it->second.second}},
+                {"reduction_factor", value}
+            });
+        }
+        else
+        {
+            NF_THROW("Unknown Ginkgo stopping criterion " + key);
+        }
+    }
+    return pnode {typed};
+}
+
+}
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
@@ -175,6 +227,12 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
             node = parseData(key);
         }
         result.emplace(key, node);
+    }
+    if (holdsString("type", "solver::Ir") && result.contains("criteria")
+        && result.at("criteria").get_tag() == gko::config::pnode::tag_t::map
+        && !result.at("criteria").get("type"))
+    {
+        result["criteria"] = typedCriteria(result.at("criteria"));
     }
     return gko::config::pnode {result};
 }
