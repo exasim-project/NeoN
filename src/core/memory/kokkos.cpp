@@ -25,7 +25,10 @@ void* KokkosAllocator::alloc(sizeType size)
     }
     case MemorySpace::CPU:
     {
-        return std::malloc(size);
+        // unlike kokkos_malloc, std::malloc reports a failure only through its result
+        void* ptr = std::malloc(size);
+        NF_ASSERT(ptr != nullptr || size == 0, "Host allocation failed");
+        return ptr;
     }
     default:
         NF_ERROR_EXIT("Unknown memory space");
@@ -42,7 +45,10 @@ void* KokkosAllocator::realloc(void* ptr, sizeType size)
     }
     case MemorySpace::CPU:
     {
-        return std::realloc(ptr, size);
+        // on failure std::realloc returns null and keeps the original allocation
+        void* newPtr = std::realloc(ptr, size);
+        NF_ASSERT(newPtr != nullptr || size == 0, "Host reallocation failed");
+        return newPtr;
     }
     default:
         NF_ERROR_EXIT("Unknown memory space");
