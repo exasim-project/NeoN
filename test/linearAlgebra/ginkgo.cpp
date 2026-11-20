@@ -356,6 +356,47 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
     }
 
+    // The short form {iteration: .., <norm>: ..} is what NeoFOAM's fvSolution mapping writes;
+    // Ginkgo's Ir itself only parses typed criteria, so parse() has to translate it.
+    for (const bool l1 : {false, true})
+    {
+        SECTION(
+            std::string("solver::Ir with short-form criteria") + (l1 ? ", l1ScaledResidual " : " ")
+            + execName
+        )
+        {
+            Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+            CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+            Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+            Vector<scalar> bValues(exec, {});
+            COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+            Vector<scalar> bRhs(exec, {});
+            auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+            Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+            Dictionary solverDict {
+                {{"solver", std::string {"Ginkgo"}},
+                 {"type", "solver::Ir"},
+                 {"preconditioner", Dictionary {{{"type", "preconditioner::Jacobi"}}}},
+                 {"criteria", Dictionary {{{"iteration", 100}, {"absolute_residual_norm", 1e-12}}}}}
+            };
+            if (l1)
+            {
+                solverDict.insert("l1ScaledResidual", true);
+            }
+
+            auto solver = NeoN::la::Solver(exec, solverDict);
+            auto solverStats = solver.solve(linearSystem, x);
+
+            auto hostX = x.copyToHost();
+            auto hostXS = hostX.view();
+            REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
+            REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
+            REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
+            REQUIRE(solverStats.entries[0].numIter < 100);
+        }
+    }
+
     SECTION("Solve linear system vector " + execName)
     {
         Vector<Vec3> values(
