@@ -410,6 +410,11 @@ private:
     bool l1InConfig_ = false;
     // Report sink the in-config criterion writes its scaled L1 residual / iters into.
     mutable L1ResidualResult l1Report_;
+
+    /* @brief Replace the solve's unscaled norms and iteration count with the in-config L1
+     * criterion's report, if that criterion ran during the solve.
+     */
+    SolverStatsEntry withL1Report(SolverStatsEntry entry) const;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>

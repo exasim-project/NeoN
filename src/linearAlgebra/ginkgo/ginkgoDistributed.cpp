@@ -609,7 +609,8 @@ SolverStats GinkgoSolver::solveDist(
     // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
+    l1Report_.fired = false;
+    return {withL1Report(solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control))};
 }
 
 SolverStats GinkgoSolver::solveDist(

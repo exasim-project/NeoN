@@ -542,6 +542,19 @@ std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const g
     return solver;
 }
 
+SolverStatsEntry GinkgoSolver::withL1Report(SolverStatsEntry entry) const
+{
+    // The in-config criterion decides convergence but only reports through l1Report_; the
+    // generic solve path returns unscaled norms.
+    if (l1InConfig_ && l1Report_.fired)
+    {
+        entry.numIter = l1Report_.numIter;
+        entry.initResNorm = l1Report_.initResNorm;
+        entry.finalResNorm = l1Report_.finalResNorm;
+    }
+    return entry;
+}
+
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
@@ -552,7 +565,10 @@ SolverStats GinkgoSolver::solve(
     // twice. The flag-only case (criterion not in the config) still attaches it here.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control)};
+    l1Report_.fired = false;
+    return {
+        withL1Report(solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control))
+    };
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
