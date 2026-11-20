@@ -37,11 +37,13 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx);
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/distributed/communicationPattern.hpp"
 
-template<typename IndexType>
+/** @brief create a distributed ginkgo matrix from the local block mtx and the processor coupling
+ *  bmtx */
+template<typename LocalMatrixType, typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
-    const CSRMatrix<scalar, IndexType>& mtx,
+    const LocalMatrixType& mtx,
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
@@ -346,6 +348,17 @@ public:
         const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
     ) const final;
 
+    // Format-generic scalar solve body (defined in ginkgo.cpp, explicitly instantiated for
+    // CSRMatrix and ELLMatrix). Both scalar solve() overrides below forward to this; virtual
+    // functions can't themselves be templates.
+    template<typename SystemMatrixType>
+    SolverStats
+    solveImpl(const LinearSystem<scalar, scalar, SystemMatrixType>& sys, Vector<scalar>& x) const;
+
+    virtual SolverStats solve(
+        const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
+
     virtual SolverStats solve(
         const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
     ) const final;
@@ -356,9 +369,25 @@ public:
         Vector<Vec3>& x
     ) const final;
 
+    // Format-generic segregated (scalar matrix, Vec3 rhs) solve body (defined in ginkgo.cpp,
+    // explicitly instantiated for CSRMatrix and ELLMatrix). Both segregated solve() overrides
+    // below forward to this, same reasoning as solveImpl above.
+    template<typename SystemMatrixType>
+    SolverStats solveSegregatedImpl(
+        const LinearSystem<scalar, Vec3, SystemMatrixType>& sys, Vector<Vec3>& x
+    ) const;
+
+    virtual SolverStats solve(
+        const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& sys, Vector<Vec3>& x
+    ) const final;
+
 #ifdef NF_WITH_MPI_SUPPORT
     virtual SolverStats solveDist(
         const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
+
+    virtual SolverStats solveDist(
+        const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
     ) const final;
 
     virtual SolverStats solveDist(

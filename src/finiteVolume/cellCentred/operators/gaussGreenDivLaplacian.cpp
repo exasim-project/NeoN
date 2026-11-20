@@ -15,10 +15,17 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename FieldValueType, typename AssemblyType>
-static void computeDivLaplacianIntImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& /*U*/,
+// Fused div+laplacian internal-face, boundary, and proc-boundary assembly kernels. Internal
+// linkage: every public GaussGreenDivLaplacian::implicitOperation overload is now a concrete,
+// non-template member defined below in this same TU, so implicitOperationImpl -- their one
+// shared caller -- and these kernels are never reached from outside gaussGreenDivLaplacian.cpp.
+namespace
+{
+
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
+void computeDivLaplacianIntImpl(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
+    const VolumeField<FieldValueType>& /*u*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
@@ -30,7 +37,7 @@ static void computeDivLaplacianIntImpl(
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     const auto [gammaV, deltaV] =
         views(gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector());
@@ -72,9 +79,9 @@ static void computeDivLaplacianIntImpl(
 }
 
 template<typename FieldValueType, typename AssemblyType>
-static void computeDivLaplacianIntCellBasedImpl(
+void computeDivLaplacianIntCellBasedImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& /*U*/,
+    const VolumeField<FieldValueType>& /*u*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
@@ -157,9 +164,9 @@ static void computeDivLaplacianIntCellBasedImpl(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType>
-static void computeDivLaplacianBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
+void computeDivLaplacianBoundImpl(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
@@ -173,7 +180,7 @@ static void computeDivLaplacianBoundImpl(
     const auto exec = phi.exec();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     const auto [bPhiV, bGammaV, bDeltaV, bMagSf, surfFaceCells] = views(
         phi.boundaryData().value(),
@@ -234,10 +241,10 @@ static void computeDivLaplacianBoundImpl(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType>
-static void computeDivLaplacianProcBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& /*U*/,
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
+void computeDivLaplacianProcBoundImpl(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
+    const VolumeField<FieldValueType>& /*u*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
@@ -253,7 +260,7 @@ static void computeDivLaplacianProcBoundImpl(
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     if (nProcBoundaryFaces == 0) return;
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     const auto [bPhiV, bGammaV, bDeltaCoeffs, bMagSf, boundaryFaceOwner, isOwner] = views(
         phi.boundaryData().value(),
@@ -301,6 +308,8 @@ static void computeDivLaplacianProcBoundImpl(
     );
 }
 
+} // namespace
+
 template<typename ValueType>
 GaussGreenDivLaplacian<ValueType>::GaussGreenDivLaplacian(
     const Executor& exec, Dictionary divConfig, Dictionary lapConfig
@@ -321,30 +330,62 @@ template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*source*/) const
 {}
 
+// Shared by all three implicitOperation overloads below -- the assembly sequence (internal
+// faces, non-orthogonal correction, physical/proc boundaries, deferred div correction) has one
+// source of truth instead of being duplicated per format. No longer needs to be header-inline:
+// every caller (the three implicitOperation overloads) is defined in this same TU, so same-TU
+// implicit instantiation covers whatever AssemblyType/SystemMatrixType combination each one
+// needs, matching GaussGreenDiv::divImpl<SystemMatrixType>'s existing pattern. Cell-based
+// assembly stays CSR-only; a CellBasedIterator on a non-CSR system is rejected rather than
+// silently falling back to face-based assembly.
 template<typename ValueType>
-void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
+template<typename AssemblyType, typename SystemMatrixType>
+void GaussGreenDivLaplacian<ValueType>::implicitOperationImpl(
+    la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls
+) const
 {
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+    if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
     {
-        if (!cellIter->getCellBasedData())
+        if (auto* cellIter =
+                dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
         {
-            cellIter->setComputeCellBasedData(
-                this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+            if (!cellIter->getCellBasedData())
+            {
+                cellIter->setComputeCellBasedData(
+                    this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                );
+            }
+            computeDivLaplacianIntCellBasedImpl(
+                ls,
+                this->getVector(),
+                flux_,
+                gamma_,
+                *divSurfaceInterpolation_,
+                *faceNormalGradient_,
+                coeffA_,
+                coeffB_
             );
         }
-        computeDivLaplacianIntCellBasedImpl(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_
-        );
+        else
+        {
+            computeDivLaplacianIntImpl(
+                ls,
+                this->getVector(),
+                flux_,
+                gamma_,
+                *divSurfaceInterpolation_,
+                *faceNormalGradient_,
+                coeffA_,
+                coeffB_
+            );
+        }
     }
     else
     {
+        NF_ASSERT(
+            dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()) == nullptr,
+            "Cell-based iteration is not implemented for ELL assembly"
+        );
         computeDivLaplacianIntImpl(
             ls,
             this->getVector(),
@@ -378,8 +419,8 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
         coeffB_
     );
 
-    // Deferred correction for a corrected div scheme (e.g. linearUpwind): the fused matrix uses
-    // upwind div weights, the gradient correction is added explicitly to the rhs (internal + proc).
+    // Deferred correction for a corrected div scheme (e.g. linearUpwind): the fused matrix
+    // uses upwind div weights, the gradient correction is added explicitly to the rhs.
     if (divSurfaceInterpolation_->corrected())
     {
         const auto& mesh = this->getVector().mesh();
@@ -394,10 +435,27 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
     }
 
     // Bounded-convection Sp diagonal term for a `bounded` div scheme (same as BoundedDiv::div).
+    // applyBoundedDivDiagonal is CSR-only (no SystemMatrixType parameter of its own); reject
+    // rather than silently skip the stabilisation term for ELL.
     if (bounded_)
     {
-        applyBoundedDivDiagonal(ls, flux_, this->getVector().mesh(), coeffA_);
+        if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
+        {
+            applyBoundedDivDiagonal(ls, flux_, this->getVector().mesh(), coeffA_);
+        }
+        else
+        {
+            NF_ASSERT(
+                false, "bounded div scheme is not yet implemented for ELL GaussGreenDivLaplacian"
+            );
+        }
     }
+}
+
+template<typename ValueType>
+void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
+{
+    implicitOperationImpl(ls);
 }
 
 template<typename ValueType>
@@ -405,81 +463,15 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
 ) const
     requires(!std::is_same_v<ValueType, scalar>)
 {
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
-    {
-        if (!cellIter->getCellBasedData())
-        {
-            cellIter->setComputeCellBasedData(
-                this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
-            );
-        }
-        computeDivLaplacianIntCellBasedImpl<ValueType, scalar>(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_
-        );
-    }
-    else
-    {
-        computeDivLaplacianIntImpl<ValueType, scalar>(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_
-        );
-    }
-    computeLaplacianNonOrthCorrImpl<ValueType, scalar>(
-        ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
-    );
-    computeDivLaplacianBoundImpl<ValueType, scalar>(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
-    computeDivLaplacianProcBoundImpl<ValueType, scalar>(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
+    implicitOperationImpl(ls);
+}
 
-    // Deferred correction for a corrected div scheme (e.g. linearUpwind), scalar-matrix / Vec3-rhs.
-    if (divSurfaceInterpolation_->corrected())
-    {
-        const auto& mesh = this->getVector().mesh();
-        SurfaceField<ValueType> correction(
-            this->getVector().exec(),
-            "divCorrection",
-            mesh,
-            createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
-        );
-        divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
-        addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
-    }
-
-    // Bounded-convection Sp diagonal term for a `bounded` div scheme (same as BoundedDiv::div).
-    if (bounded_)
-    {
-        applyBoundedDivDiagonal(ls, flux_, this->getVector().mesh(), coeffA_);
-    }
+template<typename ValueType>
+void GaussGreenDivLaplacian<ValueType>::implicitOperation(
+    la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls
+) const
+{
+    implicitOperationImpl(ls);
 }
 
 template<typename ValueType>

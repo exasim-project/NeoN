@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/input.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/dsl/coeff.hpp"

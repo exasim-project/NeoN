@@ -67,56 +67,9 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 template<typename ValueType>
 void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
-    if (!spCoeff_)
-    {
-        NF_ERROR_EXIT("Not implemented");
-    }
-    const auto operatorScaling = this->getCoefficient();
-    const auto vol = spCoeff_->mesh().cellVolumes().view();
-    const auto [coeff] = views(spCoeff_->internalVector());
-    auto values = ls.matrix().values().view();
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
-
-    if (suSp_)
-    {
-        // SuSp: the positive part of the coefficient goes implicitly on the diagonal, the
-        // negative part explicitly to the rhs using the current field:
-        //   diag += V*max(c,0);  source -= V*min(c,0)*field
-        //
-        // The split is taken on the RAW coefficient and the expression scaling is applied
-        // to the result, so the assembled contribution stays linear in that scaling — the
-        // same property every other operator has. Splitting the already-scaled product
-        // instead would make a negative scaling swap the implicit and explicit branches
-        // rather than negate the split term, so `susp(c, phi) - susp(c, phi)` would not
-        // cancel (expression subtraction sets the scaling to -1, see dsl/expression.hpp).
-        auto rhs = ls.rhs().view();
-        const auto [fieldView] = views(this->field_.internalVector());
-        NeoN::parallelFor(
-            ls.exec(),
-            {0, coeff.size()},
-            NEON_LAMBDA(const localIdx celli) {
-                const scalar c = coeff[celli];
-                const scalar cPos = c > scalar(0) ? c : scalar(0);
-                const scalar cNeg = c < scalar(0) ? c : scalar(0);
-                const scalar scaling = operatorScaling[celli];
-                values[ma.diagIdx(celli)] += scaling * cPos * vol[celli] * one<ValueType>();
-                rhs[celli] += -scaling * cNeg * vol[celli] * fieldView[celli];
-            },
-            "SuSp::implicitOperation"
-        );
-        return;
-    }
-
-    // Sp implicit: diagonal += scaling * spCoeff * volume
-    NeoN::parallelFor(
-        ls.exec(),
-        {0, coeff.size()},
-        NEON_LAMBDA(const localIdx celli) {
-            values[ma.diagIdx(celli)] +=
-                operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
-        },
-        "Sp::implicitOperation"
-    );
+    // Explicit template argument, not implicitOperation(ls) -- that would resolve back to this
+    // exact non-template overload (exact match beats template deduction) and recurse forever.
+    implicitOperation<la::CSRMatrix<ValueType, localIdx>>(ls);
 }
 
 

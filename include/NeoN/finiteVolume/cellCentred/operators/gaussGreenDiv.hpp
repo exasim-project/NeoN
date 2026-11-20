@@ -9,10 +9,23 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
-#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
+
+// Internal-face divergence assembly kernel (defined in gaussGreenDiv.cpp) -- the only piece of
+// div assembly that touches upperIdx()/lowerIdx() as well as diagIdx(). Declared here, like
+// computeLaplacianIntImpl in gaussGreenLaplacian.hpp, so it can be instantiated for a
+// SystemMatrixType other than the CSR default (e.g. ELL), independent of the still-CSR-only
+// virtual GaussGreenDiv::div() member below.
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
+void computeDivIntImp(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<FieldValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff coeff
+);
 
 /* @brief
  *
@@ -59,6 +72,14 @@ public:
         const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const override;
 
+    // ELL counterpart of the override above. Skips the CellBasedIterator dispatch (cell-based
+    // ELL assembly is deferred) and shares the rest of the assembly sequence via divImpl().
+    virtual void
+    div(la::LinearSystem<AssemblyType, FieldValueType, la::ELLMatrix<AssemblyType, localIdx>>& ls,
+        const SurfaceField<scalar>& faceFlux,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff operatorScaling) const override;
+
     std::unique_ptr<DivOperatorFactory<FieldValueType, AssemblyType>> clone() const override
     {
         return std::make_unique<GaussGreenDiv<FieldValueType, AssemblyType>>(*this);
@@ -67,6 +88,17 @@ public:
 private:
 
     SurfaceInterpolation<FieldValueType> surfaceInterpolation_;
+
+    // Shared by both div() overrides above: face-to-matrix assembly, boundary/proc-boundary
+    // contributions, and the deferred correction for corrected schemes. Defined in
+    // gaussGreenDiv.cpp; not declared for cross-TU use since only the two overrides call it.
+    template<typename SystemMatrixType>
+    void divImpl(
+        la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
+        const SurfaceField<scalar>& faceFlux,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff operatorScaling
+    ) const;
 };
 
 // Required on MSVC: without extern template, each TU (DLL and EXE) gets its own
@@ -80,9 +112,12 @@ extern template class GaussGreenDiv<Vec3, scalar>;
  * to the linear-system rhs. Shared with the fused div-laplacian operator so both implicit div
  * paths apply linearUpwind identically. Defined and instantiated in gaussGreenDiv.cpp.
  */
-template<typename FieldValueType, typename AssemblyType>
+template<
+    typename FieldValueType,
+    typename AssemblyType,
+    typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
 void addDivCorrectionToRhs(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const SurfaceField<FieldValueType>& correction,
     const dsl::Coeff operatorScaling

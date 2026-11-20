@@ -29,27 +29,30 @@ namespace NeoN::la
  * @brief A view linear into a linear system's data.
  *
  * @tparam RHSValueType The value type of the rhs/solution vectors.
- * @tparam MatrixViewType The type representing the matrix view
+ * @tparam SystemMatrixViewType The type representing the system matrix view.
+ * @tparam BoundaryMatrixViewType The type representing the boundary matrix view. Independent
+ * of SystemMatrixViewType since the two matrices may use different sparsity formats (e.g. an
+ * ELL system matrix with a COO boundary matrix).
  */
-template<typename RHSValueType, typename MatrixViewType>
+template<typename RHSValueType, typename SystemMatrixViewType, typename BoundaryMatrixViewType>
 struct LinearSystemView
 {
     LinearSystemView() = default;
     ~LinearSystemView() = default;
 
     LinearSystemView(
-        MatrixViewType matrixView,
+        SystemMatrixViewType matrixView,
         View<RHSValueType> rhsView,
-        MatrixViewType boundaryMatrixView,
+        BoundaryMatrixViewType boundaryMatrixView,
         View<RHSValueType> boundaryRhsView
     )
         : matrix(matrixView), rhs(rhsView), boundaryMatrix(boundaryMatrixView),
           boundaryRhs(boundaryRhsView) {};
 
-    MatrixViewType matrix;
+    SystemMatrixViewType matrix;
     View<RHSValueType> rhs;
 
-    MatrixViewType boundaryMatrix;
+    BoundaryMatrixViewType boundaryMatrix;
     View<RHSValueType> boundaryRhs;
 };
 
@@ -100,7 +103,15 @@ class LinearSystem :
 
 public:
 
-    using LinearSystemIndexType = typename SystemMatrixType::MatrixSparsityType::SparsityIndexType;
+    using SystemMatrixViewType =
+        MatrixView<MatrixValueType, typename SystemMatrixType::MatrixSparsityType::ViewType>;
+    using BoundaryMatrixViewType =
+        MatrixView<MatrixValueType, typename BoundaryMatrixType::MatrixSparsityType::ViewType>;
+    using ConstSystemMatrixViewType =
+        MatrixView<const MatrixValueType, typename SystemMatrixType::MatrixSparsityType::ViewType>;
+    using ConstBoundaryMatrixViewType = MatrixView<
+        const MatrixValueType,
+        typename BoundaryMatrixType::MatrixSparsityType::ViewType>;
 
     LinearSystem(
         const SystemMatrixType& matrix,
@@ -244,23 +255,16 @@ public:
         if (diagCmpt_) fill(*diagCmpt_, zero<RHSValueType>());
     }
 
-    [[nodiscard]] LinearSystemView<
-        RHSValueType,
-        MatrixView<
-            MatrixValueType,
-            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
+    [[nodiscard]] LinearSystemView<RHSValueType, SystemMatrixViewType, BoundaryMatrixViewType>
     view() && = delete;
 
     [[nodiscard]] LinearSystemView<
-        RHSValueType,
-        MatrixView<
-            MatrixValueType,
-            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
+        const RHSValueType,
+        ConstSystemMatrixViewType,
+        ConstBoundaryMatrixViewType>
     view() const&& = delete;
 
-    [[nodiscard]] LinearSystemView<
-        RHSValueType,
-        MatrixView<MatrixValueType, SparsityView<LinearSystemIndexType>>>
+    [[nodiscard]] LinearSystemView<RHSValueType, SystemMatrixViewType, BoundaryMatrixViewType>
     view() &
     {
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
@@ -278,7 +282,8 @@ public:
 
     [[nodiscard]] LinearSystemView<
         const RHSValueType,
-        const MatrixView<MatrixValueType, SparsityView<const LinearSystemIndexType>>>
+        ConstSystemMatrixViewType,
+        ConstBoundaryMatrixViewType>
     view() const&
     {
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
@@ -418,7 +423,9 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     );
 
     LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
-        SystemMatrixType(Vector<ValueType>(sp->exec(), sp->nnz(), zero<ValueType>()), sp, mi),
+        SystemMatrixType(
+            Vector<ValueType>(sp->exec(), sp->storageSize(), zero<ValueType>()), sp, mi
+        ),
         Vector<RHSValueType>(sp->exec(), sp->rows(), zero<RHSValueType>()),
         BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
         BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp),
@@ -438,7 +445,11 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
  *
  * @note templated on the full LinearSystem parameter set so it also accepts the segregated
  * vector-solve form (scalar matrix, Vec3 rhs): the scalar boundary diagonal is reversed on the
- * scalar matrix while the rhs reversal uses the field (RHS) value type. **/
+ * scalar matrix while the rhs reversal uses the field (RHS) value type.
+ * @note BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO).
+ * Works with any SystemMatrixType whose sparsity has a matching FaceToMatrixAddress::view()
+ * overload (CSR, COO, ELL) -- uses Matrix/Vector views directly rather than LinearSystem::view().
+ **/
 template<
     typename MatrixValueType,
     typename RHSValueType,
@@ -449,23 +460,26 @@ removeBoundaryContributions(
     const la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>&
         lsIn
 )
+    requires requires(const BoundaryMatrixType& bm) { bm.sparsity()->rowIdxs(); }
 {
     auto ls =
         la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>(lsIn);
-    auto lsView = ls.view();
-    auto& matrix = lsView.matrix;
-    auto& rhs = lsView.rhs;
-    auto& bMatrix = lsView.boundaryMatrix;
-    auto& bRhs = lsView.boundaryRhs;
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    auto matrixValues = ls.matrix().values().view();
+    auto rhs = ls.rhs().view();
+    const auto bMatrixValues = ls.boundaryMatrix().values().view();
+    const auto bRhs = ls.boundaryRhs().view();
+
+    const auto ma = ls.matrix().faceToMatrixView();
+    // Per-face owner cell -- bMatrix.sparsity.rowOffs is CSR-style range data, not a cell index.
+    const auto bRowIdxs = ls.boundaryMatrix().sparsity()->rowIdxs().view();
 
     parallelFor(
         ls.exec(),
-        {0, bMatrix.values.size()},
+        {0, bMatrixValues.size()},
         NEON_LAMBDA(const localIdx facei) {
-            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
-            Kokkos::atomic_add(&matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);
+            const auto celli = bRowIdxs[facei];
+            Kokkos::atomic_add(&matrixValues[ma.diagIdx(celli)], bMatrixValues[facei]);
             Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
         },
         "removeBoundaryContributions"

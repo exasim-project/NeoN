@@ -90,6 +90,198 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     }
 }
 
+// computeDivIntImp is the only piece of div assembly touching upperIdx()/lowerIdx() as well as
+// diagIdx() -- called here directly on CSR and ELL systems, bypassing the still-CSR-only virtual
+// GaussGreenDiv::div(), to prove the assembly kernel itself is format-generic, mirroring
+// computeLaplacianIntImpl's equivalent test in laplacianOperator.cpp.
+TEMPLATE_TEST_CASE(
+    "computeDivIntImp matches for CSR and ELL", "[template]", NeoN::scalar, NeoN::Vec3
+)
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<TestType, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<TestType, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    // 4x4 mesh: corner cells have 2 internal-face neighbours, edge cells 3, interior cells 4 --
+    // gives ELL three distinct row widths (real padding, multiple diagonal slot positions),
+    // unlike the uniform 1D mesh used elsewhere in this branch.
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
+    fvcc::SurfaceField<scalar> weights(exec, "weights", mesh, surfaceBCs);
+
+    // Face-dependent (not uniform) flux/weights, and a cell-dependent coefficient below --
+    // uniform values could mask a swapped upperIdx()/lowerIdx() or misindexed face/cell, since
+    // every face or cell would then contribute an identical value regardless of which one it
+    // actually landed on.
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto fluxV = faceFlux.internalVector().view();
+    auto weightsV = weights.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            fluxV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+            weightsV[facei] = 0.2 + 0.01 * static_cast<scalar>(facei % 30);
+        }
+    );
+    fill(faceFlux.boundaryData().value(), 1.0);
+    fill(weights.boundaryData().value(), 0.5);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+    fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Vector<scalar> coeffVec(exec, nCells, 0.0);
+    auto coeffVecV = coeffVec.view();
+    parallelFor(
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx celli) {
+            coeffVecV[celli] = 1.0 + 0.05 * static_cast<scalar>(celli);
+        }
+    );
+    dsl::Coeff coeff(coeffVec);
+
+    SECTION("logical entries match " + execName)
+    {
+        auto csrLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, CSRMatrix>(mesh);
+        auto ellLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, ELLMatrix>(mesh);
+
+        fvcc::computeDivIntImp(csrLs, faceFlux, phi, weights, coeff);
+        fvcc::computeDivIntImp(ellLs, faceFlux, phi, weights, coeff);
+
+        REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+
+        // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+        // different physical layouts (CSR compact vs ELL padded column-major).
+        auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+        auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+        auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+        auto csrMatView = csrLsHost.matrix().view();
+        auto ellMatView = ellLsHost.matrix().view();
+
+        std::vector<TestType> csrEntries;
+        std::vector<TestType> ellEntries;
+        for (localIdx row = 0; row < nCells; ++row)
+        {
+            for (localIdx col = 0; col < nCells; ++col)
+            {
+                if (csrSparsityView.findEntry(row, col)
+                    != decltype(csrSparsityView)::invalidIndex())
+                {
+                    csrEntries.push_back(csrMatView.entry(row, col));
+                    ellEntries.push_back(ellMatView.entry(row, col));
+                }
+            }
+        }
+        REQUIRE(csrEntries.size() == ellEntries.size());
+        REQUIRE_THAT(
+            Vector<TestType>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10})
+        );
+
+        // Every ELL slot whose column index is the padding sentinel must stay untouched.
+        auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+        auto ellValuesHostV = ellLsHost.matrix().values().view();
+        for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+        {
+            if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+            {
+                REQUIRE(ellValuesHostV[i] == zero<TestType>());
+            }
+        }
+    }
+}
+
+// Segregated vector-solve form (scalar matrix, Vec3 rhs), matching the ELL instantiation added
+// alongside GaussGreenDiv<Vec3, scalar>'s CSR support. Compares every logical entry, not just
+// the diagonal -- div is primarily a face-coupled operator, so the upper/lower entries matter
+// here just as much as in the main comparison test above.
+TEST_CASE("computeDivIntImp matches for CSR and ELL, segregated vector-solve form")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
+    fvcc::SurfaceField<scalar> weights(exec, "weights", mesh, surfaceBCs);
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto fluxV = faceFlux.internalVector().view();
+    auto weightsV = weights.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            fluxV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+            weightsV[facei] = 0.2 + 0.01 * static_cast<scalar>(facei % 30);
+        }
+    );
+    fill(faceFlux.boundaryData().value(), 1.0);
+    fill(weights.boundaryData().value(), 0.5);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    fvcc::VolumeField<Vec3> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Vector<scalar> coeffVec(exec, nCells, 0.0);
+    auto coeffVecV = coeffVec.view();
+    parallelFor(
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx celli) {
+            coeffVecV[celli] = 1.0 + 0.05 * static_cast<scalar>(celli);
+        }
+    );
+    dsl::Coeff coeff(coeffVec);
+
+    SECTION("logical entries match " + execName)
+    {
+        auto csrLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, CSRMatrix>(mesh);
+        auto ellLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, ELLMatrix>(mesh);
+
+        fvcc::computeDivIntImp(csrLs, faceFlux, phi, weights, coeff);
+        fvcc::computeDivIntImp(ellLs, faceFlux, phi, weights, coeff);
+
+        REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+
+        auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+        auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+        auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+        auto csrMatView = csrLsHost.matrix().view();
+        auto ellMatView = ellLsHost.matrix().view();
+
+        std::vector<scalar> csrEntries;
+        std::vector<scalar> ellEntries;
+        for (localIdx row = 0; row < nCells; ++row)
+        {
+            for (localIdx col = 0; col < nCells; ++col)
+            {
+                if (csrSparsityView.findEntry(row, col)
+                    != decltype(csrSparsityView)::invalidIndex())
+                {
+                    csrEntries.push_back(csrMatView.entry(row, col));
+                    ellEntries.push_back(ellMatView.entry(row, col));
+                }
+            }
+        }
+        REQUIRE(csrEntries.size() == ellEntries.size());
+        REQUIRE_THAT(
+            Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10})
+        );
+    }
+}
+
 TEST_CASE("DivOperator implicit boundary contributions are accumulated")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -227,6 +419,251 @@ TEMPLATE_TEST_CASE(
     REQUIRE_THAT(
         lsFaceBased.matrix().values(), Equals(lsCellBased.matrix().values(), Approx {1e-12})
     );
+}
+
+// Full vertical slice: dsl::imp::div (the production entry point) assembles into an ELL system
+// via Expression::assemble<AssemblyType, SystemMatrixType>(), through DivOperator ->
+// DivOperatorFactory -> GaussGreenDiv::div(ELL...) -- not by calling computeDivIntImp directly,
+// unlike the TEMPLATE_TEST_CASEs above. Real boundary faces are in play here (computeDivBoundImpl
+// is templated on SystemMatrixType too), so boundaryMatrix/boundaryRhs are compared as well.
+TEST_CASE("Expression assembles div into ELL via DivOperator, matches CSR")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+
+    fvcc::SurfaceField<scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto fluxV = faceFlux.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) { fluxV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei); }
+    );
+    fill(faceFlux.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Dictionary divSchemes;
+    divSchemes.insert(
+        "div(faceFlux,phi)", TokenList({std::string("Gauss"), std::string("linear")})
+    );
+    Dictionary fvSchemes;
+    fvSchemes.insert("divSchemes", divSchemes);
+
+    dsl::Expression<scalar> expr(dsl::imp::div(faceFlux, phi));
+    expr.read(fvSchemes);
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+    REQUIRE_THAT(
+        csrLs.boundaryMatrix().values(), Equals(ellLs.boundaryMatrix().values(), Approx {1e-10})
+    );
+    REQUIRE_THAT(csrLs.boundaryRhs(), Equals(ellLs.boundaryRhs(), Approx {1e-10}));
+
+    // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+    // different physical layouts (CSR compact vs ELL padded column-major).
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
+
+    // Every ELL slot whose column index is the padding sentinel must stay untouched.
+    auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+    auto ellValuesHostV = ellLsHost.matrix().values().view();
+    for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+    {
+        if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+        {
+            REQUIRE(ellValuesHostV[i] == zero<scalar>());
+        }
+    }
+}
+
+// Segregated vector-solve form (scalar matrix, Vec3 rhs) through the full DSL -- unlike
+// "computeDivIntImp matches for CSR and ELL, segregated vector-solve form" above (which calls the
+// kernel directly), this goes through dsl::imp::div -> Expression<Vec3> -> SpatialOperator's new
+// segregated-ELL dispatch (HasImplicitOperatorScalarMtxELL/implicitOperationScalarMtxELL) ->
+// DivOperator's new segregated implicitOperation<SystemMatrixType> entry point. The underlying
+// kernel and GaussGreenDiv<Vec3, scalar>'s ELL override already existed (proven by the
+// kernel-level test above); this proves the DSL can actually reach them.
+TEST_CASE("Expression assembles div into ELL via DivOperator, matches CSR, segregated")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+
+    fvcc::SurfaceField<scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto fluxV = faceFlux.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) { fluxV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei); }
+    );
+    fill(faceFlux.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    fvcc::VolumeField<Vec3> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Dictionary divSchemes;
+    divSchemes.insert(
+        "div(faceFlux,phi)", TokenList({std::string("Gauss"), std::string("linear")})
+    );
+    Dictionary fvSchemes;
+    fvSchemes.insert("divSchemes", divSchemes);
+
+    dsl::Expression<Vec3> expr(dsl::imp::div(faceFlux, phi));
+    expr.read(fvSchemes);
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+    REQUIRE_THAT(
+        csrLs.boundaryMatrix().values(), Equals(ellLs.boundaryMatrix().values(), Approx {1e-10})
+    );
+    REQUIRE_THAT(csrLs.boundaryRhs(), Equals(ellLs.boundaryRhs(), Approx {1e-10}));
+
+    // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+    // different physical layouts (CSR compact vs ELL padded column-major).
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
+
+    // Every ELL slot whose column index is the padding sentinel must stay untouched.
+    auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+    auto ellValuesHostV = ellLsHost.matrix().values().view();
+    for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+    {
+        if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+        {
+            REQUIRE(ellValuesHostV[i] == zero<scalar>());
+        }
+    }
+}
+
+// Corrected-scheme coverage for the ELL vertical slice above -- "Gauss linear" (used above) is
+// uncorrected, so it never exercises addDivCorrectionToRhs's SystemMatrixType-generic path;
+// linearUpwind's deferred gradient correction does.
+TEST_CASE("Expression assembles div into ELL via DivOperator, matches CSR, linearUpwind")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+
+    fvcc::SurfaceField<scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto fluxV = faceFlux.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) { fluxV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei); }
+    );
+    fill(faceFlux.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Dictionary divSchemes;
+    divSchemes.insert(
+        "div(faceFlux,phi)",
+        TokenList({std::string("Gauss"), std::string("linearUpwind"), std::string("Gauss")})
+    );
+    Dictionary fvSchemes;
+    fvSchemes.insert("divSchemes", divSchemes);
+
+    dsl::Expression<scalar> expr(dsl::imp::div(faceFlux, phi));
+    expr.read(fvSchemes);
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
 }
 
 } // namespace NeoN
