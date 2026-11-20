@@ -37,11 +37,13 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx);
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/distributed/communicationPattern.hpp"
 
-template<typename IndexType>
+/** @brief create a distributed ginkgo matrix from the local block mtx and the processor coupling
+ *  bmtx */
+template<typename LocalMatrixType, typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
-    const CSRMatrix<scalar, IndexType>& mtx,
+    const LocalMatrixType& mtx,
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,

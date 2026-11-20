@@ -100,11 +100,36 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
     ));
 }
 
+/* @brief create the local block as a zero-copy csr view, the matrix must outlive it */
 template<typename IndexType>
+std::shared_ptr<const gko::LinOp> createLocalGkoMtx(
+    std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scalar, IndexType>& mtx
+)
+{
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(mtx.values().size()), mtx.values().data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
+        mtx.sparsity()->colIdxs().data()
+    );
+    auto row = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
+        mtx.sparsity()->rowOffs().data()
+    );
+    const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
+    return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
+        exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+    ));
+}
+
+template<typename LocalMatrixType, typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
-    const CSRMatrix<scalar, IndexType>& mtx,
+    const LocalMatrixType& mtx,
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
@@ -149,29 +174,10 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         return distMtxCache;
     }
 
-    // Local block: zero-copy CSR views over the existing NeoN storage. The local matrix is by far
-    // the largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
-    auto vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(mtx.values().size()), mtx.values().data()
-    );
-    auto col = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
-        mtx.sparsity()->colIdxs().data()
-    );
-    auto row = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
-        mtx.sparsity()->rowOffs().data()
-    );
-
-    const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
-    const auto matrixSize = gko::dim<2> {nrows, nrows};
-
-    std::shared_ptr<const gko::LinOp> localMtx =
-        gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-            exec, matrixSize, std::move(vals), std::move(col), std::move(row)
-        ));
+    // Local block: zero-copy view over the existing NeoN storage. The local matrix is by far the
+    // largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
+    std::shared_ptr<const gko::LinOp> localMtx = createLocalGkoMtx(exec, mtx);
+    const auto nrows = static_cast<gko::size_type>(mtx.nRows());
 
     if (imapCache && nonLocalMtxCache)
     {
@@ -730,10 +736,7 @@ SolverStats GinkgoSolver::solveDist(
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
 
-template std::
-    shared_ptr<const gko::LinOp>
-    createGkoMtxDist<
-        localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
+template std::shared_ptr<const gko::LinOp> createGkoMtxDist(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
 
 }
 
