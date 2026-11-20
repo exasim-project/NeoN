@@ -426,23 +426,28 @@ $(function() {
 <div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <span class="keywordtype">bool</span> l1InConfig_ = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>    <span class="comment">// Report sink the in-config criterion writes its scaled L1 residual / iters into.</span></div>
 <div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>    <span class="keyword">mutable</span> L1ResidualResult l1Report_;</div>
-<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>    <span class="comment">// Both caches are null until the first solve; after that topology is fixed.</span></div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>    <span class="keyword">mutable</span> std::shared_ptr&lt;gko::experimental::distributed::index_map&lt;label, gko::int64&gt;&gt;</div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        cachedImap_;</div>
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    <span class="keyword">mutable</span> std::shared_ptr&lt;gko::matrix::Coo&lt;scalar, localIdx&gt;&gt; cachedNonLocalMtx_;</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>    <span class="comment">// Distributed-matrix wrapper and the local value buffer it views. While the buffer is unchanged</span></div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="comment">// (NeoN re-assembles in place), createGkoMtxDist returns the wrapper instead of rebuilding it,</span></div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    <span class="comment">// which would redo Ginkgo&#39;s Csr load-balancing analysis and the row-gatherer setup every solve.</span></div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    <span class="keyword">mutable</span> std::shared_ptr&lt;const gko::LinOp&gt; cachedDistMtx_;</div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>    <span class="keyword">mutable</span> <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>* cachedLocalValPtr_ = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>};</div>
-<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span> </div>
-<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span> </div>
-<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>}</div>
-<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span> </div>
-<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span> </div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>    <span class="comment">/* @brief Replace the solve&#39;s unscaled norms and iteration count with the in-config L1</span></div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span><span class="comment">     * criterion&#39;s report, if that criterion ran during the solve.</span></div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span><span class="comment">     */</span></div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    SolverStatsEntry withL1Report(SolverStatsEntry entry) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="comment">// Both caches are null until the first solve; after that topology is fixed.</span></div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    <span class="keyword">mutable</span> std::shared_ptr&lt;gko::experimental::distributed::index_map&lt;label, gko::int64&gt;&gt;</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>        cachedImap_;</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>    <span class="keyword">mutable</span> std::shared_ptr&lt;gko::matrix::Coo&lt;scalar, localIdx&gt;&gt; cachedNonLocalMtx_;</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>    <span class="comment">// Distributed-matrix wrapper and the local value buffer it views. While the buffer is unchanged</span></div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>    <span class="comment">// (NeoN re-assembles in place), createGkoMtxDist returns the wrapper instead of rebuilding it,</span></div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>    <span class="comment">// which would redo Ginkgo&#39;s Csr load-balancing analysis and the row-gatherer setup every solve.</span></div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>    <span class="keyword">mutable</span> std::shared_ptr&lt;const gko::LinOp&gt; cachedDistMtx_;</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>    <span class="keyword">mutable</span> <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>* cachedLocalValPtr_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>};</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span> </div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span> </div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>}</div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span> </div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="acommunicationPattern_8hpp_html"><div class="ttname"><a href="communicationPattern_8hpp.html">communicationPattern.hpp</a></div></div>
 <div class="ttc" id="adictionary_8hpp_html"><div class="ttname"><a href="dictionary_8hpp.html">dictionary.hpp</a></div></div>
 <div class="ttc" id="aerror_8hpp_html_a8b8fc4329e5e6dfc3731ca28605a8a49"><div class="ttname"><a href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a></div><div class="ttdeci">#define NF_ERROR_EXIT(message)</div><div class="ttdoc">Macro for printing an error message and aborting the program.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00090">error.hpp:90</a></div></div>

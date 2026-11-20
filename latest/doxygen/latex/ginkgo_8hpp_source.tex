@@ -349,22 +349,27 @@
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00410}00410\ \ \ \ \ \textcolor{keywordtype}{bool}\ l1InConfig\_\ =\ \textcolor{keyword}{false};}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00411}00411\ \ \ \ \ \textcolor{comment}{//\ Report\ sink\ the\ in-\/config\ criterion\ writes\ its\ scaled\ L1\ residual\ /\ iters\ into.}}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00412}00412\ \ \ \ \ \textcolor{keyword}{mutable}\ L1ResidualResult\ l1Report\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00413}00413\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00414}00414\ \ \ \ \ \textcolor{comment}{//\ Both\ caches\ are\ null\ until\ the\ first\ solve;\ after\ that\ topology\ is\ fixed.}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00415}00415\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::experimental::distributed::index\_map<label,\ gko::int64>>}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00416}00416\ \ \ \ \ \ \ \ \ cachedImap\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00417}00417\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::matrix::Coo<scalar,\ localIdx>>\ cachedNonLocalMtx\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00418}00418\ \ \ \ \ \textcolor{comment}{//\ Distributed-\/matrix\ wrapper\ and\ the\ local\ value\ buffer\ it\ views.\ While\ the\ buffer\ is\ unchanged}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00419}00419\ \ \ \ \ \textcolor{comment}{//\ (NeoN\ re-\/assembles\ in\ place),\ createGkoMtxDist\ returns\ the\ wrapper\ instead\ of\ rebuilding\ it,}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00420}00420\ \ \ \ \ \textcolor{comment}{//\ which\ would\ redo\ Ginkgo's\ Csr\ load-\/balancing\ analysis\ and\ the\ row-\/gatherer\ setup\ every\ solve.}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00421}00421\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<const\ gko::LinOp>\ cachedDistMtx\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00422}00422\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}*\ cachedLocalValPtr\_\ =\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00423}00423\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00424}00424\ \};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00425}00425\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00426}00426\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00427}00427\ \}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00428}00428\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00429}00429\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00413}00413\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00414}00414\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Replace\ the\ solve's\ unscaled\ norms\ and\ iteration\ count\ with\ the\ in-\/config\ L1}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00415}00415\ \textcolor{comment}{\ \ \ \ \ *\ criterion's\ report,\ if\ that\ criterion\ ran\ during\ the\ solve.}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00416}00416\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00417}00417\ \ \ \ \ SolverStatsEntry\ withL1Report(SolverStatsEntry\ entry)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00418}00418\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00419}00419\ \ \ \ \ \textcolor{comment}{//\ Both\ caches\ are\ null\ until\ the\ first\ solve;\ after\ that\ topology\ is\ fixed.}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00420}00420\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::experimental::distributed::index\_map<label,\ gko::int64>>}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00421}00421\ \ \ \ \ \ \ \ \ cachedImap\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00422}00422\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::matrix::Coo<scalar,\ localIdx>>\ cachedNonLocalMtx\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00423}00423\ \ \ \ \ \textcolor{comment}{//\ Distributed-\/matrix\ wrapper\ and\ the\ local\ value\ buffer\ it\ views.\ While\ the\ buffer\ is\ unchanged}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00424}00424\ \ \ \ \ \textcolor{comment}{//\ (NeoN\ re-\/assembles\ in\ place),\ createGkoMtxDist\ returns\ the\ wrapper\ instead\ of\ rebuilding\ it,}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00425}00425\ \ \ \ \ \textcolor{comment}{//\ which\ would\ redo\ Ginkgo's\ Csr\ load-\/balancing\ analysis\ and\ the\ row-\/gatherer\ setup\ every\ solve.}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00426}00426\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<const\ gko::LinOp>\ cachedDistMtx\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00427}00427\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}*\ cachedLocalValPtr\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00428}00428\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00429}00429\ \};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00430}00430\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00431}00431\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00432}00432\ \}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00433}00433\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00434}00434\ \textcolor{preprocessor}{\#endif}}
 
 \end{DoxyCode}
