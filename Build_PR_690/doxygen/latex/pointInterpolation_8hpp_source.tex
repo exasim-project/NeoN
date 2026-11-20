@@ -1,0 +1,112 @@
+\doxysection{point\+Interpolation.\+hpp}
+\hypertarget{pointInterpolation_8hpp_source}{}\label{pointInterpolation_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/pointInterpolation.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/pointInterpolation.hpp}}
+\mbox{\hyperlink{pointInterpolation_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{trackingMesh_8hpp}{NeoN/mesh/unstructured/trackingMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00022}00022\ KOKKOS\_INLINE\_FUNCTION}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00023}\mbox{\hyperlink{namespaceNeoN_a17e66b8f18fbad2fbe45aae01fec0e72}{00023}}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{namespaceNeoN_a17e66b8f18fbad2fbe45aae01fec0e72}{pointToBarycentric}}(}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ x,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ a,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ b,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ c,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ d,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ w[4]}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00025}00025\ )}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00026}00026\ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ e1\ =\ b\ -\/\ a,\ e2\ =\ c\ -\/\ a,\ e3\ =\ d\ -\/\ a,\ r\ =\ x\ -\/\ a;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ det\ =\ (e1\ \string^\ e2)\ \&\ e3;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keywordflow}{if}\ (det\ ==\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0))}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00030}00030\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ w[0]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ w[1]\ =\ w[2]\ =\ w[3]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ det;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00034}00034\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00035}00035\ \ \ \ \ w[1]\ =\ ((r\ \string^\ e2)\ \&\ e3)\ /\ det;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00036}00036\ \ \ \ \ w[2]\ =\ ((e1\ \string^\ r)\ \&\ e3)\ /\ det;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00037}00037\ \ \ \ \ w[3]\ =\ ((e1\ \string^\ e2)\ \&\ r)\ /\ det;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00038}00038\ \ \ \ \ w[0]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1)\ -\/\ w[1]\ -\/\ w[2]\ -\/\ w[3];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keywordflow}{return}\ det;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00040}00040\ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00057}00057\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00058}\mbox{\hyperlink{namespaceNeoN_aac891ab7ee6f61ab202443b01a1ae9d9}{00058}}\ KOKKOS\_INLINE\_FUNCTION\ ValueType\ \mbox{\hyperlink{namespaceNeoN_aac891ab7ee6f61ab202443b01a1ae9d9}{interpolateCellPoint}}(}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{TrackingMeshView}}\&\ m,}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}\&\ cellValues,}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ ValueType>}}\&\ pointValues,}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ c,}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\&\ x}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00064}00064\ )}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00065}00065\ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ tol\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1e-\/15);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ cc\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a2e6dd4e6cb8f3204890c14a96a9a22a0}{cellCenters}}[c];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00068}00068\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ best[4]\ =\ \{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1),\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0),\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0),\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0)\};}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00069}00069\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ bestPts[3]\ =\ \{-\/1,\ -\/1,\ -\/1\};}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00070}00070\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ bestMin\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(-\/1e300);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keywordtype}{bool}\ found\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ [faceStart,\ faceEnd]\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a0a05e1d56928c91a4a140cc292a4e7d7}{cellFaces}}.\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ae951634d8f5ebd5fb95d7e165af78ccc}{bounds}}(c);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ k\ =\ faceStart;\ k\ <\ faceEnd\ \&\&\ !found;\ k++)}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00074}00074\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ face\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a0a05e1d56928c91a4a140cc292a4e7d7}{cellFaces}}.\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ac9d5ff1ed74531fe956a31da40b0565e}{values}}[k];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ [pointStart,\ pointEnd]\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_ad7e3014f14aa49b269bfba79bef05219}{facePoints}}.\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ae951634d8f5ebd5fb95d7e165af78ccc}{bounds}}(face);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ p0\ =\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}(pointStart);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ n\ =\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}(pointEnd)\ -\/\ p0;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ base\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_af80ec5c5bf10aa2c71e7449595e294d4}{faceBasePt}}[face];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ tetPt\ =\ 1;\ tetPt\ <\ n\ -\/\ 1;\ tetPt++)}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ OpenFOAM\ tetIndices::faceTriIs\ (flipped\ for\ the\ neighbour\ cell)}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ facePt\ =\ (tetPt\ +\ base)\ \%\ n;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ otherPt\ =\ (facePt\ +\ 1)\ \%\ n;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a4345f8138ae197976e86f639a468980b}{faceOwners}}[face]\ !=\ c)}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ t\ =\ facePt;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ facePt\ =\ otherPt;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ otherPt\ =\ t;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ ia\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_ad7e3014f14aa49b269bfba79bef05219}{facePoints}}.\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ac9d5ff1ed74531fe956a31da40b0565e}{values}}[p0\ +\ base];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ ib\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_ad7e3014f14aa49b269bfba79bef05219}{facePoints}}.\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ac9d5ff1ed74531fe956a31da40b0565e}{values}}[p0\ +\ facePt];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\ ic\ =\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_ad7e3014f14aa49b269bfba79bef05219}{facePoints}}.\mbox{\hyperlink{classNeoN_1_1SegmentedVectorView_ac9d5ff1ed74531fe956a31da40b0565e}{values}}[p0\ +\ otherPt];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ w[4];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ det\ =}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a17e66b8f18fbad2fbe45aae01fec0e72}{pointToBarycentric}}(x,\ cc,\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a4304373ef20ab6c8c0cf02a0aca1718b}{points}}[ia],\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a4304373ef20ab6c8c0cf02a0aca1718b}{points}}[ib],\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a4304373ef20ab6c8c0cf02a0aca1718b}{points}}[ic],\ w);}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Kokkos::fabs(det\ /\ m.\mbox{\hyperlink{structNeoN_1_1TrackingMeshView_a4462112e9addabc48efc5c9d9d47ef05}{cellVolumes}}[c])\ <=\ tol)}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ wMin\ =\ Kokkos::fmin(Kokkos::fmin(w[0],\ w[1]),\ Kokkos::fmin(w[2],\ w[3]));}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wMin\ >\ bestMin)}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestMin\ =\ wMin;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ 4;\ j++)}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ best[j]\ =\ w[j];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestPts[0]\ =\ ia;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestPts[1]\ =\ ib;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestPts[2]\ =\ ic;}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wMin\ +\ tol\ >\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0))}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ found\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00119}00119\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keywordflow}{if}\ (bestPts[0]\ <\ 0)}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00121}00121\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cellValues[c];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00123}00123\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00124}00124\ \ \ \ \ \textcolor{keywordflow}{return}\ best[0]\ *\ cellValues[c]\ +\ best[1]\ *\ pointValues[bestPts[0]]}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ +\ best[2]\ *\ pointValues[bestPts[1]]\ +\ best[3]\ *\ pointValues[bestPts[2]];}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00126}00126\ \}}
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{pointInterpolation_8hpp_source_l00128}00128\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}
