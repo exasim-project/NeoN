@@ -27,6 +27,19 @@ void computeLaplacianNonOrthCorrImpl(
     const FaceNormalGradient<FieldValueType>& faceNormalGradient
 );
 
+// Implicit transform-BC (slip/symmetry "implicit") per-component diagonal of the Laplacian,
+// accumulated into the linear system's diagCmpt store (defined in gaussGreenLaplacian.cpp). A no-op
+// for scalar fields or when no boundary condition is an implicit transform. Declared here so the
+// fused GaussGreenDivLaplacian applies the same contribution as the plain Laplacian.
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeLaplacianImplicitTransformDiagImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
+);
+
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class GaussGreenLaplacian :
     public LaplacianOperatorFactory<FieldValueType, AssemblyType>::template Register<
