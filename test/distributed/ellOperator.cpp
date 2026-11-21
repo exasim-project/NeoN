@@ -6,6 +6,10 @@
 
 #include "../dsl/common.hpp"
 
+#if NF_WITH_GINKGO
+#include "NeoN/linearAlgebra/ginkgo.hpp"
+#endif
+
 namespace dsl = NeoN::dsl;
 using Catch::randomizeVector;
 
@@ -187,6 +191,76 @@ TEST_CASE("Distributed ELL solve matches distributed CSR")
         REQUIRE(statsReused.entries[0].numIter == statsFresh.entries[0].numIter);
         REQUIRE_THAT(xReused, Equals(xFresh, Approx {1e-10}));
         REQUIRE_THAT(xReused, !Equals(xFirst, Approx {1e-6}));
+    }
+
+    SECTION("createGkoMtxDist reuses the distributed matrix for unchanged ELL storage")
+    {
+        using DistMtx = gko::experimental::distributed::Matrix<scalar, label, gko::int64>;
+        using GkoEll = gko::matrix::Ell<scalar, localIdx>;
+
+        const auto& commPattern = lsEll.commPattern();
+        auto comm = gko::experimental::mpi::communicator(
+            commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+        );
+        auto gkoExec = la::ginkgo::getGkoExecutor(exec);
+
+        // the caches a GinkgoSolver keeps between solves
+        std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>> imap;
+        std::shared_ptr<gko::matrix::Coo<scalar, localIdx>> nonLocal;
+        std::shared_ptr<const gko::LinOp> distMtx;
+        const scalar* localValPtr = nullptr;
+
+        auto create = [&](const la::ELLMatrix<scalar, localIdx>& mtx)
+        {
+            return la::ginkgo::createGkoMtxDist(
+                gkoExec,
+                comm,
+                mtx,
+                lsEll.offDiagonalMatrix(),
+                commPattern,
+                imap,
+                nonLocal,
+                distMtx,
+                localValPtr
+            );
+        };
+
+        auto first = create(lsEll.matrix());
+        const auto imapFirst = imap;
+
+        // the local block is a view of the NeoN storage, nothing is copied
+        auto local = gko::as<const GkoEll>(gko::as<const DistMtx>(first)->get_local_matrix());
+        REQUIRE(local->get_const_values() == lsEll.matrix().values().data());
+        REQUIRE(local->get_const_col_idxs() == lsEll.matrix().sparsity()->colIdxs().data());
+
+        // unchanged storage gives the same distributed matrix, only the off-diagonal values are
+        // copied into it
+        lsEll.offDiagonalMatrix().values() *= 2.0;
+        auto second = create(lsEll.matrix());
+        REQUIRE(second.get() == first.get());
+
+        const auto nNonLocal = static_cast<gko::size_type>(nonLocal->get_num_stored_elements());
+        auto nonLocalHost = gko::array<scalar>(
+            gkoExec->get_master(),
+            gko::array<scalar>::const_view(gkoExec, nNonLocal, nonLocal->get_const_values())
+                .copy_to_array()
+        );
+        const std::vector<scalar> nonLocalValues(
+            nonLocalHost.get_const_data(), nonLocalHost.get_const_data() + nNonLocal
+        );
+        REQUIRE_THAT(lsEll.offDiagonalMatrix().values(), Equals(nonLocalValues));
+
+        // a new value buffer gives a new distributed matrix around the new storage, the index
+        // map is kept
+        auto mtxCopy =
+            la::ELLMatrix<scalar, localIdx>(lsEll.matrix().values(), lsEll.matrix().sparsity());
+        REQUIRE(mtxCopy.values().data() != lsEll.matrix().values().data());
+
+        auto third = create(mtxCopy);
+        REQUIRE(third.get() != first.get());
+        REQUIRE(imap.get() == imapFirst.get());
+        auto localCopy = gko::as<const GkoEll>(gko::as<const DistMtx>(third)->get_local_matrix());
+        REQUIRE(localCopy->get_const_values() == mtxCopy.values().data());
     }
 #endif
 }
