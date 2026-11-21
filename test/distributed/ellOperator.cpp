@@ -7,6 +7,9 @@
 #include "../dsl/common.hpp"
 
 #if NF_WITH_GINKGO
+#include <filesystem>
+#include <fstream>
+
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #endif
 
@@ -44,6 +47,50 @@ void requireConverged(const la::SolverStats& stats)
     REQUIRE(stats.entries[0].numIter < 200);
     REQUIRE(stats.entries[0].finalResNorm <= 1e-10 * stats.entries[0].initResNorm);
 }
+
+// every rank writes its own file, so the ranks do not write to the same file at once
+std::string writeConfig(const std::string& name, const std::string& json, int rank)
+{
+    auto path = std::filesystem::temp_directory_path()
+              / ("neon_ellOperator_" + name + "_" + std::to_string(rank) + ".json");
+    std::ofstream out(path);
+    out << json;
+    return path.string();
+}
+
+// the exact ILU factorization, the default ParIlu is not deterministic on GPUs, so the CSR and the
+// ELL solve could take a different number of iterations
+const std::string schwarzIluJson = R"({"type": "solver::Cg",
+    "criteria": [{"type": "Iteration", "max_iters": 200},
+                 {"type": "ResidualNorm", "baseline": "rhs_norm", "reduction_factor": 1e-11}],
+    "preconditioner": {"type": "preconditioner::Schwarz",
+                       "local_solver": {"type": "preconditioner::Ilu",
+                                        "factorization": {"type": "factorization::Ilu"}}}})";
+
+// one scale corrected MergedPgm V-cycle as preconditioner of CG, the scale correction takes the
+// diagonal of the local block of the distributed matrix
+const std::string mergedPgmJson = R"({"type": "solver::Cg",
+    "criteria": [{"type": "Iteration", "max_iters": 200},
+                 {"type": "ResidualNorm", "baseline": "rhs_norm", "reduction_factor": 1e-11}],
+    "preconditioner": {"type": "solver::Multigrid",
+        "mg_level": [{"type": "neon::MergedPgm", "merge_levels": 1, "deterministic": true,
+                      "scale_correction": true}],
+        "pre_smoother": [{"type": "solver::Ir",
+            "solver": {"type": "preconditioner::Schwarz",
+                       "local_solver": {"type": "preconditioner::Jacobi", "max_block_size": 1}},
+            "relaxation_factor": 0.6666666666666666,
+            "criteria": [{"type": "Iteration", "max_iters": 2}]}],
+        "post_smoother": [{"type": "solver::Ir",
+            "solver": {"type": "preconditioner::Schwarz",
+                       "local_solver": {"type": "preconditioner::Jacobi", "max_block_size": 1}},
+            "relaxation_factor": 0.6666666666666666,
+            "criteria": [{"type": "Iteration", "max_iters": 2}]}],
+        "coarsest_solver": [{"type": "solver::Cg",
+            "criteria": [{"type": "Iteration", "max_iters": 50},
+                         {"type": "ResidualNorm", "reduction_factor": 1e-4}]}],
+        "min_coarse_rows": 16,
+        "cycle": "v",
+        "criteria": [{"type": "Iteration", "max_iters": 1}]}})";
 #endif
 
 }
@@ -264,5 +311,75 @@ TEST_CASE("Distributed ELL solve matches distributed CSR")
     }
 #endif
 }
+
+#if NF_WITH_GINKGO
+// the preconditioners take the local block of the distributed matrix, which is an Ell instead of a
+// Csr for the ELL system. checks that they give the same solve as for the CSR system
+TEST_CASE("Distributed ELL solve with preconditioners matches distributed CSR")
+{
+    using ELLMatrix = la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::mpi::Environment mpiEnviron;
+
+    // large enough for a few multigrid levels on each rank
+    const localIdx nCells = 300;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    auto u = fvcc::VolumeField<scalar>(
+        exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+    );
+
+    // zero flux, so only the symmetric laplacian is left for CG
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = fvcc::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto gamma = fvcc::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    fill(phi.internalVector(), 0.0);
+    fill(gamma.internalVector(), 2.0);
+
+    dsl::SetReference<scalar, localIdx> setRef(0, 0.0);
+
+    const localIdx nLocal = nCells / static_cast<localIdx>(mpiEnviron.sizeRank());
+    auto meshPart = create1DUniformMeshPart(exec, nLocal);
+
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
+    exprDist.read(schemes("Part"));
+
+    auto lsCsr = exprDist.assemble(meshPart, 1.0, 1.0, {&setRef});
+    auto lsEll = exprDist.assemble<scalar, ELLMatrix>(meshPart, 1.0, 1.0, {&setRef});
+    fill(lsCsr.rhs(), 2.0);
+    fill(lsEll.rhs(), 2.0);
+
+    auto [name, json] = GENERATE(
+        std::pair {std::string("schwarzIlu"), schwarzIluJson},
+        std::pair {std::string("mergedPgm"), mergedPgmJson}
+    );
+
+    SECTION(name)
+    {
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"configFile", writeConfig(name, json, static_cast<int>(mpiEnviron.rank()))}}
+        };
+
+        auto xCsr = Vector<scalar>(exec, nLocal, 0.0);
+        auto xEll = Vector<scalar>(exec, nLocal, 0.0);
+
+        auto statsCsr = la::Solver(exec, solverDict).solve(lsCsr, xCsr);
+        auto statsEll = la::Solver(exec, solverDict).solve(lsEll, xEll);
+
+        requireConverged(statsCsr);
+        requireConverged(statsEll);
+        REQUIRE(statsEll.entries[0].numIter == statsCsr.entries[0].numIter);
+        REQUIRE_THAT(xEll, Equals(xCsr, Approx {1e-10}));
+    }
+}
+#endif
 
 }

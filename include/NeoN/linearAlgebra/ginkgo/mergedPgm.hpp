@@ -482,13 +482,12 @@ private:
     mutable gko::array<char> dotTmp_;         // compute_dot workspace
 };
 
-/** @brief D^-1 of a Csr's diagonal (zero where the diagonal is zero). */
-template<typename ValueType, typename IndexType>
-std::shared_ptr<const gko::matrix::Diagonal<ValueType>>
-invertedDiagonal(const gko::matrix::Csr<ValueType, IndexType>* mtx)
+/** @brief D^-1 of a Csr's or Ell's diagonal (zero where the diagonal is zero). */
+template<typename ValueType>
+std::shared_ptr<const gko::matrix::Diagonal<ValueType>> invertedDiagonal(const gko::LinOp* mtx)
 {
     // invert in place on mtx's executor (no copy of the diagonal to the host and back)
-    auto diag = gko::share(mtx->extract_diagonal());
+    auto diag = gko::share(gko::as<gko::DiagonalExtractable<ValueType>>(mtx)->extract_diagonal());
     auto* v = diag->get_values();
     forEachOn(
         *diag->get_executor(),
@@ -762,7 +761,7 @@ protected:
             );
         }
         // coarse == the last inner Pgm's distributed coarse op == A_merged; use it directly.
-        setLevel(system_matrix_, gko::as<csr>(distFine->get_diag_matrix().get()), coarse);
+        setLevel(system_matrix_, distFine->get_diag_matrix().get(), coarse);
         recordReuse(reuseData, std::move(newSlots), true);
     }
 #else
@@ -776,7 +775,7 @@ private:
     // diagonal block of `fineOp` (the matrix itself in the local path).
     void setLevel(
         std::shared_ptr<const gko::LinOp> fineOp,
-        const csr* diagBlock,
+        const gko::LinOp* diagBlock,
         std::shared_ptr<const gko::LinOp> coarse
     )
     {
@@ -819,7 +818,7 @@ private:
         auto state = std::make_shared<detail::ScaleCorrectionState>();
         this->set_multigrid_level(
             std::make_shared<detail::ScaledProlongation<ValueType, IndexType>>(
-                P, std::move(fineOp), detail::invertedDiagonal(diagBlock), state
+                P, std::move(fineOp), detail::invertedDiagonal<ValueType>(diagBlock), state
             ),
             std::move(coarse),
             std::make_shared<detail::RecordingRestriction>(R, state)
