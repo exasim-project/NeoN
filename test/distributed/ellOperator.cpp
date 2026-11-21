@@ -140,6 +140,54 @@ TEST_CASE("Distributed ELL solve matches distributed CSR")
         const auto offset = nLocal * static_cast<localIdx>(mpiEnviron.rank());
         REQUIRE_THAT(xEll, Equals(take(x, {offset, offset + nLocal}), Approx {1e-6}));
     }
+
+    SECTION("ELL solve after reassembly matches a fresh solve")
+    {
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Gmres"},
+             {"criteria", Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-10}}}}}
+        };
+
+        // first solve fills the cached distributed matrix of this solver
+        auto solver = la::Solver(exec, solverDict);
+        auto xFirst = Vector<scalar>(exec, nLocal, 0.0);
+        requireConverged(solver.solve(lsEll, xFirst));
+
+        const auto* valuesPtr = lsEll.matrix().values().data();
+        const auto offDiagBefore = lsEll.offDiagonalMatrix().values().copyToHost();
+
+        // change the coefficients and reassemble into the same linear system, so the second solve
+        // reuses the cached matrix and only has to refresh the off-diagonal values
+        gammaPart.internalVector() *= 2.5;
+        gammaPart.boundaryData().value() *= 2.5;
+        lsEll.reset();
+        exprDist.assemble<scalar, ELLMatrix>(1.0, 1.0, lsEll, meshPart, {&setRef});
+        fill(lsEll.rhs(), 2.0);
+
+        REQUIRE(lsEll.matrix().values().data() == valuesPtr);
+        if (lsEll.offDiagonalMatrix().values().size() > 0)
+        {
+            REQUIRE_THAT(
+                lsEll.offDiagonalMatrix().values(), !Equals(offDiagBefore, Approx {1e-12})
+            );
+        }
+
+        auto xReused = Vector<scalar>(exec, nLocal, 0.0);
+        auto statsReused = solver.solve(lsEll, xReused);
+
+        // same system assembled and solved from scratch to compare against
+        auto lsFresh = exprDist.assemble<scalar, ELLMatrix>(meshPart, 1.0, 1.0, {&setRef});
+        fill(lsFresh.rhs(), 2.0);
+        auto xFresh = Vector<scalar>(exec, nLocal, 0.0);
+        auto statsFresh = la::Solver(exec, solverDict).solve(lsFresh, xFresh);
+
+        requireConverged(statsReused);
+        requireConverged(statsFresh);
+        REQUIRE(statsReused.entries[0].numIter == statsFresh.entries[0].numIter);
+        REQUIRE_THAT(xReused, Equals(xFresh, Approx {1e-10}));
+        REQUIRE_THAT(xReused, !Equals(xFirst, Approx {1e-6}));
+    }
 #endif
 }
 
