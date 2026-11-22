@@ -100,11 +100,62 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
     ));
 }
 
+/* @brief create the local block as a zero-copy csr view, the matrix must outlive it */
 template<typename IndexType>
+std::shared_ptr<const gko::LinOp> createLocalGkoMtx(
+    std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scalar, IndexType>& mtx
+)
+{
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(mtx.values().size()), mtx.values().data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
+        mtx.sparsity()->colIdxs().data()
+    );
+    auto row = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
+        mtx.sparsity()->rowOffs().data()
+    );
+    const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
+    return gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
+        exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+    ));
+}
+
+/* @brief create the local block as a zero-copy ell view, the matrix must outlive it.
+ * the padding and the column major layout of the NeoN ell matrix are the same as in ginkgo */
+template<typename IndexType>
+std::shared_ptr<const gko::LinOp> createLocalGkoMtx(
+    std::shared_ptr<const gko::Executor> exec, const ELLMatrix<scalar, IndexType>& mtx
+)
+{
+    static_assert(std::is_signed_v<IndexType>, "Ginkgo ELL requires a signed index type");
+    const auto [coeffsV, sparsityV] = mtx.view();
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(coeffsV.size()), coeffsV.data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(sparsityV.colIdxs.size()), sparsityV.colIdxs.data()
+    );
+    const auto nrows = static_cast<gko::size_type>(mtx.nRows());
+    return gko::share(gko::matrix::Ell<scalar, IndexType>::create_const(
+        exec,
+        gko::dim<2> {nrows, nrows},
+        std::move(vals),
+        std::move(col),
+        static_cast<gko::size_type>(sparsityV.numStoredElementsPerRow),
+        static_cast<gko::size_type>(sparsityV.stride)
+    ));
+}
+
+template<typename LocalMatrixType, typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
-    const CSRMatrix<scalar, IndexType>& mtx,
+    const LocalMatrixType& mtx,
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
@@ -149,29 +200,10 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         return distMtxCache;
     }
 
-    // Local block: zero-copy CSR views over the existing NeoN storage. The local matrix is by far
-    // the largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
-    auto vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(mtx.values().size()), mtx.values().data()
-    );
-    auto col = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
-        mtx.sparsity()->colIdxs().data()
-    );
-    auto row = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
-        mtx.sparsity()->rowOffs().data()
-    );
-
-    const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
-    const auto matrixSize = gko::dim<2> {nrows, nrows};
-
-    std::shared_ptr<const gko::LinOp> localMtx =
-        gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-            exec, matrixSize, std::move(vals), std::move(col), std::move(row)
-        ));
+    // Local block: zero-copy view over the existing NeoN storage. The local matrix is by far the
+    // largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
+    std::shared_ptr<const gko::LinOp> localMtx = createLocalGkoMtx(exec, mtx);
+    const auto nrows = static_cast<gko::size_type>(mtx.nRows());
 
     if (imapCache && nonLocalMtxCache)
     {
@@ -585,8 +617,9 @@ void solveImplicitTransformComponentDist(
     gkoExec->synchronize();
 }
 
-SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+template<typename SystemMatrixType>
+SolverStats GinkgoSolver::solveDistImpl(
+    const LinearSystem<scalar, scalar, SystemMatrixType>& sys, Vector<scalar>& x
 ) const
 {
     const CommunicationPattern& commPattern = sys.commPattern();
@@ -617,6 +650,20 @@ SolverStats GinkgoSolver::solveDist(
 }
 
 SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+) const
+{
+    return solveDistImpl<CSRMatrix<scalar, localIdx>>(sys, x);
+}
+
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+) const
+{
+    return solveDistImpl<ELLMatrix<scalar, localIdx>>(sys, x);
+}
+
+SolverStats GinkgoSolver::solveDist(
     const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
@@ -638,9 +685,9 @@ SolverStats GinkgoSolver::solveDist(
     return stats;
 }
 
-SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
-    Vector<Vec3>& x
+template<typename SystemMatrixType>
+SolverStats GinkgoSolver::solveSegregatedDistImpl(
+    const LinearSystem<scalar, Vec3, SystemMatrixType>& sys, Vector<Vec3>& x
 ) const
 {
     const CommunicationPattern& commPattern = sys.commPattern();
@@ -667,73 +714,98 @@ SolverStats GinkgoSolver::solveDist(
     // per-component diagonal correction to the shared rank-local diagonal in place. Mirrors the
     // serial path; createGkoMtxDist views the local matrix, so the in-place edits are seen at solve
     // time.
-    if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+    // CSR only, like the local segregated solve: the matrix address needs the CSR row offsets,
+    // an ELL system with diagCmpt (e.g. an implicit symmetry bc) is rejected below
+    if constexpr (std::is_same_v<SystemMatrixType, CSRMatrix<scalar, localIdx>>)
     {
-        auto generate = [this](auto mtx) { return generateSolver(mtx); };
-        auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
-        const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
-        auto diagC = sys.diagCmpt()->view();
-        const localIdx nrows = sys.rhs().size();
-        gkoExec_->synchronize();
+        if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+        {
+            auto generate = [this](auto mtx) { return generateSolver(mtx); };
+            auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
+            const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
+            auto diagC = sys.diagCmpt()->view();
+            const localIdx nrows = sys.rhs().size();
+            gkoExec_->synchronize();
 
-        SolverStats stats;
-        solveImplicitTransformComponentDist<0>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            generate,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        solveImplicitTransformComponentDist<1>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            generate,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        solveImplicitTransformComponentDist<2>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            generate,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        return stats;
+            SolverStats stats;
+            solveImplicitTransformComponentDist<0>(
+                sys,
+                x,
+                exec_,
+                gkoExec_,
+                comm,
+                gkoMtx,
+                generate,
+                stats,
+                l1Control,
+                values,
+                ma,
+                diagC,
+                nrows
+            );
+            solveImplicitTransformComponentDist<1>(
+                sys,
+                x,
+                exec_,
+                gkoExec_,
+                comm,
+                gkoMtx,
+                generate,
+                stats,
+                l1Control,
+                values,
+                ma,
+                diagC,
+                nrows
+            );
+            solveImplicitTransformComponentDist<2>(
+                sys,
+                x,
+                exec_,
+                gkoExec_,
+                comm,
+                gkoMtx,
+                generate,
+                stats,
+                l1Control,
+                values,
+                ma,
+                diagC,
+                nrows
+            );
+            return stats;
+        }
     }
-
+    else
+    {
+        NF_ASSERT(
+            !sys.diagCmpt() || sys.diagCmpt()->size() == 0,
+            "Implicit transform-BC (diagCmpt) segregated solve is not yet implemented for ELL"
+        );
+    }
 
     auto solver = gko::share(generateSolver(gkoMtx));
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
 
-template std::
-    shared_ptr<const gko::LinOp>
-    createGkoMtxDist<
-        localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
+    Vector<Vec3>& x
+) const
+{
+    return solveSegregatedDistImpl<CSRMatrix<scalar, localIdx>>(sys, x);
+}
+
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& sys, Vector<Vec3>& x
+) const
+{
+    return solveSegregatedDistImpl<ELLMatrix<scalar, localIdx>>(sys, x);
+}
+
+template std::shared_ptr<const gko::LinOp> createGkoMtxDist(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
+
+template std::shared_ptr<const gko::LinOp> createGkoMtxDist(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const ELLMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
 
 }
 

@@ -66,12 +66,34 @@ public:
         NF_THROW("solve(scalar matrix, Vec3 rhs) not implemented for this solver");
     }
 
+    // Default-throwing rather than pure virtual: most backends (e.g. PETSc) stay CSR-only, so
+    // this only needs overriding by solvers that actually support ELL (currently GinkgoSolver).
+    virtual SolverStats
+    solve(const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>&, Vector<scalar>&) const
+    {
+        NF_THROW("solve(ELL matrix) not implemented for this solver");
+    }
+
+    // Segregated counterpart of the ELL overload above, same default-throwing rationale.
+    virtual SolverStats
+    solve(const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>&, Vector<Vec3>&) const
+    {
+        NF_THROW("solve(ELL matrix, segregated Vec3 rhs) not implemented for this solver");
+    }
+
 #ifdef NF_WITH_MPI_SUPPORT
     virtual SolverStats
     solveDist(const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&)
         const
     {
         NF_THROW("solveDist not implemented for this solver");
+    }
+
+    virtual SolverStats
+    solveDist(const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>&, Vector<scalar>&)
+        const
+    {
+        NF_THROW("solveDist(ELL matrix) not implemented for this solver");
     }
 
     virtual SolverStats
@@ -85,6 +107,12 @@ public:
         const
     {
         NF_THROW("solveDist(scalar matrix, Vec3 rhs) not implemented for this solver");
+    }
+
+    virtual SolverStats
+    solveDist(const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>&, Vector<Vec3>&) const
+    {
+        NF_THROW("solveDist(ELL matrix, segregated Vec3 rhs) not implemented for this solver");
     }
 #endif
 
@@ -139,6 +167,30 @@ public:
         const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&
             ls,
         Vector<Vec3>& field
+    ) const
+    {
+#ifdef NF_WITH_MPI_SUPPORT
+        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
+#endif
+        return solverInstance_->solve(ls, field);
+    }
+
+    /// @brief solve a system with an ELL matrix, uses the distributed solver if the system has a
+    ///        communication pattern
+    SolverStats solve(
+        const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& ls, Vector<scalar>& field
+    ) const
+    {
+#ifdef NF_WITH_MPI_SUPPORT
+        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
+#endif
+        return solverInstance_->solve(ls, field);
+    }
+
+    /// @brief solve a system with a scalar ELL matrix and a Vec3 rhs, uses the distributed solver
+    ///        if the system has a communication pattern
+    SolverStats solve(
+        const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& ls, Vector<Vec3>& field
     ) const
     {
 #ifdef NF_WITH_MPI_SUPPORT
