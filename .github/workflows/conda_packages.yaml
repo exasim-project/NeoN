@@ -92,7 +92,7 @@ jobs:
       fail-fast: false
       matrix:
         # One job per (platform x python version), mirroring the wheel matrix.
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-14, macos-15-intel]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15, macos-15-intel]
         python: ["3.11", "3.12", "3.13"]
         # target-platform is attached per os rather than being a matrix dimension of its own.
         include:
@@ -100,7 +100,7 @@ jobs:
             target-platform: linux-64
           - os: ubuntu-24.04-arm
             target-platform: linux-aarch64
-          - os: macos-14
+          - os: macos-15
             target-platform: osx-arm64
           - os: macos-15-intel
             target-platform: osx-64
