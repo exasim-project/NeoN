@@ -91,7 +91,7 @@ jobs:
           # create virtual environment
           python -m venv venv
           source venv/bin/activate
-          pip install nanobind pytest numpy
+          pip install "nanobind>=3,<4" pytest numpy
 
       - name: Build NeoN without Ginkgo
         if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}

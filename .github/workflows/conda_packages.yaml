@@ -93,9 +93,7 @@ jobs:
       matrix:
         # One job per (platform x python version), mirroring the wheel matrix.
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-14, macos-15-intel]
-        # No 3.9: conda-forge has no nanobind for it, which the stub generation step needs.
-        # Python 3.9 users get the PyPI wheel.
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        python: ["3.11", "3.12", "3.13"]
         # target-platform is attached per os rather than being a matrix dimension of its own.
         include:
           - os: ubuntu-latest
