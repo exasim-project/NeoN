@@ -291,7 +291,7 @@ the import package is <code class="docutils literal notranslate"><span class="pr
 <span class="n">neon</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The package supports CPython 3.9–3.13 and depends on NumPy.</p>
+<p>The package supports CPython 3.11–3.13 and depends on NumPy.</p>
 <section id="installing">
 <h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
 <section id="cpu-wheels-from-pypi">
@@ -323,11 +323,9 @@ get NeoN into a <a class="reference external" href="https://pixi.sh">pixi</a> pr
 <span class="n">neon-pde</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
 </pre></div>
 </div>
-<p>The channel provides CPython 3.10-3.13 packages for <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>,
+<p>The channel provides CPython 3.11-3.13 packages for <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>,
 <code class="docutils literal notranslate"><span class="pre">linux-aarch64</span></code>, <code class="docutils literal notranslate"><span class="pre">osx-64</span></code> and <code class="docutils literal notranslate"><span class="pre">osx-arm64</span></code>. There is no <code class="docutils literal notranslate"><span class="pre">win-64</span></code> conda
-package, and no Python 3.9 one — use the PyPI wheel for those. (3.9 is excluded
-because conda-forge builds <code class="docutils literal notranslate"><span class="pre">nanobind</span></code>, which the stub generation step needs,
-only for Python 3.10 and newer.)</p>
+package — use the PyPI wheel on Windows.</p>
 <p>Unlike the wheels, the conda package installs the NeoN C++ runtime into
 <code class="docutils literal notranslate"><span class="pre">$CONDA_PREFIX/lib</span></code> and its headers and CMake package files into
 <code class="docutils literal notranslate"><span class="pre">$CONDA_PREFIX/include</span></code> and <code class="docutils literal notranslate"><span class="pre">$CONDA_PREFIX/lib/cmake/NeoN</span></code>, so a C++ project

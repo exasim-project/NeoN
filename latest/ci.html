@@ -318,7 +318,7 @@ package version is derived from the tag and treated as a stable release. For man
 builds, the workflow generates a development version with a <code class="docutils literal notranslate"><span class="pre">.dev</span></code> suffix so that test artifacts
 do not conflict with stable releases.</p>
 <p>CPU wheels are built for Linux x86-64, Linux ARM64, Windows AMD64, macOS Apple Silicon, and macOS
-Intel. The matrix covers CPython 3.9 through 3.13. MPI and optional dependencies such as PETSc,
+Intel. The matrix covers CPython 3.11 through 3.13. MPI and optional dependencies such as PETSc,
 ADIOS2, and SUNDIALS are disabled for these wheels, and CUDA/HIP support is disabled. This keeps the
 default PyPI package installable without requiring those external HPC libraries.</p>
 <p>After each CPU wheel is built and repaired, <code class="docutils literal notranslate"><span class="pre">cibuildwheel</span></code> installs it into an isolated test
@@ -372,10 +372,9 @@ the same <code class="docutils literal notranslate"><span class="pre">neon.__ver
 used by both CI and local builds: it exports <code class="docutils literal notranslate"><span class="pre">NEON_VERSION</span></code>, writes the per-build variant
 configuration (python version, GPU flavour, C runtime floor) and calls <code class="docutils literal notranslate"><span class="pre">rattler-build</span></code>.
 <code class="docutils literal notranslate"><span class="pre">ci/install_rattler_build.sh</span></code> installs a pinned, checksum-verified rattler-build release.</p>
-<p>CPU packages are built for CPython 3.10-3.13 on <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>, <code class="docutils literal notranslate"><span class="pre">linux-aarch64</span></code>, <code class="docutils literal notranslate"><span class="pre">osx-64</span></code> and
+<p>CPU packages are built for CPython 3.11-3.13 on <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>, <code class="docutils literal notranslate"><span class="pre">linux-aarch64</span></code>, <code class="docutils literal notranslate"><span class="pre">osx-64</span></code> and
 <code class="docutils literal notranslate"><span class="pre">osx-arm64</span></code>. There is no <code class="docutils literal notranslate"><span class="pre">win-64</span></code> conda package, because NeoN disables Ginkgo on Windows and the
-wheel is the supported Windows path. Python 3.9 is also wheel-only: conda-forge builds <code class="docutils literal notranslate"><span class="pre">nanobind</span></code>,
-which the <code class="docutils literal notranslate"><span class="pre">nanobind.stubgen</span></code> POST_BUILD step needs, only for Python 3.10 and newer. The GPU flavour is encoded in the build string
+wheel is the supported Windows path. The GPU flavour is encoded in the build string
 (<code class="docutils literal notranslate"><span class="pre">cpu_py312_*</span></code>, <code class="docutils literal notranslate"><span class="pre">cuda_py312_*</span></code>, <code class="docutils literal notranslate"><span class="pre">rocm_py312_*</span></code>) so all flavours can coexist in one channel.</p>
 <p>Unlike the wheels, the conda package is installed by CMake rather than by <code class="docutils literal notranslate"><span class="pre">pip</span></code>: the C++ runtime
 and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to <code class="docutils literal notranslate"><span class="pre">$PREFIX/lib</span></code>, headers and
