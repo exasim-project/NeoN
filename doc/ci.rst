@@ -45,7 +45,7 @@ builds, the workflow generates a development version with a ``.dev`` suffix so t
 do not conflict with stable releases.
 
 CPU wheels are built for Linux x86-64, Linux ARM64, Windows AMD64, macOS Apple Silicon, and macOS
-Intel. The matrix covers CPython 3.9 through 3.13. MPI and optional dependencies such as PETSc,
+Intel. The matrix covers CPython 3.11 through 3.13. MPI and optional dependencies such as PETSc,
 ADIOS2, and SUNDIALS are disabled for these wheels, and CUDA/HIP support is disabled. This keeps the
 default PyPI package installable without requiring those external HPC libraries.
 
@@ -106,10 +106,9 @@ used by both CI and local builds: it exports ``NEON_VERSION``, writes the per-bu
 configuration (python version, GPU flavour, C runtime floor) and calls ``rattler-build``.
 ``ci/install_rattler_build.sh`` installs a pinned, checksum-verified rattler-build release.
 
-CPU packages are built for CPython 3.10-3.13 on ``linux-64``, ``linux-aarch64``, ``osx-64`` and
+CPU packages are built for CPython 3.11-3.13 on ``linux-64``, ``linux-aarch64``, ``osx-64`` and
 ``osx-arm64``. There is no ``win-64`` conda package, because NeoN disables Ginkgo on Windows and the
-wheel is the supported Windows path. Python 3.9 is also wheel-only: conda-forge builds ``nanobind``,
-which the ``nanobind.stubgen`` POST_BUILD step needs, only for Python 3.10 and newer. The GPU flavour is encoded in the build string
+wheel is the supported Windows path. The GPU flavour is encoded in the build string
 (``cpu_py312_*``, ``cuda_py312_*``, ``rocm_py312_*``) so all flavours can coexist in one channel.
 
 Unlike the wheels, the conda package is installed by CMake rather than by ``pip``: the C++ runtime

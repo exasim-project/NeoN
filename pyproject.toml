@@ -11,14 +11,12 @@ authors = [
 description = "Python bindings for the NeoN CFD framework"
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Programming Language :: C++",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -48,7 +46,7 @@ requires = [
     "cmake>=3.22",
     "ninja",
     "scikit-build-core[pyproject]>=0.11.0",
-    "nanobind>=2.9.0",
+    "nanobind>=3,<4",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -65,7 +63,7 @@ editable.rebuild = false
 NeoN_BUILD_PYTHON_BINDINGS = "ON"
 
 [tool.cibuildwheel]
-build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+build = "cp311-* cp312-* cp313-*"
 skip = "pp* *-musllinux* *-win32 *-manylinux_i686"
 test-command = "python {project}/ci/check_installed_wheel.py"
 
@@ -82,8 +80,8 @@ python_functions = "test_*"
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py311"
 
 [tool.black]
 line-length = 100
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ["py311", "py312", "py313"]

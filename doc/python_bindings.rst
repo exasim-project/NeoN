@@ -14,7 +14,7 @@ the import package is ``neon``:
    del v, executor          # Kokkos aborts if allocations outlive finalize
    neon.finalize()
 
-The package supports CPython 3.9–3.13 and depends on NumPy.
+The package supports CPython 3.11–3.13 and depends on NumPy.
 
 Installing
 ----------
@@ -56,11 +56,9 @@ or, in ``pixi.toml``:
    [dependencies]
    neon-pde = "*"
 
-The channel provides CPython 3.10-3.13 packages for ``linux-64``,
+The channel provides CPython 3.11-3.13 packages for ``linux-64``,
 ``linux-aarch64``, ``osx-64`` and ``osx-arm64``. There is no ``win-64`` conda
-package, and no Python 3.9 one — use the PyPI wheel for those. (3.9 is excluded
-because conda-forge builds ``nanobind``, which the stub generation step needs,
-only for Python 3.10 and newer.)
+package — use the PyPI wheel on Windows.
 
 Unlike the wheels, the conda package installs the NeoN C++ runtime into
 ``$CONDA_PREFIX/lib`` and its headers and CMake package files into

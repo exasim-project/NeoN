@@ -69,10 +69,8 @@ requirements:
   host:
     - python
     # nanobind_add_module fetches its own C++ nanobind through CPM; this is the python-side
-    # package that provides the nanobind.stubgen module run as a POST_BUILD step. conda-forge
-    # only builds it for python >=3.10, which sets the floor for the conda packages (the wheels
-    # still cover 3.9).
-    - nanobind >=2.9
+    # package that provides the nanobind.stubgen module run as a POST_BUILD step.
+    - nanobind >=3,<4
     - if: gpu == "cuda"
       then:
         - cuda-version ==${{ cuda_version }}
