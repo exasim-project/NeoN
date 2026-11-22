@@ -26,8 +26,9 @@ esac
 
 mkdir -p "${install_dir}"
 url="https://github.com/prefix-dev/rattler-build/releases/download/v${version}/rattler-build-${target}"
-curl -fsSL "${url}" -o "${install_dir}/rattler-build"
-curl -fsSL "${url}.sha256" -o "${install_dir}/rattler-build.sha256"
+# Retry: a transient GitHub connection failure otherwise fails a whole matrix job.
+curl -fsSL --retry 5 --retry-all-errors --connect-timeout 20 "${url}" -o "${install_dir}/rattler-build"
+curl -fsSL --retry 5 --retry-all-errors --connect-timeout 20 "${url}.sha256" -o "${install_dir}/rattler-build.sha256"
 
 # The release publishes "<sha>  rattler-build-<target>", so verify from the download directory
 # with the name the checksum file refers to.
