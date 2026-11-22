@@ -44,14 +44,14 @@ get NeoN into a `pixi <https://pixi.sh>`_ project. The conda package is named
 
 .. code-block:: bash
 
-   pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
+   pixi add neon-pde -c https://prefix.dev/exasim-project/main -c conda-forge
 
 or, in ``pixi.toml``:
 
 .. code-block:: toml
 
    [project]
-   channels = ["https://prefix.dev/exasim-project", "conda-forge"]
+   channels = ["https://prefix.dev/exasim-project/main", "conda-forge"]
 
    [dependencies]
    neon-pde = "*"
@@ -71,7 +71,7 @@ selected by matching on it:
 .. code-block:: bash
 
    # CUDA 12.8, CPython 3.12, NVIDIA Ampere (sm_80), linux-64
-   pixi add "neon-pde=*=cuda_py312*" -c https://prefix.dev/exasim-project -c conda-forge
+   pixi add "neon-pde=*=cuda_py312*" -c https://prefix.dev/exasim-project/main -c conda-forge
 
 The CUDA package depends on the ``__cuda`` virtual package, so it only resolves
 on a machine whose NVIDIA driver is new enough. A ROCm flavour
