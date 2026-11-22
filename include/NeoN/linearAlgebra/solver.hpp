@@ -108,6 +108,12 @@ public:
     {
         NF_THROW("solveDist(scalar matrix, Vec3 rhs) not implemented for this solver");
     }
+
+    virtual SolverStats
+    solveDist(const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>&, Vector<Vec3>&) const
+    {
+        NF_THROW("solveDist(ELL matrix, segregated Vec3 rhs) not implemented for this solver");
+    }
 #endif
 
     // Pure virtual function for cloning
@@ -181,17 +187,14 @@ public:
         return solverInstance_->solve(ls, field);
     }
 
-    /// @brief solve a system with a scalar ELL matrix and a Vec3 rhs. the distributed solve is
-    ///        not implemented yet, so this throws if the system has a communication pattern
+    /// @brief solve a system with a scalar ELL matrix and a Vec3 rhs, uses the distributed solver
+    ///        if the system has a communication pattern
     SolverStats solve(
         const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& ls, Vector<Vec3>& field
     ) const
     {
 #ifdef NF_WITH_MPI_SUPPORT
-        if (!ls.commPattern().sendCounts.empty())
-        {
-            NF_THROW("Distributed ELL solving is not implemented");
-        }
+        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
 #endif
         return solverInstance_->solve(ls, field);
     }

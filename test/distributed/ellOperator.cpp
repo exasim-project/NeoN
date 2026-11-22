@@ -41,11 +41,15 @@ Dictionary schemes(const std::string& post)
 #if NF_WITH_GINKGO
 // the solve has to stop before the iteration limit and reach the tolerance of the solver
 // dictionaries below, otherwise matching results could also mean that both solves stopped at the
-// iteration limit
+// iteration limit. a segregated solve has one entry per component
 void requireConverged(const la::SolverStats& stats)
 {
-    REQUIRE(stats.entries[0].numIter < 200);
-    REQUIRE(stats.entries[0].finalResNorm <= 1e-10 * stats.entries[0].initResNorm);
+    REQUIRE_FALSE(stats.entries.empty());
+    for (const auto& entry : stats.entries)
+    {
+        REQUIRE(entry.numIter < 200);
+        REQUIRE(entry.finalResNorm <= 1e-10 * entry.initResNorm);
+    }
 }
 
 // every rank writes its own file, so the ranks do not write to the same file at once
@@ -92,6 +96,19 @@ const std::string mergedPgmJson = R"({"type": "solver::Cg",
         "cycle": "v",
         "criteria": [{"type": "Iteration", "max_iters": 1}]}})";
 #endif
+
+// a different spatial profile for each component, from the global cell index, so the serial and the
+// distributed system get the same values and the components are not just multiples of each other
+Vector<Vec3> profile(const Executor& exec, localIdx n, localIdx offset, scalar shift)
+{
+    std::vector<Vec3> values;
+    for (localIdx i = 0; i < n; ++i)
+    {
+        const auto g = static_cast<scalar>(offset + i);
+        values.push_back(Vec3 {1.0 + g + shift, 1.0 / (1.0 + g) - shift, 0.1 * g * g});
+    }
+    return Vector<Vec3>(exec, values);
+}
 
 }
 
@@ -308,6 +325,145 @@ TEST_CASE("Distributed ELL solve matches distributed CSR")
         REQUIRE(imap.get() == imapFirst.get());
         auto localCopy = gko::as<const GkoEll>(gko::as<const DistMtx>(third)->get_local_matrix());
         REQUIRE(localCopy->get_const_values() == mtxCopy.values().data());
+    }
+#endif
+}
+
+// segregated form of the first test case, a scalar matrix with a Vec3 rhs as for the momentum
+// equation
+TEST_CASE("Distributed ELL solve matches distributed CSR, segregated")
+{
+    using ELLMatrix = la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 12;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    auto u = fvcc::VolumeField<Vec3>(
+        exec, "U", mesh, Vector<Vec3>(exec, nCells, 2.0 * one<Vec3>()), volBCs
+    );
+    srand(42);
+    randomizeVector(u);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = fvcc::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto gamma = fvcc::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    srand(42);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    dsl::SetReference<Vec3, localIdx> setRef(0, zero<Vec3>());
+
+    auto expr = dsl::imp::div(phi, u) - dsl::imp::laplacian(gamma, u);
+    expr.read(schemes(""));
+    auto ls = expr.template assemble<scalar>(mesh, 1.0, 1.0, {&setRef});
+    ls.rhs() = profile(exec, nCells, 0, 0.0);
+
+    NeoN::mpi::Environment mpiEnviron;
+    const localIdx nLocal = nCells / static_cast<localIdx>(mpiEnviron.sizeRank());
+    auto meshPart = create1DUniformMeshPart(exec, nLocal);
+
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
+    exprDist.read(schemes("Part"));
+
+    auto lsCsr = exprDist.template assemble<scalar>(meshPart, 1.0, 1.0, {&setRef});
+    auto lsEll = exprDist.template assemble<scalar, ELLMatrix>(meshPart, 1.0, 1.0, {&setRef});
+    const auto offset = nLocal * static_cast<localIdx>(mpiEnviron.rank());
+    lsCsr.rhs() = profile(exec, nLocal, offset, 0.0);
+    lsEll.rhs() = profile(exec, nLocal, offset, 0.0);
+
+    static_assert(std::is_same_v<
+                  std::decay_t<decltype(lsEll)>,
+                  la::LinearSystem<scalar, Vec3, ELLMatrix>>);
+
+    SECTION("ELL carries the same processor coupling as CSR")
+    {
+        REQUIRE_FALSE(lsEll.commPattern().sendCounts.empty());
+        REQUIRE_THAT(
+            lsEll.offDiagonalMatrix().values(), Equals(lsCsr.offDiagonalMatrix().values())
+        );
+        REQUIRE_THAT(
+            lsEll.offDiagonalMatrix().sparsity()->rowIdxs(),
+            Equals(lsCsr.offDiagonalMatrix().sparsity()->rowIdxs(), EqualInt())
+        );
+        REQUIRE_THAT(
+            lsEll.offDiagonalMatrix().sparsity()->colIdxs(),
+            Equals(lsCsr.offDiagonalMatrix().sparsity()->colIdxs(), EqualInt())
+        );
+    }
+
+#if NF_WITH_GINKGO
+    SECTION("ELL solve matches CSR and serial")
+    {
+        // the l1 criterion takes the multi-RHS path of the distributed solve with its own stopping
+        // test, its relative tolerance is checked on the sum of the three components
+        const bool l1 = GENERATE(false, true);
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Gmres"},
+             {"criteria",
+              l1 ? Dictionary {{{"iteration", 200}, {"initial_residual_norm", 1e-11}}}
+                 : Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-10}}}}}
+        };
+        if (l1)
+        {
+            solverDict.insert("l1ScaledResidual", true);
+        }
+
+        // non zero initial guess, the same on every rank as in the serial solve
+        auto x = profile(exec, nCells, 0, 0.5);
+        auto xCsr = profile(exec, nLocal, offset, 0.5);
+        auto xEll = profile(exec, nLocal, offset, 0.5);
+
+        auto statsSerial = la::Solver(exec, solverDict).solve(ls, x);
+        auto statsCsr = la::Solver(exec, solverDict).solve(lsCsr, xCsr);
+        auto statsEll = la::Solver(exec, solverDict).solve(lsEll, xEll);
+
+        // one entry per component
+        REQUIRE(statsEll.entries.size() == 3);
+        REQUIRE(statsCsr.entries.size() == 3);
+        if (l1)
+        {
+            for (const auto& stats : {statsSerial, statsCsr, statsEll})
+            {
+                scalar init = 0.0;
+                scalar final = 0.0;
+                for (const auto& entry : stats.entries)
+                {
+                    REQUIRE(entry.numIter < 200);
+                    init += entry.initResNorm;
+                    final += entry.finalResNorm;
+                }
+                REQUIRE(final <= 1e-10 * init);
+            }
+        }
+        else
+        {
+            requireConverged(statsSerial);
+            requireConverged(statsCsr);
+            requireConverged(statsEll);
+        }
+        for (sizeType i = 0; i < 3; ++i)
+        {
+            REQUIRE(statsEll.entries[i].numIter == statsCsr.entries[i].numIter);
+            REQUIRE(
+                statsEll.entries[i].initResNorm
+                == Catch::Approx(statsCsr.entries[i].initResNorm).margin(1e-10)
+            );
+            REQUIRE(
+                statsEll.entries[i].finalResNorm
+                == Catch::Approx(statsCsr.entries[i].finalResNorm).margin(1e-10)
+            );
+        }
+
+        REQUIRE_THAT(xEll, Equals(xCsr, Approx {1e-10}));
+        REQUIRE_THAT(xEll, Equals(take(x, {offset, offset + nLocal}), Approx {1e-6}));
     }
 #endif
 }

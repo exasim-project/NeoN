@@ -410,6 +410,17 @@ public:
             sys,
         Vector<Vec3>& x
     ) const final;
+
+    // distributed counterpart of solveSegregatedImpl, both segregated solveDist() overrides
+    // forward to this (defined in ginkgoDistributed.cpp)
+    template<typename SystemMatrixType>
+    SolverStats solveSegregatedDistImpl(
+        const LinearSystem<scalar, Vec3, SystemMatrixType>& sys, Vector<Vec3>& x
+    ) const;
+
+    virtual SolverStats solveDist(
+        const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& sys, Vector<Vec3>& x
+    ) const final;
 #endif
 
     // TODO why use a smart pointer here?

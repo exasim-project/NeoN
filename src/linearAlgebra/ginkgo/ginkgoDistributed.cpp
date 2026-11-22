@@ -699,9 +699,9 @@ SolverStats GinkgoSolver::solveDist(
     return stats;
 }
 
-SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
-    Vector<Vec3>& x
+template<typename SystemMatrixType>
+SolverStats GinkgoSolver::solveSegregatedDistImpl(
+    const LinearSystem<scalar, Vec3, SystemMatrixType>& sys, Vector<Vec3>& x
 ) const
 {
     const CommunicationPattern& commPattern = sys.commPattern();
@@ -728,67 +728,92 @@ SolverStats GinkgoSolver::solveDist(
     // per-component diagonal correction to the shared rank-local diagonal in place. Mirrors the
     // serial path; createGkoMtxDist views the local matrix, so the in-place edits are seen at solve
     // time.
-    if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+    // CSR only, like the local segregated solve: the matrix address needs the CSR row offsets
+    if constexpr (std::is_same_v<SystemMatrixType, CSRMatrix<scalar, localIdx>>)
     {
-        auto generate = [this](auto mtx) { return generateSolver(mtx); };
-        auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
-        const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
-        auto diagC = sys.diagCmpt()->view();
-        const localIdx nrows = sys.rhs().size();
-        gkoExec_->synchronize();
+        if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+        {
+            auto generate = [this](auto mtx) { return generateSolver(mtx); };
+            auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
+            const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
+            auto diagC = sys.diagCmpt()->view();
+            const localIdx nrows = sys.rhs().size();
+            gkoExec_->synchronize();
 
-        SolverStats stats;
-        solveImplicitTransformComponentDist<0>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            generate,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        solveImplicitTransformComponentDist<1>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            generate,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        solveImplicitTransformComponentDist<2>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            generate,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        return stats;
+            SolverStats stats;
+            solveImplicitTransformComponentDist<0>(
+                sys,
+                x,
+                exec_,
+                gkoExec_,
+                comm,
+                gkoMtx,
+                generate,
+                stats,
+                l1Control,
+                values,
+                ma,
+                diagC,
+                nrows
+            );
+            solveImplicitTransformComponentDist<1>(
+                sys,
+                x,
+                exec_,
+                gkoExec_,
+                comm,
+                gkoMtx,
+                generate,
+                stats,
+                l1Control,
+                values,
+                ma,
+                diagC,
+                nrows
+            );
+            solveImplicitTransformComponentDist<2>(
+                sys,
+                x,
+                exec_,
+                gkoExec_,
+                comm,
+                gkoMtx,
+                generate,
+                stats,
+                l1Control,
+                values,
+                ma,
+                diagC,
+                nrows
+            );
+            return stats;
+        }
     }
-
+    else
+    {
+        NF_ASSERT(
+            !sys.diagCmpt() || sys.diagCmpt()->size() == 0,
+            "Implicit transform-BC (diagCmpt) segregated solve is not yet implemented for ELL"
+        );
+    }
 
     auto solver = gko::share(generateSolver(gkoMtx));
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
+}
+
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
+    Vector<Vec3>& x
+) const
+{
+    return solveSegregatedDistImpl<CSRMatrix<scalar, localIdx>>(sys, x);
+}
+
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& sys, Vector<Vec3>& x
+) const
+{
+    return solveSegregatedDistImpl<ELLMatrix<scalar, localIdx>>(sys, x);
 }
 
 template std::shared_ptr<const gko::LinOp> createGkoMtxDist(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&);
