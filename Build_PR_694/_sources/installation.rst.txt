@@ -114,7 +114,7 @@ NeoN specific build flags are prefixed by ``NeoN_``.
 
    .. code-block:: bash
 
-      pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
+      pixi add neon-pde -c https://prefix.dev/exasim-project/main -c conda-forge
 
    See :doc:`python_bindings` for the available platforms and GPU flavours.
 
