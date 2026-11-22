@@ -196,6 +196,21 @@ if n != 1:
 path.write_text(text, encoding="utf-8")
 PY
 
+    info "updating the CUDA wheel install example in doc/python_bindings.rst"
+    run python3 - "${version}" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+version = sys.argv[1]
+path = Path("doc/python_bindings.rst")
+text = path.read_text(encoding="utf-8")
+text, n = re.subn(r"(?m)^(\s*)VERSION=.*$", rf"\g<1>VERSION={version}", text)
+if n != 1:
+    raise SystemExit("Could not update 'VERSION=' in doc/python_bindings.rst")
+path.write_text(text, encoding="utf-8")
+PY
+
     # A prerelease keeps the CHANGELOG section open; only a final release dates it.
     if is_prerelease "${version}"; then
         info "keeping the CHANGELOG ${base} section marked unreleased (${version} is a prerelease)"
@@ -223,7 +238,7 @@ PY
 
     echo
     info "review the staged version bump:"
-    run git --no-pager diff -- pyproject.toml CITATION.cff CHANGELOG.md
+    run git --no-pager diff -- pyproject.toml CITATION.cff CHANGELOG.md doc/python_bindings.rst
 
     run git commit --all --message "release: ${tag}"
     run git push --set-upstream "${REMOTE}" "${branch}"
