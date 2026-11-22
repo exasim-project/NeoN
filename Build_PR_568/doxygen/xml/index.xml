@@ -2470,6 +2470,9 @@
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1acc9cb8ccd4becd6fca6b27878029e1af" kind="function"><name>addDivCorrectionToRhs</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a3bd96e0c8137cbaf0a4e24d4c4f48f76" kind="function"><name>addDivCorrectionToRhs</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ae5461c8baf9da045ef94157a975a19fb" kind="function"><name>addDivCorrectionToRhs</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a4cac75ab01762b5393a6cb8a7f6b3e8a" kind="function"><name>addDivCorrectionToRhs</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af4b89b41b7f7ebc12086849f421f85ff" kind="function"><name>addDivCorrectionToRhs</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a03e2acc0a80e797152a3c44e0f97118f" kind="function"><name>addDivCorrectionToRhs</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a05b37eff645d0a8bd864f9b0d067dce2" kind="function"><name>computeLaplacianNonOrthCorrImpl</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a76870fb8b37ff17723ef95da689c76bb" kind="function"><name>computeLaplacianIntImpl</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a8cefb24542c6975b722d2814028ebd41" kind="function"><name>reconstruct</name></member>
@@ -2713,6 +2716,10 @@
   </compound>
   <compound refid="optimizer_8hpp" kind="file"><name>optimizer.hpp</name>
   </compound>
+  <compound refid="dsl_2solver_8hpp" kind="file"><name>solver.hpp</name>
+  </compound>
+  <compound refid="linearAlgebra_2solver_8hpp" kind="file"><name>solver.hpp</name>
+  </compound>
   <compound refid="spatialOperator_8hpp" kind="file"><name>spatialOperator.hpp</name>
   </compound>
   <compound refid="temporalOperator_8hpp" kind="file"><name>temporalOperator.hpp</name>
@@ -2729,31 +2736,19 @@
   </compound>
   <compound refid="boundaryPatchMixin_8hpp" kind="file"><name>boundaryPatchMixin.hpp</name>
   </compound>
+  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
+  </compound>
+  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
+  </compound>
   <compound refid="surface_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
   <compound refid="volume_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
-  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
+  <compound refid="slipSymmetry_8hpp" kind="file"><name>slipSymmetry.hpp</name>
   </compound>
   <compound refid="surface_2empty_8hpp" kind="file"><name>empty.hpp</name>
   </compound>
   <compound refid="volume_2empty_8hpp" kind="file"><name>empty.hpp</name>
-  </compound>
-  <compound refid="surface_2fixedValue_8hpp" kind="file"><name>fixedValue.hpp</name>
-  </compound>
-  <compound refid="volume_2fixedValue_8hpp" kind="file"><name>fixedValue.hpp</name>
-  </compound>
-  <compound refid="surface_2processor_8hpp" kind="file"><name>processor.hpp</name>
-  </compound>
-  <compound refid="volume_2processor_8hpp" kind="file"><name>processor.hpp</name>
-  </compound>
-  <compound refid="surface_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
-  </compound>
-  <compound refid="volume_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
-  </compound>
-  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
-  </compound>
-  <compound refid="slipSymmetry_8hpp" kind="file"><name>slipSymmetry.hpp</name>
   </compound>
   <compound refid="extrapolated_8hpp" kind="file"><name>extrapolated.hpp</name>
   </compound>
@@ -2761,9 +2756,21 @@
   </compound>
   <compound refid="fixedGradient_8hpp" kind="file"><name>fixedGradient.hpp</name>
   </compound>
+  <compound refid="surface_2fixedValue_8hpp" kind="file"><name>fixedValue.hpp</name>
+  </compound>
+  <compound refid="volume_2fixedValue_8hpp" kind="file"><name>fixedValue.hpp</name>
+  </compound>
   <compound refid="inletOutlet_8hpp" kind="file"><name>inletOutlet.hpp</name>
   </compound>
+  <compound refid="surface_2processor_8hpp" kind="file"><name>processor.hpp</name>
+  </compound>
+  <compound refid="volume_2processor_8hpp" kind="file"><name>processor.hpp</name>
+  </compound>
   <compound refid="slip_8hpp" kind="file"><name>slip.hpp</name>
+  </compound>
+  <compound refid="surface_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
+  </compound>
+  <compound refid="volume_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
   </compound>
   <compound refid="totalPressure_8hpp" kind="file"><name>totalPressure.hpp</name>
   </compound>
@@ -2857,10 +2864,6 @@
   <compound refid="petsc_8hpp" kind="file"><name>petsc.hpp</name>
   </compound>
   <compound refid="petscSolverContext_8hpp" kind="file"><name>petscSolverContext.hpp</name>
-  </compound>
-  <compound refid="dsl_2solver_8hpp" kind="file"><name>solver.hpp</name>
-  </compound>
-  <compound refid="linearAlgebra_2solver_8hpp" kind="file"><name>solver.hpp</name>
   </compound>
   <compound refid="sparsityView_8hpp" kind="file"><name>sparsityView.hpp</name>
   </compound>
