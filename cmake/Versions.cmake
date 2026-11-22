@@ -17,10 +17,9 @@ set(NeoN_GINKGO_VERSION "2.0.0")
 set(NeoN_GINKGO_TAG "13c9174360667ad8ae8f1d9e8523c554f2c06e7d")
 set(NeoN_CATCH2_VERSION "3.4.0")
 set(NeoN_SPDLOG_VERSION "1.16.0")
-# Match the nanobind pybFoam builds against (pip, currently 2.13.0). With NeoN_NANOBIND_SHARED the
-# _neon module shares pybFoam's libnanobind.so at runtime by SONAME, so a version/ABI mismatch (e.g.
-# the ndarray_create signature change after 2.9.2) breaks symbol resolution. Overridable so a
-# downstream can track its own pybFoam.
+# Default for standalone builds. nanobind 3 needs Python 3.10, but the wheels still cover 3.9. A
+# build that exchanges types with another extension module, such as pybFoam, needs its nanobind
+# ABI and should use NeoN_EXTERNAL_NANOBIND or override this version.
 if(NOT DEFINED NeoN_NANOBIND_VERSION)
   set(NeoN_NANOBIND_VERSION "2.13.0")
 endif()
