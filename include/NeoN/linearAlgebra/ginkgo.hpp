@@ -401,6 +401,12 @@ public:
         const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
     ) const final;
 
+    // both scalar solveDist() overrides forward to this (defined in ginkgoDistributed.cpp)
+    template<typename SystemMatrixType>
+    SolverStats solveDistImpl(
+        const LinearSystem<scalar, scalar, SystemMatrixType>& sys, Vector<scalar>& x
+    ) const;
+
     virtual SolverStats solveDist(
         const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
     ) const final;

@@ -844,9 +844,9 @@ SolverStats GinkgoSolver::solveSegregatedImpl(
     // subtracted from the shared scalar diagonal in place — no matrix copy — and restored after;
     // createGkoMtx only views the matrix, so the edits are seen at generate()/apply() time, and the
     // const_cast is safe because the storage is owned mutably by the caller.
-    // CSR-only: sys.matrix().rowOffs() has no ELL equivalent, and nothing currently populates
-    // diagCmpt() for an ELL-typed system (GaussGreenLaplacian's implicit-transform assembly is
-    // same-type/CSR only) -- reject rather than silently skip the correction if that changes.
+    // CSR only: sys.matrix().rowOffs() has no ELL equivalent. An ELL system can still carry
+    // diagCmpt (e.g. an implicit symmetry bc), it is rejected below instead of skipping the
+    // correction.
     if constexpr (std::is_same_v<SystemMatrixType, CSRMatrix<scalar, localIdx>>)
     {
         if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)

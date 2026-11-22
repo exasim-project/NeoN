@@ -617,8 +617,9 @@ void solveImplicitTransformComponentDist(
     gkoExec->synchronize();
 }
 
-SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+template<typename SystemMatrixType>
+SolverStats GinkgoSolver::solveDistImpl(
+    const LinearSystem<scalar, scalar, SystemMatrixType>& sys, Vector<scalar>& x
 ) const
 {
     const CommunicationPattern& commPattern = sys.commPattern();
@@ -649,32 +650,17 @@ SolverStats GinkgoSolver::solveDist(
 }
 
 SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+) const
+{
+    return solveDistImpl<CSRMatrix<scalar, localIdx>>(sys, x);
+}
+
+SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
-    const CommunicationPattern& commPattern = sys.commPattern();
-    auto comm = gko::experimental::mpi::communicator(
-        commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
-    );
-    auto gkoMtx = createGkoMtxDist(
-        gkoExec_,
-        comm,
-        sys.matrix(),
-        sys.offDiagonalMatrix(),
-        commPattern,
-        cachedImap_,
-        cachedNonLocalMtx_,
-        cachedDistMtx_,
-        cachedLocalValPtr_
-    );
-    auto solver = gko::share(generateSolver(gkoMtx));
-    const L1ResidualControl* l1Control =
-        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    l1Report_.fired = false;
-    auto entry = solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
-    const auto b = gkoConstVecViewDist(gkoExec_, comm, sys.rhs().data(), sys.rhs().size());
-    const auto xView = gkoVecViewDist(gkoExec_, comm, x.data(), x.size());
-    return {withL1Report(entry, gkoMtx.get(), b.get(), xView.get())};
+    return solveDistImpl<ELLMatrix<scalar, localIdx>>(sys, x);
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -728,7 +714,8 @@ SolverStats GinkgoSolver::solveSegregatedDistImpl(
     // per-component diagonal correction to the shared rank-local diagonal in place. Mirrors the
     // serial path; createGkoMtxDist views the local matrix, so the in-place edits are seen at solve
     // time.
-    // CSR only, like the local segregated solve: the matrix address needs the CSR row offsets
+    // CSR only, like the local segregated solve: the matrix address needs the CSR row offsets,
+    // an ELL system with diagCmpt (e.g. an implicit symmetry bc) is rejected below
     if constexpr (std::is_same_v<SystemMatrixType, CSRMatrix<scalar, localIdx>>)
     {
         if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
