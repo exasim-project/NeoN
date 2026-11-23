@@ -450,6 +450,10 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
         coeffA_,
         coeffB_
     );
+    // implicit slip/symmetry: per-component diagonal, as in the un-fused Laplacian
+    computeLaplacianImplicitTransformDiagImpl<ValueType, scalar>(
+        ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
+    );
     computeDivLaplacianProcBoundImpl<ValueType, scalar>(
         ls,
         this->getVector(),

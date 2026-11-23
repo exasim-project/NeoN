@@ -4,6 +4,7 @@
 
 #define CATCH_CONFIG_RUNNER
 
+#include <atomic>
 #include <fstream>
 #include <iostream>
 #include <thread>
@@ -396,6 +397,8 @@ void runDistributedMomentumBenchmark(
         std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
             imapCache0;
         std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache0;
+        std::shared_ptr<const gko::LinOp> distMtxCache0;
+        const NeoN::scalar* localValPtrCache0 = nullptr;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -410,7 +413,9 @@ void runDistributedMomentumBenchmark(
                         ls.offDiagonalMatrix(),
                         commPattern,
                         imapCache0,
-                        nonLocalMtxCache0
+                        nonLocalMtxCache0,
+                        distMtxCache0,
+                        localValPtrCache0
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -453,6 +458,9 @@ void runDistributedMomentumBenchmark(
             meter.measure(
                 [&]
                 {
+                    // Like the solver's Vec3 component path: the wrapper is not cached.
+                    std::shared_ptr<const gko::LinOp> uncachedDistMtx;
+                    const NeoN::scalar* uncachedLocalValPtr = nullptr;
                     auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
                         gkoExec,
                         comm,
@@ -460,7 +468,9 @@ void runDistributedMomentumBenchmark(
                         nonLocalMtx0,
                         commPattern,
                         imapCache1,
-                        nonLocalMtxCache1
+                        nonLocalMtxCache1,
+                        uncachedDistMtx,
+                        uncachedLocalValPtr
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -488,6 +498,8 @@ void runDistributedMomentumBenchmark(
         std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
             imapCache2;
         std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache2;
+        std::shared_ptr<const gko::LinOp> distMtxCache2;
+        const NeoN::scalar* localValPtrCache2 = nullptr;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -502,7 +514,9 @@ void runDistributedMomentumBenchmark(
                         ls.offDiagonalMatrix(),
                         commPattern,
                         imapCache2,
-                        nonLocalMtxCache2
+                        nonLocalMtxCache2,
+                        distMtxCache2,
+                        localValPtrCache2
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -532,6 +546,8 @@ void runDistributedMomentumBenchmark(
         std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
             imapCache3;
         std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache3;
+        std::shared_ptr<const gko::LinOp> distMtxCache3;
+        const NeoN::scalar* localValPtrCache3 = nullptr;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -546,7 +562,9 @@ void runDistributedMomentumBenchmark(
                         ls.offDiagonalMatrix(),
                         commPattern,
                         imapCache3,
-                        nonLocalMtxCache3
+                        nonLocalMtxCache3,
+                        distMtxCache3,
+                        localValPtrCache3
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -706,8 +724,26 @@ int main(int argc, char* argv[])
         MPI_Comm_size(COMM, &COMM_SIZE);
         IS_ROOT = RANK == ROOT;
 
-        bool threadShutdown = false;
-        std::thread serializeIOThread {serializeIO, &threadShutdown};
+        // serializeIO calls MPI concurrently with the main thread, which is only defined
+        // behaviour at MPI_THREAD_MULTIPLE. This target compiles with
+        // NF_REQUIRE_MPI_THREAD_SUPPORT so NeoN::mpi::Init requests that level, but query what
+        // was actually provided rather than relying on an assert that a release build may drop.
+        // See the same guard in test/catch2/test_main_mpi.cpp.
+        int providedThreadLevel = MPI_THREAD_SINGLE;
+        MPI_Query_thread(&providedThreadLevel);
+        IO_SERIALIZATION = providedThreadLevel == MPI_THREAD_MULTIPLE;
+
+        std::atomic<bool> threadShutdown {false};
+        std::thread serializeIOThread;
+        if (IO_SERIALIZATION)
+        {
+            serializeIOThread = std::thread {serializeIO, &threadShutdown};
+        }
+        else if (IS_ROOT)
+        {
+            std::cout << "[NeoN] MPI thread level is below MPI_THREAD_MULTIPLE; benchmark output "
+                         "from different ranks is not serialized.\n";
+        }
 
         NeoN::initialize(argc, argv);
 
@@ -739,7 +775,10 @@ int main(int argc, char* argv[])
 
         MPI_Barrier(COMM);
         threadShutdown = true;
-        serializeIOThread.join();
+        if (serializeIOThread.joinable())
+        {
+            serializeIOThread.join();
+        }
 
         NeoN::finalize();
     }

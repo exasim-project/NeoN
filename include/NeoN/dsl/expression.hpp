@@ -314,22 +314,19 @@ public:
     }
 
     /* @brief perform all explicit operation and accumulate the result */
-    Vector<ValueType> explicitOperation(localIdx nCells) const
+    Vector<ValueType> explicitOperation(sizeType nCells) const
     {
         Vector<ValueType> source(exec_, nCells, zero<ValueType>());
-        return explicitOperation(source);
+        // accumulate in place and return the local: returning explicitOperation(source) would
+        // copy-construct the result from the reference (allocation + full device copy)
+        accumulateExplicitOperation(source);
+        return source;
     }
 
     /* @brief perform all explicit operation and accumulate the result */
     Vector<ValueType> explicitOperation(Vector<ValueType>& source) const
     {
-        for (auto& op : spatialOperators_)
-        {
-            if (op.getType() == Operator::Type::Explicit)
-            {
-                op.explicitOperation(source);
-            }
-        }
+        accumulateExplicitOperation(source);
         return source;
     }
 
@@ -381,7 +378,7 @@ public:
         la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
     ) const
     {
-        auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
+        auto expTmp = explicitOperation(mesh.nCells());
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
         parallelFor(
             ls.exec(),
@@ -572,6 +569,18 @@ public:
     const Executor& exec() const { return exec_; }
 
 private:
+
+    /* @brief add all explicit spatial operations to source in place */
+    void accumulateExplicitOperation(Vector<ValueType>& source) const
+    {
+        for (auto& op : spatialOperators_)
+        {
+            if (op.getType() == Operator::Type::Explicit)
+            {
+                op.explicitOperation(source);
+            }
+        }
+    }
 
     const Executor exec_;
 

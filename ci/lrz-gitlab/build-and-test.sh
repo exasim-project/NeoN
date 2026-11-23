@@ -13,6 +13,21 @@ PRESET="develop"
 
 echo "Selected GPU type: $GPU_VENDOR"
 
+# The runner sets its own PATH, so the PATH entries of the image are lost: add the
+# GPU-aware MPICH of the Ginkgo images and the CUDA toolkit back (missing dirs are harmless).
+export PATH="/opt/mpich/bin:/usr/local/cuda/bin:${PATH}"
+
+# Launch the MPI tests with MPICH's own mpiexec, matching the libmpi NeoN links, and start
+# the ranks locally: inside the Slurm allocation hydra would otherwise bootstrap through
+# srun, and every rank comes up as a singleton.
+export HYDRA_BOOTSTRAP=fork
+MPIEXEC="$(command -v mpiexec.mpich || command -v mpiexec || true)"
+echo "=== MPI launcher: ${MPIEXEC} ==="
+[ -n "${MPIEXEC}" ] && { "${MPIEXEC}" --version | head -4 || true; }
+
+# Use the Ginkgo of the image unless cmake/Versions.cmake requests a commit it lacks.
+GINKGO_ARGS="$(./ci/ginkgo-cmake-args.sh)"
+
 echo "=== Tool versions ==="
 cmake --version
 g++ --version || clang++ --version
@@ -24,10 +39,12 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
 
     echo "=== Configuring, building, and testing NeoN on NVIDIA ==="
     export CUDA_VISIBLE_DEVICES=0
-    cmake --preset develop \
+    cmake --preset develop ${GINKGO_ARGS} \
+        -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_CUDA_ARCHITECTURES=89 \
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_WITH_MPI=ON \
+        -DMPIEXEC_EXECUTABLE="${MPIEXEC}" \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
     # The CI OpenMPI uses the shared-memory transport (mca_btl_vader) which is
@@ -49,7 +66,8 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
     which mpirun
 
     echo "=== Configuring, building, and testing NeoN on AMD ==="
-    cmake --preset develop \
+    cmake --preset develop ${GINKGO_ARGS} \
+        -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_PREFIX_PATH=/opt/rocm \
         -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang \
         -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ \
@@ -59,6 +77,7 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
         -DKokkos_ARCH_AMD_GFX90A=ON \
         -DNeoN_WITH_THREADS=OFF \
         -DNeoN_WITH_MPI=ON \
+        -DMPIEXEC_EXECUTABLE="${MPIEXEC}" \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
     # See NVIDIA comment above — same rationale for AMD ROCm MPI.
@@ -80,7 +99,8 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
     export ZE_FLAT_DEVICE_HIERARCHY=COMPOSITE
 
     echo "=== Configuring, building, and testing NeoN on Intel ==="
-    cmake --preset develop \
+    cmake --preset develop ${GINKGO_ARGS} \
+        -DNeoN_DEVEL_TOOLS=OFF \
         -DCMAKE_CXX_COMPILER=icpx \
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
         -DKokkos_ENABLE_SYCL=ON \

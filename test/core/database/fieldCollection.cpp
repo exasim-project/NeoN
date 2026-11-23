@@ -260,3 +260,85 @@ TEST_CASE("VectorCollection")
         }
     }
 }
+
+// Moving a field must keep its data: a deep copy would allocate new storage. registerVector moves
+// the document from the create function into the collection, so a field that the create function
+// moves into its document is registered without any copy.
+TEST_CASE("Fields are moved, not copied")
+{
+    NeoN::Executor exec = GENERATE(
+        NeoN::Executor(NeoN::SerialExecutor {}),
+        NeoN::Executor(NeoN::CPUExecutor {}),
+        NeoN::Executor(NeoN::GPUExecutor {})
+    );
+    std::string execName = std::visit([](auto e) { return e.name(); }, exec);
+    NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
+
+    SECTION("VolumeField move constructor on " + execName)
+    {
+        auto vf = createVolumeField(mesh, "T");
+        const auto* data = vf.internalVector().data();
+        fvcc::VolumeField<NeoN::scalar> moved(std::move(vf));
+        REQUIRE(moved.internalVector().data() == data);
+        REQUIRE(moved.name == "T");
+    }
+
+    SECTION("SurfaceField move constructor on " + execName)
+    {
+        auto bcs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
+        fvcc::SurfaceField<NeoN::scalar> sf(exec, "phi", mesh, bcs);
+        const auto* data = sf.internalVector().data();
+        fvcc::SurfaceField<NeoN::scalar> moved(std::move(sf));
+        REQUIRE(moved.internalVector().data() == data);
+    }
+
+    SECTION("registerVector on " + execName)
+    {
+        NeoN::Database db;
+        fvcc::VectorCollection& fieldCollection = fvcc::VectorCollection::instance(db, "fields");
+        const NeoN::scalar* data = nullptr;
+        auto& t = fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+            [&](NeoN::Database& dbIn)
+            {
+                auto vf = createVolumeField(mesh, "T");
+                fvcc::VolumeField<NeoN::scalar> dbField(
+                    exec,
+                    "T",
+                    mesh,
+                    NeoN::Field<NeoN::scalar>(
+                        exec, vf.internalVector(), mesh.boundaryMesh().offset()
+                    ),
+                    vf.boundaryConditions(),
+                    dbIn,
+                    "",
+                    ""
+                );
+                data = dbField.internalVector().data();
+                NeoN::Dictionary dict(
+                    {{"name", dbField.name},
+                     {"timeIndex", std::int64_t {0}},
+                     {"iterationIndex", std::int64_t {0}},
+                     {"subCycleIndex", std::int64_t {0}}}
+                );
+                dict.insert("field", std::any(std::move(dbField)));
+                return NeoN::Document(std::move(dict), fvcc::validateVectorDoc);
+            }
+        );
+        REQUIRE(t.internalVector().data() == data);
+        REQUIRE(t.registered());
+    }
+
+    SECTION("oldTime on " + execName)
+    {
+        NeoN::Database db;
+        fvcc::VectorCollection& fieldCollection = fvcc::VectorCollection::instance(db, "fields");
+        auto& t = fieldCollection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+            CreateVector {.name = "T", .mesh = mesh, .timeIndex = 1}
+        );
+        auto& tOld = fvcc::oldTime(t);
+        // a separate copy of the data, registered under its own key
+        REQUIRE(tOld.internalVector().data() != t.internalVector().data());
+        REQUIRE(tOld.name == "T_0");
+        REQUIRE(tOld.registered());
+    }
+}

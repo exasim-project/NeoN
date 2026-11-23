@@ -1,0 +1,48 @@
+name: Publish release on Zenodo
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to archive, e.g. v0.2.0'
+        required: true
+      publish:
+        description: 'Publish immediately (otherwise leave a draft for review)'
+        type: boolean
+        default: false
+
+jobs:
+  zenodo:
+    runs-on: ubuntu-latest
+    if: github.repository == 'exasim-project/NeoN' && !github.event.release.prerelease
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+    # Release events check out the tag; manual runs use the current branch so
+    # that the script and CITATION.cff are up to date for older tags
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install requirements
+      run: pip install requests pyyaml
+
+    - name: Create source archive
+      run: |
+        git archive --format=zip --prefix="NeoN-${TAG#v}/" -o "NeoN-${TAG}.zip" "$TAG"
+        echo "ARCHIVE=NeoN-${TAG}.zip" >> "$GITHUB_ENV"
+        echo "RELEASE_DATE=$(git log -1 --format=%cs "$TAG")" >> "$GITHUB_ENV"
+
+    - name: Publish on Zenodo
+      env:
+        ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+        ZENODO_CONCEPT_ID: '14608520'
+        PUBLISH: ${{ github.event_name == 'release' || inputs.publish }}
+      run: python .github/scripts/zenodo_release.py

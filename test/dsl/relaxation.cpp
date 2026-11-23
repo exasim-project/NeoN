@@ -10,6 +10,7 @@
 
 using NeoN::scalar;
 using NeoN::localIdx;
+using NeoN::toLocalIdx;
 using NeoN::Vector;
 using NeoN::Vec3;
 namespace fvcc = NeoN::finiteVolume::cellCentred;
@@ -103,7 +104,7 @@ TEMPLATE_TEST_CASE(
     // Boundary conditions for the companion VolumeField (one per patch; values
     // are irrelevant — only the mesh topology / internalVector are read).
     std::vector<fvcc::VolumeBoundary<ValueType>> bcs {};
-    for (localIdx patchi = 0; patchi < mesh.nBoundaries(); ++patchi)
+    for (localIdx patchi = 0; patchi < toLocalIdx(mesh.nBoundaries()); ++patchi)
     {
         NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -133,8 +134,8 @@ TEMPLATE_TEST_CASE(
             auto oh = offV.copyToHost();
             for (localIdx c = 0; c < nCells; ++c)
             {
-                dh.view()[c] = sampleValue<ValueType>(diagBase[static_cast<std::size_t>(c)]);
-                oh.view()[c] = sampleValue<ValueType>(offBase[static_cast<std::size_t>(c)]);
+                dh.view()[c] = sampleValue<ValueType>(diagBase[static_cast<sizeType>(c)]);
+                oh.view()[c] = sampleValue<ValueType>(offBase[static_cast<sizeType>(c)]);
             }
             diagV = dh.copyToExecutor(exec);
             offV = oh.copyToExecutor(exec);
@@ -172,7 +173,7 @@ TEMPLATE_TEST_CASE(
             auto ph = psi.copyToHost();
             for (localIdx c = 0; c < nCells; ++c)
             {
-                ph.view()[c] = sampleValue<ValueType>(psiBase[static_cast<std::size_t>(c)]);
+                ph.view()[c] = sampleValue<ValueType>(psiBase[static_cast<sizeType>(c)]);
             }
             psi = ph.copyToExecutor(exec);
         }
@@ -191,7 +192,7 @@ TEMPLATE_TEST_CASE(
         std::vector<ValueType> diagBefore(nCells);
         for (localIdx c = 0; c < nCells; ++c)
         {
-            diagBefore[static_cast<std::size_t>(c)] =
+            diagBefore[static_cast<sizeType>(c)] =
                 beforeView.matrix.values[hostDiagIdx(beforeView.matrix, c)];
         }
 
@@ -201,7 +202,7 @@ TEMPLATE_TEST_CASE(
         auto afterView = after.view();
         for (localIdx c = 0; c < nCells; ++c)
         {
-            const ValueType d0 = diagBefore[static_cast<std::size_t>(c)];
+            const ValueType d0 = diagBefore[static_cast<sizeType>(c)];
             const ValueType d1 = afterView.matrix.values[hostDiagIdx(afterView.matrix, c)];
             INFO("cell " << c << " diag before/after");
             if constexpr (std::is_same_v<ValueType, scalar>)
@@ -213,6 +214,41 @@ TEMPLATE_TEST_CASE(
                 REQUIRE(sgn(d1[0]) == sgn(d0[0]));
                 REQUIRE(sgn(d1[1]) == sgn(d0[1]));
                 REQUIRE(sgn(d1[2]) == sgn(d0[2]));
+            }
+        }
+    }
+
+    SECTION("a row of the opposite sign is relaxed with the system's sign on " + execName)
+    {
+        // Cell 2's diagonal has the opposite sign of the summed diagonal. As fvMatrix::relax()
+        // does, every relaxed row gets the system's sign, so cell 2 flips.
+        auto [ls, solution] = buildSystem({-4.0, -5.0, 1.0}, {1.0, -2.0, 3.0}, {0.7, -0.3, 0.5});
+
+        auto before = ls.copyToHost();
+        auto beforeView = before.view();
+        ValueType sumDiag = NeoN::zero<ValueType>();
+        for (localIdx c = 0; c < nCells; ++c)
+        {
+            sumDiag = sumDiag + beforeView.matrix.values[hostDiagIdx(beforeView.matrix, c)];
+        }
+
+        dsl::applyMatrixRelaxation(ls, solution, 0.5);
+
+        auto after = ls.copyToHost();
+        auto afterView = after.view();
+        for (localIdx c = 0; c < nCells; ++c)
+        {
+            const ValueType d1 = afterView.matrix.values[hostDiagIdx(afterView.matrix, c)];
+            INFO("cell " << c);
+            if constexpr (std::is_same_v<ValueType, scalar>)
+            {
+                REQUIRE(sgn(d1) == sgn(sumDiag));
+            }
+            else
+            {
+                REQUIRE(sgn(d1[0]) == sgn(sumDiag[0]));
+                REQUIRE(sgn(d1[1]) == sgn(sumDiag[1]));
+                REQUIRE(sgn(d1[2]) == sgn(sumDiag[2]));
             }
         }
     }
@@ -233,16 +269,15 @@ TEMPLATE_TEST_CASE(
 
         auto before = ls.copyToHost();
         auto beforeView = before.view();
-        std::vector<ValueType> valuesBefore(static_cast<std::size_t>(beforeView.matrix.values.size()
-        ));
+        std::vector<ValueType> valuesBefore(static_cast<sizeType>(beforeView.matrix.values.size()));
         for (localIdx i = 0; i < beforeView.matrix.values.size(); ++i)
         {
-            valuesBefore[static_cast<std::size_t>(i)] = beforeView.matrix.values[i];
+            valuesBefore[static_cast<sizeType>(i)] = beforeView.matrix.values[i];
         }
-        std::vector<ValueType> rhsBefore(static_cast<std::size_t>(nCells));
+        std::vector<ValueType> rhsBefore(static_cast<sizeType>(nCells));
         for (localIdx c = 0; c < nCells; ++c)
         {
-            rhsBefore[static_cast<std::size_t>(c)] = beforeView.rhs[c];
+            rhsBefore[static_cast<sizeType>(c)] = beforeView.rhs[c];
         }
 
         dsl::applyMatrixRelaxation(ls, solution, 1.0);
@@ -252,11 +287,11 @@ TEMPLATE_TEST_CASE(
         // BITWISE equality (==, not Approx): a diff means the early-return regressed.
         for (localIdx i = 0; i < afterView.matrix.values.size(); ++i)
         {
-            REQUIRE(afterView.matrix.values[i] == valuesBefore[static_cast<std::size_t>(i)]);
+            REQUIRE(afterView.matrix.values[i] == valuesBefore[static_cast<sizeType>(i)]);
         }
         for (localIdx c = 0; c < nCells; ++c)
         {
-            REQUIRE(afterView.rhs[c] == rhsBefore[static_cast<std::size_t>(c)]);
+            REQUIRE(afterView.rhs[c] == rhsBefore[static_cast<sizeType>(c)]);
         }
 
         // alpha == 0 must also be a bitwise no-op (Discretion alpha<=0 guard).
@@ -265,7 +300,7 @@ TEMPLATE_TEST_CASE(
         auto after0View = after0.view();
         for (localIdx i = 0; i < after0View.matrix.values.size(); ++i)
         {
-            REQUIRE(after0View.matrix.values[i] == valuesBefore[static_cast<std::size_t>(i)]);
+            REQUIRE(after0View.matrix.values[i] == valuesBefore[static_cast<sizeType>(i)]);
         }
     }
 
@@ -313,16 +348,15 @@ TEMPLATE_TEST_CASE(
         for (localIdx c = 0; c < nCells; ++c)
         {
             const auto diagIdx = hostDiagIdx(beforeView.matrix, c);
-            dAug[static_cast<std::size_t>(c)] = beforeView.matrix.values[diagIdx];
+            dAug[static_cast<sizeType>(c)] = beforeView.matrix.values[diagIdx];
             for (localIdx idx = beforeView.matrix.sparsity.rowOffs[c];
                  idx < beforeView.matrix.sparsity.rowOffs[c + 1];
                  ++idx)
             {
                 if (idx != diagIdx)
                 {
-                    sumOff[static_cast<std::size_t>(c)] =
-                        sumOff[static_cast<std::size_t>(c)]
-                        + hostCompMag(beforeView.matrix.values[idx]);
+                    sumOff[static_cast<sizeType>(c)] = sumOff[static_cast<sizeType>(c)]
+                                                     + hostCompMag(beforeView.matrix.values[idx]);
                 }
             }
         }
@@ -338,10 +372,10 @@ TEMPLATE_TEST_CASE(
         for (localIdx c = 0; c < nCells; ++c)
         {
             const ValueType dDom = hostCompMax(
-                hostCompMag(dAug[static_cast<std::size_t>(c)]), sumOff[static_cast<std::size_t>(c)]
+                hostCompMag(dAug[static_cast<sizeType>(c)]), sumOff[static_cast<sizeType>(c)]
             );
             const ValueType expected =
-                hostCopySign(invAlpha * dDom, dAug[static_cast<std::size_t>(c)]);
+                hostCopySign(invAlpha * dDom, dAug[static_cast<sizeType>(c)]);
             const ValueType got = relaxedView.matrix.values[hostDiagIdx(relaxedView.matrix, c)];
             INFO("nonzero-boundary cell " << c);
             if constexpr (std::is_same_v<ValueType, scalar>)
@@ -379,16 +413,15 @@ TEMPLATE_TEST_CASE(
         for (localIdx c = 0; c < nCells; ++c)
         {
             const auto diagIdx = hostDiagIdx(beforeView.matrix, c);
-            dAug[static_cast<std::size_t>(c)] = beforeView.matrix.values[diagIdx];
+            dAug[static_cast<sizeType>(c)] = beforeView.matrix.values[diagIdx];
             for (localIdx idx = beforeView.matrix.sparsity.rowOffs[c];
                  idx < beforeView.matrix.sparsity.rowOffs[c + 1];
                  ++idx)
             {
                 if (idx != diagIdx)
                 {
-                    sumOff[static_cast<std::size_t>(c)] =
-                        sumOff[static_cast<std::size_t>(c)]
-                        + hostCompMag(beforeView.matrix.values[idx]);
+                    sumOff[static_cast<sizeType>(c)] = sumOff[static_cast<sizeType>(c)]
+                                                     + hostCompMag(beforeView.matrix.values[idx]);
                 }
             }
         }
@@ -400,9 +433,9 @@ TEMPLATE_TEST_CASE(
         for (localIdx c = 0; c < nCells; ++c)
         {
             // boundaryDiag == 0 here, so D_internal == D_aug.
-            const ValueType dInternal = dAug[static_cast<std::size_t>(c)];
+            const ValueType dInternal = dAug[static_cast<sizeType>(c)];
             const ValueType dDom =
-                hostCompMax(hostCompMag(dInternal), sumOff[static_cast<std::size_t>(c)]);
+                hostCompMax(hostCompMag(dInternal), sumOff[static_cast<sizeType>(c)]);
             const ValueType expected = hostCopySign(invAlpha * dDom, dInternal);
             const ValueType got = afterView.matrix.values[hostDiagIdx(afterView.matrix, c)];
             INFO("clamp cell " << c);
@@ -439,7 +472,7 @@ TEMPLATE_TEST_CASE(
             auto xh = xStar.copyToHost();
             for (localIdx c = 0; c < nCells; ++c)
             {
-                xh.view()[c] = sampleValue<ValueType>(xStarBase[static_cast<std::size_t>(c)]);
+                xh.view()[c] = sampleValue<ValueType>(xStarBase[static_cast<sizeType>(c)]);
             }
             xStar = xh.copyToExecutor(exec);
         }
@@ -520,7 +553,7 @@ TEMPLATE_TEST_CASE(
 
     // Companion boundary conditions (one per patch; only the internalVector is blended).
     std::vector<fvcc::VolumeBoundary<ValueType>> bcs {};
-    for (localIdx patchi = 0; patchi < mesh.nBoundaries(); ++patchi)
+    for (localIdx patchi = 0; patchi < toLocalIdx(mesh.nBoundaries()); ++patchi)
     {
         NeoN::Dictionary dict;
         dict.insert("type", std::string("fixedValue"));
@@ -537,7 +570,7 @@ TEMPLATE_TEST_CASE(
             auto ph = psi.copyToHost();
             for (localIdx c = 0; c < nCells; ++c)
             {
-                ph.view()[c] = sampleValue<ValueType>(base[static_cast<std::size_t>(c)]);
+                ph.view()[c] = sampleValue<ValueType>(base[static_cast<sizeType>(c)]);
             }
             psi = ph.copyToExecutor(exec);
         }
@@ -560,7 +593,7 @@ TEMPLATE_TEST_CASE(
             for (localIdx c = 0; c < nCells; ++c)
             {
                 cur.view()[c] =
-                    cur.view()[c] + sampleValue<ValueType>(deltaBase[static_cast<std::size_t>(c)]);
+                    cur.view()[c] + sampleValue<ValueType>(deltaBase[static_cast<sizeType>(c)]);
             }
             solution.internalVector() = cur.copyToExecutor(exec);
         }
@@ -603,10 +636,10 @@ TEMPLATE_TEST_CASE(
         REQUIRE(prev.size() == solution.size());
 
         auto prevHost0V = prev.copyToHost();
-        std::vector<ValueType> prevHost0(static_cast<std::size_t>(nCells));
+        std::vector<ValueType> prevHost0(static_cast<sizeType>(nCells));
         for (localIdx c = 0; c < nCells; ++c)
         {
-            prevHost0[static_cast<std::size_t>(c)] = prevHost0V.view()[c];
+            prevHost0[static_cast<sizeType>(c)] = prevHost0V.view()[c];
         }
 
         // Mutate the SOURCE field to a completely different state; the snapshot must NOT track it.
@@ -624,7 +657,7 @@ TEMPLATE_TEST_CASE(
         auto prevHost1 = prevHost1V.view();
         for (localIdx c = 0; c < nCells; ++c)
         {
-            const ValueType expect = prevHost0[static_cast<std::size_t>(c)];
+            const ValueType expect = prevHost0[static_cast<sizeType>(c)];
             INFO("snapshot cell " << c);
             // BITWISE (==, not Approx): a deep copy is byte-identical and independent.
             if constexpr (std::is_same_v<ValueType, scalar>)
@@ -646,10 +679,10 @@ TEMPLATE_TEST_CASE(
 
         // Capture the field state BEFORE any relaxation.
         auto beforeV = solution.internalVector().copyToHost();
-        std::vector<ValueType> before(static_cast<std::size_t>(nCells));
+        std::vector<ValueType> before(static_cast<sizeType>(nCells));
         for (localIdx c = 0; c < nCells; ++c)
         {
-            before[static_cast<std::size_t>(c)] = beforeV.view()[c];
+            before[static_cast<sizeType>(c)] = beforeV.view()[c];
         }
 
         // Build a prev whose values DIFFER from the current field (prev != current is the
@@ -660,7 +693,7 @@ TEMPLATE_TEST_CASE(
             auto ph = prev.copyToHost();
             for (localIdx c = 0; c < nCells; ++c)
             {
-                ph.view()[c] = before[static_cast<std::size_t>(c)]
+                ph.view()[c] = before[static_cast<sizeType>(c)]
                              + sampleValue<ValueType>(0.123456789 * (static_cast<scalar>(c) + 1.0));
             }
             prev = ph.copyToExecutor(exec);
@@ -674,7 +707,7 @@ TEMPLATE_TEST_CASE(
             auto after = afterV.view();
             for (localIdx c = 0; c < nCells; ++c)
             {
-                const ValueType b = before[static_cast<std::size_t>(c)];
+                const ValueType b = before[static_cast<sizeType>(c)];
                 INFO("noop alpha=" << alpha << " cell " << c);
                 if constexpr (std::is_same_v<ValueType, scalar>)
                 {

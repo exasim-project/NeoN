@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 #include <memory>
 
@@ -34,10 +35,10 @@ public:
     void setMemSpace(MemorySpace memSpace) { memSpace_ = memSpace; }
 
     /**@brief allocate a block of size bytes */
-    virtual void* alloc(size_t size) = 0;
+    virtual void* alloc(sizeType size) = 0;
 
     /**@brief reallocate a block of size bytes */
-    virtual void* realloc(void* ptr, size_t size) = 0;
+    virtual void* realloc(void* ptr, sizeType size) = 0;
 
     /**@brief free a block of size bytes */
     virtual void free(void* ptr) = 0;
@@ -60,7 +61,7 @@ public:
 
     /**@brief allocate a space for n elements of type T  */
     template<typename T>
-    T* alloc(size_t elements) const
+    T* alloc(sizeType elements) const
     {
         if (!strategy)
         {
@@ -71,7 +72,7 @@ public:
 
     /**@brief reallocate a space for n elements of type T  */
     template<typename T>
-    T* realloc(void* ptr, size_t elements) const
+    T* realloc(void* ptr, sizeType elements) const
     {
         if (!strategy)
         {

@@ -11,6 +11,33 @@ if(NeoN_WITH_MPI)
     message(FATAL_ERROR "NeoN_WITH_MPI not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
+  # Distribution MPI builds record the distribution's build flags in their compiler wrappers, e.g.
+  # Ubuntu's MPICH reports -flto=auto -ffat-lto-objects. FindMPI passes them on through MPI::MPI_C
+  # and MPI::MPI_CXX, which silently enables GCC LTO for everything using MPI. That breaks nvcc
+  # compiled code: LTO merges the per-object host stubs and their fatbinData symbols collide.
+  #
+  # Scrub FindMPI's cache rather than the targets: every later find_package(MPI), e.g. the
+  # find_dependency(MPI) in GinkgoConfig.cmake, rebuilds the targets from these variables.
+  foreach(_neon_var MPI_C_COMPILE_OPTIONS MPI_CXX_COMPILE_OPTIONS MPI_C_LINK_FLAGS
+                    MPI_CXX_LINK_FLAGS)
+    if(NOT DEFINED CACHE{${_neon_var}})
+      continue()
+    endif()
+    set(_neon_value "$CACHE{${_neon_var}}")
+    string(REGEX REPLACE "(^|[ ;])-f(no-)?(fat-)?lto[^ ;]*" "\\1" _neon_value "${_neon_value}")
+    string(REGEX REPLACE "  +" " " _neon_value "${_neon_value}")
+    string(REGEX REPLACE ";;+" ";" _neon_value "${_neon_value}")
+    string(REGEX REPLACE "^[ ;]+|[ ;]+$" "" _neon_value "${_neon_value}")
+    get_property(
+      _neon_doc
+      CACHE ${_neon_var}
+      PROPERTY HELPSTRING)
+    set(${_neon_var}
+        "${_neon_value}"
+        CACHE STRING "${_neon_doc}" FORCE)
+  endforeach()
+  # Rebuild MPI::MPI_C and MPI::MPI_CXX from the scrubbed cache.
+  find_package(MPI 3.1 REQUIRED)
   include(cmake/DetectMpiThreadSupport.cmake)
 endif()
 
@@ -250,8 +277,25 @@ if(${NeoN_WITH_GINKGO})
   find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
+    # An installed Ginkgo shares NeoN's Umpire pool only if it was built with Umpire.
+    if(NeoN_WITH_UMPIRE AND GINKGO_HAVE_UMPIRE)
+      set(NeoN_GINKGO_WITH_UMPIRE ON)
+    else()
+      set(NeoN_GINKGO_WITH_UMPIRE OFF)
+      if(NeoN_WITH_UMPIRE)
+        message(STATUS "System Ginkgo is built without Umpire: "
+                       "Ginkgo does not allocate from NeoN's Umpire pool")
+      endif()
+    endif()
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # Ginkgo shares NeoN's Umpire pool only in shared builds: it rejects Umpire in static builds,
+    # where each library would also carry its own Umpire ResourceManager.
+    if(NeoN_WITH_UMPIRE AND BUILD_SHARED_LIBS)
+      set(NeoN_GINKGO_WITH_UMPIRE ON)
+    else()
+      set(NeoN_GINKGO_WITH_UMPIRE OFF)
+    endif()
     cpmaddpackage(
       NAME
       Ginkgo
@@ -272,7 +316,8 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_MPI ${NeoN_WITH_MPI}"
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
-      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}"
+      "GINKGO_BUILD_UMPIRE ${NeoN_GINKGO_WITH_UMPIRE}")
 
     # Ginkgo's build_helpers.cmake forces its targets to ${PROJECT_BINARY_DIR}/lib, ignoring
     # CMAKE_LIBRARY_OUTPUT_DIRECTORY. Route them into our shared lib output dir so all CPM-built
@@ -314,8 +359,8 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
     REQUIRED)
   if(NeoN_EXTERNAL_NANOBIND)
     # Use the nanobind shipped in the active Python environment (a build requirement, see
-    # pyproject). pybFoam is built against that same copy, so _neon and pybFoam share one
-    # libnanobind ABI by construction and NeoN_NANOBIND_VERSION does not have to be kept in sync.
+    # pyproject). pybFoam is built against that same copy, so _neon and pybFoam share one nanobind
+    # ABI by construction and NeoN_NANOBIND_VERSION does not have to be kept in sync.
     execute_process(
       COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -343,5 +388,9 @@ if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
     VERSION
     ${NeoN_CATCH2_VERSION}
     SYSTEM
-    YES)
+    YES
+    # Static, like the test helper libraries: the installed test executables cannot find a shared
+    # Catch2, which is not installed (NeoN_WITH_UMPIRE forces BUILD_SHARED_LIBS=ON).
+    OPTIONS
+    "BUILD_SHARED_LIBS OFF")
 endif()

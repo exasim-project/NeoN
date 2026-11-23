@@ -4,7 +4,7 @@ name: Conda packages
 # channel, so that `pixi add neon-pde -c https://prefix.dev/<channel>` resolves a release.
 #
 # Requires two repository settings:
-#   vars.PREFIX_DEV_CHANNEL   the prefix.dev channel name, e.g. exasim-project
+#   vars.PREFIX_DEV_CHANNEL   the prefix.dev channel, e.g. exasim-project/main
 #   secrets.PREFIX_DEV_API_KEY  an API key with write access to that channel
 
 on:
@@ -92,17 +92,15 @@ jobs:
       fail-fast: false
       matrix:
         # One job per (platform x python version), mirroring the wheel matrix.
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-14, macos-15-intel]
-        # No 3.9: conda-forge has no nanobind for it, which the stub generation step needs.
-        # Python 3.9 users get the PyPI wheel.
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15, macos-15-intel]
+        python: ["3.11", "3.12", "3.13"]
         # target-platform is attached per os rather than being a matrix dimension of its own.
         include:
           - os: ubuntu-latest
             target-platform: linux-64
           - os: ubuntu-24.04-arm
             target-platform: linux-aarch64
-          - os: macos-14
+          - os: macos-15
             target-platform: osx-arm64
           - os: macos-15-intel
             target-platform: osx-64

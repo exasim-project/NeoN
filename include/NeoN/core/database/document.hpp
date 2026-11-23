@@ -22,13 +22,13 @@ namespace NeoN
  *
  * Example usage:
  * @code
- * DocumentValidator validator = [](Dictionary dict) -> bool {
+ * DocumentValidator validator = [](const Dictionary& dict) -> bool {
  *     // Validation logic here
  *     return true; // or false based on validation
  * };
  * @endcode
  */
-using DocumentValidator = std::function<bool(Dictionary)>;
+using DocumentValidator = std::function<bool(const Dictionary&)>;
 
 /**
  * @brief Checks if a Dictionary object has an "id" key.
@@ -38,7 +38,7 @@ using DocumentValidator = std::function<bool(Dictionary)>;
  * @param doc The Dictionary object to check.
  * @return true if the Dictionary has an "id" key, false otherwise.
  */
-bool hasId(Dictionary doc);
+bool hasId(const Dictionary& doc);
 
 
 /**
@@ -64,6 +64,14 @@ public:
      * @param validator The validator function to use for validating the Document.
      */
     Document(const Dictionary& dict, DocumentValidator validator = hasId);
+
+    /**
+     * @brief Constructs a Document from the given Dictionary, moving its entries.
+     *
+     * @param dict The Dictionary object to construct the Document from.
+     * @param validator The validator function to use for validating the Document.
+     */
+    Document(Dictionary&& dict, DocumentValidator validator = hasId);
 
     /**
      * @brief Validates the Document.

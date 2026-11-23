@@ -92,9 +92,9 @@ public:
      *
      * This function provides the number of elements currently stored in the database.
      *
-     * @return std::size_t The number of elements in the database.
+     * @return sizeType The number of elements in the database.
      */
-    std::size_t size() const;
+    sizeType size() const;
 
 
 private:

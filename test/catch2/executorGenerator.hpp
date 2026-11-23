@@ -13,13 +13,15 @@
 #include <string>
 #include <utility>
 
+using NeoN::sizeType;
+
 // This class shows how to implement a simple generator for Catch tests
 class ExecutorGenerator final :
     public Catch::Generators::IGenerator<std::pair<std::string, NeoN::Executor>>
 {
 public:
 
-    std::size_t i = 0;
+    sizeType i = 0;
     std::vector<std::pair<std::string, NeoN::Executor>> execs {};
     std::pair<std::string, NeoN::Executor> current_exec = {
         "SerialExecutor", NeoN::SerialExecutor {}

@@ -14,6 +14,12 @@ neon_unit_test(utilities)
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
+  neon_unit_test(ginkgoMergedPgm)
+  neon_unit_test(ginkgoScaleCorrection)
+  # Only when Ginkgo shares NeoN's Umpire pool (see cmake/CxxThirdParty.cmake)
+  if(NeoN_GINKGO_WITH_UMPIRE AND (Kokkos_ENABLE_CUDA OR Kokkos_ENABLE_HIP))
+    neon_unit_test(ginkgoUmpirePool)
+  endif()
 endif()
 
 if(NeoN_WITH_PETSC)

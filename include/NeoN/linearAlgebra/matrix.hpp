@@ -8,6 +8,7 @@
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN::la
 {
@@ -74,7 +75,10 @@ class Matrix : public NeoN::SupportsCopyTo<Matrix<ValueType, SparsityType>>
     {
         NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
         // TODO this is not necessarily true for matrix types with padding like ELL
-        NF_ASSERT(values_.size() == sparsityPattern_->nnz(), "Matrix values and columns mismatch");
+        NF_ASSERT(
+            toLocalIdx(values_.size()) == sparsityPattern_->nnz(),
+            "Matrix values and columns mismatch"
+        );
     }
 
 public:

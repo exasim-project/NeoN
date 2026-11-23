@@ -17,8 +17,8 @@ TEST_CASE("fullDuplexBuffer")
 {
 
     Environment mpiEnviron;
-    std::vector<std::size_t> rankSendCommSize(mpiEnviron.sizeRank(), 1);
-    std::vector<std::size_t> rankReceiveCommSize(mpiEnviron.sizeRank(), 1);
+    std::vector<sizeType> rankSendCommSize(mpiEnviron.sizeRank(), 1);
+    std::vector<sizeType> rankReceiveCommSize(mpiEnviron.sizeRank(), 1);
     FullDuplexCommBuffer buffer(mpiEnviron, rankSendCommSize, rankReceiveCommSize);
 
     SECTION("Parameterized Constructor")
@@ -41,7 +41,7 @@ TEST_CASE("fullDuplexBuffer")
     SECTION("Send and Receive")
     {
         buffer.initComm<int>("Send and Receive");
-        for (size_t rank = 0; rank < mpiEnviron.sizeRank(); ++rank)
+        for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); ++rank)
         {
             auto data = buffer.getSend<int>(rank);
             data[0] = static_cast<int>(rank);
@@ -50,7 +50,7 @@ TEST_CASE("fullDuplexBuffer")
         buffer.startComm();
         buffer.waitComplete();
 
-        for (size_t rank = 0; rank < mpiEnviron.sizeRank(); ++rank)
+        for (sizeType rank = 0; rank < mpiEnviron.sizeRank(); ++rank)
         {
             auto data = buffer.getReceive<int>(rank);
             REQUIRE(data[0] == static_cast<int>(mpiEnviron.rank()));

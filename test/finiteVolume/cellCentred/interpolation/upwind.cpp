@@ -8,7 +8,7 @@
 
 #include "NeoN/NeoN.hpp"
 
-
+using NeoN::toLocalIdx;
 using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
 using NeoN::finiteVolume::cellCentred::VolumeField;
 using NeoN::finiteVolume::cellCentred::SurfaceField;
@@ -46,7 +46,7 @@ TEMPLATE_TEST_CASE("upwind", "", NeoN::scalar, NeoN::Vec3)
     out.correctBoundaryConditions();
 
     auto outHost = out.internalVector().copyToHost();
-    auto nInternal = mesh.nInternalFaces();
+    const auto nInternal = toLocalIdx(mesh.nInternalFaces());
     for (NeoN::localIdx i = 0; i < nInternal; i++)
     {
         REQUIRE(outHost.view()[i] == one<TestType>());
@@ -54,7 +54,7 @@ TEMPLATE_TEST_CASE("upwind", "", NeoN::scalar, NeoN::Vec3)
 
     // boundary face values are now in boundaryData().value()
     auto outBHost = out.boundaryData().value().copyToHost();
-    for (NeoN::localIdx i = 0; i < mesh.nBoundaryFaces(); i++)
+    for (NeoN::localIdx i = 0; i < toLocalIdx(mesh.nBoundaryFaces()); i++)
     {
         REQUIRE(outBHost.view()[i] == one<TestType>());
     }

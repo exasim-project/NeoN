@@ -8,6 +8,7 @@
 
 #include "NeoN/NeoN.hpp"
 
+using NeoN::toLocalIdx;
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 namespace NeoN
@@ -101,14 +102,14 @@ TEST_CASE("reconstruct")
         const auto bSf = mesh.boundaryMesh().faceNormals().view();
         parallelFor(
             exec,
-            {0, mesh.nInternalFaces()},
+            {0, toLocalIdx(mesh.nInternalFaces())},
             NEON_LAMBDA(const localIdx f) {
                 phiI[f] = u[0] * sf[f][0] + u[1] * sf[f][1] + u[2] * sf[f][2];
             }
         );
         parallelFor(
             exec,
-            {0, mesh.nBoundaryFaces()},
+            {0, toLocalIdx(mesh.nBoundaryFaces())},
             NEON_LAMBDA(const localIdx bf) {
                 phiB[bf] = u[0] * bSf[bf][0] + u[1] * bSf[bf][1] + u[2] * bSf[bf][2];
             }
@@ -117,7 +118,7 @@ TEST_CASE("reconstruct")
         auto res = fvcc::reconstruct(phi);
         auto hostRes = res.internalVector().copyToHost();
         auto resView = hostRes.view();
-        for (localIdx i = 0; i < hostRes.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(hostRes.size()); ++i)
         {
             REQUIRE_THAT(resView[i][0], Catch::Matchers::WithinAbs(u[0], 1e-12));
             REQUIRE_THAT(resView[i][1], Catch::Matchers::WithinAbs(u[1], 1e-12));

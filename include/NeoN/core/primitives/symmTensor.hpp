@@ -63,11 +63,11 @@ public:
     KOKKOS_INLINE_FUNCTION scalar* data() { return data_; }
     KOKKOS_INLINE_FUNCTION const scalar* data() const { return data_; }
 
-    KOKKOS_INLINE_FUNCTION constexpr size_t size() const { return 6; }
+    KOKKOS_INLINE_FUNCTION constexpr sizeType size() const { return 6; }
 
     /** @brief Component access — maps (i,j) to the stored upper-triangle */
     KOKKOS_INLINE_FUNCTION
-    scalar operator()(const size_t i, const size_t j) const
+    scalar operator()(const sizeType i, const sizeType j) const
     {
         // index map: (0,0)->0, (0,1)->1, (0,2)->2, (1,1)->3, (1,2)->4, (2,2)->5
         // symmetric: (1,0)->(0,1), (2,0)->(0,2), (2,1)->(1,2)
@@ -76,7 +76,7 @@ public:
     }
 
     KOKKOS_INLINE_FUNCTION
-    scalar& operator()(const size_t i, const size_t j)
+    scalar& operator()(const sizeType i, const sizeType j)
     {
         static constexpr int lut[3][3] = {{0, 1, 2}, {1, 3, 4}, {2, 4, 5}};
         return data_[lut[i][j]];

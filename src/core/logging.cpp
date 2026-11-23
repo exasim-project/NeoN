@@ -41,7 +41,7 @@ namespace
 Level MIN_LEVEL = Level::Info;
 std::string RANK_PREFIX; // empty on rank 0 / serial
 
-void applyRankPolicy(std::size_t rank)
+void applyRankPolicy(sizeType rank)
 {
     const bool nonRoot = rank != 0;
     MIN_LEVEL = nonRoot ? Level::Error : Level::Info;

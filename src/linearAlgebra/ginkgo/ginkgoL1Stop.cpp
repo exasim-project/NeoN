@@ -135,6 +135,21 @@ std::pair<scalar, std::vector<scalar>> computeL1NormFactor(
     return {combined, perCol};
 }
 
+/* @brief sum|b - A x| / normFactor, recomputing the residual with one SpMV. */
+template<typename VecType>
+scalar
+scaledL1ResidualTyped(const gko::LinOp* mtx, const VecType* b, const VecType* x, scalar normFactor)
+{
+    const auto exec = x->get_executor();
+    const auto one = gko::initialize<dense>({1.0}, exec);
+    const auto negOne = gko::initialize<dense>({-1.0}, exec);
+    auto r = b->clone();
+    mtx->apply(negOne, x, one, r);
+    auto rNorm = dense::create(exec, gko::dim<2> {1, r->get_size()[1]});
+    r->compute_norm1(rNorm);
+    return sumRetrieve(rNorm.get()) / normFactor;
+}
+
 /* @brief Ginkgo stopping criterion based on the L1-scaled residual.
  *
  * The iteration stops on the scaled residual sum|b - A x| / normFactor, using an absolute
@@ -157,10 +172,8 @@ std::pair<scalar, std::vector<scalar>> computeL1NormFactor(
  * relies on this (JSON cannot carry the live operands); the programmatic path
  * (attachL1StopAndSolve) sets them explicitly and they take precedence.
  */
-class L1ResidualCriterion :
-    public gko::EnablePolymorphicObject<L1ResidualCriterion, gko::stop::Criterion>
+class L1ResidualCriterion : public gko::stop::Criterion
 {
-    friend class gko::EnablePolymorphicObject<L1ResidualCriterion, gko::stop::Criterion>;
     using Criterion = gko::stop::Criterion;
 
 public:
@@ -192,6 +205,10 @@ public:
 
         std::add_pointer<gko::size_type>::type GKO_FACTORY_PARAMETER_SCALAR(num_iters, NULL);
 
+        // Combined norm factor, written on the first check so the caller can rescale a
+        // residual it computes itself (see scaledL1Residual).
+        std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(norm_factor, NULL);
+
         // Set to true by the criterion on its first check; lets the caller tell whether the
         // (config-registered) criterion actually ran and populated the residual reports.
         std::add_pointer<bool>::type GKO_FACTORY_PARAMETER_SCALAR(fired, NULL);
@@ -212,12 +229,11 @@ public:
     GKO_ENABLE_BUILD_METHOD(Factory);
 
     explicit L1ResidualCriterion(std::shared_ptr<const gko::Executor> exec)
-        : gko::EnablePolymorphicObject<L1ResidualCriterion, Criterion>(std::move(exec))
+        : Criterion(std::move(exec))
     {}
 
     explicit L1ResidualCriterion(const Factory* factory, const gko::stop::CriterionArgs& args)
-        : gko::EnablePolymorphicObject<L1ResidualCriterion, Criterion>(factory->get_executor()),
-          parameters_ {factory->get_parameters()}
+        : Criterion(factory->get_executor()), parameters_ {factory->get_parameters()}
     {
         // Prefer the explicitly-set factory operands (programmatic path); otherwise take the
         // system matrix and RHS the solver supplies through the CriterionArgs (config path).
@@ -324,6 +340,10 @@ private:
             if (parameters_.init_residual != NULL)
             {
                 *(parameters_.init_residual) = initResidual_;
+            }
+            if (parameters_.norm_factor != NULL)
+            {
+                *(parameters_.norm_factor) = normFactor_;
             }
             if (parameters_.fired != NULL)
             {
@@ -494,6 +514,22 @@ L1ResidualResult solveWithL1StopDist(
 }
 #endif
 
+scalar
+scaledL1Residual(const gko::LinOp* mtx, const gko::LinOp* b, const gko::LinOp* x, scalar normFactor)
+{
+    if (const auto* xDense = dynamic_cast<const dense*>(x))
+    {
+        return scaledL1ResidualTyped(mtx, gko::as<dense>(b), xDense, normFactor);
+    }
+#ifdef NF_WITH_MPI_SUPPORT
+    if (const auto* xDist = dynamic_cast<const dist*>(x))
+    {
+        return scaledL1ResidualTyped(mtx, gko::as<dist>(b), xDist, normFactor);
+    }
+#endif
+    throw std::runtime_error("scaledL1Residual: unsupported vector type");
+}
+
 std::shared_ptr<gko::stop::CriterionFactory> makeL1CriterionFactory(
     std::shared_ptr<const gko::Executor> exec,
     const L1ResidualControl& control,
@@ -516,6 +552,7 @@ std::shared_ptr<gko::stop::CriterionFactory> makeL1CriterionFactory(
         params.with_init_residual(&report->initResNorm)
             .with_final_residual(&report->finalResNorm)
             .with_num_iters(&report->numIter)
+            .with_norm_factor(&report->normFactor)
             .with_fired(&report->fired)
             .with_per_col_init_residuals(&report->perColInitNorms)
             .with_per_col_final_residuals(&report->perColFinalNorms);

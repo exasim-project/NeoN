@@ -5,6 +5,13 @@
 add_library(NeoN ${NeoN_LIB_TYPE})
 add_library(NeoN::NeoN ALIAS NeoN) # dummy target
 
+# Bind libNeoN's calls to its own template instantiations instead of a consumer's copy; see
+# detail::visitExecutor in core/parallelAlgorithms.hpp (exasim-project/NeoFOAM#410). Data, e.g. the
+# runtime selection tables, stays shared process-wide.
+if(NeoN_LIB_TYPE STREQUAL "SHARED" AND NOT APPLE)
+  target_link_options(NeoN PRIVATE "LINKER:-Bsymbolic-functions")
+endif()
+
 include(GNUInstallDirs)
 
 set(NeoN_SRCS
@@ -66,6 +73,7 @@ set(NeoN_SRCS
     "finiteVolume/cellCentred/interpolation/linear.cpp"
     "finiteVolume/cellCentred/interpolation/upwind.cpp"
     "finiteVolume/cellCentred/interpolation/linearUpwind.cpp"
+    "finiteVolume/cellCentred/interpolation/limitedLinear.cpp"
     "finiteVolume/cellCentred/faceNormalGradient/corrected.cpp"
     "finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.cpp"
     "finiteVolume/cellCentred/faceNormalGradient/uncorrected.cpp"

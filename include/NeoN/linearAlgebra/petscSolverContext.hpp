@@ -70,8 +70,8 @@ public:
     //- Create auxiliary rows for calculation purposes
     void initialize(const LinearSystem<scalar>& sys)
     {
-        std::size_t size = sys.matrix().values().size();
-        std::size_t nrows = sys.rhs().size();
+        sizeType size = sys.matrix().values().size();
+        sizeType nrows = sys.rhs().size();
         PetscInt colIdx[size];
         PetscInt rowIdx[size];
         PetscInt rhsIdx[nrows];
@@ -86,23 +86,23 @@ public:
         auto colIdxHost = hostLS.matrix().colIdxs().view();
         auto rhsHost = sys.rhs().copyToHost();
 
-        for (size_t index = 0; index < nrows; ++index)
+        for (sizeType index = 0; index < nrows; ++index)
         {
             rhsIdx[index] = static_cast<PetscInt>(index);
         }
         // copy colidx
         // TODO: (this should be done only once when the matrix
         //  topology changes
-        for (size_t index = 0; index < size; ++index)
+        for (sizeType index = 0; index < size; ++index)
         {
             colIdx[index] = static_cast<PetscInt>(colIdxHost[index]);
         }
         // convert rowPtr to rowIdx
         // TODO: (this should be done only once when the matrix
         //  topology changes
-        size_t rowI = 0;
-        size_t rowOffset = rowPtrHost[rowI + 1];
-        for (size_t index = 0; index < size; ++index)
+        sizeType rowI = 0;
+        sizeType rowOffset = rowPtrHost[rowI + 1];
+        for (sizeType index = 0; index < size; ++index)
         {
             if (index == rowOffset)
             {

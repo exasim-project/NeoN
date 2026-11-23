@@ -1,0 +1,27 @@
+name: Label PR
+
+# Add labels based on the PR diff. Runs as pull_request_target so fork PRs can be
+# labeled too; it only reads the diff through the API and never checks out PR code.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  label:
+    if: github.repository == 'exasim-project/NeoN'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Label Ginkgo version changes
+        run: |
+          patch=$(gh api --paginate "repos/$GH_REPO/pulls/$PR_NUMBER/files" \
+            --jq '.[] | select(.filename == "cmake/Versions.cmake") | .patch')
+          if grep -qE '^[+-]\s*set\(NeoN_GINKGO_(VERSION|TAG)\b' <<< "$patch"; then
+            gh pr edit "$PR_NUMBER" --add-label ginkgo-version
+          fi

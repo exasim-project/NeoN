@@ -9,6 +9,8 @@
 
 #include "NeoN/NeoN.hpp"
 
+using NeoN::toLocalIdx;
+
 TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -52,12 +54,12 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
         auto rowOffsDenseHost = rowOffsDense.copyToHost();
         auto rowOffsDenseHostView = rowOffsDenseHost.view();
 
-        for (int i = 0; i < valuesDenseHostView.size(); ++i)
+        for (int i = 0; i < toLocalIdx(valuesDenseHostView.size()); ++i)
         {
             REQUIRE(valuesDenseHostView[i] == values[i]);
             REQUIRE(colIdxDenseHostView[i] == colIdxs[i]);
         }
-        for (int i = 0; i < rowOffsDenseHostView.size(); ++i)
+        for (int i = 0; i < toLocalIdx(rowOffsDenseHostView.size()); ++i)
         {
             REQUIRE(rowOffsDenseHostView[i] == rowOffs[i]);
         }
@@ -248,7 +250,7 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
         REQUIRE(hostcolIdxSparse.size() == column.size());
         REQUIRE(hostrowOffsSparse.size() == row.size());
 
-        for (NeoN::localIdx i = 0; i < value.size(); ++i)
+        for (NeoN::localIdx i = 0; i < toLocalIdx(value.size()); ++i)
         {
             REQUIRE(hostvaluesSparse.view()[i] == value[i]);
             REQUIRE(hostcolIdxSparse.view()[i] == column[i]);

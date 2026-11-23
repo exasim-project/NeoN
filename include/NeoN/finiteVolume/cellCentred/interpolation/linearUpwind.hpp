@@ -61,6 +61,8 @@ struct LinearUpwindGradType<Vec3>
 ** @param faceDeltaOwner Cf - C_owner per internal face (from the geometry scheme)
 ** @param faceDeltaNeighbour Cf - C_neighbour per internal face (from the geometry scheme)
 ** @param dst the target surface field
+** @param limiterWeights when given, the central-differencing weights for OpenFOAM's linearUpwindV
+**        directional limiter (see applyLinearUpwind); null for plain linearUpwind
 */
 template<typename ValueType>
 void computeLinearUpwindInterpolation(
@@ -69,7 +71,8 @@ void computeLinearUpwindInterpolation(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
-    const bool cellLimitedGradient = false
+    const bool cellLimitedGradient = false,
+    const SurfaceField<scalar>* limiterWeights = nullptr
 );
 
 /* @brief computes only the gradient correction part of the linearUpwind face value,
@@ -87,13 +90,14 @@ void computeLinearUpwindCorrection(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
-    const bool cellLimitedGradient = false
+    const bool cellLimitedGradient = false,
+    const SurfaceField<scalar>* limiterWeights = nullptr
 );
 
-// @tparam CellLimited when true the gradient correction is built from the cell-limited (minmod,
-// k=1) gradient rather than the unlimited Gauss-Green gradient — this is the "linearUpwindV"
-// scheme, a directionally-bounded vector reconstruction. Only meaningful for Vec3 fields; the
-// scalar path ignores it.
+// @tparam CellLimited when true this is OpenFOAM's "linearUpwindV": the gradient correction of each
+// face is limited so it never points against, nor overshoots, the weighted jump between the two
+// cells (see applyLinearUpwind). The gradient itself is the one named in the spec, as for
+// linearUpwind. Only meaningful for Vec3 fields.
 template<typename ValueType, bool CellLimited = false>
 class LinearUpwind :
     public SurfaceInterpolationFactory<ValueType>::template Register<
@@ -106,7 +110,8 @@ public:
 
     LinearUpwind(const Executor& exec, const UnstructuredMesh& mesh, Input input)
         : Base(exec, mesh), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
-          gradSchemeName_(readGradSchemeName(input))
+          gradSchemeName_(readGradSchemeName(input)),
+          cellLimitedGradient_(readCellLimited(gradSchemeName_))
     {
         // Opt in to the geometry scheme's per-internal-face cell-to-face offset vectors. These are
         // computed lazily and only for schemes that need them, so non-linearUpwind runs never
@@ -119,7 +124,7 @@ public:
 
     static std::string doc()
     {
-        return CellLimited ? "linearUpwindV interpolation (cell-limited gradient correction)"
+        return CellLimited ? "linearUpwindV interpolation (directionally limited correction)"
                            : "linearUpwind interpolation";
     }
 
@@ -145,7 +150,8 @@ public:
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
             dst,
-            CellLimited
+            cellLimitedGradient_,
+            CellLimited ? &geometryScheme_->weights() : nullptr
         );
     }
 
@@ -180,7 +186,8 @@ public:
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
             corr,
-            CellLimited
+            cellLimitedGradient_,
+            CellLimited ? &geometryScheme_->weights() : nullptr
         );
     }
 
@@ -191,9 +198,16 @@ public:
 
 private:
 
-    // The OpenFOAM scheme spec is "linearUpwind <gradScheme>"; NeoN currently has a single
-    // (Gauss-Green) gradient scheme, so the name is read for spec-compatibility but not used to
-    // select a scheme. Returns a default when absent.
+    // The scheme spec is "linearUpwind <gradScheme>", e.g.
+    // "linearUpwind cellLimited Gauss linear 1". The deferred correction has to be built from
+    // the gradient named there: falling back to the unlimited Gauss-Green gradient leaves the
+    // reconstruction unclipped, a systematically more aggressive convection term. So the
+    // leading word decides whether the correction is cell-limited.
+    //
+    // A bare key ("linearUpwind limited", naming an entry in the caller's gradient-scheme
+    // table) cannot be resolved here -- NeoN holds no such table -- and falls back to the
+    // unlimited gradient. Callers that own the scheme dictionary should expand such a key to
+    // its definition before handing the spec over.
     static std::string readGradSchemeName(Input& input)
     {
         if (std::holds_alternative<NeoN::TokenList>(input))
@@ -207,8 +221,16 @@ private:
         return "Gauss";
     }
 
+    // Honour the gradient named in the spec, for linearUpwindV as well: OpenFOAM's linearUpwindV
+    // bounds the correction with its directional limiter, not by limiting the gradient.
+    static bool readCellLimited(const std::string& gradSchemeName)
+    {
+        return gradSchemeName == "cellLimited";
+    }
+
     const std::shared_ptr<GeometryScheme> geometryScheme_;
     std::string gradSchemeName_;
+    bool cellLimitedGradient_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred
@@ -220,7 +242,7 @@ namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::LinearUpwind<scalar>;
 template class fvcc::LinearUpwind<Vec3>;
-// linearUpwindV: cell-limited gradient reconstruction, vector fields only.
+// linearUpwindV: directionally limited gradient correction, vector fields only.
 template class fvcc::LinearUpwind<Vec3, true>;
 
 }

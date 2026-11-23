@@ -20,6 +20,7 @@
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 #endif
 
 namespace NeoN
@@ -64,6 +65,22 @@ public:
           nBoundaryFaces_(rhs.nBoundaryFaces_)
     {}
 
+    /**
+     * @brief Move constructor.
+     * @note The user-declared destructor and copy constructor suppress the implicit move
+     * constructor, so without this every move (e.g. Field's move constructor) copied all
+     * boundary vectors. Completes any in-flight processor-halo exchange of rhs first, so no
+     * pending MPI request refers to the moved buffers.
+     * @param rhs The boundaryVectors object to be moved from.
+     */
+    BoundaryData(BoundaryData<ValueType>&& rhs)
+        : exec_((rhs.waitAll(), rhs.exec_)), value_(std::move(rhs.value_)),
+          refValue_(std::move(rhs.refValue_)), valueFraction_(std::move(rhs.valueFraction_)),
+          refGrad_(std::move(rhs.refGrad_)), boundaryTypes_(std::move(rhs.boundaryTypes_)),
+          offset_(std::move(rhs.offset_)), nBoundaries_(rhs.nBoundaries_),
+          nBoundaryFaces_(rhs.nBoundaryFaces_)
+    {}
+
 
     /**
      * @brief Copy constructor.
@@ -83,7 +100,7 @@ public:
      * @param nBoundaryFaces - The total number of boundary faces
      * @param nBoundaryType - The total number of boundary patches
      */
-    BoundaryData(const Executor& exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)
+    BoundaryData(const Executor& exec, sizeType nBoundaryFaces, localIdx nBoundaryTypes)
         : exec_(exec), value_(exec, nBoundaryFaces, ValueType {}),
           refValue_(exec, nBoundaryFaces, ValueType {}),
           valueFraction_(exec, nBoundaryFaces, scalar(0)),
@@ -167,19 +184,19 @@ public:
      * @brief Get the number of boundaries.
      * @return The number of boundaries.
      */
-    localIdx nBoundaries() const { return nBoundaries_; }
+    sizeType nBoundaries() const { return nBoundaries_; }
 
     /**
      * @brief Get the number of boundary faces.
      * @return The number of boundary faces.
      */
-    localIdx nBoundaryFaces() const { return nBoundaryFaces_; }
+    sizeType nBoundaryFaces() const { return nBoundaryFaces_; }
 
     /**
      * @brief Get the number of boundary faces for this patch.
      * @return The number of boundary faces for this patch.
      */
-    localIdx nBoundaryFaces(localIdx patchId) const
+    sizeType nBoundaryFaces(localIdx patchId) const
     {
         return offset_.data()[patchId + 1] - offset_.data()[patchId];
     }
@@ -203,8 +220,14 @@ public:
         return *this;
     }
 
-    BoundaryData<ValueType>& operator=(const BoundaryData<ValueType>&& rhs)
+    // Non-const rvalue: with `const BoundaryData&&` the std::move calls below bound to the Vector
+    // copy assignments, so a move assignment copied every boundary vector.
+    BoundaryData<ValueType>& operator=(BoundaryData<ValueType>&& rhs)
     {
+        // finish pending halo exchanges: ours would write into the replaced vectors, rhs's
+        // would refer to the moved buffers
+        waitAll();
+        rhs.waitAll();
 
         // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
         // but use them for a sanity check
@@ -224,6 +247,9 @@ public:
     void communicate(std::pair<localIdx, localIdx> range, int neighborRank)
     {
         const auto [rangeStart, rangeEnd] = range;
+        validateInput(
+            rangeEnd > rangeStart, "range ending index must be larger than range starting index"
+        );
         const localIdx patchSize = rangeEnd - rangeStart;
 
         mpi::Environment mpiEnv;
@@ -250,6 +276,9 @@ public:
         if (useGpuPath)
         {
             buf.deviceRecvBuf = Vector<ValueType>(exec_, patchSize, ValueType {});
+            // The zero-fill above is an asynchronous kernel and MPI does not order against it:
+            // without a fence it can overwrite halo data that already arrived through irecv.
+            fence(exec_);
             mpi::isend<char>(
                 reinterpret_cast<const char*>(value_.data() + rangeStart),
                 byteCount,
@@ -270,10 +299,10 @@ public:
         else
         {
             auto valH = value_.copyToHost();
-            buf.sendBuf.resize(static_cast<std::size_t>(patchSize));
-            buf.recvBuf.resize(static_cast<std::size_t>(patchSize));
+            buf.sendBuf.resize(static_cast<sizeType>(patchSize));
+            buf.recvBuf.resize(static_cast<sizeType>(patchSize));
             for (localIdx k = 0; k < patchSize; k++)
-                buf.sendBuf[static_cast<std::size_t>(k)] = valH.view()[rangeStart + k];
+                buf.sendBuf[static_cast<sizeType>(k)] = valH.view()[rangeStart + k];
             mpi::isend<char>(
                 reinterpret_cast<const char*>(buf.sendBuf.data()),
                 byteCount,
@@ -333,6 +362,9 @@ public:
                     KOKKOS_LAMBDA(const localIdx k) { dstView[start + k] = srcView[k]; }
                 );
             }
+            // The copy kernels read deviceRecvBuf, which commBuffers_.clear() below frees; with a
+            // memory pool a later irecv could reuse that memory while they still run.
+            fence(exec_);
         }
         else if (std::holds_alternative<GPUExecutor>(exec_))
         {
@@ -344,7 +376,7 @@ public:
             for (const auto& buf : commBuffers_)
             {
                 for (localIdx k = 0; k < buf.patchSize; k++)
-                    valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<std::size_t>(k)];
+                    valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<sizeType>(k)];
             }
             Vector<ValueType> backToDevice = valH.copyToExecutor(exec_);
             value_ = backToDevice; // operator=(const Vector&): setContainer dispatches async kernel
@@ -360,7 +392,7 @@ public:
             {
                 ValueType* dst = value_.data() + buf.rangeStart;
                 for (localIdx k = 0; k < buf.patchSize; k++)
-                    dst[k] = buf.recvBuf[static_cast<std::size_t>(k)];
+                    dst[k] = buf.recvBuf[static_cast<sizeType>(k)];
             }
         }
         requests_.clear();
@@ -407,8 +439,8 @@ private:
     Vector<ValueType> refGrad_; ///< The Vector storing the Neumann boundary values.
     Vector<int> boundaryTypes_; ///< The Vector storing the boundary types.
     Vector<localIdx> offset_;   ///< The Vector storing the offsets of each boundary.
-    localIdx nBoundaries_;      ///< The number of boundaries.
-    localIdx nBoundaryFaces_;   ///< The number of boundary faces.
+    sizeType nBoundaries_;      ///< The number of boundaries.
+    sizeType nBoundaryFaces_;   ///< The number of boundary faces.
 
 #ifdef NF_WITH_MPI_SUPPORT
     struct CommBuffer
@@ -417,7 +449,7 @@ private:
         std::vector<ValueType> recvBuf;                 // host staging, used when !gpuAwareMpi
         std::optional<Vector<ValueType>> deviceRecvBuf; // device buffer, used when gpuAwareMpi
         localIdx rangeStart;
-        localIdx patchSize;
+        sizeType patchSize;
     };
     mutable std::vector<MPI_Request>
         requests_; ///< Pending MPI requests (send+recv pairs per patch).

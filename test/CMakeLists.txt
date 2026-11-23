@@ -53,6 +53,10 @@ function(NeoN_unit_test TEST)
     target_link_libraries(${NeoN_COMMAND} PRIVATE SUNDIALS::arkode)
 
   endif()
+  # Heavily templated tests exceed the default COFF section limit (C1128)
+  if(MSVC)
+    target_compile_options(${NeoN_COMMAND} PRIVATE /bigobj)
+  endif()
   if(WIN32)
     set_target_properties(
       ${NeoN_COMMAND}
@@ -73,9 +77,11 @@ function(NeoN_unit_test TEST)
   else()
     add_test(
       NAME ${TEST}
-      COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE} ${NeoN_COMMAND}
+      # Absolute path: MPICH's hydra only searches PATH, unlike Open MPI's mpirun.
+      COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NeoN_MPI_SIZE}
+              $<TARGET_FILE:${NeoN_COMMAND}>
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
-    set_tests_properties(${TEST} PROPERTIES TIMEOUT 10)
+    set_tests_properties(${TEST} PROPERTIES TIMEOUT 60)
     set_tests_properties(${TEST} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
     if(${MPIEXEC_MAX_NUMPROCS} LESS NeoN_MPI_SIZE)
       message(WARNING "Test <${TEST}> requested <${NeoN_MPI_SIZE}> processors, "

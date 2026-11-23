@@ -5,6 +5,7 @@
 #if NF_WITH_GINKGO
 
 #include <array>
+#include <map>
 #include <mutex>
 #include <sstream>
 #include <stdexcept>
@@ -12,19 +13,98 @@
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/memory/umpire.hpp"
+
+namespace
+{
+
+// Translate Ginkgo's short-form stopping criteria ({iteration: 100, initial_residual_norm: 0.1})
+// into the typed list ([{type: Iteration, max_iters: 100}, {type: ResidualNorm, ...}]), with the
+// mapping of Ginkgo's own parse_minimal_criteria. The Krylov solvers accept both forms; solver::Ir
+// only takes the typed one.
+gko::config::pnode typedCriteria(const gko::config::pnode& shortForm)
+{
+    using pnode = gko::config::pnode;
+    static const std::map<std::string, std::pair<std::string, std::string>> residualCriteria = {
+        {"relative_residual_norm", {"ResidualNorm", "rhs_norm"}},
+        {"initial_residual_norm", {"ResidualNorm", "initial_resnorm"}},
+        {"absolute_residual_norm", {"ResidualNorm", "absolute"}},
+        {"relative_implicit_residual_norm", {"ImplicitResidualNorm", "rhs_norm"}},
+        {"initial_implicit_residual_norm", {"ImplicitResidualNorm", "initial_resnorm"}},
+        {"absolute_implicit_residual_norm", {"ImplicitResidualNorm", "absolute"}}
+    };
+    pnode::array_type typed;
+    for (const auto& [key, value] : shortForm.get_map())
+    {
+        if (key == "iteration")
+        {
+            typed.emplace_back(
+                pnode::map_type {{"type", pnode {std::string("Iteration")}}, {"max_iters", value}}
+            );
+        }
+        else if (key == "time")
+        {
+            typed.emplace_back(
+                pnode::map_type {{"type", pnode {std::string("Time")}}, {"time_limit", value}}
+            );
+        }
+        else if (auto it = residualCriteria.find(key); it != residualCriteria.end())
+        {
+            typed.emplace_back(pnode::map_type {
+                {"type", pnode {it->second.first}},
+                {"baseline", pnode {it->second.second}},
+                {"reduction_factor", value}
+            });
+        }
+        else
+        {
+            NF_THROW("Unknown Ginkgo stopping criterion " + key);
+        }
+    }
+    return pnode {typed};
+}
+
+}
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
-    // remove 'solver Ginkgo;' entry
-    if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
+    // Whether the entry key holds the string value, stored as std::string or const char*.
+    auto holdsString = [&dict](const std::string& key, const std::string& value)
+    {
+        if (!dict.contains(key)) return false;
+        const auto& entry = dict[key];
+        if (entry.type() == typeid(std::string)) return std::any_cast<std::string>(entry) == value;
+        if (entry.type() == typeid(const char*)) return std::any_cast<const char*>(entry) == value;
+        return false;
+    };
+
+    // remove 'solver Ginkgo;' entry. Only a string is the backend key: solver::Ir carries its inner
+    // solver as a sub-dictionary under 'solver'.
+    if (holdsString("solver", "Ginkgo"))
     {
         dict.remove("solver");
+    }
+
+    // At the top level 'solver' selects the backend, so a top-level solver::Ir gives its inner
+    // solver under 'preconditioner', which Ginkgo's Ir rejects; rename it to Ir's 'solver' key.
+    if (holdsString("type", "solver::Ir") && dict.contains("preconditioner")
+        && !dict.contains("solver"))
+    {
+        dict.insert("solver", dict["preconditioner"]);
+        dict.remove("preconditioner");
     }
 
     if (dict.contains("coupled"))
     {
         dict.remove("coupled");
+    }
+
+    // 'reuseSetup' controls reusing the preconditioner setup across solves (see
+    // GinkgoSolver::generateSolver); it is not a Ginkgo config key.
+    if (dict.contains("reuseSetup"))
+    {
+        dict.remove("reuseSetup");
     }
 
     // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
@@ -77,7 +157,7 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
                 throw std::runtime_error("configFile token list is empty");
             }
 
-            for (size_t i = 0; i + 1 < token.size(); ++i)
+            for (sizeType i = 0; i + 1 < token.size(); ++i)
             {
                 s << token.next<std::string>() << '/';
             }
@@ -148,6 +228,12 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         }
         result.emplace(key, node);
     }
+    if (holdsString("type", "solver::Ir") && result.contains("criteria")
+        && result.at("criteria").get_tag() == gko::config::pnode::tag_t::map
+        && !result.at("criteria").get("type"))
+    {
+        result["criteria"] = typedCriteria(result.at("criteria"));
+    }
     return gko::config::pnode {result};
 }
 
@@ -162,6 +248,31 @@ std::array<std::shared_ptr<gko::Executor>, 3>& gkoExecutorCache()
     return cache;
 }
 
+#if NF_WITH_UMPIRE && GKO_HAVE_UMPIRE
+// Device executor that allocates from NeoN's Umpire DEVICE_POOL, so NeoN and Ginkgo share one pool.
+// Umpire pools are not stream-ordered; this is safe because Ginkgo runs on the same Kokkos stream.
+std::shared_ptr<gko::Executor> createPooledGkoExecutor(Kokkos::DefaultExecutionSpace space)
+{
+#if defined(KOKKOS_ENABLE_CUDA)
+    return gko::CudaExecutor::create(
+        Kokkos::device_id(),
+        gko::ext::kokkos::create_default_host_executor(),
+        std::make_shared<gko::UmpireCudaAllocator>("DEVICE_POOL"),
+        space.cuda_stream()
+    );
+#elif defined(KOKKOS_ENABLE_HIP)
+    return gko::HipExecutor::create(
+        Kokkos::device_id(),
+        gko::ext::kokkos::create_default_host_executor(),
+        std::make_shared<gko::UmpireHipAllocator>("DEVICE_POOL"),
+        space.hip_stream()
+    );
+#else
+    return gko::ext::kokkos::create_executor(space);
+#endif
+}
+#endif
+
 std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
 {
     // Defer to Ginkgo's Kokkos extension instead of a hand-rolled #ifdef mapping. Each NeoN
@@ -174,6 +285,15 @@ std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
         {
             using ExecType = std::decay_t<decltype(concreteExec)>;
+#if NF_WITH_UMPIRE && GKO_HAVE_UMPIRE
+            if constexpr (std::is_same_v<ExecType, NeoN::GPUExecutor>)
+            {
+                if (NeoN::UmpireMempoolHandler::hasPool(NeoN::MemorySpace::GPU))
+                {
+                    return createPooledGkoExecutor(typename ExecType::exec {});
+                }
+            }
+#endif
             return gko::ext::kokkos::create_executor(typename ExecType::exec {});
         },
         exec
@@ -216,7 +336,7 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
     static std::mutex cacheMutex;
     const std::lock_guard<std::mutex> guard {cacheMutex};
     auto& cache = gkoExecutorCache();
-    const std::size_t idx = exec.index();
+    const sizeType idx = exec.index();
     if (!cache[idx])
     {
         cache[idx] = createGkoExecutor(exec);
@@ -358,7 +478,7 @@ SolverStatsEntry solve_impl(
             )
             / 1000.0;
         return {
-            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+            static_cast<sizeType>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
         };
     }
 
@@ -380,7 +500,7 @@ SolverStatsEntry solve_impl(
     solver->apply(b, x);
 
     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
-    auto numIter = static_cast<size_t>(logger->get_num_iterations());
+    auto numIter = static_cast<sizeType>(logger->get_num_iterations());
     exec->synchronize();
 
     auto endEval = std::chrono::steady_clock::now();
@@ -436,7 +556,7 @@ SolverStats solve_impl(
     mtx->apply(one, x, neg_one, resFinal);
     auto finalNorms = colNorms(resFinal);
 
-    auto numIter = static_cast<size_t>(logger->get_num_iterations());
+    auto numIter = static_cast<sizeType>(logger->get_num_iterations());
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -452,6 +572,53 @@ SolverStats solve_impl(
 }
 
 
+std::unique_ptr<gko::LinOp> GinkgoSolver::generateSolver(std::shared_ptr<const gko::LinOp> mtx
+) const
+{
+    if (!reuseSetup_) return factory_->generate(mtx);
+    const auto& reusable = precondFactory_ ? precondFactory_ : factory_;
+    auto generateReuse = [&]() -> std::unique_ptr<gko::LinOp>
+    {
+        if (reuseData_)
+        {
+            try
+            {
+                return reusable->generate_reuse(mtx, *reuseData_);
+            }
+            catch (const gko::DimensionMismatch&)
+            {}
+            catch (const gko::InvalidStateError&)
+            {}
+        }
+        // first solve, or the matrix does not fit the recorded setup: record a new one
+        reuseData_ = reusable->create_empty_reuse_data();
+        return reusable->generate_reuse(mtx, *reuseData_);
+    };
+    if (!precondFactory_) return generateReuse();
+    auto solver = factory_->generate(mtx);
+    gko::as<gko::Preconditionable>(solver.get())->set_preconditioner(gko::share(generateReuse()));
+    return solver;
+}
+
+SolverStatsEntry GinkgoSolver::withL1Report(
+    SolverStatsEntry entry, const gko::LinOp* mtx, const gko::LinOp* b, const gko::LinOp* x
+) const
+{
+    // The in-config criterion decides convergence but only reports through l1Report_; the
+    // generic solve path returns unscaled norms. Its iteration count is kept: another criterion
+    // of the config may stop the solve, and the logger counts every iteration.
+    if (l1InConfig_ && l1Report_.fired)
+    {
+        entry.initResNorm = l1Report_.initResNorm;
+        // The criterion skips its report between checkFrequency checks and before minIter, so
+        // if another criterion stopped the solve there the report predates the last iteration.
+        entry.finalResNorm = l1Report_.numIter == entry.numIter
+                               ? l1Report_.finalResNorm
+                               : scaledL1Residual(mtx, b, x, l1Report_.normFactor);
+    }
+    return entry;
+}
+
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
@@ -462,7 +629,11 @@ SolverStats GinkgoSolver::solve(
     // twice. The flag-only case (criterion not in the config) still attaches it here.
     const L1ResidualControl* l1Control =
         (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx), l1Control)};
+    l1Report_.fired = false;
+    auto entry = solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, generateSolver(gkoMtx), l1Control);
+    const auto b = gkoVecView(gkoExec_, sys.rhs().data(), sys.rhs().size());
+    const auto xView = gkoVecView(gkoExec_, x.data(), x.size());
+    return {withL1Report(entry, gkoMtx.get(), b.get(), xView.get())};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -491,7 +662,7 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
 // wrapper to solve a single component of a <vec3> equation
 template<unsigned int I>
 void solveComponent(
-    auto& sys, auto& x, auto& exec, auto& factory, auto& stats, const L1ResidualControl* l1Control
+    auto& sys, auto& x, auto& exec, auto& generate, auto& stats, const L1ResidualControl* l1Control
 )
 {
     auto rhs = getComponent<I>(sys.rhs());
@@ -500,9 +671,7 @@ void solveComponent(
     auto sparsity = sys.matrix().sparsity();
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
     auto gkoMtx = createGkoMtx(mtx);
-    stats.entries.push_back(
-        solve_impl(exec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
-    );
+    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
     setComponent<I>(xcopy, x);
 }
 
@@ -522,7 +691,7 @@ SolverStats GinkgoSolver::solve(
         auto xCopy = unpackVecValues(x);
 
         auto stats =
-            solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, factory_->generate(gkoMtx), l1Control);
+            solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, generateSolver(gkoMtx), l1Control);
 
         packVecValues(xCopy, x);
         return {stats};
@@ -530,9 +699,10 @@ SolverStats GinkgoSolver::solve(
     else
     {
         auto stats = SolverStats {};
-        solveComponent<0>(sys, x, gkoExec_, factory_, stats, l1Control);
-        solveComponent<1>(sys, x, gkoExec_, factory_, stats, l1Control);
-        solveComponent<2>(sys, x, gkoExec_, factory_, stats, l1Control);
+        auto generate = [this](auto mtx) { return generateSolver(mtx); };
+        solveComponent<0>(sys, x, gkoExec_, generate, stats, l1Control);
+        solveComponent<1>(sys, x, gkoExec_, generate, stats, l1Control);
+        solveComponent<2>(sys, x, gkoExec_, generate, stats, l1Control);
         return stats;
     }
 }
@@ -543,13 +713,37 @@ SolverStats GinkgoSolver::solve(
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
 // l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The loop is over
 // cells and each iteration writes its own (distinct) diagonal entry, so plain writes suffice.
-// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
-// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+// NOTE: the device kernels live in shiftImplicitTransformDiag, which is not templated on
+// GenerateType: nvcc forbids an extended __device__ lambda inside a function whose template
+// arguments include a function-local type (the `generate` lambda), or `auto` parameters.
+template<
+    unsigned int I,
+    typename ExecType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
+void shiftImplicitTransformDiag(
+    const ExecType& exec,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
+    localIdx nrows,
+    scalar sign
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += sign * diagC[cell][I]; },
+        "shiftImplicitTransformDiag"
+    );
+}
+
 template<
     unsigned int I,
     typename SystemType,
     typename ExecType,
-    typename FactoryType,
+    typename GenerateType,
     typename ValuesType,
     typename MatAddrType,
     typename DiagType>
@@ -559,7 +753,7 @@ void solveImplicitTransformComponent(
     const ExecType& exec,
     std::shared_ptr<const gko::Executor> gkoExec,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    const FactoryType& factory,
+    const GenerateType& generate,
     SolverStats& stats,
     const L1ResidualControl* l1Control,
     ValuesType values,
@@ -568,27 +762,15 @@ void solveImplicitTransformComponent(
     localIdx nrows
 )
 {
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
-        "applyImplicitTransformDiag"
-    );
+    shiftImplicitTransformDiag<I>(exec, values, ma, diagC, nrows, -1.0);
     gkoExec->synchronize();
 
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
-    stats.entries.push_back(
-        solve_impl(gkoExec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
-    );
+    stats.entries.push_back(solve_impl(gkoExec, rhs, xcopy, gkoMtx, generate(gkoMtx), l1Control));
     setComponent<I>(xcopy, x);
 
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
-        "restoreImplicitTransformDiag"
-    );
+    shiftImplicitTransformDiag<I>(exec, values, ma, diagC, nrows, 1.0);
     gkoExec->synchronize();
 }
 
@@ -620,14 +802,15 @@ SolverStats GinkgoSolver::solve(
         gkoExec_->synchronize();
 
         SolverStats stats;
+        auto generate = [this](auto mtx) { return generateSolver(mtx); };
         solveImplicitTransformComponent<0>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            sys, x, exec_, gkoExec_, gkoMtx, generate, stats, l1Control, values, ma, diagC, nrows
         );
         solveImplicitTransformComponent<1>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            sys, x, exec_, gkoExec_, gkoMtx, generate, stats, l1Control, values, ma, diagC, nrows
         );
         solveImplicitTransformComponent<2>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            sys, x, exec_, gkoExec_, gkoMtx, generate, stats, l1Control, values, ma, diagC, nrows
         );
         return stats;
     }
@@ -639,7 +822,7 @@ SolverStats GinkgoSolver::solve(
         label nrows = sys.rhs().size();
         const auto b = gkoVecView(gkoExec_, sys.rhs().data(), nrows); // [nrows x 3]
         auto xView = gkoVecView(gkoExec_, x.data(), nrows);           // [nrows x 3]
-        auto solver = factory_->generate(gkoMtx);
+        auto solver = generateSolver(gkoMtx);
         auto l1Res = solveWithL1Stop(gkoExec_, gkoMtx, b, xView, solver.get(), *l1Control);
 
         gkoExec_->synchronize();
@@ -653,7 +836,7 @@ SolverStats GinkgoSolver::solve(
         SolverStats stats;
         for (int i = 0; i < 3; ++i)
             stats.entries.push_back(
-                {static_cast<size_t>(l1Res.numIter),
+                {static_cast<sizeType>(l1Res.numIter),
                  l1Res.perColInitNorms[i],
                  l1Res.perColFinalNorms[i],
                  duration}
@@ -692,7 +875,7 @@ SolverStats GinkgoSolver::solve(
         b_col->compute_norm2(initNorm_v); // initResNorm = ||b_col||₂  (x starts at 0)
         scalar initResNorm = retrieve(initNorm_v);
 
-        auto solver = factory_->generate(gkoMtx);
+        auto solver = generateSolver(gkoMtx);
         std::shared_ptr<const gko::log::Convergence<scalar>> logger =
             gko::log::Convergence<scalar>::create();
         solver->add_logger(logger);
@@ -706,7 +889,8 @@ SolverStats GinkgoSolver::solve(
                         )
                                                 .count())
                       / 1000.0;
-        stats.entries.push_back({static_cast<size_t>(numIter), initResNorm, finalResNorm, duration}
+        stats.entries.push_back(
+            {static_cast<sizeType>(numIter), initResNorm, finalResNorm, duration}
         );
     }
     return stats;

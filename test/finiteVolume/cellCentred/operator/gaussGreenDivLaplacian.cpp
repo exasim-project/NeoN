@@ -12,6 +12,7 @@
 namespace fvcc = NeoN::finiteVolume::cellCentred;
 
 using Operator = NeoN::dsl::Operator;
+using NeoN::toLocalIdx;
 
 namespace NeoN
 {
@@ -76,7 +77,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         auto matHost = ls.matrix().values().copyToHost();
         auto matView = matHost.view();
         NeoN::scalar matAbsSum = 0.0;
-        for (localIdx i = 0; i < matView.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(matView.size()); ++i)
         {
             matAbsSum += std::abs(matView[i]);
         }
@@ -97,7 +98,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         auto matHost = ls.matrix().values().copyToHost();
         auto matView = matHost.view();
         NeoN::scalar matMagSum = 0.0;
-        for (localIdx i = 0; i < matView.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(matView.size()); ++i)
         {
             matMagSum += mag(matView[i]);
         }
@@ -133,7 +134,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         auto xHost = x.copyToHost();
         auto xView = xHost.view();
         NeoN::scalar xMagSum = 0.0;
-        for (localIdx i = 0; i < xView.size(); ++i)
+        for (localIdx i = 0; i < toLocalIdx(xView.size()); ++i)
         {
             xMagSum += mag(xView[i]);
         }
@@ -204,6 +205,59 @@ TEMPLATE_TEST_CASE(
         lsFaceBased.matrix().values(), Equals(lsCellBased.matrix().values(), Approx {1e-12})
     );
     REQUIRE_THAT(lsFaceBased.rhs(), Equals(lsCellBased.rhs(), Approx {1e-12}));
+}
+
+// The fused div+Laplacian (dsl::optimize) must add the implicit slip/symmetry per-component
+// diagonal (diagCmpt) exactly like the un-fused Laplacian; without it the normal damping of the
+// transform BC is lost.
+TEST_CASE("Div + Laplacian implicit transform diagCmpt matches unfused")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create1DUniformMesh(exec, 10);
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    std::vector<fvcc::VolumeBoundary<Vec3>> bcs;
+    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
+    {
+        bcs.push_back(fvcc::VolumeBoundary<Vec3>(
+            mesh, Dictionary({{"type", std::string("slip")}, {"implicit", true}}), patchID
+        ));
+    }
+    fvcc::VolumeField<Vec3> phi(exec, "phi", mesh, bcs);
+    NeoN::fill(phi.internalVector(), Vec3(1.0, -0.5, 0.25));
+    phi.correctBoundaryConditions();
+
+    fvcc::SurfaceField<scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
+    NeoN::fill(faceFlux.internalVector(), 1.0);
+    NeoN::fill(faceFlux.boundaryData().value(), 0.0);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    NeoN::fill(gamma.internalVector(), 2.0);
+    NeoN::fill(gamma.boundaryData().value(), 2.0);
+
+    // the fused operator needs an upwind-type div scheme
+    auto fvSchemes = MAKE_FV_SCHEMES();
+    NeoN::Dictionary divSchemes;
+    divSchemes.insert(
+        "div(faceFlux,phi)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})
+    );
+    fvSchemes.insert("divSchemes", divSchemes);
+    auto t = scalar(1.0);
+    auto dt = scalar(1.0);
+
+    auto unfused = NeoN::dsl::imp::div(faceFlux, phi) + NeoN::dsl::imp::laplacian(gamma, phi);
+    unfused.read(fvSchemes);
+    auto fused = NeoN::dsl::optimize(
+        NeoN::dsl::imp::div(faceFlux, phi) + NeoN::dsl::imp::laplacian(gamma, phi)
+    );
+    fused.read(fvSchemes);
+    REQUIRE(fused.size() < unfused.size()); // the optimizer fused the two operators
+
+    auto lsU = unfused.template assemble<scalar>(mesh, t, dt);
+    auto lsF = fused.template assemble<scalar>(mesh, t, dt);
+    REQUIRE(lsU.diagCmpt());
+    REQUIRE(lsF.diagCmpt());
+    REQUIRE_THAT(*lsF.diagCmpt(), Equals(*lsU.diagCmpt(), Approx {1e-12}));
+    REQUIRE_THAT(lsF.matrix().values(), Equals(lsU.matrix().values(), Approx {1e-12}));
 }
 
 } // namespace NeoN

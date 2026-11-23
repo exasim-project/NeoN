@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN
 {
@@ -58,7 +59,7 @@ public:
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
-        if (index < 0 || index >= this->size())
+        if (index < 0 || static_cast<sizeType>(index) >= this->size())
         {
             if (abortOnFail)
             {
@@ -66,26 +67,26 @@ public:
             }
             else
             {
-                return std::span<ValueType>::operator[](static_cast<size_t>(index));
+                return std::span<ValueType>::operator[](static_cast<sizeType>(index));
             }
         }
 #endif
-        return std::span<ValueType>::operator[](static_cast<size_t>(index));
+        return std::span<ValueType>::operator[](static_cast<sizeType>(index));
     }
 
     KOKKOS_INLINE_FUNCTION
-    localIdx size() const { return static_cast<localIdx>(base::size()); }
+    sizeType size() const { return base::size(); }
 
     KOKKOS_INLINE_FUNCTION
     View<ValueType> subview(localIdx start, localIdx length) const
     {
-        return base::subspan(static_cast<size_t>(start), static_cast<size_t>(length));
+        return base::subspan(static_cast<sizeType>(start), static_cast<sizeType>(length));
     }
 
     KOKKOS_INLINE_FUNCTION
     View<ValueType> subview(localIdx start) const
     {
-        return base::subspan(static_cast<size_t>(start));
+        return base::subspan(static_cast<sizeType>(start));
     }
 };
 

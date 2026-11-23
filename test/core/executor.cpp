@@ -12,6 +12,8 @@
 #include "NeoN/core/memory/umpire.hpp"
 #include "NeoN/core/memory/kokkos.hpp"
 
+using NeoN::sizeType;
+
 TEST_CASE("Executor Equality")
 {
     NeoN::Executor cpuExec0(NeoN::SerialExecutor {});
@@ -39,7 +41,7 @@ TEST_CASE("Executor Equality")
 TEST_CASE("Can use CPUExecutor wo mempool")
 {
     auto exec = NeoN::CPUExecutor();
-    size_t numElems {5};
+    sizeType numElems {5};
     int* ptr = exec.template alloc<int>(numElems);
     exec.free(ptr);
 }
@@ -48,7 +50,7 @@ TEST_CASE("Can use CPUExecutor wo mempool")
 TEST_CASE("Can use DefaultExecutor wo mempool")
 {
     auto exec = NeoN::createDefaultExecutor();
-    size_t numElems {5};
+    sizeType numElems {5};
     std::visit(
         [=](auto concreteExec)
         {
@@ -64,7 +66,7 @@ TEST_CASE("Can use DefaultExecutor wo mempool")
 TEST_CASE("Can use SerialExecutor with UmpireAllocator")
 {
     auto exec = NeoN::SerialExecutor(std::make_unique<NeoN::UmpireAllocator>());
-    size_t numElems {5};
+    sizeType numElems {5};
     int* ptr = exec.template alloc<int>(numElems);
     exec.free(ptr);
 }
@@ -73,7 +75,7 @@ TEST_CASE("Can use SerialExecutor with UmpireAllocator")
 TEST_CASE("Can use DefaultExecutor with UmpireAllocator")
 {
     auto exec = NeoN::createDefaultExecutor(std::make_unique<NeoN::UmpireAllocator>());
-    size_t numElems {5};
+    sizeType numElems {5};
     std::visit(
         [=](auto concreteExec)
         {
@@ -90,7 +92,7 @@ TEST_CASE("Can use SerialExecutor with UmpirePoolAllocator")
     auto exec = NeoN::SerialExecutor(std::make_unique<NeoN::UmpirePoolAllocator>());
     NeoN::UmpireMempoolHandler::setupUmpirePool(NeoN::MemorySpace::CPU, 1024);
 
-    size_t numElems {5};
+    sizeType numElems {5};
     int* ptr = exec.template alloc<int>(numElems);
     exec.free(ptr);
 
@@ -103,7 +105,7 @@ TEST_CASE("Can use DefaultExecutor with UmpirePoolAllocator")
     auto exec = NeoN::createDefaultExecutor(std::make_unique<NeoN::UmpirePoolAllocator>());
     NeoN::UmpireMempoolHandler::setupUmpirePool(NeoN::memorySpace(exec), 1024);
 
-    size_t numElems {5};
+    sizeType numElems {5};
     std::visit(
         [=](auto concreteExec)
         {

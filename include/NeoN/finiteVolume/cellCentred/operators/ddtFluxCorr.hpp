@@ -52,7 +52,7 @@ inline void ddtFluxCorrBDF1Kernel(
     );
     parallelFor(
         exec,
-        {size_t(0), static_cast<size_t>(nInternalFaces)},
+        {sizeType(0), nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
             const auto d = (SfV[i] & uf0V[i]);
             const auto corr = flux0V[i] - d;
@@ -81,7 +81,7 @@ inline void ddtFluxCorrBDF1Kernel(
     const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
-        {size_t(0), static_cast<size_t>(nBoundaryFaces + nProcBoundaryFaces)},
+        {sizeType(0), nBoundaryFaces + nProcBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             const auto d = (bFaceNormals[bfi] & uf0BV[bfi]);
             const auto corr = flux0BV[bfi] - d;
@@ -124,7 +124,7 @@ inline void ddtFluxCorrBDF2Kernel(
         );
         parallelFor(
             exec,
-            {size_t(0), static_cast<size_t>(nInternalFaces)},
+            {sizeType(0), nInternalFaces},
             NEON_LAMBDA(const localIdx i) {
                 const auto d1 = (SfV[i] & uf0V[i]);
                 const auto corr1 = flux0V[i] - d1;
@@ -154,7 +154,7 @@ inline void ddtFluxCorrBDF2Kernel(
         const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
         parallelFor(
             exec,
-            {size_t(0), static_cast<size_t>(nBoundaryFaces + nProcBoundaryFaces)},
+            {sizeType(0), nBoundaryFaces + nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx bfi) {
                 const auto d1 = (bFaceNormals[bfi] & uf0BV[bfi]);
                 const auto corr1 = flux0BV[bfi] - d1;

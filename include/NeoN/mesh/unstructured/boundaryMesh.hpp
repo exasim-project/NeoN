@@ -223,7 +223,7 @@ public:
     const std::vector<localIdx>& offset() const;
 
     /**@brief number of proc boundary patches */
-    localIdx nProcBoundaryPatches() const;
+    sizeType nProcBoundaryPatches() const;
 
     /**
      * @brief Get the offset of the boundary faces.
@@ -244,7 +244,7 @@ public:
     /**
      * @brief Get the number of the boundaries.
      */
-    localIdx nBoundaries() const { return offset_.size() - 1; }
+    sizeType nBoundaries() const { return offset_.size() - 1; }
 
 
     const Vector<localIdx>& getRowOrderWriteIndex() const;
@@ -254,12 +254,12 @@ public:
     /**
      * @brief Get the number of the boundary faces.
      */
-    localIdx nBoundaryFaces() const { return faceOwners_.size() - nProcBoundaryFaces(); }
+    sizeType nBoundaryFaces() const { return faceOwners_.size() - nProcBoundaryFaces(); }
 
     /**
      * @brief Get the number of the processor boundary faces.
      */
-    localIdx nProcBoundaryFaces() const;
+    sizeType nProcBoundaryFaces() const;
 
     /**
      * @brief Return whether this local mesh is a part of a global distributed mesh
@@ -340,7 +340,7 @@ private:
      *
      * Vector of cell to face distances.
      */
-    localIdx procBoundaryPatches_;
+    sizeType procBoundaryPatches_;
 
     /**
      * @brief The mpi rank of the corresponding neighbour patch

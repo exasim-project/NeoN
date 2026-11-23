@@ -4,7 +4,13 @@
 
 #pragma once
 
+#include <stdexcept>
+#include <utility>
+#include <source_location>
+#include <sstream>
+#include <string_view>
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/error.hpp"
 
 namespace NeoN
 {
@@ -106,4 +112,65 @@ public:
             __FILE__, __LINE__, __func__, s1, s2, "expected equal dimensions"                      \
         );                                                                                         \
     }
+
+/**
+ * Checks that the half-open range [begin, end) lies inside a container of the given size.
+ *
+ * A range is valid if 0 <= begin <= end <= size. An empty range
+ * (begin == end) is valid, including at begin == end == size.
+ *
+ * @param range  The pair {begin, end}, where end is exclusive
+ * @param size   The size of the container being indexed
+ *
+ * @throw std::out_of_range  if begin < 0, begin > end, or end > size
+ */
+inline void validateRange(std::pair<localIdx, localIdx> range, sizeType size)
+{
+    const auto begin = range.first;
+    const auto end = range.second;
+
+    if (begin < 0 || begin > end || static_cast<sizeType>(end) > size)
+    {
+        throw std::out_of_range("The chosen range is not valid!");
+    }
 }
+
+/**
+ * Converts a sizeType to localIdx, checking that the value fits.
+ *
+ * Use this instead of a plain static_cast when converting container sizes or
+ * indices. A plain cast can silently wrap around if the value is larger than
+ * the maximum localIdx.
+ *
+ * @param value  The unsigned value to convert, typically a size() result
+ * @return The same value as a localIdx
+ *
+ * @throw std::length_error  if value is greater than the maximum localIdx
+ */
+inline localIdx toLocalIdx(sizeType value)
+{
+    if (!std::in_range<localIdx>(value))
+    {
+        throw std::length_error("Value cannot be represented by localIdx!");
+    }
+    return static_cast<localIdx>(value);
+}
+
+inline void validateInput(
+    bool condition,
+    std::string_view message,
+    const std::source_location location = std::source_location::current()
+)
+{
+    if (condition)
+    {
+        return;
+    }
+    std::ostringstream error;
+    error << "Invalid input: " << message << "\nFile: \n"
+          << location.file_name() << "\nLine: " << location.line();
+
+    throw NeoN::NeoNException(error.str());
+}
+
+} // namespace NeoN

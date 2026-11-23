@@ -6,6 +6,7 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
+#include "NeoN/helpers/exceptions.hpp"
 
 namespace NeoN::la
 {
@@ -133,8 +134,8 @@ void negLUx(
     Vector<Vec3>& out
 )
 {
-    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
-    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(a.size()), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(out.size()), "Dimension mismatch");
 
     const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, bV] =
         views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), rAU, vol, a, b);
@@ -169,8 +170,8 @@ void scaledInvDiagNegLUx(
     Vector<Vec3>& out
 )
 {
-    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
-    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(a.size()), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(out.size()), "Dimension mismatch");
 
     const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, bV] =
         views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), rAU, vol, a, b);
@@ -209,8 +210,8 @@ void scaledInvDiagNegLUx(
     Vector<Vec3>& out
 )
 {
-    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
-    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(a.size()), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(out.size()), "Dimension mismatch");
 
     const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, bV] =
         views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), rAU, vol, a, b);
@@ -254,7 +255,7 @@ void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a, Vector<scalar>& out
 )
 {
-    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(a.size()), "Dimension mismatch");
 
     auto [outV, rowOffsV, colIdxV, matrixV, aV] =
         views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
@@ -291,7 +292,7 @@ void scaledInverseDiag(
     Vector<scalar>& out
 )
 {
-    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(a.size()), "Dimension mismatch");
 
     auto [outV, rowOffsV, colIdxV, matrixV, aV] =
         views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
@@ -323,7 +324,7 @@ void scaledInverseDiag(
     Vector<scalar>& out
 )
 {
-    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == toLocalIdx(a.size()), "Dimension mismatch");
 
     auto [outV, rowOffsV, colIdxV, matrixV, aV] =
         views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);

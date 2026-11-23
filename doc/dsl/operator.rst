@@ -6,9 +6,10 @@ Overview
 
 An `Operator` is an essential building block to represent expressions in NeoNs dsl.
 Here is an example of combining multiple `Operator` to an expression:
-    .. code-block:: cpp
 
-        dsl::imp::ddt(U) + dsl::imp::div(phi, U) - dsl::imp::laplacian(nu, U)
+.. code-block:: cpp
+
+    dsl::imp::ddt(U) + dsl::imp::div(phi, U) - dsl::imp::laplacian(nu, U)
 
 NeoN's implements explicit (`exp`) and implicit (`imp`) of operator in the `dsl` namespace.
 Note that, temporal operators are currently, part of the implicit (`imp`) namespace eventhough an explicit time integration can be selected at runtime.
@@ -28,6 +29,7 @@ Operators are implemented via multiple functions and classes:
     4. The concrete model here is constructed at run time via NeoN run time factory mechanism. Thus a base class for the registry is implemented for example in `divOperator.hpp` for which concrete implementation an its kernels are implemented in `gaussGreenDiv.hpp`
 
 .. mermaid::
+
     flowchart TD
         n2["dsl/implicit.hpp"]
         -- imp::div
@@ -70,7 +72,7 @@ To fit the specification of the Expression (storage in a vector), the Operator n
 
         // Operator also supports the use of a lambda as scaling function to reduce the number of temporaries generated
         auto lambdaScaledTerm =
-            (NEON_LAMBDA(const NeoN::size_t i) { return sF[i] + sF[i] + sF[i]  + sF[i]; }) * customTerm;
+            (NEON_LAMBDA(const NeoN::sizeType i) { return sF[i] + sF[i] + sF[i]  + sF[i]; }) * customTerm;
 
 To add a user-defined `Operator`, a new derived class must be created, inheriting from `OperatorMixin`,
  and provide the definitions of the below virtual functions that are required for the `Operator` interface:

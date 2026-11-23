@@ -8,6 +8,7 @@
 
 #include "NeoN/NeoN.hpp"
 
+using NeoN::toLocalIdx;
 using NeoN::finiteVolume::cellCentred::SurfaceInterpolation;
 using NeoN::finiteVolume::cellCentred::VolumeField;
 using NeoN::finiteVolume::cellCentred::SurfaceField;
@@ -52,13 +53,13 @@ TEMPLATE_TEST_CASE("linearUpwind reduces to upwind for a constant field", "", sc
     out.correctBoundaryConditions();
 
     auto outHost = out.internalVector().copyToHost();
-    for (localIdx i = 0; i < mesh.nInternalFaces(); i++)
+    for (localIdx i = 0; i < toLocalIdx(mesh.nInternalFaces()); i++)
     {
         REQUIRE(outHost.view()[i] == one<TestType>());
     }
 
     auto outBHost = out.boundaryData().value().copyToHost();
-    for (localIdx i = 0; i < mesh.nBoundaryFaces(); i++)
+    for (localIdx i = 0; i < toLocalIdx(mesh.nBoundaryFaces()); i++)
     {
         REQUIRE(outBHost.view()[i] == one<TestType>());
     }
@@ -85,7 +86,7 @@ TEST_CASE("GeometryScheme caches face-to-cell delta vectors")
     const auto dNeiV = dNei.view();
 
     REQUIRE(dOwn.size() == mesh.nInternalFaces());
-    for (localIdx i = 0; i < dOwn.size(); ++i)
+    for (localIdx i = 0; i < toLocalIdx(dOwn.size()); ++i)
     {
         REQUIRE(mag(dOwnV[i]) == Catch::Approx(0.5 * h).margin(1e-12));
         REQUIRE(mag(dNeiV[i]) == Catch::Approx(0.5 * h).margin(1e-12));
@@ -127,7 +128,7 @@ TEST_CASE("linearUpwind is exact for a linear scalar field")
     auto interior = [&](localIdx celli)
     {
         const Vec3 p = cc[celli];
-        for (std::size_t dd = 0; dd < 3; ++dd)
+        for (sizeType dd = 0; dd < 3; ++dd)
         {
             if (p[dd] < h || p[dd] > l - h) return false;
         }
@@ -208,7 +209,7 @@ TEST_CASE("linearUpwind is exact for a linear vector field")
     auto interior = [&](localIdx celli)
     {
         const Vec3 p = cc[celli];
-        for (std::size_t dd = 0; dd < 3; ++dd)
+        for (sizeType dd = 0; dd < 3; ++dd)
         {
             if (p[dd] < h || p[dd] > l - h) return false;
         }

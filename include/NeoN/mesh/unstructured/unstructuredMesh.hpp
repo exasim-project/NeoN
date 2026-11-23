@@ -10,6 +10,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {
@@ -89,136 +90,138 @@ public:
      *
      * @return The field of mesh points.
      */
-    const vectorVector& points() const;
-    vectorVector& points();
+    const vectorVector& points() const { return points_; }
+    vectorVector& points() { return points_; }
 
     /**
      * @brief Get the field of cell volumes in the mesh.
      *
      * @return The field of cell volumes in the mesh.
      */
-    const scalarVector& cellVolumes() const;
-    scalarVector& cellVolumes();
+    const scalarVector& cellVolumes() const { return cellVolumes_; }
+    scalarVector& cellVolumes() { return cellVolumes_; }
 
     /**
      * @brief Get the field of cell centers in the mesh.
      *
      * @return The field of cell centers in the mesh.
      */
-    const vectorVector& cellCenters() const;
-    vectorVector& cellCenters();
+    const vectorVector& cellCenters() const { return cellCenters_; }
+    vectorVector& cellCenters() { return cellCenters_; }
 
     /**
      * @brief Get the field of face centers.
      *
      * @return The field of face centers.
      */
-    const vectorVector& faceCenters() const;
-    vectorVector& faceCenters();
+    const vectorVector& faceCenters() const { return faceCenters_; }
+    vectorVector& faceCenters() { return faceCenters_; }
 
     /**
      * @brief Get the field of face normal vectors.
      *
      * @return The field of face normal vectors.
      */
-    const vectorVector& faceNormals() const;
-    vectorVector& faceNormals();
+    const vectorVector& faceNormals() const { return faceNormals_; }
+    vectorVector& faceNormals() { return faceNormals_; }
 
     /**
      * @brief Get the field of face areas.
      *
      * @return The field of face areas.
      */
-    const scalarVector& faceAreas() const;
-    scalarVector& faceAreas();
+    const scalarVector& faceAreas() const { return faceAreas_; }
+    scalarVector& faceAreas() { return faceAreas_; }
 
     /**
      * @brief Get the list of labels of face owner cells.
      *
      * @return The list of labels of face owner cells.
      */
-    const labelVector& faceOwners() const;
-    labelVector& faceOwners();
+    const labelVector& faceOwners() const { return faceOwners_; }
+    labelVector& faceOwners() { return faceOwners_; }
 
     /**
      * @brief Get the list of labels of face neighbor cells.
      *
      * @return The list of labels of face neighbor cells.
      */
-    const labelVector& faceNeighbors() const;
-    labelVector& faceNeighbors();
+    const labelVector& faceNeighbors() const { return faceNeighbors_; }
+    labelVector& faceNeighbors() { return faceNeighbors_; }
 
     /**
      * @brief Get the number of cells in the mesh.
      *
      * @return The number of cells in the mesh.
      */
-    localIdx nCells() const;
+    sizeType nCells() const { return nCells_; }
 
     /**
      * @brief Get the number of internal faces in the mesh.
      *
      * @return The number of internal faces in the mesh.
      */
-    localIdx nInternalFaces() const;
+    sizeType nInternalFaces() const { return nInternalFaces_; }
 
     /**
      * @brief Get the number of boundary faces in the mesh.
      *
      * @return The number of boundary faces in the mesh.
      */
-    localIdx nBoundaryFaces() const;
+    sizeType nBoundaryFaces() const { return boundaryMesh_.nBoundaryFaces(); }
 
     /**
      * @brief Get the total number of faces including boundary and processor faces in the mesh.
      *
      * @return The  total number of faces in the mesh.
      */
-    localIdx nTotalFaces() const;
+    sizeType nTotalFaces() const
+    {
+        return nInternalFaces() + nBoundaryFaces() + nProcBoundaryFaces();
+    }
 
     /**
      * @brief Get the number of boundaries patches in the mesh.
      *
      * @return The number of boundaries in the mesh.
      */
-    localIdx nBoundaries() const;
+    sizeType nBoundaries() const { return boundaryMesh_.nBoundaries(); }
 
     /**
      * @brief Get the number of processor-boundary faces (inter-rank faces).
      *
      * Returns 0 for single-process runs.
      */
-    localIdx nProcBoundaryFaces() const;
+    sizeType nProcBoundaryFaces() const { return boundaryMesh_.nProcBoundaryFaces(); }
 
     /**
      * @brief the offset local cellIds for the global mesh.
      *
      * @return the global offset
      */
-    localIdx globalOffset() const;
+    localIdx globalOffset() const { return globalOffset_; }
 
     /**
      * @brief Get the boundary mesh.
      *
      * @return The boundary mesh.
      */
-    const BoundaryMesh& boundaryMesh() const;
-
-    BoundaryMesh& boundaryMesh();
+    const BoundaryMesh& boundaryMesh() const { return boundaryMesh_; }
+    BoundaryMesh& boundaryMesh() { return boundaryMesh_; }
 
     /**
      * @brief Get the stencil data base.
      *
      * @return The stencil data base.
      */
-    Dictionary& stencilDB() const;
+    Dictionary& stencilDB() const { return stencilDataBase_; }
 
     /**
      * @brief Get the executor.
      *
      * @return The executor.
      */
-    const Executor& exec() const;
+    const Executor& exec() const { return exec_; }
 
 private:
 
@@ -275,12 +278,12 @@ private:
     /**
      * @brief Number of cells in the mesh.
      */
-    localIdx nCells_;
+    sizeType nCells_;
 
     /**
      * @brief Number of internal faces in the mesh.
      */
-    localIdx nInternalFaces_;
+    sizeType nInternalFaces_;
 
     /**
      * @brief Boundary mesh.

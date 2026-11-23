@@ -67,19 +67,19 @@ public:
      *
      * @return The size of the vector
      */
-    constexpr size_t size() const { return 3; }
+    constexpr sizeType size() const { return 3; }
 
     KOKKOS_INLINE_FUNCTION
-    scalar& operator[](const size_t i) { return cmpts_[i]; }
+    scalar& operator[](const sizeType i) { return cmpts_[i]; }
 
     KOKKOS_INLINE_FUNCTION
-    scalar operator[](const size_t i) const { return cmpts_[i]; }
+    scalar operator[](const sizeType i) const { return cmpts_[i]; }
 
     KOKKOS_INLINE_FUNCTION
-    scalar& operator()(const size_t i) { return cmpts_[i]; }
+    scalar& operator()(const sizeType i) { return cmpts_[i]; }
 
     KOKKOS_INLINE_FUNCTION
-    scalar operator()(const size_t i) const { return cmpts_[i]; }
+    scalar operator()(const sizeType i) const { return cmpts_[i]; }
 
     KOKKOS_INLINE_FUNCTION
     bool operator==(const Vec3& rhs) const

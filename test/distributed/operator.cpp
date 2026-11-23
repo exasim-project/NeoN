@@ -439,7 +439,7 @@ TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
 
     // distributed per-component convergence matches the serial reference (same arithmetic,
     // partitioned vs global operator)
-    for (std::size_t i = 0; i < 3; ++i)
+    for (sizeType i = 0; i < 3; ++i)
     {
         REQUIRE(
             solverStatsDist.entries[i].finalResNorm
@@ -507,15 +507,23 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
     );
     std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>> imapCache;
     std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache;
-    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
-        gkoExec,
-        comm,
-        lsDst.matrix(),
-        lsDst.offDiagonalMatrix(),
-        commPattern,
-        imapCache,
-        nonLocalMtxCache
-    );
+    std::shared_ptr<const gko::LinOp> distMtxCache;
+    const scalar* localValPtrCache = nullptr;
+    auto createMtx = [&]()
+    {
+        return NeoN::la::ginkgo::createGkoMtxDist(
+            gkoExec,
+            comm,
+            lsDst.matrix(),
+            lsDst.offDiagonalMatrix(),
+            commPattern,
+            imapCache,
+            nonLocalMtxCache,
+            distMtxCache,
+            localValPtrCache
+        );
+    };
+    auto gkoMtx = createMtx();
 
     // The local CSR block must share memory with lsDst.matrix().values_
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, gko::int64>;
@@ -524,6 +532,47 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
     const auto* localCsr = gko::as<const gko::matrix::Csr<scalar, localIdx>>(localLinOp.get());
 
     REQUIRE(localCsr->get_const_values() == lsDst.matrix().values().data());
+
+    SECTION("Unchanged value buffer reuses the cached wrapper with refreshed off-diagonal values")
+    {
+        auto offDiagValues = lsDst.offDiagonalMatrix().values().view();
+        const auto nOffDiag = static_cast<localIdx>(offDiagValues.size());
+        parallelFor(
+            exec,
+            {0, nOffDiag},
+            NEON_LAMBDA(const localIdx i) { offDiagValues[i] *= 2.0; },
+            "scaleOffDiag"
+        );
+
+        REQUIRE(createMtx() == gkoMtx);
+
+        const auto* nonLocalCoo = gko::as<const gko::matrix::Coo<scalar, localIdx>>(
+            distMtxPtr->get_non_local_matrix().get()
+        );
+        auto cachedValues =
+            gko::make_const_array_view(gkoExec, nOffDiag, nonLocalCoo->get_const_values())
+                .copy_to_array();
+        cachedValues.set_executor(gkoExec->get_master());
+        auto expected = lsDst.offDiagonalMatrix().values().copyToHost();
+        for (localIdx i = 0; i < nOffDiag; ++i)
+        {
+            REQUIRE(cachedValues.get_const_data()[i] == expected.view()[i]);
+        }
+    }
+
+    SECTION("Changed value buffer rebuilds the wrapper")
+    {
+        localValPtrCache = nullptr;
+        REQUIRE(createMtx() != gkoMtx);
+    }
+
+    SECTION("Changed value buffer on one rank rebuilds the wrapper on all ranks")
+    {
+        // The rebuild is collective: a cache hit on the other ranks must not leave rank 0 alone in
+        // the setup collectives.
+        if (mpiEnviron.rank() == 0) localValPtrCache = nullptr;
+        REQUIRE(createMtx() != gkoMtx);
+    }
 }
 
 // Distributed counterpart of the serial implicit transform-BC solver test: a scalar matrix with a
@@ -662,6 +711,114 @@ TEST_CASE("Distributed Operator - linearUpwind deferred correction (fused)")
         INFO("rank " << mpiEnviron.rank() << " local cell " << i);
         REQUIRE(partCorr == Catch::Approx(globalCorr).margin(1e-9));
     }
+}
+
+// The linearUpwindV counterpart for a vector field: the directional limiter must also be applied on
+// processor faces, so the partitioned correction matches the global serial correction on every
+// rank. On a random field the limiter is active on some faces, including faces cut by the
+// decomposition.
+TEST_CASE("Distributed Operator - linearUpwindV deferred correction (fused)")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const auto nCells = 12;
+    auto meshGlobal = create1DUniformMesh(exec, nCells);
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    auto u = finiteVolume::cellCentred::VolumeField<Vec3>(
+        exec, "U", mesh, Vector<Vec3>(exec, nCells, 2.0 * one<Vec3>()), volBCs
+    );
+    srand(42);
+    randomizeVector(u);
+    u.correctBoundaryConditions();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    fill(phi.internalVector(), 1.0);
+    srand(42);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    auto assembleRhsHost =
+        [&](UnstructuredMesh& m, auto& uF, auto& phiF, auto& gammaF, const NeoN::Dictionary& inp)
+    {
+        auto e = dsl::imp::div(phiF, uF) - dsl::imp::laplacian(gammaF, uF);
+        e.read(inp);
+        return e.assemble(m, 1.0, 1.0, {}).rhs().copyToHost();
+    };
+
+    auto rhsUpw = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("upwind", ""));
+    auto rhsLin = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("linearUpwindV", ""));
+
+    NeoN::mpi::Environment mpiEnviron;
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto rhsUpwP =
+        assembleRhsHost(meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("upwind", "Part"));
+    auto rhsLinP = assembleRhsHost(
+        meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("linearUpwindV", "Part")
+    );
+
+    const auto localCells = nCells / mpiEnviron.sizeRank();
+    const localIdx offset = static_cast<localIdx>(mpiEnviron.rank()) * localCells;
+    for (localIdx i = 0; i < localCells; ++i)
+    {
+        const Vec3 globalCorr = rhsLin.view()[offset + i] - rhsUpw.view()[offset + i];
+        const Vec3 partCorr = rhsLinP.view()[i] - rhsUpwP.view()[i];
+        INFO("rank " << mpiEnviron.rank() << " local cell " << i);
+        for (sizeType cmpt = 0; cmpt < 3; ++cmpt)
+        {
+            REQUIRE(partCorr[cmpt] == Catch::Approx(globalCorr[cmpt]).margin(1e-9));
+        }
+    }
+}
+
+// The relaxation sign is taken from the diagonal summed over all ranks. The last rank's diagonal is
+// positive while the system's is negative, so with a rank-local sum the last rank would keep its
+// rows positive; with the global sum every row is relaxed with the negative sign, as in serial.
+TEST_CASE("Distributed relaxation uses the global sign of the system")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    NeoN::mpi::Environment mpiEnviron;
+    REQUIRE(mpiEnviron.sizeRank() > 1);
+
+    const localIdx nCellsLocal = 4;
+    auto meshPart = create1DUniformMeshPart(exec, nCellsLocal);
+    auto ls = la::createEmptyLinearSystem<scalar>(meshPart);
+    const localIdx n = ls.rhs().size();
+
+    const bool lastRank = mpiEnviron.rank() == mpiEnviron.sizeRank() - 1;
+    const scalar d = lastRank ? 1.0 : -4.0;
+    {
+        auto values = ls.matrix().values().view();
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().rowOffs().view());
+        parallelFor(
+            exec, {0, n}, NEON_LAMBDA(const localIdx c) { values[ma.diagIdx(c)] = d; }, "setDiag"
+        );
+    }
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshPart);
+    fvcc::VolumeField<scalar> psi(exec, "psi", meshPart, Vector<scalar>(exec, n, 1.0), volBCs);
+
+    dsl::applyMatrixRelaxation(ls, psi, 0.5);
+
+    // The off-diagonals are zero, so the non-zero values are exactly the n diagonals.
+    auto valuesH = ls.matrix().values().copyToHost();
+    localIdx nDiag = 0;
+    for (localIdx i = 0; i < valuesH.size(); ++i)
+    {
+        const scalar v = valuesH.view()[i];
+        if (v == 0.0) continue;
+        INFO("rank " << mpiEnviron.rank() << " value " << i);
+        REQUIRE(v == Catch::Approx(-2.0 * std::abs(d)));
+        ++nDiag;
+    }
+    REQUIRE(nDiag == n);
 }
 
 }

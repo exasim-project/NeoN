@@ -16,6 +16,7 @@ using NeoN::Vector;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
 using NeoN::la::COOMatrix;
+using NeoN::toLocalIdx;
 
 TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 {
@@ -133,16 +134,16 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         REQUIRE(hostLSView.rhs.size() == 3);
 
         // check system values
-        for (NeoN::localIdx i = 0; i < hostLSView.matrix.values.size(); ++i)
+        for (NeoN::localIdx i = 0; i < toLocalIdx(hostLSView.matrix.values.size()); ++i)
         {
             REQUIRE(hostLSView.matrix.values[i] == static_cast<scalar>(i + 1));
             REQUIRE(hostLSView.matrix.sparsity.colIdxs[i] == (i % 3));
         }
-        for (NeoN::localIdx i = 0; i < hostLSView.matrix.sparsity.rowOffs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < toLocalIdx(hostLSView.matrix.sparsity.rowOffs.size()); ++i)
         {
             REQUIRE(hostLSView.matrix.sparsity.rowOffs[i] == i * 3);
         }
-        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < toLocalIdx(hostLSView.rhs.size()); ++i)
         {
             REQUIRE(hostLSView.rhs[i] == static_cast<scalar>((i + 1) * 10));
         }
@@ -164,11 +165,11 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         // Check modification.
         auto hostLS2 = linearSystem.copyToHost();
         auto hostLS2View = hostLS2.view();
-        for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
+        for (NeoN::localIdx i = 0; i < toLocalIdx(hostLS2View.matrix.values.size()); ++i)
         {
             REQUIRE(hostLS2View.matrix.values[i] == -static_cast<scalar>(i + 1));
         }
-        for (NeoN::localIdx i = 0; i < hostLSView.rhs.size(); ++i)
+        for (NeoN::localIdx i = 0; i < toLocalIdx(hostLSView.rhs.size()); ++i)
         {
             REQUIRE(hostLS2View.rhs[i] == -static_cast<scalar>((i + 1) * 10));
         }

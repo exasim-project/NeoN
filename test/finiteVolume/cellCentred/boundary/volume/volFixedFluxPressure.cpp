@@ -8,6 +8,8 @@
 
 #include "NeoN/NeoN.hpp"
 
+using NeoN::toLocalIdx;
+
 // fixedFluxPressure differs from fixedGradient in exactly one respect: refGrad is owned by an
 // external caller (NeoFOAM::constrainPressure sets it once per pressure corrector), so
 // correctBoundaryCondition must READ it and never overwrite it with a stored uniform. These
@@ -21,7 +23,7 @@ TEST_CASE("fixedFluxPressure")
     // unit cube mesh: one cell, six single-face boundary patches, deltaCoeffs == 2.0
     auto mesh = NeoN::createSingleCellMesh(exec);
     const NeoN::scalar deltaCoeff = 2.0;
-    const auto nBnd = mesh.nBoundaryFaces();
+    const auto nBnd = toLocalIdx(mesh.nBoundaryFaces());
 
     NeoN::Field<NeoN::scalar> domainVector(exec, mesh.nCells(), mesh.boundaryMesh().offset());
     NeoN::fill(domainVector.internalVector(), 1.0);
@@ -66,10 +68,10 @@ TEST_CASE("fixedFluxPressure")
     {
         // A different refGrad on every boundary face: a BC that (like fixedGradient) wrote a
         // stored uniform back into refGrad would flatten this and fail below.
-        std::vector<NeoN::scalar> seeded(static_cast<std::size_t>(nBnd));
+        std::vector<NeoN::scalar> seeded(static_cast<sizeType>(nBnd));
         for (NeoN::localIdx i = 0; i < nBnd; ++i)
         {
-            seeded[static_cast<std::size_t>(i)] = 10.0 + static_cast<NeoN::scalar>(i);
+            seeded[static_cast<sizeType>(i)] = 10.0 + static_cast<NeoN::scalar>(i);
         }
         domainVector.boundaryData().refGrad() = NeoN::Vector<NeoN::scalar>(exec, seeded);
 
@@ -87,7 +89,7 @@ TEST_CASE("fixedFluxPressure")
 
             for (NeoN::localIdx i = 0; i < nBnd; ++i)
             {
-                const auto expected = seeded[static_cast<std::size_t>(i)];
+                const auto expected = seeded[static_cast<sizeType>(i)];
                 REQUIRE(refGradView[i] == expected);
                 REQUIRE_THAT(
                     valuesView[i], Catch::Matchers::WithinAbs(1.0 + expected / deltaCoeff, 1e-12)
@@ -107,7 +109,7 @@ TEST_CASE("fixedFluxPressure")
         auto valuesView = values.view();
         for (NeoN::localIdx i = 0; i < nBnd; ++i)
         {
-            const auto expected = seeded[static_cast<std::size_t>(i)];
+            const auto expected = seeded[static_cast<sizeType>(i)];
             REQUIRE(refGradView[i] == expected);
             REQUIRE_THAT(
                 valuesView[i], Catch::Matchers::WithinAbs(5.0 + expected / deltaCoeff, 1e-12)

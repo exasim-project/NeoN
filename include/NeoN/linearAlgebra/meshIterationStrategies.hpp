@@ -34,7 +34,7 @@ public:
     virtual std::string name() const = 0;
 
     /** @brief Returns the number of iteration elements (cells or faces). */
-    virtual size_t size() const = 0;
+    virtual sizeType size() const = 0;
 
     virtual ~MeshIterationStrategy() {}
 };
@@ -74,7 +74,7 @@ public:
 
     std::string name() const override { return "FaceBased"; }
 
-    size_t size() const override { return 0; }
+    sizeType size() const override { return 0; }
 
     ~FaceBasedIterator() override {}
 };
@@ -155,7 +155,7 @@ public:
 
     std::string name() const override;
 
-    size_t size() const override;
+    sizeType size() const override;
 
     ~CellBasedIterator() override {}
 

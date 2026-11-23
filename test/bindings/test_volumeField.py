@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+import gc
+
 import pytest
 
 import neon
@@ -19,6 +21,85 @@ def test_scalar_volume_field_and_bcs(executor):
 
     neon.fill(field.internal_vector(), 2.0)
     assert neon.equal(field.internal_vector(), 2.0)
+
+
+
+def _fixed_value(mesh, patch, value):
+    d = neon.Dictionary()
+    d.insert_string("type", "fixedValue")
+    d.insert_double("fixedValue", value)
+    return neon.ScalarVolumeBoundary(mesh, d, patch)
+
+
+def test_scalar_volume_field_with_fixed_value_bcs(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    bcs = [_fixed_value(mesh, 0, 1.0), _fixed_value(mesh, 1, 2.0)]
+    assert [bc.patch_id() for bc in bcs] == [0, 1]
+
+    field = neon.ScalarVolumeField(exec, "T", mesh, bcs)
+    neon.fill(field.internal_vector(), 0.0)
+    field.correct_boundary_conditions()
+
+    assert np.allclose(np.asarray(field.boundary_data_value().copy_to_host()), [1.0, 2.0])
+    assert field.exec().name() == exec.name()
+
+
+def test_vector_volume_field_with_fixed_value_bcs(executor):
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    bcs = []
+    for patch, value in enumerate([neon.Vec3(1.0, 2.0, 3.0), neon.Vec3(4.0, 5.0, 6.0)]):
+        d = neon.Dictionary()
+        d.insert_string("type", "fixedValue")
+        d.insert_vec3("fixedValue", value)
+        bcs.append(neon.VectorVolumeBoundary(mesh, d, patch))
+    field = neon.VectorVolumeField(exec, "U", mesh, bcs)
+    neon.fill(field.internal_vector(), neon.Vec3(0.0, 0.0, 0.0))
+    field.correct_boundary_conditions()
+
+    boundary = np.asarray(field.boundary_data_value().copy_to_host())
+    np.testing.assert_allclose(boundary, [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+
+
+def test_volume_boundary_rejects_invalid_input(executor):
+    """The C++ validation error arrives as a Python exception."""
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)  # two patches
+
+    d = neon.Dictionary()
+    d.insert_string("type", "calculated")
+    with pytest.raises(RuntimeError, match="invalid patch id"):
+        neon.ScalarVolumeBoundary(mesh, d, 2)
+
+
+def test_field_keeps_mesh_alive(executor):
+    """A field returned from a function keeps working after its mesh went out of scope."""
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+
+    def make_field():
+        mesh = neon.create_1d_uniform_mesh(exec, 4)
+        # fixedGradient keeps a reference to the mesh
+        d = neon.Dictionary()
+        d.insert_string("type", "fixedGradient")
+        d.insert_double("fixedGradient", 2.0)
+        bcs = [neon.ScalarVolumeBoundary(mesh, d, 0), _fixed_value(mesh, 1, 3.0)]
+        return neon.ScalarVolumeField(exec, "T", mesh, bcs)
+
+    field = make_field()
+    gc.collect()
+
+    assert field.mesh().n_cells() == 4
+    neon.fill(field.internal_vector(), 1.0)
+    field.correct_boundary_conditions()
+    # T_b = T_P + gradient * dx / 2
+    boundary = np.asarray(field.boundary_data_value().copy_to_host())
+    np.testing.assert_allclose(boundary, [1.0 + 2.0 * 0.125, 3.0])
 
 
 def _filled(exec, mesh, value):
@@ -195,4 +276,39 @@ def test_vec3_field_cross(executor):
     np.testing.assert_allclose(
         np.asarray(omega.internal_vector().copy_to_host()),
         np.tile([0.0, 0.0, 5.0], (mesh.n_cells(), 1)),
+    )
+
+
+def test_vec3_field_mag_sqr(executor):
+    """Elementwise magSqr(U) -> scalar VolumeField, the kinetic-energy term's
+    building block (2*K = magSqr(U)).
+
+    A Kokkos kernel, so the assertions hold on every executor. Only the internal
+    values are checked, mirroring test_vec3_field_cross: VectorVolumeField exposes
+    no boundary accessor to Python.
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    velocity = neon.VectorVolumeField(exec, "U", mesh)
+    neon.fill(velocity.internal_vector(), neon.Vec3(1.0, 2.0, 3.0))
+
+    # |U|^2 = 1^2 + 2^2 + 3^2 = 14
+    result = neon.mag_sqr(velocity)
+    assert isinstance(result, neon.ScalarVolumeField)
+    values = np.asarray(result.internal_vector().copy_to_host())
+    assert values.shape == (mesh.n_cells(),)
+    np.testing.assert_allclose(values, 14.0)
+
+    # A different field gives a different result (catches a kernel that always
+    # returns a constant), and the operand itself is left untouched.
+    omega = neon.VectorVolumeField(exec, "omega", mesh)
+    neon.fill(omega.internal_vector(), neon.Vec3(0.0, 0.0, 5.0))
+    np.testing.assert_allclose(
+        np.asarray(neon.mag_sqr(omega).internal_vector().copy_to_host()), 25.0
+    )
+    np.testing.assert_allclose(
+        np.asarray(velocity.internal_vector().copy_to_host()),
+        np.tile([1.0, 2.0, 3.0], (mesh.n_cells(), 1)),
     )

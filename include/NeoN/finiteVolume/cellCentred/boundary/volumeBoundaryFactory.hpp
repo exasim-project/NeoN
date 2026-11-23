@@ -104,13 +104,9 @@ class VolumeBoundary : public BoundaryPatchMixin
 public:
 
     VolumeBoundary(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : BoundaryPatchMixin(
-            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID)],
-            mesh.boundaryMesh().offset()[static_cast<size_t>(patchID) + 1],
-            patchID
-        ),
+        : BoundaryPatchMixin(mesh, checkedPatchID(mesh, patchID)),
           boundaryCorrectionStrategy_(VolumeBoundaryFactory<ValueType>::create(
-              dict.get<std::string>("type"), mesh, dict, patchID
+              boundaryType<VolumeBoundaryFactory<ValueType>>(dict, patchID), mesh, dict, patchID
           ))
     {}
 
