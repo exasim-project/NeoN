@@ -359,7 +359,9 @@ CUDA wheels carry a local version suffix such as <code class="docutils literal n
 </ul>
 <p>Download the wheel from the release page and install it, or install it directly
 by URL:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>https://github.com/exasim-project/NeoN/releases/download/v0.3.0rc2/neon_pde-0.3.0rc2+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># scripts/release.sh stamps the latest release here; set another to pick that release instead.</span>
+<span class="nv">VERSION</span><span class="o">=</span><span class="m">0</span>.3.0rc2
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;https://github.com/exasim-project/NeoN/releases/download/v</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">/neon_pde-</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl&quot;</span>
 </pre></div>
 </div>
 <p>The CUDA wheel requires a host NVIDIA driver that provides <code class="docutils literal notranslate"><span class="pre">libcuda.so.1</span></code>.
