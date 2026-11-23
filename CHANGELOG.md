@@ -1,4 +1,4 @@
-# Version 0.3.0 (unreleased)
+# Version 0.3.0 (2026/11/23)
 ## Features
 - Require Python 3.11 and `nanobind>=3,<4`, and always link nanobind statically, so `_neon` shares its ABI with pybFoam and NeoFOAM [#693](https://github.com/exasim-project/NeoN/pull/693)
 - Compute the scalar Gauss gradient cell by cell, without atomics, using a cell-to-face stencil cached in `mesh.stencilDB()` [#547](https://github.com/exasim-project/NeoN/pull/547)
