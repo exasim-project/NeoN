@@ -26,6 +26,7 @@
 - Add a density-weighted `ddtFluxCorr(rho, U, phi, dt, scheme)` overload for compressible mass fluxes, and make `ddtFluxCorr` follow OpenFOAM's `fvcDdtPhiCorr` for BDF2 (one coupling coefficient) and on boundary faces (zero for the density-weighted overload) [#624](https://github.com/exasim-project/NeoN/pull/624)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add `fixedMean` and `flowRateInletVelocity` volume boundary conditions [#644](https://github.com/exasim-project/NeoN/pull/644)
+- Add the `plenumPressure` and `pressureInletVelocity` volume boundary conditions, and let `fixedMean` keep its values for an evaluation that follows a solve (context value `evaluateOnly`), as OpenFOAM does [#645](https://github.com/exasim-project/NeoN/pull/645)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
 - Add division operators (`field / field`, `field / scalar`, `scalar / field`) for scalar `SurfaceField`s in the Python bindings [#642](https://github.com/exasim-project/NeoN/pull/642)
 - Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4` or `{"type": "neon::MergedPgm", ...}`. It supports `generate_reuse`, which the Ginkgo solver now uses to reuse the multigrid setup across solves (`reuseSetup`, default on), and an OpenFOAM-style `scale_correction` of the coarse correction [#602](https://github.com/exasim-project/NeoN/pull/602)
