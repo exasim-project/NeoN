@@ -94,10 +94,10 @@ void computeLinearUpwindCorrection(
     const SurfaceField<scalar>* limiterWeights = nullptr
 );
 
-// @tparam CellLimited when true this is OpenFOAM's "linearUpwindV": the gradient correction of each
-// face is limited so it never points against, nor overshoots, the weighted jump between the two
-// cells (see applyLinearUpwind). The gradient itself is the one named in the spec, as for
-// linearUpwind. Only meaningful for Vec3 fields.
+// @tparam CellLimited when true this is OpenFOAM's "linearUpwindV" for a Vec3 field: the gradient
+// correction of each face is limited so it never points against, nor overshoots, the weighted jump
+// between the two cells (see applyLinearUpwind). For a scalar field it selects the slope-limited
+// scalar gradient when the spec names "cellLimited", as OpenFOAM's linearUpwind does.
 template<typename ValueType, bool CellLimited = false>
 class LinearUpwind :
     public SurfaceInterpolationFactory<ValueType>::template Register<
