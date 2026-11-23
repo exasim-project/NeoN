@@ -51,9 +51,16 @@ case "${gpu_variant}" in
         )
         ;;
     cuda)
+        # conda-forge installs the CUDA headers under targets/<arch>/include in the host prefix, but
+        # Ginkgo's FindNVTX only searches the include dirs of the nvcc toolkit in the build prefix.
+        case "${target_platform}" in
+            linux-aarch64) cuda_target="sbsa-linux" ;;
+            *) cuda_target="x86_64-linux" ;;
+        esac
         # Mirrors the CUDA wheel configuration, except that the CMake package files stay installed.
         # Umpire is off there because its BLT build does not survive the relocation cleanly.
         cmake_args+=(
+            -D NVTX3_INCLUDE_DIR="${PREFIX}/targets/${cuda_target}/include/nvtx3"
             -D NeoN_WITH_UMPIRE=OFF
             -D CMAKE_CUDA_COMPILER="${BUILD_PREFIX}/bin/nvcc"
             -D CMAKE_CUDA_HOST_COMPILER="${CXX}"
