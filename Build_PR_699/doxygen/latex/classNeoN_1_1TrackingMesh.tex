@@ -1,0 +1,103 @@
+\doxysection{NeoN\+::Tracking\+Mesh Class Reference}
+\hypertarget{classNeoN_1_1TrackingMesh}{}\label{classNeoN_1_1TrackingMesh}\index{NeoN::TrackingMesh@{NeoN::TrackingMesh}}
+
+
+Connectivity for locating points (e.\+g. particles) in an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} and interpolating cell values to them, on the executor (CPU or GPU).  
+
+
+
+
+{\ttfamily \#include $<$tracking\+Mesh.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1TrackingMesh_ad74df1844ef6b7f72a9c49343c2355b2}{Tracking\+Mesh}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&\mbox{\hyperlink{classNeoN_1_1TrackingMesh_ab7a60164af74db8620b8dbc2739c78a2}{mesh}}, \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} $>$ cell\+Faces, \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} $>$ face\+Points, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} $>$ face\+Base\+Pt, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} $>$ face\+Type, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} $>$ cyclic\+Partner\+Cell, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ cyclic\+Shift, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ points)
+\begin{DoxyCompactList}\small\item\em Construct from a mesh and the connectivity it lacks. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \mbox{\hyperlink{classNeoN_1_1TrackingMesh_aa84fce0d3dbbc120eea204f38d95ac90}{view}} () const
+\begin{DoxyCompactList}\small\item\em Views for use inside kernels. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \& \mbox{\hyperlink{classNeoN_1_1TrackingMesh_ab7a60164af74db8620b8dbc2739c78a2}{mesh}} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Connectivity for locating points (e.\+g. particles) in an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} and interpolating cell values to them, on the executor (CPU or GPU). 
+
+\doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} stores cell and face geometry but not which faces belong to a cell or which points belong to a face. \doxylink{classNeoN_1_1TrackingMesh}{Tracking\+Mesh} adds exactly that, plus the tet base point of every face (for the tet decomposition used by point interpolation) and the periodic (cyclic) face pairing. It also keeps its own copy of the points on the executor, since \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} may hold them on the host only.
+
+The geometry it does not own is read from the mesh, which must outlive it. 
+
+Definition at line \mbox{\hyperlink{trackingMesh_8hpp_source_l00063}{63}} of file \mbox{\hyperlink{trackingMesh_8hpp_source}{tracking\+Mesh.\+hpp}}.
+
+
+
+\label{doc-constructors}
+\Hypertarget{classNeoN_1_1TrackingMesh_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1TrackingMesh_ad74df1844ef6b7f72a9c49343c2355b2}\index{NeoN::TrackingMesh@{NeoN::TrackingMesh}!TrackingMesh@{TrackingMesh}}
+\index{TrackingMesh@{TrackingMesh}!NeoN::TrackingMesh@{NeoN::TrackingMesh}}
+\doxysubsubsection{\texorpdfstring{TrackingMesh()}{TrackingMesh()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1TrackingMesh_ad74df1844ef6b7f72a9c49343c2355b2} 
+Neo\+N\+::\+Tracking\+Mesh\+::\+Tracking\+Mesh (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} $>$}]{cell\+Faces}{, }\item[{\mbox{\hyperlink{classNeoN_1_1SegmentedVector}{Segmented\+Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}, \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} $>$}]{face\+Points}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} $>$}]{face\+Base\+Pt}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} $>$}]{face\+Type}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} $>$}]{cyclic\+Partner\+Cell}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$}]{cyclic\+Shift}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$}]{points}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct from a mesh and the connectivity it lacks. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mesh} & the mesh the connectivity belongs to \\
+\hline
+{\em cell\+Faces} & faces of every cell, internal and boundary \\
+\hline
+{\em face\+Points} & points of every face, in face order \\
+\hline
+{\em face\+Base\+Pt} & tet base point of every face, local index in the face \\
+\hline
+{\em face\+Type} & \doxylink{namespaceNeoN_abad01face12f9693da8be65752f00b4b}{Tracking\+Face\+Type} of every face \\
+\hline
+{\em cyclic\+Partner\+Cell} & cyclic faces\+: cell behind the paired face, -\/1 otherwise \\
+\hline
+{\em cyclic\+Shift} & cyclic faces\+: translation to the paired face, 0 otherwise \\
+\hline
+{\em points} & mesh points on the executor of the mesh \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{trackingMesh_8hpp_source_l00078}{78}} of file \mbox{\hyperlink{trackingMesh_8hpp_source}{tracking\+Mesh.\+hpp}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{classNeoN_1_1TrackingMesh_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1TrackingMesh_ab7a60164af74db8620b8dbc2739c78a2}\index{NeoN::TrackingMesh@{NeoN::TrackingMesh}!mesh@{mesh}}
+\index{mesh@{mesh}!NeoN::TrackingMesh@{NeoN::TrackingMesh}}
+\doxysubsubsection{\texorpdfstring{mesh()}{mesh()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1TrackingMesh_ab7a60164af74db8620b8dbc2739c78a2} 
+const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \& Neo\+N\+::\+Tracking\+Mesh\+::mesh (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+Definition at line \mbox{\hyperlink{trackingMesh_8hpp_source_l00116}{116}} of file \mbox{\hyperlink{trackingMesh_8hpp_source}{tracking\+Mesh.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1TrackingMesh_aa84fce0d3dbbc120eea204f38d95ac90}\index{NeoN::TrackingMesh@{NeoN::TrackingMesh}!view@{view}}
+\index{view@{view}!NeoN::TrackingMesh@{NeoN::TrackingMesh}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}}
+{\footnotesize\ttfamily \label{classNeoN_1_1TrackingMesh_aa84fce0d3dbbc120eea204f38d95ac90} 
+\mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} Neo\+N\+::\+Tracking\+Mesh\+::view (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [nodiscard]}}
+
+
+
+Views for use inside kernels. 
+
+
+
+Definition at line \mbox{\hyperlink{trackingMesh_8hpp_source_l00095}{95}} of file \mbox{\hyperlink{trackingMesh_8hpp_source}{tracking\+Mesh.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/mesh/unstructured/\mbox{\hyperlink{trackingMesh_8hpp}{tracking\+Mesh.\+hpp}}\end{DoxyCompactItemize}
