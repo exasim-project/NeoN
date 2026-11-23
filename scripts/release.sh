@@ -255,7 +255,7 @@ After it is merged, run \`scripts/release.sh tag ${tag}\` to tag the merge commi
 
     echo
     info "next: get the PR approved and merged, then run: scripts/release.sh tag ${tag}"
-    echo "note: the CITATION.cff abstract still describes the v0.1 release; update it by hand if it should reflect ${base}."
+    echo "note: Zenodo uses the CITATION.cff abstract as the record description; check that it describes ${base}."
 }
 
 cmd_tag() {
