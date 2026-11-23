@@ -1,10 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-abstract: '<p>The NeoN team is proud to announce the first release of NeoN,
-  a next generation implementation of a CFD core. NeoN leverages the features of
-  modern C++ to implement core routines to efficiently solve PDEs required by CFD
-  frameworks like OpenFOAM, thus NeoN helps to catch up with the rapidly evolving
-  HPC ecosystem.</p>
+abstract: '<p>NeoN is a next generation implementation of a CFD core. It leverages
+  the features of modern C++ to implement core routines to efficiently solve PDEs
+  required by CFD frameworks like OpenFOAM, and thus helps to catch up with the
+  rapidly evolving HPC ecosystem.</p>
 
   <p>Our design goals are:</p>
 
@@ -15,8 +14,8 @@ abstract: '<p>The NeoN team is proud to announce the first release of NeoN,
   <li>Modular design leveraging the existing simulation software ecosystem like Kokkos,
   sundials, PETSc, or Ginkgo</li>
 
-  <li>Implement an updated domain specific language for DSL that allows to encode
-  complex partial differential equations in a concise yet powerful form</li>
+  <li>A domain specific language that encodes complex partial differential equations
+  in a concise yet powerful form</li>
 
   <li>Simple adoption within OpenFOAM</li>
 
@@ -25,16 +24,22 @@ abstract: '<p>The NeoN team is proud to announce the first release of NeoN,
 
   </ul>
 
-  <p>This v.0.1 release is all about building a foundation for the future developments
-  of NeoN. It focuses on building the foundational library structure, a first draft
-  of the DSL API including basic kernels, and a solid CI/CD infrastructure from the
-  start. It features unit and integration testing on Linux, macOS, and Windows as
-  well as sanitizer and static analyzer <a href="https://github.com/exasim-project/NeoN/actions">workflows</a>.</p>
+  <p>The v0.3 release adds experimental distributed support, so NeoN runs across multiple
+  MPI ranks and GPUs: processor boundaries with exact processor-face geometry, distributed
+  linear system assembly through Ginkgo, mesh partitioning and GPU-aware halo exchange.
+  NeoN is now usable from Python through nanobind bindings, published as pre-built
+  wheels on PyPI (<code>pip install neon-pde</code>) and as conda packages for CPU and
+  CUDA on prefix.dev.</p>
 
-  <p>Integration into OpenFOAM applications are demonstrated in our <a href="https://github.com/exasim-project/NeoFOAM">NeoFOAM</a>
+  <p>It also extends the numerics, with slip and inletOutlet boundary conditions, corrected
+  and limited-corrected face-normal gradients, linearUpwind and backward schemes, tensor
+  primitives, and an expression optimizer that fuses DSL operators. The linear algebra
+  layer gains COO and CSR matrices, cell-based assembly, an L1-norm stopping criterion,
+  merged-Pgm multigrid coarsening with setup reuse, and Umpire memory pools.</p>
+
+  <p>Integration into OpenFOAM applications is demonstrated in our <a href="https://github.com/exasim-project/NeoFOAM">NeoFOAM</a>
   repository. A full list of changes can be found in the <a href="https://github.com/exasim-project/NeoN/blob/main/CHANGELOG.md">CHANGELOG.md</a>.
-  An exciting year is ahead of us, visit our <a href="https://github.com/orgs/exasim-project/projects/1/views/8">Roadmap</a>
-  to find out which features are next. Thank you to everyone who <a href="https://github.com/exasim-project/NeoN/blob/main/AUTHORS.md">contributed</a>
+  Thank you to everyone who <a href="https://github.com/exasim-project/NeoN/blob/main/AUTHORS.md">contributed</a>
   to NeoN.</p>'
 authors:
 - affiliation: Technical University of Munich
@@ -98,4 +103,4 @@ license: MIT
 repository-code: https://github.com/exasim-project/NeoN
 title: 'NeoN: a modern CFD core'
 type: software
-version: v0.3.0rc3
+version: v0.3.0

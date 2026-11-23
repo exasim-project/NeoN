@@ -44,8 +44,10 @@ jobs:
         cd docs_build
         ls doxygen
         touch .nojekyll
+    # The PR preview and comment steps only make sense for pull requests; on a tag push they
+    # deployed to Build_PR_ and failed to find a PR to comment on.
     - name: Deploy PR Build
-      if: ${{ github.event.action != 'closed' }}
+      if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: docs_build
@@ -65,6 +67,7 @@ jobs:
         target-folder: latest
 
     - name: Find Comment
+      if: ${{ github.event_name == 'pull_request' }}
       uses: peter-evans/find-comment@v1
       id: fc
       with:
@@ -73,7 +76,7 @@ jobs:
 
     - name: Comment PR
       uses: thollander/actions-comment-pull-request@v2
-      if: steps.fc.outputs.comment-id == ''
+      if: ${{ github.event_name == 'pull_request' && steps.fc.outputs.comment-id == '' }}
       with:
         message: |
           Thank you for your PR, here are some useful tips:
@@ -86,6 +89,7 @@ jobs:
         mode: createIfNotExists
 
     - name: Echo Build PR URL
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         echo "Deploy to: https://exasim-project.com/NeoN/Build_PR_${{ env.PR_NUMBER }}"
 
