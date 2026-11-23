@@ -15,6 +15,7 @@
 #include "boundary/volume/extrapolated.hpp"
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
+#include "boundary/volume/sineFixedValue.hpp"
 #include "boundary/volume/fixedFluxPressure.hpp"
 #include "boundary/volume/fixedEnergy.hpp"
 #include "boundary/volume/gradientEnergy.hpp"
