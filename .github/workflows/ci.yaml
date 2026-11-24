@@ -379,56 +379,6 @@ jobs:
           done
           exit $fail
 
-  linux-ginkgo:
-    name: Linux Ginkgo ${{ matrix.preset }}
-    needs: gate
-    if: needs.gate.outputs.build == 'true'
-    # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging: Ubuntu 24.04, GCC 13,
-    # MPICH, Ginkgo in /opt/ginkgo on CMAKE_PREFIX_PATH, so find_package(Ginkgo) picks it up.
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
-    container:
-      image: ghcr.io/exasim-project/ginkgo-cpu:nightly
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    strategy:
-      fail-fast: false
-      matrix:
-        preset: ["develop", "production"]
-    steps:
-      - name: Checkout to repository
-        uses: actions/checkout@v4
-
-      - name: Get versions
-        run: |
-          g++ --version
-          ninja --version
-          cmake --version
-          cat /opt/ginkgo/share/ginkgo-revision
-
-      - name: Build NeoN with Ginkgo
-        run: |
-          # use the Ginkgo of the image unless cmake/Versions.cmake requests a commit it lacks
-          GINKGO_ARGS="$(./ci/ginkgo-cmake-args.sh)"
-          cmake --preset ${{ matrix.preset }} ${GINKGO_ARGS} \
-            -DNeoN_BUILD_TESTS=ON \
-            -DNeoN_BUILD_EXAMPLES=ON \
-            -DNeoN_DEVEL_TOOLS=OFF \
-            -DNeoN_WITH_GINKGO=ON \
-            -DMPIEXEC_MAX_NUMPROCS=3 \
-            -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
-          cmake --build --preset ${{ matrix.preset }}
-          # fail if CPM fetched Ginkgo although the image provides the requested commit
-          if [ -z "${GINKGO_ARGS}" ]; then
-            grep "^Ginkgo_DIR:PATH=/opt/ginkgo" build/${{ matrix.preset }}/CMakeCache.txt
-          fi
-
-      - name: Execute unit tests NeoN
-        run: ctest --preset ${{ matrix.preset }} -E bench
-
   macos:
     name: macOS ${{ matrix.compiler.CC }} ${{ matrix.preset }}
     needs: gate
@@ -516,7 +466,8 @@ jobs:
     needs: gate
     if: needs.gate.outputs.sanitize == 'true'
     runs-on: ubuntu-latest
-    # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging, see linux-ginkgo
+    # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging: Ubuntu 24.04, GCC 13,
+    # MPICH, Ginkgo in /opt/ginkgo on CMAKE_PREFIX_PATH, so find_package(Ginkgo) picks it up.
     permissions:
       contents: read
       packages: read
