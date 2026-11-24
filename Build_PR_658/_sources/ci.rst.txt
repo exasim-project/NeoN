@@ -45,7 +45,7 @@ builds, the workflow generates a development version with a ``.dev`` suffix so t
 do not conflict with stable releases.
 
 CPU wheels are built for Linux x86-64, Linux ARM64, Windows AMD64, macOS Apple Silicon, and macOS
-Intel. The matrix covers CPython 3.9 through 3.13. MPI and optional dependencies such as PETSc,
+Intel. The matrix covers CPython 3.11 through 3.13. MPI and optional dependencies such as PETSc,
 ADIOS2, and SUNDIALS are disabled for these wheels, and CUDA/HIP support is disabled. This keeps the
 default PyPI package installable without requiring those external HPC libraries.
 
@@ -106,10 +106,9 @@ used by both CI and local builds: it exports ``NEON_VERSION``, writes the per-bu
 configuration (python version, GPU flavour, C runtime floor) and calls ``rattler-build``.
 ``ci/install_rattler_build.sh`` installs a pinned, checksum-verified rattler-build release.
 
-CPU packages are built for CPython 3.10-3.13 on ``linux-64``, ``linux-aarch64``, ``osx-64`` and
+CPU packages are built for CPython 3.11-3.13 on ``linux-64``, ``linux-aarch64``, ``osx-64`` and
 ``osx-arm64``. There is no ``win-64`` conda package, because NeoN disables Ginkgo on Windows and the
-wheel is the supported Windows path. Python 3.9 is also wheel-only: conda-forge builds ``nanobind``,
-which the ``nanobind.stubgen`` POST_BUILD step needs, only for Python 3.10 and newer. The GPU flavour is encoded in the build string
+wheel is the supported Windows path. The GPU flavour is encoded in the build string
 (``cpu_py312_*``, ``cuda_py312_*``, ``rocm_py312_*``) so all flavours can coexist in one channel.
 
 Unlike the wheels, the conda package is installed by CMake rather than by ``pip``: the C++ runtime
@@ -159,8 +158,7 @@ The development workflow for NeoN proceeds as follows:
 #. GitHub CI cancels all pending or running LRZ GitLab pipelines for that branch.
 #. GitHub CI triggers a **new LRZ GitLab pipeline**.
 #. LRZ GitLab CI builds and tests NeoN on GPUs.
-#. If the tests pass, GitHub CI triggers integration tests with the **NeoFOAM** on GPUs (see below).
-#. *(Optional)* Benchmark jobs are executed after successful testing, including integration testing.
+#. *(Optional)* Benchmark jobs are executed after successful testing.
 #. The developer monitors all results directly on GitHub.
 
 .. tip::
@@ -171,33 +169,9 @@ The development workflow for NeoN proceeds as follows:
 -------------------------------
 Integration Tests
 -------------------------------
-**NeoN** is a CFD library that can be integrated into other frameworks. An option is to use the
-GitHub repository **NeoFOAM**, which provides an adapter to integrate NeoN with OpenFOAM.
-
-To ensure the correctness of this integration, the CI system includes jobs that build and run
-NeoFOAM with NeoN. The integration tests are executed on CPUs by GitHub CI, while the integration
-tests on GPUs are executed by LRZ GitLab CI as illustrated below.
-
-.. mermaid::
-
-   flowchart TD
-       A[GitHub CI] --> B[NeoN LRZ GitLab Pipeline]
-       B -->|Build & Test NeoN| C{Pipeline Success?}
-       C -->|Yes| D[NeoFOAM LRZ GitLab Pipeline]
-       D -->|Build & Test NeoFOAM using same NeoN version| E[End]
-       C -->|No| F[Stop]
-
-#. GitHub CI triggers a pipeline on **NeoN LRZ GitLab** which builds and tests NeoN.
-#. If the pipeline succeeds, GitHub CI triggers a pipeline on **NeoFOAM LRZ GitLab**.
-#. The NeoFOAM pipeline builds and tests NeoFOAM with the NeoN version triggering the pipeline.
-
-This ensures that any changes in NeoN do not break the integration with NeoFOAM.
-
-**Branch Handling Rules:**
-When triggering the NeoFOAM pipeline, the following rules apply to determine which NeoFOAM branch to use:
-
-* If a branch with the same name as the NeoN branch exists on LRZ GitLab, it is used directly.
-* Otherwise, the **main** branch is used as a fallback.
+NeoN's CI only tests NeoN. Downstream projects such as **NeoFOAM** pin a NeoN version and test
+against it in their own CI; updating that version there is what reveals integration issues. Issues
+caused by NeoN are reported as NeoN issues.
 
 .. _ci-neon-labels:
 
@@ -209,7 +183,7 @@ NeoN’s GitHub repository uses labels to control the CI behavior.
 **Relevant Labels:**
 
 * ``skip-build`` — Skip all build-and-test jobs on both GitHub and LRZ GitLab.
-* ``benchmark`` — Enable GPU benchmarking jobs after successful build-and-test jobs and integration tests.
+* ``benchmark`` — Enable GPU benchmarking jobs after successful build-and-test jobs.
 
 These labels allow developers to customize the CI process according to their needs.
 

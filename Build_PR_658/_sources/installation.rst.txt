@@ -14,7 +14,7 @@ Building NeoN from source requires
 * CMake >= 3.22
 * `Ninja <https://ninja-build.org/>`_ (required by the provided CMake presets)
 * gcc >= 13 or clang >= 19
-* Kokkos 5.0.2 (fetched automatically, see below)
+* Kokkos 5.0 - 5.2 (fetched automatically, see below)
 
 Optional dependencies:
 
@@ -85,15 +85,17 @@ you can specify the number of CPU cores as shown above.
 The following can be chained with -D<DesiredBuildFlags>=<Value> to the CMake command.
 Most relevant build flags are:
 
-+------------------+--------------------------------+---------+
-| Flag             | Description                    | Default |
-+==================+================================+=========+
-| CMAKE_BUILD_TYPE | Build in debug or release mode | Debug   |
-+------------------+--------------------------------+---------+
-| NeoN_BUILD_DOC   | Build NeoN with documentation  | ON      |
-+------------------+--------------------------------+---------+
-| NeoN_BUILD_TESTS | Build NeoN with tests          | OFF     |
-+------------------+--------------------------------+---------+
++---------------------+--------------------------------+---------+
+| Flag                | Description                    | Default |
++=====================+================================+=========+
+| CMAKE_BUILD_TYPE    | Build in debug or release mode | Debug   |
++---------------------+--------------------------------+---------+
+| NeoN_BUILD_DOC      | Build NeoN with documentation  | ON      |
++---------------------+--------------------------------+---------+
+| NeoN_BUILD_TESTS    | Build NeoN with tests          | OFF     |
++---------------------+--------------------------------+---------+
+| NeoN_BUILD_EXAMPLES | Build the examples             | OFF     |
++---------------------+--------------------------------+---------+
 
 To browse the full list of build options it is recommended to use a build tool like ``ccmake``.
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
@@ -112,7 +114,7 @@ NeoN specific build flags are prefixed by ``NeoN_``.
 
    .. code-block:: bash
 
-      pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
+      pixi add neon-pde -c https://prefix.dev/exasim-project/main -c conda-forge
 
    See :doc:`python_bindings` for the available platforms and GPU flavours.
 
