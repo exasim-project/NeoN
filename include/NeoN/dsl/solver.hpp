@@ -21,6 +21,9 @@
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/core/mpi/operators.hpp"
+#endif
 
 
 namespace NeoN::dsl
@@ -177,7 +180,8 @@ KOKKOS_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
  *
  *   D_aug     : matrix.values[diagIdx(cell)]            (augmented, boundary-baked)
  *   D_dom     : max(mag(D_aug), sumMagOffDiag[cell])    (dominance clamp on the augmented diag)
- *   D_relaxed : componentCopySign(D_dom / alpha, D_aug) (scale whole augmented diag by 1/alpha)
+ *   D_relaxed : componentCopySign(D_dom / alpha, sign)  (sign: the system's convention, taken
+ *               from the summed diagonal; OpenFOAM's D = max(|D|, sumOff) for a positive system)
  *   write     : matrix.values[diagIdx(cell)] = D_relaxed
  *   source    : rhs[cell] += (D_relaxed - D_aug) * psi_prev[cell]
  *
@@ -231,6 +235,58 @@ void applyMatrixRelaxation(
 
     const localIdx nCells = field.size();
 
+    // The system's sign convention, per component. OpenFOAM assembles with a positive central
+    // coefficient and fvMatrix::relax() makes every relaxed diagonal positive
+    // (D = max(|D|, sumOff)), so a row whose diagonal came out negative -- convection-dominated
+    // and not diagonally dominant, e.g. a bounded-convection cell with more outflow than inflow --
+    // is relaxed as a positive one. NeoN also relaxes systems assembled with the opposite overall
+    // sign, so the sign is taken from the summed diagonal rather than assumed, and every relaxed
+    // row gets it; copying each row's own sign would keep such a negative row negative. The sum
+    // is taken over all ranks, so the sign does not depend on the decomposition.
+    auto globalSum = [&](scalar& sum)
+    {
+#ifdef NF_WITH_MPI_SUPPORT
+        if (solution.mesh().boundaryMesh().isDistributed())
+        {
+            mpi::allReduce(sum, mpi::ReduceOp::Sum, ls.commPattern().env.comm());
+        }
+#else
+        (void)sum;
+#endif
+    };
+    auto convention = one<MatrixValueType>();
+    if constexpr (std::is_same_v<MatrixValueType, scalar>)
+    {
+        scalar sumDiag = 0;
+        parallelReduce(
+            ls.exec(),
+            {0, nCells},
+            NEON_LAMBDA(const localIdx celli, scalar& sum) {
+                sum += matrix.values[ma.diagIdx(celli)];
+            },
+            sumDiag
+        );
+        globalSum(sumDiag);
+        convention = sumDiag >= 0 ? scalar(1) : scalar(-1);
+    }
+    else
+    {
+        for (int cmpt = 0; cmpt < 3; ++cmpt)
+        {
+            scalar sumDiag = 0;
+            parallelReduce(
+                ls.exec(),
+                {0, nCells},
+                NEON_LAMBDA(const localIdx celli, scalar& sum) {
+                    sum += matrix.values[ma.diagIdx(celli)][cmpt];
+                },
+                sumDiag
+            );
+            globalSum(sumDiag);
+            convention[cmpt] = sumDiag >= 0 ? scalar(1) : scalar(-1);
+        }
+    }
+
     // FUSED single-pass relaxation: compute the off-diagonal magnitude sum inline and apply
     // the dominance clamp + diagonal boost + source correction in ONE kernel, eliminating the
     // per-call O(nCells) `sumOff` scratch allocation. Each cell needs only its OWN row's
@@ -239,7 +295,8 @@ void applyMatrixRelaxation(
     // (colIdxs[idx] != celli), and a cell's diagonal write never aliases another cell's
     // off-diagonal storage.
     //
-    // componentCopySign preserves dAug's sign so rAU = V/diag stays correct for alpha < 1.
+    // componentCopySign gives the relaxed diagonal the system's sign so rAU = V/diag stays correct
+    // for alpha < 1 under either convention.
     // The source correction rhs += (dRelaxed - dAug)*psi_prev makes the relaxed system share
     // the unrelaxed fixed point. Off-diagonal sum + diagonal algebra are in MatrixValueType;
     // the source-correction cross term (dRelaxed - dAug)*field is MatrixValueType * RHSValueType
@@ -260,8 +317,8 @@ void applyMatrixRelaxation(
             const auto diagIdx = ma.diagIdx(celli);
             const auto dAug = matrix.values[diagIdx];                   // augmented, boundary-baked
             const auto dDom = componentMax(componentMag(dAug), sumOff); // dominance clamp
-            const auto dRelaxed =
-                componentCopySign(dDom * invAlpha, dAug); // scale whole augmented diag by 1/alpha
+            // scale whole augmented diag by 1/alpha
+            const auto dRelaxed = componentCopySign(dDom * invAlpha, convention);
             matrix.values[diagIdx] = dRelaxed;
             rhs[celli] = rhs[celli] + (dRelaxed - dAug) * field[celli]; // source corr
         },

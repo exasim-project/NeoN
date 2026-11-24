@@ -92,6 +92,8 @@ Dictionary::Dictionary(const std::initializer_list<std::pair<std::string, std::a
 
 void Dictionary::insert(const std::string& key, const std::any& value) { data_[key] = value; }
 
+void Dictionary::insert(const std::string& key, std::any&& value) { data_[key] = std::move(value); }
+
 void Dictionary::remove(const std::string& key) { data_.erase(key); }
 
 bool Dictionary::contains(const std::string& key) const { return data_.contains(key); }

@@ -41,4 +41,7 @@ NB_MODULE(_neon, m)
     m.attr("__has_serial__") = NeoN::hasSerialBackend();
     m.attr("__has_cpu__") = NeoN::hasCpuBackend();
     m.attr("__has_gpu__") = NeoN::hasGpuBackend();
+
+    // needed by neon.solve
+    m.attr("__has_ginkgo__") = static_cast<bool>(NF_WITH_GINKGO);
 }

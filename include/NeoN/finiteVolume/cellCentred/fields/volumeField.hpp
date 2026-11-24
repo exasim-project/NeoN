@@ -102,7 +102,7 @@ public:
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& domainVector,
+        Field<ValueType> domainVector,
         const std::vector<VolumeBoundary<ValueType>>& boundaryConditions,
         Database& db,
         std::string dbKey,
@@ -110,6 +110,12 @@ public:
     );
 
     VolumeField(const VolumeField& other);
+
+    /**
+     * @brief Move constructor. Without it, moving a VolumeField would copy its data, since the
+     * user-declared copy constructor suppresses the implicit move constructor.
+     */
+    VolumeField(VolumeField&& other);
 
     VolumeField<ValueType>& operator-=(const ValueType rhs);
 

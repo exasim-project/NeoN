@@ -9,6 +9,7 @@
 #if NF_WITH_GINKGO
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
 #include <numeric>
 #include <stdexcept>
@@ -21,6 +22,9 @@
 #include <ginkgo/core/matrix/csr.hpp>
 #include <ginkgo/core/matrix/row_gatherer.hpp>
 #include <ginkgo/core/solver/multigrid.hpp>
+
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
 #ifdef NF_WITH_MPI_SUPPORT
 #include <ginkgo/core/distributed/base.hpp>
@@ -42,6 +46,205 @@ struct ScaleCorrectionState
 {
     const gko::LinOp* residual = nullptr;
 };
+
+/** @brief Whether the device executor @p exec runs on the Kokkos default execution space's stream.
+ * NeoN creates its Ginkgo device executors there (createGkoExecutor); a Kokkos kernel is then
+ * stream-ordered with the surrounding Ginkgo operations. Throws if @p exec is on another device,
+ * whose memory a Kokkos kernel cannot access. SYCL queues are not compared.
+ */
+inline bool onKokkosStream([[maybe_unused]] const gko::Executor& exec)
+{
+#if defined(KOKKOS_ENABLE_CUDA)
+    if (const auto* cuda = dynamic_cast<const gko::CudaExecutor*>(&exec))
+    {
+        NF_ASSERT(
+            cuda->get_device_id() == Kokkos::device_id(),
+            "MergedPgm: the Ginkgo executor is on another device than Kokkos"
+        );
+        return cuda->get_stream() == Kokkos::DefaultExecutionSpace().cuda_stream();
+    }
+#elif defined(KOKKOS_ENABLE_HIP)
+    if (const auto* hip = dynamic_cast<const gko::HipExecutor*>(&exec))
+    {
+        NF_ASSERT(
+            hip->get_device_id() == Kokkos::device_id(),
+            "MergedPgm: the Ginkgo executor is on another device than Kokkos"
+        );
+        return hip->get_stream() == Kokkos::DefaultExecutionSpace().hip_stream();
+    }
+#endif
+    return true;
+}
+
+/** @brief Run kernel(i) for i in [0, n) where @p exec's memory lives: as a Kokkos kernel for a
+ * device (CUDA/HIP/SYCL) executor, a parallel host kernel for an OpenMP executor and a host loop
+ * otherwise. A device executor on another stream than Kokkos' is synchronised around the kernel. */
+template<typename Kernel>
+void forEachOn(const gko::Executor& exec, gko::size_type n, const Kernel& kernel)
+{
+    // Host executors are their own master.
+    if (exec.get_master().get() != &exec)
+    {
+        const bool sameStream = onKokkosStream(exec);
+        if (!sameStream)
+        {
+            exec.synchronize();
+        }
+        parallelFor(GPUExecutor {}, {0, static_cast<localIdx>(n)}, kernel, "mergedPgm");
+        if (!sameStream)
+        {
+            fence(GPUExecutor {});
+        }
+    }
+    else if (dynamic_cast<const gko::OmpExecutor*>(&exec))
+    {
+        parallelFor(CPUExecutor {}, {0, static_cast<localIdx>(n)}, kernel, "mergedPgm");
+    }
+    else
+    {
+        for (localIdx i = 0; i < static_cast<localIdx>(n); ++i)
+        {
+            kernel(i);
+        }
+    }
+}
+
+/** @brief Rayleigh scale factors sf = num / den per column (1 where den == 0), computed on the
+ * executor of the 1 x ncols operands instead of a host round trip. */
+template<typename ValueType>
+void rayleighScale(
+    const gko::matrix::Dense<ValueType>* num,
+    const gko::matrix::Dense<ValueType>* den,
+    gko::matrix::Dense<ValueType>* sf
+)
+{
+    const auto* n = num->get_const_values();
+    const auto* d = den->get_const_values();
+    auto* s = sf->get_values();
+    forEachOn(
+        *sf->get_executor(),
+        sf->get_size()[1],
+        NEON_LAMBDA(const localIdx c) { s[c] = d[c] != ValueType {} ? n[c] / d[c] : ValueType {1}; }
+    );
+}
+
+/** @brief Fused update of the scale-corrected prolongation, per rank-local row i and column c:
+ *    x = beta x + alpha (sf d + D^-1 (r - sf A d)),  sf per column, D^-1 per row.
+ * alpha / beta are 1 x 1 or 1 x ncols. Replaces scale, copy, sub_scaled, scale, Diagonal apply,
+ * scale and add_scaled (seven kernels). */
+template<typename ValueType>
+void fusedScaledUpdate(
+    const gko::Executor& exec,
+    localIdx rows,
+    localIdx nc,
+    ValueType* xv,
+    localIdx xs,
+    const ValueType* dv,
+    localIdx ds,
+    const ValueType* av,
+    localIdx ads,
+    const ValueType* rv,
+    localIdx rs,
+    const ValueType* sv,
+    const ValueType* di,
+    const ValueType* al,
+    bool alphaPerCol,
+    const ValueType* be,
+    bool betaPerCol
+)
+{
+    forEachOn(
+        exec,
+        static_cast<gko::size_type>(rows * nc),
+        NEON_LAMBDA(const localIdx k) {
+            const localIdx i = k / nc;
+            const localIdx c = k % nc;
+            const ValueType s = sv[c];
+            const ValueType upd =
+                s * dv[i * ds + c] + di[i] * (rv[i * rs + c] - s * av[i * ads + c]);
+            const ValueType b = be[betaPerCol ? c : 0];
+            const ValueType xo = b == ValueType {} ? ValueType {} : b * xv[i * xs + c];
+            xv[i * xs + c] = xo + al[alphaPerCol ? c : 0] * upd;
+        }
+    );
+}
+
+/** @brief Set the square Dense @p m to the identity (on its executor). */
+template<typename ValueType>
+void setIdentity(gko::matrix::Dense<ValueType>* m)
+{
+    m->fill(ValueType {});
+    auto* v = m->get_values();
+    const localIdx stride = static_cast<localIdx>(m->get_stride());
+    forEachOn(
+        *m->get_executor(),
+        m->get_size()[0],
+        NEON_LAMBDA(const localIdx i) { v[i * stride + i] = ValueType {1}; }
+    );
+}
+
+#ifdef NF_WITH_MPI_SUPPORT
+/**
+ * @brief Rank-local (block-diagonal) operator applied to distributed vectors WITHOUT communication.
+ *
+ * MergedPgm's distributed prolong/restrict have an empty off-diagonal block (aggregation is
+ * rank-local), but as gko::experimental::distributed::Matrix every apply still runs the halo
+ * machinery: an event sync, an MPI_Ialltoallv with zero counts (a collective over all ranks) and
+ * MPI_Wait. This wrapper applies the local block to the local parts of the vectors instead: a plain
+ * local SpMV.
+ */
+template<typename ValueType>
+class LocalBlockOp : public gko::LinOp
+{
+    using dense = gko::matrix::Dense<ValueType>;
+    using dist_vec = gko::experimental::distributed::Vector<ValueType>;
+
+public:
+
+    LocalBlockOp(std::shared_ptr<const gko::LinOp> localBlock, gko::dim<2> globalSize)
+        : gko::LinOp(localBlock->get_executor(), globalSize), local_ {std::move(localBlock)}
+    {}
+
+protected:
+
+    void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
+    {
+        local_->apply(
+            gko::as<dist_vec>(b)->get_local_vector(), localView(gko::as<dist_vec>(x)).get()
+        );
+    }
+
+    void apply_impl(
+        const gko::LinOp* alpha, const gko::LinOp* b, const gko::LinOp* beta, gko::LinOp* x
+    ) const override
+    {
+        local_->apply(
+            alpha,
+            gko::as<dist_vec>(b)->get_local_vector(),
+            beta,
+            localView(gko::as<dist_vec>(x)).get()
+        );
+    }
+
+private:
+
+    // mutable view of the rank-local part (distributed::Vector only exposes it read-only)
+    static std::unique_ptr<dense> localView(dist_vec* v)
+    {
+        const auto* l = v->get_local_vector();
+        return dense::create(
+            l->get_executor(),
+            l->get_size(),
+            gko::make_array_view(
+                l->get_executor(), l->get_size()[0] * l->get_stride(), v->get_local_values()
+            ),
+            l->get_stride()
+        );
+    }
+
+    std::shared_ptr<const gko::LinOp> local_;
+};
+#endif
 
 /** @brief Restriction that records the residual it restricts for ScaledProlongation. */
 class RecordingRestriction : public gko::LinOp
@@ -106,7 +309,7 @@ public:
     )
         : gko::LinOp(prolongOp->get_executor(), prolongOp->get_size()),
           prolong_ {std::move(prolongOp)}, fine_ {std::move(fineOp)}, invDiag_ {std::move(invDiag)},
-          state_ {std::move(state)}
+          state_ {std::move(state)}, dotTmp_ {prolong_->get_executor()}
     {}
 
 protected:
@@ -171,6 +374,33 @@ private:
         return ws;
     }
 
+    // Reduce the two local dot products [d.r | d.Ad] over all ranks in one allreduce (as Ginkgo's
+    // all_reduce_sum, but one call for both instead of one per compute_dot).
+    void reduce(const dense*, dense*) const {} // single-rank operator: the local dots are global
+#ifdef NF_WITH_MPI_SUPPORT
+    void reduce(const gko::experimental::distributed::Vector<ValueType>* x, dense* v) const
+    {
+        auto exec = v->get_executor();
+        const auto comm = x->get_communicator();
+        const int count = static_cast<int>(v->get_size()[1]);
+        exec->synchronize();
+        if (gko::experimental::mpi::requires_host_buffer(exec, comm))
+        {
+            if (!hostDots_ || hostDots_->get_size() != v->get_size())
+            {
+                hostDots_ = dense::create(exec->get_master(), v->get_size());
+            }
+            hostDots_->copy_from(v);
+            comm.all_reduce(exec->get_master(), hostDots_->get_values(), count, MPI_SUM);
+            v->copy_from(hostDots_);
+        }
+        else
+        {
+            comm.all_reduce(exec, v->get_values(), count, MPI_SUM);
+        }
+    }
+#endif
+
     template<typename VecType>
     void scaled(
         const gko::LinOp* alpha,
@@ -184,36 +414,60 @@ private:
         const auto ncols = x->get_size()[1];
         auto* d = workspace(delta_, x);
         auto* ad = workspace(aDelta_, x);
-        auto* t = workspace(tmp_, x);
 
         prolong_->apply(e, d); // d = P e
         fine_->apply(d, ad);   // ad = A d
 
-        auto num = dense::create(exec, gko::dim<2> {1, ncols});
-        auto den = dense::create(exec, gko::dim<2> {1, ncols});
-        d->compute_dot(r, num);
-        d->compute_dot(ad, den);
-        auto host = exec->get_master();
-        auto numHost = gko::clone(host, num);
-        auto denHost = gko::clone(host, den);
-        auto sfHost = dense::create(host, gko::dim<2> {1, ncols});
-        for (gko::size_type c = 0; c < ncols; ++c)
+        // both dot products into one 1 x 2 ncols buffer [d.r | d.Ad] and ONE reduction over the
+        // ranks (two compute_dot calls cost two stream syncs + two allreduces); buffers are kept
+        // between calls instead of being created (and `one` copied from the host) on every call
+        if (!dots_ || dots_->get_size()[1] != 2 * ncols)
         {
-            const auto dn = denHost->at(0, c);
-            sfHost->at(0, c) =
-                dn != gko::zero<ValueType>() ? numHost->at(0, c) / dn : gko::one<ValueType>();
+            dots_ = dense::create(exec, gko::dim<2> {1, 2 * ncols});
+            sf_ = dense::create(exec, gko::dim<2> {1, ncols});
         }
-        auto sf = gko::clone(exec, sfHost);
+        auto num = dots_->create_submatrix(gko::span {0, 1}, gko::span {0, ncols});
+        auto den = dots_->create_submatrix(gko::span {0, 1}, gko::span {ncols, 2 * ncols});
+        const auto* dl = local(static_cast<const VecType*>(d));
+        dl->compute_dot(local(r), num, dotTmp_);
+        dl->compute_dot(local(static_cast<const VecType*>(ad)), den, dotTmp_);
+        reduce(static_cast<const VecType*>(x), dots_.get());
+        rayleighScale(num.get(), den.get(), sf_.get());
 
-        auto one = gko::initialize<dense>({gko::one<ValueType>()}, exec);
-        ad->scale(sf); // ad = sf A d
-        t->copy_from(r);
-        t->sub_scaled(one, ad); // t = r - sf A d
-        d->scale(sf);           // d = sf d
-        invDiag_->apply(one, local(static_cast<const VecType*>(t)), one, local(d)); // d += D^-1 t
-
-        x->scale(beta);
-        x->add_scaled(alpha, d);
+        // one fused kernel instead of scale/copy/sub_scaled/scale/Diagonal apply/scale/add_scaled:
+        //   x = beta x + alpha (sf d + D^-1 (r - sf A d))   (rank-local rows, per column sf)
+        auto alphaD = gko::make_temporary_clone(exec, gko::as<dense>(alpha));
+        auto betaD = gko::make_temporary_clone(exec, gko::as<dense>(beta));
+        auto&& xl = local(x);
+        dense* xp = &*xl;
+        const dense* rp = local(r);
+        const dense* adp = local(static_cast<const VecType*>(ad));
+        const localIdx nc = static_cast<localIdx>(ncols);
+        const localIdx xs = static_cast<localIdx>(xp->get_stride());
+        const localIdx ds = static_cast<localIdx>(dl->get_stride());
+        const localIdx ads = static_cast<localIdx>(adp->get_stride());
+        const localIdx rs = static_cast<localIdx>(rp->get_stride());
+        const bool alphaPerCol = alphaD->get_size()[1] > 1;
+        const bool betaPerCol = betaD->get_size()[1] > 1;
+        detail::fusedScaledUpdate<ValueType>(
+            *exec,
+            static_cast<localIdx>(xp->get_size()[0]),
+            nc,
+            xp->get_values(),
+            xs,
+            dl->get_const_values(),
+            ds,
+            adp->get_const_values(),
+            ads,
+            rp->get_const_values(),
+            rs,
+            sf_->get_const_values(),
+            invDiag_->get_const_values(),
+            alphaD->get_const_values(),
+            alphaPerCol,
+            betaD->get_const_values(),
+            betaPerCol
+        );
     }
 
     std::shared_ptr<const gko::LinOp> prolong_;
@@ -222,7 +476,10 @@ private:
     std::shared_ptr<ScaleCorrectionState> state_;
     mutable std::unique_ptr<gko::LinOp> delta_;
     mutable std::unique_ptr<gko::LinOp> aDelta_;
-    mutable std::unique_ptr<gko::LinOp> tmp_;
+    mutable std::unique_ptr<dense> dots_;     // [d.r | d.Ad], 1 x 2 ncols
+    mutable std::unique_ptr<dense> sf_;       // Rayleigh factors, 1 x ncols
+    mutable std::unique_ptr<dense> hostDots_; // host staging if MPI is not GPU-aware
+    mutable gko::array<char> dotTmp_;         // compute_dot workspace
 };
 
 /** @brief D^-1 of a Csr's diagonal (zero where the diagonal is zero). */
@@ -230,15 +487,17 @@ template<typename ValueType, typename IndexType>
 std::shared_ptr<const gko::matrix::Diagonal<ValueType>>
 invertedDiagonal(const gko::matrix::Csr<ValueType, IndexType>* mtx)
 {
-    auto exec = mtx->get_executor();
-    auto diag = gko::clone(exec->get_master(), mtx->extract_diagonal());
+    // invert in place on mtx's executor (no copy of the diagonal to the host and back)
+    auto diag = gko::share(mtx->extract_diagonal());
     auto* v = diag->get_values();
-    for (gko::size_type i = 0; i < diag->get_size()[0]; ++i)
-    {
-        v[i] =
-            v[i] != gko::zero<ValueType>() ? gko::one<ValueType>() / v[i] : gko::zero<ValueType>();
-    }
-    return gko::share(gko::clone(exec, diag));
+    forEachOn(
+        *diag->get_executor(),
+        diag->get_size()[0],
+        NEON_LAMBDA(const localIdx i) {
+            v[i] = v[i] != ValueType {} ? ValueType {1} / v[i] : ValueType {};
+        }
+    );
+    return diag;
 }
 
 } // namespace detail
@@ -303,6 +562,9 @@ public:
         bool GKO_FACTORY_PARAMETER_SCALAR(skip_sorting, false);
         /** Scale the coarse correction like OpenFOAM's GAMG scaleCorrection. */
         bool GKO_FACTORY_PARAMETER_SCALAR(scale_correction, false);
+        /** Distributed: apply the (block-diagonal) prolong/restrict as rank-local SpMVs without the
+         * empty halo exchange of a distributed::Matrix (same result; default off). */
+        bool GKO_FACTORY_PARAMETER_SCALAR(local_transfer, false);
     };
     class reuse_data_type;
     GKO_ENABLE_LIN_OP_FACTORY_WITH_REUSE(MergedPgm, parameters, Factory, reuse_data_type);
@@ -518,18 +780,49 @@ private:
         std::shared_ptr<const gko::LinOp> coarse
     )
     {
+        std::shared_ptr<const gko::LinOp> P = prolong_;
+        std::shared_ptr<const gko::LinOp> R = restrict_;
+#ifdef NF_WITH_MPI_SUPPORT
+        if (parameters_.local_transfer)
+        {
+            auto dp = std::dynamic_pointer_cast<const dist_mtx>(prolong_);
+            auto dr = std::dynamic_pointer_cast<const dist_mtx>(restrict_);
+            auto emptyOffDiag = [](const dist_mtx* m)
+            {
+                const auto od = m->get_off_diag_matrix();
+                if (od->get_size()[1] == 0 || od->get_size()[0] == 0) return true;
+                auto odCsr = std::dynamic_pointer_cast<const csr>(od);
+                return odCsr && odCsr->get_num_stored_elements() == 0;
+            };
+            if (dp && dr && emptyOffDiag(dp.get()) && emptyOffDiag(dr.get()))
+            {
+                P = std::make_shared<detail::LocalBlockOp<ValueType>>(
+                    dp->get_diag_matrix(), dp->get_size()
+                );
+                R = std::make_shared<detail::LocalBlockOp<ValueType>>(
+                    dr->get_diag_matrix(), dr->get_size()
+                );
+            }
+            else
+            {
+                std::cerr << "NeoN MergedPgm: local_transfer requested but the transfer operators "
+                             "are not "
+                             "block-diagonal distributed matrices; keeping them\n";
+            }
+        }
+#endif
         if (!parameters_.scale_correction)
         {
-            this->set_multigrid_level(prolong_, std::move(coarse), restrict_);
+            this->set_multigrid_level(P, std::move(coarse), R);
             return;
         }
         auto state = std::make_shared<detail::ScaleCorrectionState>();
         this->set_multigrid_level(
             std::make_shared<detail::ScaledProlongation<ValueType, IndexType>>(
-                prolong_, std::move(fineOp), detail::invertedDiagonal(diagBlock), state
+                P, std::move(fineOp), detail::invertedDiagonal(diagBlock), state
             ),
             std::move(coarse),
-            std::make_shared<detail::RecordingRestriction>(restrict_, state)
+            std::make_shared<detail::RecordingRestriction>(R, state)
         );
     }
 
@@ -676,6 +969,78 @@ private:
 };
 
 /**
+ * @brief Exact solver for a small (rank-local) matrix through its explicit dense inverse.
+ *
+ * generate() factorises the matrix with Ginkgo's sparse LU (solver::Direct, factorization::Lu) and
+ * applies it to the identity (n right-hand sides), which gives A^-1 as a Dense n x n matrix;
+ * apply() is then a single dense matrix-vector product (no iterations, no residual checks). Meant
+ * as the local solver of the coarsest multigrid level, e.g. "coarsest_solver": {"type":
+ * "preconditioner::Schwarz", "local_solver": {"type": "neon::DenseInverse"}} Memory n^2 values (2 k
+ * rows: 32 MB in double).
+ */
+template<typename ValueType = gko::default_precision, typename IndexType = gko::int32>
+class DenseInverse : public gko::LinOp
+{
+public:
+
+    using value_type = ValueType;
+    using index_type = IndexType;
+    using dense = gko::matrix::Dense<ValueType>;
+
+    GKO_CREATE_FACTORY_PARAMETERS(parameters, Factory)
+    {
+        /** LU symbolic phase for a structurally symmetric matrix (otherwise the general algorithm).
+         */
+        bool GKO_FACTORY_PARAMETER_SCALAR(symmetric, true);
+    };
+    GKO_ENABLE_LIN_OP_FACTORY(DenseInverse, parameters, Factory);
+    GKO_ENABLE_BUILD_METHOD(Factory);
+
+    std::shared_ptr<const dense> get_inverse() const { return inverse_; }
+
+protected:
+
+    void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override { inverse_->apply(b, x); }
+    void apply_impl(
+        const gko::LinOp* alpha, const gko::LinOp* b, const gko::LinOp* beta, gko::LinOp* x
+    ) const override
+    {
+        inverse_->apply(alpha, b, beta, x);
+    }
+
+    explicit DenseInverse(std::shared_ptr<const gko::Executor> exec) : gko::LinOp(std::move(exec))
+    {}
+
+    DenseInverse(const Factory* factory, std::shared_ptr<const gko::LinOp> system_matrix)
+        : gko::LinOp(factory->get_executor(), system_matrix->get_size()),
+          parameters_ {factory->get_parameters()}
+    {
+        GKO_ASSERT_IS_SQUARE_MATRIX(system_matrix);
+        auto exec = this->get_executor();
+        const auto n = system_matrix->get_size()[0];
+        using lu = gko::experimental::factorization::Lu<ValueType, IndexType>;
+        auto direct = gko::experimental::solver::Direct<ValueType, IndexType>::build()
+                          .with_factorization(lu::build().with_symbolic_algorithm(
+                              parameters_.symmetric
+                                  ? gko::experimental::factorization::symbolic_type::symmetric
+                                  : gko::experimental::factorization::symbolic_type::general
+                          ))
+                          .with_num_rhs(n)
+                          .on(exec)
+                          ->generate(system_matrix);
+        auto identity = dense::create(exec, gko::dim<2> {n, n});
+        detail::setIdentity(identity.get());
+        auto inverse = dense::create(exec, gko::dim<2> {n, n});
+        direct->apply(identity, inverse);
+        inverse_ = std::move(inverse);
+    }
+
+private:
+
+    std::shared_ptr<const dense> inverse_;
+};
+
+/**
  * @brief Build a named MergedPgm factory for the config registry (mirrors the L1-criterion
  *        registration in the GinkgoSolver ctor). Reference it from a configFile's `mg_level`, e.g.
  *        `"mg_level": ["neon::pgmMerge2"]`.
@@ -699,9 +1064,10 @@ inline std::shared_ptr<typename MergedPgm<ValueType, IndexType>::Factory> makeMe
 }
 
 /**
- * @brief Config-file support for `{"type": "neon::MergedPgm", ...}`, for the gko::config::registry
- *        constructor. Keys: merge_levels, max_iterations, max_unassigned_ratio, deterministic,
- *        skip_sorting, scale_correction (see MergedPgm::parameters).
+ * @brief Config-file support for `{"type": "neon::MergedPgm", ...}` and `{"type":
+ * "neon::DenseInverse"}`, for the gko::config::registry constructor. Keys: merge_levels,
+ * max_iterations, max_unassigned_ratio, deterministic, skip_sorting, scale_correction (see
+ * MergedPgm::parameters).
  */
 template<typename ValueType = gko::default_precision, typename IndexType = gko::int32>
 inline gko::config::configuration_map mergedPgmConfigMap()
@@ -736,8 +1102,25 @@ inline gko::config::configuration_map mergedPgmConfigMap()
                      params.with_skip_sorting(value.get_boolean());
                  else if (key == "scale_correction")
                      params.with_scale_correction(value.get_boolean());
+                 else if (key == "local_transfer")
+                     params.with_local_transfer(value.get_boolean());
                  else
                      throw std::invalid_argument("neon::MergedPgm: unknown key '" + key + "'");
+             }
+             return params;
+         }},
+        {"neon::DenseInverse",
+         [](const gko::config::pnode& config,
+            const gko::config::registry&,
+            gko::config::type_descriptor) -> gko::deferred_factory_parameter<gko::LinOpFactory>
+         {
+             auto params = DenseInverse<ValueType, IndexType>::build();
+             for (const auto& [key, value] : config.get_map())
+             {
+                 if (key == "type" || key == "value_type") continue;
+                 if (key == "symmetric") params.with_symmetric(value.get_boolean());
+                 else
+                     throw std::invalid_argument("neon::DenseInverse: unknown key '" + key + "'");
              }
              return params;
          }}
