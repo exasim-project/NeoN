@@ -26,7 +26,8 @@ if(NeoN_WITH_GINKGO)
       linearAlgebra/matrixFree/faceCoeffOp.cpp
       linearAlgebra/krylov/krylov.cpp
       linearAlgebra/precond.cpp
-      linearAlgebra/solve/persistent.cpp)
+      linearAlgebra/solve/persistent.cpp
+      linearAlgebra/solve/oneshot.cpp)
 
   add_library(blockamr_solvers OBJECT ${_blockamr_solvers_sources})
   target_link_libraries(blockamr_solvers PRIVATE amrex NeoN::NeoN Ginkgo::ginkgo)

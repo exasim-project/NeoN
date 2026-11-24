@@ -41,6 +41,7 @@
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
 #include "NeoN/blockAmr/linearAlgebra/linearSystem.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
+#include "NeoN/blockAmr/linearAlgebra/solve/oneshot.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solve/persistent.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
@@ -527,6 +528,169 @@ void registerLinearAlgebra(nb::module_& m)
     using namespace amrex;
 
     using MLLinOp = MLLinOpT<MultiFab>;
+
+    m.def(
+        "ginkgo_solve",
+        [](MLLinOp& lp,
+           MultiFab& sol,
+           const MultiFab& rhs,
+           int max_iter,
+           double rtol,
+           double atol,
+           double sign,
+           std::optional<NeoN::Executor> executor)
+        {
+            // The Python surface is unchanged: the eight arguments are repacked here, and
+            // `solver` stays at its OneshotSpec default because this entry point is always Cg.
+            return toDict(solveMlmgSystem(
+                lp,
+                sol,
+                rhs,
+                OneshotSpec {
+                    .maxIter = max_iter,
+                    .rtol = rtol,
+                    .atol = atol,
+                    .sign = sign,
+                    .executor = executor
+                }
+            ));
+        },
+        nb::arg("lp"),
+        nb::arg("sol"),
+        nb::arg("rhs"),
+        nb::arg("max_iter") = 1000,
+        nb::arg("rtol") = 1e-10,
+        nb::arg("atol") = 0.0,
+        nb::arg("sign") = -1.0,
+        nb::arg("executor") = nb::none(),
+        "Matrix-free Ginkgo CG solve of the MLLinOp system L(sol) = rhs.\n\n"
+        "sol's incoming values are the initial guess, and boundary data set via\n"
+        "set_level_bc is honored (residual-correction solve). `sign` must make sign*L SPD:\n"
+        "-1.0 (default) for MLPoisson (L = +laplacian, negative-definite); +1.0 for\n"
+        "MLABecLaplacian (alpha*a*phi - beta*div(b grad phi), positive-definite). CG stops\n"
+        "when ||r_k||_2 <= rtol*||rhs||_2 (or <= atol when atol > 0), so a warm start\n"
+        "converges immediately. `executor` is a NeoN SerialExecutor (default), CPUExecutor\n"
+        "or GPUExecutor, and selects the Ginkgo executor via NeoN.la.ginkgo.getGkoExecutor\n"
+        "so blockAMR and the rest of NeoN share one memoized executor and one stream. On\n"
+        "GPUExecutor the whole solve stays on the device, with no per-iteration host\n"
+        "transfer.\n\n"
+        "Returns a dict with num_iters, res_norm (2-norm of the homogeneous-system\n"
+        "residual), converged and res_history (per-iteration residual norms)."
+    );
+
+    m.def(
+        "ginkgo_solve_composite",
+        [](MLLinOp& lp,
+           nb::list sol_py,
+           nb::list rhs_py,
+           int max_iter,
+           double rtol,
+           double atol,
+           double sign,
+           std::optional<NeoN::Executor> executor,
+           const std::string& solver)
+        {
+            const int nlevs = lp.NAMRLevels();
+            if (static_cast<int>(nb::len(sol_py)) != nlevs
+                || static_cast<int>(nb::len(rhs_py)) != nlevs)
+            {
+                throw std::runtime_error(
+                    "ginkgo_solve_composite: sol and rhs need one MultiFab per AMR level ("
+                    + std::to_string(nlevs) + ")"
+                );
+            }
+            Vector<MultiFab*> sol(nlevs);
+            Vector<MultiFab const*> rhs(nlevs);
+            for (int lev = 0; lev < nlevs; ++lev)
+            {
+                sol[lev] = &nb::cast<MultiFab&>(sol_py[static_cast<std::size_t>(lev)]);
+                rhs[lev] = &nb::cast<MultiFab const&>(rhs_py[static_cast<std::size_t>(lev)]);
+            }
+            return toDict(solveComposite(
+                lp, sol, rhs, OneshotSpec {solver, max_iter, rtol, atol, sign, executor}
+            ));
+        },
+        nb::arg("lp"),
+        nb::arg("sol"),
+        nb::arg("rhs"),
+        nb::arg("max_iter") = 1000,
+        nb::arg("rtol") = 1e-10,
+        nb::arg("atol") = 0.0,
+        nb::arg("sign") = -1.0,
+        nb::arg("executor") = nb::none(),
+        nb::arg("solver") = "bicgstab",
+        "Matrix-free Ginkgo solve of the multi-level COMPOSITE MLLinOp system L(sol) = rhs\n"
+        "on a 2+ level AMR hierarchy (one sol/rhs MultiFab per level, coarsest first).\n\n"
+        "The mat-vec is the multi-level MLMG::apply, so coarse/fine interpolation, reflux\n"
+        "and covered-cell average_down are AMReX's and the solved system is identical to\n"
+        "MLMG's own composite solve. Covered coarse cells are slaved, not DOFs: their rhs\n"
+        "entries are replaced internally by the average_down of the fine rhs, and on return\n"
+        "they hold the average_down of the fine solution. sol's incoming values are the\n"
+        "initial guess (residual-correction form, set_level_bc honored). `sign` as in\n"
+        "ginkgo_solve: -1.0 for MLPoisson, +1.0 for MLABecLaplacian. The composite operator\n"
+        "is not exactly symmetric (c/f interpolation vs reflux), so solver='bicgstab'\n"
+        "(default) or 'gmres' are safe; 'cg' may work in practice. Stops when\n"
+        "||r_k||_2 <= rtol*||rhs||_2 in the composite norm (or <= atol when atol > 0).\n"
+        "`executor` is a NeoN SerialExecutor / CPUExecutor / GPUExecutor.\n\n"
+        "Returns a dict with num_iters, res_norm, converged and res_history."
+    );
+
+    m.def(
+        "ginkgo_solve_face_coeffs",
+        [](MultiFab& alpha,
+           MultiFab& ux,
+           MultiFab& lx,
+           MultiFab& uy,
+           MultiFab& ly,
+           MultiFab& uz,
+           MultiFab& lz,
+           MultiFab& sol,
+           const MultiFab& rhs,
+           const Geometry& geom,
+           const std::string& solver,
+           int max_iter,
+           double rtol)
+        {
+            // Non-owning handles onto the caller's fields, in the ux/uy/uz order the bundle
+            // fixes; the layout is `sol`'s, as it was when this took ba/dm off it directly.
+            const FaceCoeffLevel level {
+                blockamr::CellFieldLevel {blockamr::nonOwning(alpha)},
+                blockamr::FaceFieldLevel {
+                    {blockamr::nonOwning(ux), blockamr::nonOwning(uy), blockamr::nonOwning(uz)}
+                },
+                blockamr::FaceFieldLevel {
+                    {blockamr::nonOwning(lx), blockamr::nonOwning(ly), blockamr::nonOwning(lz)}
+                },
+                blockamr::MeshLevel {sol.boxArray(), sol.DistributionMap(), geom}
+            };
+            // atol/sign/executor stay at their OneshotSpec defaults: this surface has no such
+            // argument, and atol = 0.0 is the absolute stop this solve never added.
+            return toDict(solveFaceCoeffs(
+                level, sol, rhs, OneshotSpec {.solver = solver, .maxIter = max_iter, .rtol = rtol}
+            ));
+        },
+        nb::arg("alpha"),
+        nb::arg("ux"),
+        nb::arg("lx"),
+        nb::arg("uy"),
+        nb::arg("ly"),
+        nb::arg("uz"),
+        nb::arg("lz"),
+        nb::arg("sol"),
+        nb::arg("rhs"),
+        nb::arg("geom"),
+        nb::arg("solver") = "bicgstab",
+        nb::arg("max_iter") = 1000,
+        nb::arg("rtol") = 1e-10,
+        "Matrix-free Ginkgo solve of a general structured face-coefficient system A(sol) = rhs.\n\n"
+        "The matrix is carried as OpenFOAM-style AMReX fields: alpha is the cell-centred\n"
+        "diagonal SOURCE (ddt/Sp/reaction), and u{x,y,z}/l{x,y,z} are the face-centred\n"
+        "upper/lower off-diagonal coefficients (pass the same field for u* and l* for a\n"
+        "symmetric matrix). The full diagonal is alpha - negSumDiag(faces), computed once\n"
+        "when the operator is built. `solver` is 'cg' (SPD only), 'bicgstab' (default) or\n"
+        "'gmres'; sol's incoming values seed the initial guess, and all three stop when\n"
+        "||r_k||_2 <= rtol*||rhs||_2. Returns a dict with num_iters and res_norm."
+    );
 
     // Persistent solver: operator + Ginkgo solver built once, solved many times.
     // FaceCoeffSolver recomputes the mat-vec from the face coefficients each apply.
