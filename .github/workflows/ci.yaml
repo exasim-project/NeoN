@@ -367,8 +367,8 @@ jobs:
           done
           exit $fail
 
-  # The other presets only start once the develop build passes, so a broken commit occupies one
-  # runner instead of four.
+  # The other presets, macOS and Windows only start once the Linux develop build passes, so a
+  # broken commit occupies one runner instead of six.
   linux-production:
     name: Linux ${{ matrix.compiler.CC }} ${{ matrix.preset }}
     needs: [gate, linux]
@@ -388,7 +388,7 @@ jobs:
 
   macos:
     name: macOS ${{ matrix.compiler.CC }} ${{ matrix.preset }}
-    needs: gate
+    needs: [gate, linux]
     if: needs.gate.outputs.build == 'true'
     runs-on: macos-latest
     env:
@@ -444,7 +444,7 @@ jobs:
 
   windows:
     name: Windows msvc
-    needs: gate
+    needs: [gate, linux]
     if: needs.gate.outputs.build == 'true'
     runs-on: windows-latest
     steps:
