@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/optional.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/variant.h>
 
@@ -67,10 +68,22 @@ void declare_surface_interpolation(nb::module_& m, const char* name)
         )
         .def(
             "interpolate",
-            [](const fvcc::SurfaceInterpolation<T>& self, const fvcc::VolumeField<T>& src)
-            { return self.interpolate(src); },
+            [](const fvcc::SurfaceInterpolation<T>& self,
+               const fvcc::VolumeField<T>& src,
+               std::optional<std::string> name)
+            {
+                auto dst = self.interpolate(src);
+                if (name)
+                {
+                    dst.name = *name;
+                }
+                return dst;
+            },
             "src"_a,
-            "Interpolate a volume field to a surface field"
+            "name"_a = nb::none(),
+            "Interpolate a volume field to a surface field. The result is named `name` if given, "
+            "otherwise \"interpolated_\" + src.name; operators such as laplacian look up their "
+            "scheme by that name"
         )
         .def(
             "interpolate_into",
