@@ -99,7 +99,7 @@ The following labels and their meaning are discussed here:
  * ``skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
  * ``full-ci``: Also run the address and undefined-behavior sanitizer builds on the PR, which otherwise only run on ``develop``, ``main`` and nightly.
  * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
- * ``benchmark``: Run the benchmark jobs on GPUs in the LRZ pipeline.
+ * ``benchmark``: Run the benchmark jobs on GPUs in the LRZ pipeline. They also run weekly on ``develop``, with results on the ``NeoN_develop`` branch of `NeoFOAM-BenchmarkData <https://github.com/exasim-project/NeoFOAM-BenchmarkData>`_.
  * ``skip-nvidia``, ``skip-amd``, ``skip-intel``: Skip the GPU tests on the respective vendor's hardware in the LRZ pipeline.
 
 A full list of the labels can be found `here <https://github.com/exasim-project/NeoN/labels>`_.

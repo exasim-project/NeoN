@@ -21,6 +21,16 @@ API_TOKEN_GITHUB=${API_TOKEN_GITHUB:?Must set API_TOKEN_GITHUB}
 
 echo "Selected GPU vendor: ${GPU_VENDOR}"
 
+# PR runs are compared against develop and stored per PR. The weekly develop run (PR_NUMBER=no-pr)
+# has nothing to compare against and keeps a history, one folder per date and commit.
+if [[ "${PR_NUMBER}" == "no-pr" ]]; then
+    RESULTS_BRANCH="NeoN_develop"
+    RESULTS_PATH="NeoN/develop/$(date -u +%Y-%m-%d)_$(git rev-parse --short HEAD)/${CI_RUNNER_DESCRIPTION}"
+else
+    RESULTS_BRANCH="NeoN_PR_${PR_NUMBER}"
+    RESULTS_PATH="NeoN/${PR_NUMBER}/${CI_RUNNER_DESCRIPTION}"
+fi
+
 # Collect system info
 collect_system_info() {
     mkdir -p "$RESULTS_DIR"
@@ -121,14 +131,14 @@ push_results() {
     git clone "https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}"
     cd "${REPO_NAME}"
 
-    git checkout "NeoN_PR_${PR_NUMBER}" || git checkout -b "NeoN_PR_${PR_NUMBER}"
-    mkdir -p "NeoN/${PR_NUMBER}/${CI_RUNNER_DESCRIPTION}"
-    cp -r ../${RESULTS_DIR}/* "NeoN/${PR_NUMBER}/${CI_RUNNER_DESCRIPTION}"
+    git checkout "${RESULTS_BRANCH}" || git checkout -b "${RESULTS_BRANCH}"
+    mkdir -p "${RESULTS_PATH}"
+    cp -r ../${RESULTS_DIR}/* "${RESULTS_PATH}"
 
     git add .
     git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
     git pull --rebase || true
-    git push origin "NeoN_PR_${PR_NUMBER}"
+    git push origin "${RESULTS_BRANCH}"
 }
 
 ### Main execution ###
@@ -137,8 +147,10 @@ collect_system_info "${GPU_VENDOR}"
 # Current branch
 build_and_benchmark "$(git rev-parse --abbrev-ref HEAD)" "${RESULTS_DIR}"
 
-# Develop branch
-build_and_benchmark "develop" "${RESULTS_DIR}/develop"
+# Develop branch, for comparison
+if [[ "${PR_NUMBER}" != "no-pr" ]]; then
+    build_and_benchmark "develop" "${RESULTS_DIR}/develop"
+fi
 
 # Push results
 push_results

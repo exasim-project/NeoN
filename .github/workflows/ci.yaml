@@ -28,7 +28,8 @@ concurrency:
 jobs:
   # Evaluates the repository check and the PR labels once. Every other job needs it, so on
   # forks everything is skipped. Adding or removing a label only restarts the builds for
-  # full-ci and skip-build; skip-changelog only reruns the changelog check.
+  # full-ci and skip-build; skip-changelog only reruns the changelog check. The GPU benchmarks
+  # run on PRs with the benchmark label and on the weekly run on develop.
   gate:
     name: Gate
     if: github.repository == 'exasim-project/NeoN'
@@ -50,6 +51,7 @@ jobs:
           LABEL_EVENT: ${{ github.event.action == 'labeled' || github.event.action == 'unlabeled' }}
           LABEL: ${{ github.event.label.name }}
           DAILY: ${{ github.event.schedule == '0 9 * * *' }}
+          WEEKLY: ${{ github.event.schedule == '00 8 * * 0' }}
         run: |
           has() { jq -e --arg l "$1" '(. // []) | index($l) != null' <<<"${LABELS:-[]}" >/dev/null; }
           is_pr=$([[ "$GITHUB_EVENT_NAME" == pull_request ]] && echo true || echo false)
@@ -84,7 +86,7 @@ jobs:
             echo "changelog=$changelog"
             echo "build=$build"
             echo "sanitize=$sanitize"
-            echo "benchmark=$($is_pr && has benchmark && echo true || echo false)"
+            echo "benchmark=$({ { $is_pr && has benchmark; } || [[ "$WEEKLY" == true ]]; } && echo true || echo false)"
             echo "skip-nvidia=$(has skip-nvidia && echo true || echo false)"
             echo "skip-amd=$(has skip-amd && echo true || echo false)"
             echo "skip-intel=$(has skip-intel && echo true || echo false)"
@@ -638,7 +640,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Only on PRs: on develop it could cancel the pipeline of a concurrent push
       - name: Cancel running/pending NeoN LRZ CI pipelines
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
           ./ci/github/cancel_triggered_pipelines.sh "${REPO_NAME}" "${BRANCH}" "${NEON_PROJECT_TOKEN}"
 
