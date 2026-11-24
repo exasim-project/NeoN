@@ -1,0 +1,34 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/mesh/unstructured/tracking\+Mesh.hpp File Reference}
+\hypertarget{trackingMesh_8hpp}{}\label{trackingMesh_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp}}
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/segmented\+Vector.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/vector/vector.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/unstructured\+Mesh.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Neo\+N\+::\+Tracking\+Mesh\+View}}
+\begin{DoxyCompactList}\small\item\em Read-\/only views of a \doxylink{classNeoN_1_1TrackingMesh}{Tracking\+Mesh}, captured by value inside kernels. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1TrackingMesh}{Neo\+N\+::\+Tracking\+Mesh}}
+\begin{DoxyCompactList}\small\item\em Connectivity for locating points (e.\+g. particles) in an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} and interpolating cell values to them, on the executor (CPU or GPU). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\begin{DoxyCompactList}\small\item\em Integer types used throughout \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4b}{Neo\+N\+::\+Tracking\+Face\+Type}} \+: label \{ \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40}{Neo\+N\+::internal}} = 0
+, \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4ba0c3d06230722a86df2ff614ba26e44ba}{Neo\+N\+::cyclic}} = 1
+, \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4bae0ebc3c409070d07f1df0f2f4132509e}{Neo\+N\+::escape}} = 2
+ \}
+\begin{DoxyCompactList}\small\item\em What happens to a point that leaves a cell through a face. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION bool \mbox{\hyperlink{namespaceNeoN_a126fc623eacef4cf0cb35c0688236c6b}{Neo\+N\+::point\+In\+Cell}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&x, const \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} c, const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&m)
+\begin{DoxyCompactList}\small\item\em Is x inside cell c? Face-\/plane test, as Open\+FOAM primitive\+Mesh\+::point\+In\+Cell (FACE\+\_\+\+PLANES)\+: x is not in front of any (outward-\/oriented) face plane of c. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} \mbox{\hyperlink{namespaceNeoN_af89b37c9748f80495cbf34d96eb93359}{Neo\+N\+::locate\+Cell}} (\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&x, \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} hint, const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&m)
+\begin{DoxyCompactList}\small\item\em Locate the cell containing x, starting from cell hint. \end{DoxyCompactList}\end{DoxyCompactItemize}
