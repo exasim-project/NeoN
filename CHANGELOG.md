@@ -16,6 +16,7 @@
 - Add scalar-scalar `ddt(rho, phi)` overloads to the explicit DSL (`dsl::exp::ddt`) and to the Python `imp`/`exp` bindings, for density-weighted terms such as `ddt(rho, he)` and `ddt(psi, p)` [#618](https://github.com/exasim-project/NeoN/pull/618)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
 - Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
+- Accept an optional `name` for the result of the Python `SurfaceInterpolation*.interpolate`: operators such as `laplacian` look up their scheme by the field name, and the default `interpolated_<src>` (`interpolated_tmp` for an arithmetic source) matches no declared key
 - Add `mag_sqr` for Vec3 `VolumeField` to the Python bindings [#619](https://github.com/exasim-project/NeoN/pull/619)
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
 - Add arithmetic between scalar and Vec3 `SurfaceField`s (`scalar * Vec3`, `Vec3 + Vec3`, `Vec3 - Vec3`) in C++ and the Python bindings [#623](https://github.com/exasim-project/NeoN/pull/623)

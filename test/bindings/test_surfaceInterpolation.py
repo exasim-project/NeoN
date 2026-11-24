@@ -45,6 +45,31 @@ def test_surface_interpolation_vector(executor):
     assert surface.size() == mesh.n_internal_faces()
 
 
+
+def test_surface_interpolation_names_result_after_source(executor):
+    name, exec = executor
+
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+    volume = neon.ScalarVolumeField(exec, "nu", mesh)
+
+    interp = neon.SurfaceInterpolationScalar(exec, mesh, neon.TokenList(["linear"]))
+    surface = interp.interpolate(volume)
+
+    assert surface.name == "interpolated_nu"
+
+
+def test_surface_interpolation_names_result_as_requested(executor):
+    """Operators look up their scheme by the field name, e.g. laplacian(nuEff,U)."""
+    name, exec = executor
+
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+    volume = neon.ScalarVolumeField(exec, "nu", mesh)
+
+    interp = neon.SurfaceInterpolationScalar(exec, mesh, neon.TokenList(["linear"]))
+    surface = interp.interpolate(volume, name="nuEff")
+
+    assert surface.name == "nuEff"
+
 def test_linear_upwind_v_registered_for_vectors_only():
     """linearUpwindV is available to _neon, and only for vector fields.
 
