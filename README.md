@@ -55,9 +55,7 @@ del v, executor
 neon.finalize()
 ```
 
-[![workflows/Build on linux](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_ubuntu.yaml?query=branch%3Amain)
-[![workflows/Build on OSX](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml?query=branch%3Amain)
-[![workflows/Build on windows](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml?query=branch%3Amain)
+[![workflows/CI](https://github.com/exasim-project/NeoN/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/ci.yaml?query=branch%3Amain)
 
 To build and run the [examples](examples), which show the basic workflow from setting up a mesh to solving equations written with NeoN's DSL, add `-DNeoN_BUILD_EXAMPLES=ON` to the first command and run e.g. `./build/production/bin/examples/neon_example_steadyDiffusion`.
 
