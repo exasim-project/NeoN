@@ -40,7 +40,8 @@ jobs:
           "NeoN_ENABLE_SANITIZE_UB=ON"
         ]
     runs-on: ubuntu-latest
-    # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging, see build_on_ubuntu.yaml
+    # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging: Ubuntu 24.04, GCC 13,
+    # MPICH, Ginkgo in /opt/ginkgo on CMAKE_PREFIX_PATH, so find_package(Ginkgo) picks it up.
     permissions:
       contents: read
       packages: read
