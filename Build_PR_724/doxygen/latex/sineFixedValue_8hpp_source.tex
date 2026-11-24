@@ -1,0 +1,195 @@
+\doxysection{sine\+Fixed\+Value.\+hpp}
+\hypertarget{sineFixedValue_8hpp_source}{}\label{sineFixedValue_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/sineFixedValue.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/sineFixedValue.hpp}}
+\mbox{\hyperlink{sineFixedValue_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{traits_8hpp}{NeoN/core/primitives/traits.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryContext_8hpp}{NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00016}00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00017}00017\ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{detail}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00022}00022\ \textcolor{comment}{//\ Shared\ kernel\ behind\ SineFixedValue,\ a\ time-\/varying\ Dirichlet\ BC\ mirroring\ OpenFOAM's}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00023}00023\ \textcolor{comment}{//\ uniformFixedValue\ patch\ field\ when\ its\ Function1\ is\ a\ sine\ (Foam::Function1Types::Sine,\ "{}sin"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00024}00024\ \textcolor{comment}{//\ form\ -\/-\/\ the\ default\ waveType).\ Per\ OpenFOAM's\ Sine::sinValue:}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00025}00025\ \textcolor{comment}{//\ \ \ value(t)\ =\ amplitude\ *\ sin(2*pi\ *\ frequency\ *\ (t\ -\/\ t0))\ *\ scale\ +\ level}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00026}00026\ \textcolor{comment}{//\ (amplitude\ defaults\ to\ 1,\ t0\ defaults\ to\ 0,\ matching\ Sine's\ own\ dict-\/read\ defaults).\ The\ whole}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00027}00027\ \textcolor{comment}{//\ patch\ gets\ one\ uniform\ value\ every\ call\ (valueFraction\ =\ 1,\ refGrad\ =\ 0),\ recomputed\ from\ the}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00028}00028\ \textcolor{comment}{//\ current\ simulation\ time\ -\/-\/\ mirroring\ uniformFixedValueFvPatchField::updateCoeffs(),\ which}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00029}00029\ \textcolor{comment}{//\ re-\/evaluates\ its\ Function1\ at\ db().time().timeOutputValue()\ on\ every\ call\ rather\ than\ caching}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00030}00030\ \textcolor{comment}{//\ the\ value.}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00031}00031\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00032}00032\ \textcolor{comment}{//\ When\ no\ time\ is\ available\ (haveContext\ ==\ false,\ e.g.\ the\ plain\ correctBoundaryCondition\ path}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00033}00033\ \textcolor{comment}{//\ with\ no\ BoundaryContext)\ the\ patch\ degrades\ to\ zero-\/gradient,\ the\ same\ fallback\ convention}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00034}00034\ \textcolor{comment}{//\ every\ other\ context-\/aware\ NeoN\ BC\ uses\ on\ missing\ context.}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00035}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5aa24d2ccea3763f760e1f5005bb041a}{00035}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5aa24d2ccea3763f760e1f5005bb041a}{setSineFixedValue}}(}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00036}00036\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00038}00038\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00039}00039\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ amplitude,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00040}00040\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ frequency,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00041}00041\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ scale,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00042}00042\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ level,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00043}00043\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ t0,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00044}00044\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ time,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keywordtype}{bool}\ haveContext}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00046}00046\ )}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00047}00047\ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ boundaryFaceOwnersV\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{faceOwners}}().\mbox{\hyperlink{classNeoN_1_1Vector_ad537cb55485b851cbc3c1f3760b77ab9}{view}}();}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue()}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00056}00056\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00058}00058\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ uniformValue\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keywordflow}{if}\ (haveContext)}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00060}00060\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ twoPi\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(2)\ *\ Kokkos::numbers::pi\_v<NeoN::scalar>;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ uniformValue\ =\ amplitude\ *\ Kokkos::sin(twoPi\ *\ frequency\ *\ (time\ -\/\ t0))\ *\ scale\ +\ level;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00063}00063\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00065}00065\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!haveContext)}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ ownerValue\ =\ internalV[owner];}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ ownerValue;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ ownerValue;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ uniformValue;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ uniformValue;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setSineFixedValue"{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00086}00086\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00087}00087\ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00089}00089\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00091}00091\ \textcolor{comment}{//\ SineFixedValue:\ a\ time-\/varying\ Dirichlet\ BC\ mirroring\ OpenFOAM's\ uniformFixedValue\ patch\ field}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00092}00092\ \textcolor{comment}{//\ configured\ with\ a\ sine\ Function1.\ See\ detail::setSineFixedValue\ for\ the\ exact\ formula.}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00093}00093\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00094}00094\ \textcolor{comment}{//\ Needs,\ via\ the\ context-\/aware\ correctBoundaryCondition(domainVector,\ ctx)\ overload,\ the\ current}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00095}00095\ \textcolor{comment}{//\ simulation\ time\ (BoundaryContext::insertValue,\ key\ "{}time"{}).\ Without\ it,\ degrades\ to\ a\ plain}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00096}00096\ \textcolor{comment}{//\ zero-\/gradient\ extrapolation\ (the\ same\ fallback\ the\ plain,\ context-\/less\ overload\ always\ uses).}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00097}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue}{00097}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_aeaca9b100ec9f7aa6e8a58157cc6b3fd}{SineFixedValue}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{VolumeBoundaryFactory}}<NeoN::scalar>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<SineFixedValue>}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00098}00098\ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{VolumeBoundaryFactory<NeoN::scalar>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<SineFixedValue>}};}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00101}00101\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ assignable\ =\ true:\ recomputed\ every\ correctBoundaryConditions()\ call.\ fixesValue\ =\ true:}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{comment}{//\ a\ genuine\ global\ Dirichlet\ patch,\ same\ as\ fixedValue\ (without\ a\ time\ in\ the\ context\ it}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{comment}{//\ degrades\ to\ zero-\/gradient\ for\ that\ call).}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00108}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_aeaca9b100ec9f7aa6e8a58157cc6b3fd}{00108}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_aeaca9b100ec9f7aa6e8a58157cc6b3fd}{SineFixedValue}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}})}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}},\ \{.assignable\ =\ \textcolor{keyword}{true},\ .fixesValue\ =\ \textcolor{keyword}{true}\}),\ mesh\_(mesh),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ amplitude\_(}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dict.contains(\textcolor{stringliteral}{"{}amplitude"{}})\ ?\ dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}amplitude"{}})\ :\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1)}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ frequency\_(dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}frequency"{}})),\ \textcolor{comment}{//\ required:\ no\ physically-\/sane\ default}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ scale\_(dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}scale"{}})),\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ required:\ no\ physically-\/sane\ default}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ level\_(dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}level"{}})),\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ required:\ no\ physically-\/sane\ default}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ t0\_(dict.contains(\textcolor{stringliteral}{"{}t0"{}})\ ?\ dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}>(\textcolor{stringliteral}{"{}t0"{}})\ :\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0))}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00117}00117\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{comment}{//\ No\ context\ =>\ no\ simulation\ time\ available:\ degrade\ to\ zero-\/gradient.}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00120}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a78e791d947e09722ecdc8ab028d62717}{00120}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a78e791d947e09722ecdc8ab028d62717}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00121}00121\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5aa24d2ccea3763f760e1f5005bb041a}{detail::setSineFixedValue}}(}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}}(),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ amplitude\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ frequency\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ scale\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ level\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ t0\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{false}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00134}00134\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00136}00136\ \ \ \ \ \textcolor{comment}{//\ Context-\/aware:\ evaluate\ the\ sine\ at\ the\ current\ simulation\ time.}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00137}00137\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00138}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a1b2a56198ac20629c13a154e31af08bc}{00138}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a1b2a56198ac20629c13a154e31af08bc}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::scalar>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{BoundaryContext}}\&\ ctx)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00139}00139\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ctx.hasValue(\textcolor{stringliteral}{"{}time"{}}))}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a78e791d947e09722ecdc8ab028d62717}{correctBoundaryCondition}}(domainVector);}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a5aa24d2ccea3763f760e1f5005bb041a}{detail::setSineFixedValue}}(}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}}(),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ amplitude\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ frequency\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ scale\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ level\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ t0\_,}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ ctx.value(\textcolor{stringliteral}{"{}time"{}}),}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{true}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00158}00158\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00160}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a2ea0343afc0e54efb3cc9b15177eb6d3}{00160}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a2ea0343afc0e54efb3cc9b15177eb6d3}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}sineFixedValue"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00161}00161\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00162}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_ad4fd468e3e138a7549d73ada5ad998eb}{00162}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_ad4fd468e3e138a7549d73ada5ad998eb}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a2ea0343afc0e54efb3cc9b15177eb6d3}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00164}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a23536a2da160eefe0224f9abb5d56b58}{00164}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a23536a2da160eefe0224f9abb5d56b58}{doc}}()}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00165}00165\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Time-\/varying\ uniform\ Dirichlet\ value\ (OpenFOAM's\ uniformFixedValue\ with\ a\ sine\ "{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Function1):\ value(t)\ =\ amplitude*sin(2*pi*frequency*(t\ -\/\ t0))*scale\ +\ level\ "{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(amplitude\ defaults\ to\ 1,\ t0\ defaults\ to\ 0).\ Needs\ the\ current\ simulation\ time\ "{}}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}in\ the\ BoundaryContext\ (key\ \(\backslash\)"{}time\(\backslash\)"{});\ without\ it,\ degrades\ to\ zero-\/gradient."{}};}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00170}00170\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00172}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a2c39af5d8182c8993bcc46f4b6b62e9e}{00172}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a2c39af5d8182c8993bcc46f4b6b62e9e}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00174}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a7108f88395cfa482a25d3583fe2abecd}{00174}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<NeoN::scalar>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1SineFixedValue_a7108f88395cfa482a25d3583fe2abecd}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00175}00175\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<SineFixedValue>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00177}00177\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00179}00179\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00181}00181\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00182}00182\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ amplitude\_;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00183}00183\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ frequency\_;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00184}00184\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ scale\_;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00185}00185\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ level\_;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00186}00186\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ t0\_;}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00187}00187\ \};}
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00188}00188\ }
+\DoxyCodeLine{\Hypertarget{sineFixedValue_8hpp_source_l00189}00189\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
+
+\end{DoxyCode}
