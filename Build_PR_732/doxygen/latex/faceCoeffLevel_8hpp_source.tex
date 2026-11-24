@@ -1,0 +1,38 @@
+\doxysection{face\+Coeff\+Level.\+hpp}
+\hypertarget{faceCoeffLevel_8hpp_source}{}\label{faceCoeffLevel_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp}}
+\mbox{\hyperlink{faceCoeffLevel_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fieldLevel_8hpp}{NeoN/blockAmr/core/fieldLevel.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{meshLevel_8hpp}{NeoN/blockAmr/core/meshLevel.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00010}00010\ \textcolor{comment}{//\ Its\ own\ header\ rather\ than\ precond.hpp's,\ because\ the\ operator\ and\ the\ preconditioner\ both}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00011}00011\ \textcolor{comment}{//\ take\ one:\ a\ low-\/level\ header\ including\ the\ factory\ header\ just\ to\ name\ this\ bundle\ inverts}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00012}00012\ \textcolor{comment}{//\ the\ layering,\ and\ it\ is\ the\ factories\ that\ build\ on\ the\ bundle,\ not\ the\ other\ way\ round.}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00014}00014\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00015}00015\ \{}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00017}00017\ \textcolor{comment}{/*\ @brief\ The\ coefficient\ fields\ one\ level\ of\ the\ face-\/coefficient\ operator\ is\ built\ from,\ as}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ the\ grouped\ handles\ rather\ than\ seven\ loose\ MultiFabs:\ \`{}lower`\ is\ the\ STORED\ low\ side}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ (aliasing\ upper\ when\ symmetric),\ and\ \`{}mesh`\ carries\ the\ ba/dm/geom\ the\ hierarchy}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ coarsens\ from\ (core/fieldLevel.hpp).\ Grouped\ because\ seven\ adjacent\ MultiFab\ of}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ identical\ type\ is\ a\ transposition\ hazard,\ and\ la::FaceCoeffs\ cannot\ express\ it\ -\/-\/}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ that\ one\ is\ FabArray<BaseFab<T>>-\/level,\ and\ const.}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00023}00023\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00024}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel}{00024}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel}{FaceCoeffLevel}}}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00025}00025\ \{}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00026}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_af039d1770c5f57a24d5a35c08f1a312c}{00026}}\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1CellFieldLevel}{CellFieldLevel}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_af039d1770c5f57a24d5a35c08f1a312c}{alpha}};}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00027}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_a85a4c93e01e4f5ce72ee6d0da8ab487a}{00027}}\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{FaceFieldLevel}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_a85a4c93e01e4f5ce72ee6d0da8ab487a}{upper}};}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00028}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_a6f920c6cfaa77fec72c6861fc06ea7d2}{00028}}\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{FaceFieldLevel}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_a6f920c6cfaa77fec72c6861fc06ea7d2}{lower}};}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00029}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_aadfaebc0dfa82669685e5a31cf44caf4}{00029}}\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1MeshLevel}{MeshLevel}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel_aadfaebc0dfa82669685e5a31cf44caf4}{mesh}};}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00030}00030\ \};}
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{faceCoeffLevel_8hpp_source_l00032}00032\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

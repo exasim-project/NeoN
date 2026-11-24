@@ -1,0 +1,140 @@
+\doxysection{kokkos\+Bench.\+hpp}
+\hypertarget{kokkosBench_8hpp_source}{}\label{kokkosBench_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp}}
+\mbox{\hyperlink{kokkosBench_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gmgOpts_8hpp}{NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00012}00012\ \textcolor{comment}{//\ Deliberately\ free\ of\ both\ Kokkos\ and\ nanobind\ headers:\ with\ gmgOpts.hpp\ (equally\ free\ of\ them)}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00013}00013\ \textcolor{comment}{//\ it\ is\ all\ the\ blockamr\_kokkos\ object\ library\ and\ the\ \_blockamr\ bindings\ share.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00015}\mbox{\hyperlink{namespaceamrex}{00015}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceamrex}{amrex}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00017}00017\ \textcolor{keyword}{class\ }Geometry;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00018}00018\ \textcolor{keyword}{class\ }MultiFab;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00019}00019\ \}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00024}00024\ \textcolor{comment}{//\ Kokkos\ lifetime\ lives\ in\ runtime.hpp,\ so\ init.cpp\ need\ not\ include\ this\ bench\ header.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00026}\mbox{\hyperlink{namespaceblockamr_abda2e18cd9152ebcf48f0ab918b7b8b1}{00026}}\ std::string\ \mbox{\hyperlink{namespaceblockamr_abda2e18cd9152ebcf48f0ab918b7b8b1}{kokkosExecutionSpace}}();}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00028}00028\ \textcolor{comment}{//\ Sum\ of\ i\ over\ [0,\ n)\ -\/-\/\ proves\ a\ Kokkos\ kernel\ links\ and\ launches\ inside\ \_blockamr.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00029}\mbox{\hyperlink{namespaceblockamr_aa1df6187be595ac6bc1fa3345c31941f}{00029}}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_aa1df6187be595ac6bc1fa3345c31941f}{kokkosSelftest}}(\textcolor{keywordtype}{long}\ n);}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00031}00031\ \textcolor{comment}{//\ Sum\ of\ mf's\ valid\ cells\ through\ an\ unmanaged\ Kokkos\ View\ -\/-\/\ proves\ the\ zero-\/copy\ handle}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00032}00032\ \textcolor{comment}{//\ addresses\ the\ same\ bytes\ AMReX\ does.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00033}\mbox{\hyperlink{namespaceblockamr_a67024ec1305cdda60c9892914107f809}{00033}}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_a67024ec1305cdda60c9892914107f809}{kokkosMfSum}}(amrex::MultiFab\&\ mf);}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00035}00035\ \textcolor{comment}{//\ Fields\ an\ operator\ reads\ and\ writes.\ Ghosts\ are\ the\ caller's\ job,\ filled\ outside\ the}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00036}00036\ \textcolor{comment}{//\ timed\ region.\ Face\ fields\ may\ be\ null\ for\ operators\ that\ do\ not\ use\ them.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00037}\mbox{\hyperlink{structblockamr_1_1OpArgs}{00037}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1OpArgs}{OpArgs}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00039}\mbox{\hyperlink{structblockamr_1_1OpArgs_aff574d8ec83eba84bfc36fb55debb97d}{00039}}\ \ \ \ \ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1OpArgs_aff574d8ec83eba84bfc36fb55debb97d}{out}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00040}\mbox{\hyperlink{structblockamr_1_1OpArgs_a0ab0c2c334d58113494385bcd888a334}{00040}}\ \ \ \ \ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1OpArgs_a0ab0c2c334d58113494385bcd888a334}{in}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00041}\mbox{\hyperlink{structblockamr_1_1OpArgs_aa6bcbad5a9be5a21ba6d1c1739140c47}{00041}}\ \ \ \ \ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1OpArgs_aa6bcbad5a9be5a21ba6d1c1739140c47}{fx}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00042}\mbox{\hyperlink{structblockamr_1_1OpArgs_af8e8a4aa649ec2e637759406c3f1b7b4}{00042}}\ \ \ \ \ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1OpArgs_af8e8a4aa649ec2e637759406c3f1b7b4}{fy}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00043}\mbox{\hyperlink{structblockamr_1_1OpArgs_a660ae8ccb0fbfe7395f150edd7bee570}{00043}}\ \ \ \ \ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1OpArgs_a660ae8ccb0fbfe7395f150edd7bee570}{fz}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00044}\mbox{\hyperlink{structblockamr_1_1OpArgs_a96116acdc7f1fe0a66e928ec94572b0d}{00044}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1OpArgs_a96116acdc7f1fe0a66e928ec94572b0d}{a}}\ =\ 1.0;\ \ \textcolor{comment}{//\ axpy\ scalar}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00045}\mbox{\hyperlink{structblockamr_1_1OpArgs_abc4e1c2e070eddc0871f33c7ae754673}{00045}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1OpArgs_abc4e1c2e070eddc0871f33c7ae754673}{dx}}\ =\ 1.0;\ \textcolor{comment}{//\ cell\ size,\ per\ axis}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00046}\mbox{\hyperlink{structblockamr_1_1OpArgs_a28e2616c378cf4c1855234782a5d08e2}{00046}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1OpArgs_a28e2616c378cf4c1855234782a5d08e2}{dy}}\ =\ 1.0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00047}\mbox{\hyperlink{structblockamr_1_1OpArgs_a05e957a38ddf6d501d2b08d51797765e}{00047}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1OpArgs_a05e957a38ddf6d501d2b08d51797765e}{dz}}\ =\ 1.0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00048}00048\ \};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00050}\mbox{\hyperlink{structblockamr_1_1BenchResult}{00050}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1BenchResult}{BenchResult}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00051}00051\ \{}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00052}\mbox{\hyperlink{structblockamr_1_1BenchResult_a4909efcab20b90eb988b2dc667dff258}{00052}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1BenchResult_a4909efcab20b90eb988b2dc667dff258}{msMin}}\ =\ 0.0;\ \ \ \ \textcolor{comment}{//\ fastest\ batch,\ per\ apply\ (enqueue\ +\ completion)}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00053}\mbox{\hyperlink{structblockamr_1_1BenchResult_aeef9d5af7c6ce4e5ae6a8715f5141948}{00053}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1BenchResult_aeef9d5af7c6ce4e5ae6a8715f5141948}{msMedian}}\ =\ 0.0;\ \textcolor{comment}{//\ median\ batch,\ per\ apply}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00054}\mbox{\hyperlink{structblockamr_1_1BenchResult_a41c9a24514781278da6451f9a372112b}{00054}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1BenchResult_a41c9a24514781278da6451f9a372112b}{gbPerSec}}\ =\ 0.0;\ \textcolor{comment}{//\ from\ the\ operator's\ ideal\ traffic\ model}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00055}\mbox{\hyperlink{structblockamr_1_1BenchResult_a874741d8d4ff8c7527c670a320858e9c}{00055}}\ \ \ \ \ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{structblockamr_1_1BenchResult_a874741d8d4ff8c7527c670a320858e9c}{ncells}}\ =\ 0;\ \ \ \ \ \ \ \textcolor{comment}{//\ valid\ cells,\ summed\ over\ boxes}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00056}\mbox{\hyperlink{structblockamr_1_1BenchResult_ae4e10a791cb989082a7dbd78a3022532}{00056}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1BenchResult_ae4e10a791cb989082a7dbd78a3022532}{nboxes}}\ =\ 0;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ launches\ per\ apply}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{comment}{//\ Host\ time\ to\ ISSUE\ the\ applies,\ before\ the\ fence:\ \string~\ msMin\ means\ host-\/limited\ (the}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{comment}{//\ launch\ path\ itself),\ <<\ msMin\ means\ GPU-\/limited.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00060}\mbox{\hyperlink{structblockamr_1_1BenchResult_a97c9bf0c7e4f10375ecb6c3c6b48de0d}{00060}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1BenchResult_a97c9bf0c7e4f10375ecb6c3c6b48de0d}{msEnqueue}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00061}00061\ \};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00063}00063\ \textcolor{comment}{//\ What\ a\ registered\ operator\ needs\ from\ the\ caller\ before\ it\ can\ run.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00064}\mbox{\hyperlink{structblockamr_1_1OpInfo}{00064}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1OpInfo}{OpInfo}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00065}00065\ \{}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00066}\mbox{\hyperlink{structblockamr_1_1OpInfo_aba561366c8d06eeb425bf223d7c62912}{00066}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1OpInfo_aba561366c8d06eeb425bf223d7c62912}{nghost}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00067}\mbox{\hyperlink{structblockamr_1_1OpInfo_ade0d2331c6cdff5850417a6a15f5d103}{00067}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structblockamr_1_1OpInfo_ade0d2331c6cdff5850417a6a15f5d103}{needsFaces}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00068}\mbox{\hyperlink{structblockamr_1_1OpInfo_a93a11e410d5703b9f0de7480c0ca22c7}{00068}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1OpInfo_a93a11e410d5703b9f0de7480c0ca22c7}{bytesPerCell}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00069}00069\ \};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00071}00071\ \textcolor{comment}{//\ Names\ of\ every\ registered\ operator,\ as\ "{}<kernel>/<backend>"{}.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00072}\mbox{\hyperlink{namespaceblockamr_a5c486abbbc3a9968b467c1dddf64d0ce}{00072}}\ std::vector<std::string>\ \mbox{\hyperlink{namespaceblockamr_a5c486abbbc3a9968b467c1dddf64d0ce}{benchOperators}}();}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00074}\mbox{\hyperlink{namespaceblockamr_a649d1dddad828fa8fc26f8ec436f0663}{00074}}\ \mbox{\hyperlink{structblockamr_1_1OpInfo}{OpInfo}}\ \mbox{\hyperlink{namespaceblockamr_a649d1dddad828fa8fc26f8ec436f0663}{benchOperatorInfo}}(\textcolor{keyword}{const}\ std::string\&\ name);}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00076}00076\ \textcolor{comment}{//\ One\ apply,\ untimed\ -\/-\/\ the\ correctness\ path.\ Ghosts\ must\ already\ be\ filled.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00077}\mbox{\hyperlink{namespaceblockamr_ac74bc6e6c8666f1b24784004e3d9d09b}{00077}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_ac74bc6e6c8666f1b24784004e3d9d09b}{applyOperator}}(\textcolor{keyword}{const}\ std::string\&\ name,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1OpArgs}{OpArgs}}\&\ args);}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00079}00079\ \textcolor{comment}{//\ batches\ x\ iters\ applies,\ fenced\ per\ batch.\ Warms\ up,\ so\ msMin\ excludes\ PTX\ JIT.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00080}\mbox{\hyperlink{namespaceblockamr_adb238d3f739671138175ba5be12b5724}{00080}}\ \mbox{\hyperlink{structblockamr_1_1BenchResult}{BenchResult}}\ \mbox{\hyperlink{namespaceblockamr_adb238d3f739671138175ba5be12b5724}{benchOperator}}(\textcolor{keyword}{const}\ std::string\&\ name,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1OpArgs}{OpArgs}}\&\ args,\ \textcolor{keywordtype}{int}\ iters,\ \textcolor{keywordtype}{int}\ batches);}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00082}00082\ \textcolor{comment}{//\ The\ GMG\ V-\/cycle\ bench:\ gmgPrecond.hpp's\ native\ V-\/cycle\ with\ its\ AMReX\ kernels\ and\ with}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00083}00083\ \textcolor{comment}{//\ Kokkos\ twins\ -\/-\/\ a\ whole\ solver\ phase,\ so\ launch\ cost\ in\ a\ real\ hierarchy's\ shape.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00085}00085\ \textcolor{comment}{//\ The\ operator\ (diagonal\ source\ +\ face\ coefficients)\ and\ the\ rhs,\ all\ FP64\ on\ one}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00086}00086\ \textcolor{comment}{//\ BoxArray,\ plus\ the\ cycle\ shape.\ Mesh\ must\ be\ triply\ periodic:\ no\ physical-\/BC\ fill.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00087}\mbox{\hyperlink{structblockamr_1_1GmgArgs}{00087}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1GmgArgs}{GmgArgs}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00088}00088\ \{}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{comment}{//\ const:\ the\ V-\/cycle\ only\ reads\ these,\ copying\ them\ into\ its\ level\ fields\ at\ setup.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00090}\mbox{\hyperlink{structblockamr_1_1GmgArgs_ae401b6e9c1bc153d387050333eb5e3dc}{00090}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Geometry*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_ae401b6e9c1bc153d387050333eb5e3dc}{geom}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00091}\mbox{\hyperlink{structblockamr_1_1GmgArgs_ad9afb4bb4f8aef2a09c0254a4e316a64}{00091}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_ad9afb4bb4f8aef2a09c0254a4e316a64}{rhs}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00092}\mbox{\hyperlink{structblockamr_1_1GmgArgs_a125f0488df8972b01ded8ea13abc3288}{00092}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_a125f0488df8972b01ded8ea13abc3288}{alpha}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00093}\mbox{\hyperlink{structblockamr_1_1GmgArgs_ab4022ef15833420d318b2e6dcbfdb774}{00093}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_ab4022ef15833420d318b2e6dcbfdb774}{ux}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00094}\mbox{\hyperlink{structblockamr_1_1GmgArgs_a4e35ae44113c5c3b0017c7cceeabcf4e}{00094}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_a4e35ae44113c5c3b0017c7cceeabcf4e}{lx}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00095}\mbox{\hyperlink{structblockamr_1_1GmgArgs_a2eea36dd4f60ecb5a373abd15cf6d4ba}{00095}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_a2eea36dd4f60ecb5a373abd15cf6d4ba}{uy}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00096}\mbox{\hyperlink{structblockamr_1_1GmgArgs_a2dd2726c9f3b9c5aaacca666efd05678}{00096}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_a2dd2726c9f3b9c5aaacca666efd05678}{ly}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00097}\mbox{\hyperlink{structblockamr_1_1GmgArgs_a69b0a90619c2c74de730b8f864a397a7}{00097}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_a69b0a90619c2c74de730b8f864a397a7}{uz}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00098}\mbox{\hyperlink{structblockamr_1_1GmgArgs_a8ac6a246e337ba7828985431820f6565}{00098}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_a8ac6a246e337ba7828985431820f6565}{lz}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ The\ cycle\ shape,\ production's\ own\ struct:\ the\ bench\ measures\ the\ SAME\ knobs\ the}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{//\ preconditioner\ runs.\ Reduced\ precision,\ share\_coeffs\ and\ aggLevel0Size\ are\ honoured\ by}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ the\ kokkos\_opt\ backend\ alone\ -\/-\/\ benchGmgVcycle\ refuses\ them\ elsewhere\ rather\ than}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ reporting\ an\ fp64\ timing\ under\ another\ label.\ \`{}cycles`\ is\ unused\ here:\ benchGmgVcycle}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{comment}{//\ takes\ its\ own\ \`{}iters`,\ so\ a\ batch's\ cycle\ count\ is\ the\ bench's,\ not\ the\ caller's.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00105}\mbox{\hyperlink{structblockamr_1_1GmgArgs_a7fc0878d9978f06dd18d5b69bbd5e45b}{00105}}\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1KokkosGmgOpts}{KokkosGmgOpts}}\ \mbox{\hyperlink{structblockamr_1_1GmgArgs_a7fc0878d9978f06dd18d5b69bbd5e45b}{opts}};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00106}00106\ \};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00108}\mbox{\hyperlink{structblockamr_1_1GmgResult}{00108}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1GmgResult}{GmgResult}}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00109}00109\ \{}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00110}\mbox{\hyperlink{structblockamr_1_1GmgResult_a2888a31538d58342433fd493b64ba4ff}{00110}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_a2888a31538d58342433fd493b64ba4ff}{msMin}}\ =\ 0.0;\ \ \ \ \textcolor{comment}{//\ fastest\ batch,\ per\ V-\/cycle}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00111}\mbox{\hyperlink{structblockamr_1_1GmgResult_ada6814a668614049f6a8fe3abe754cee}{00111}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_ada6814a668614049f6a8fe3abe754cee}{msMedian}}\ =\ 0.0;\ \textcolor{comment}{//\ median\ batch,\ per\ V-\/cycle}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00112}\mbox{\hyperlink{structblockamr_1_1GmgResult_aa6c6f3f12297e7d0844dc525b229d893}{00112}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_aa6c6f3f12297e7d0844dc525b229d893}{msEnqueue}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00114}\mbox{\hyperlink{structblockamr_1_1GmgResult_aa4c9060252095123d751b45f013de072}{00114}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_aa4c9060252095123d751b45f013de072}{nlevels}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00115}\mbox{\hyperlink{structblockamr_1_1GmgResult_ad667d01f82e280b7fe472ab70eeb0d99}{00115}}\ \ \ \ \ std::vector<int>\ \mbox{\hyperlink{structblockamr_1_1GmgResult_ad667d01f82e280b7fe472ab70eeb0d99}{boxesPerLevel}};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00116}\mbox{\hyperlink{structblockamr_1_1GmgResult_ad70a3ef800625599498179470f273efb}{00116}}\ \ \ \ \ std::vector<long>\ \mbox{\hyperlink{structblockamr_1_1GmgResult_ad70a3ef800625599498179470f273efb}{cellsPerLevel}};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{comment}{//\ ||rhs\ -\/\ A\ sol||\ before\ and\ after\ ONE\ V-\/cycle\ from\ sol\ =\ 0\ -\/-\/\ the\ correctness\ gate.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00119}\mbox{\hyperlink{structblockamr_1_1GmgResult_a4477f75e144d0503bd1fb4b758cee1be}{00119}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_a4477f75e144d0503bd1fb4b758cee1be}{resid0}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00120}\mbox{\hyperlink{structblockamr_1_1GmgResult_a2ac8f1cfa60755a48a38ffb9ed87e433}{00120}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_a2ac8f1cfa60755a48a38ffb9ed87e433}{resid1}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{comment}{//\ Whether\ the\ hierarchy\ really\ shares\ one\ coefficient\ per\ direction\ (asymmetric:\ no).}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00123}\mbox{\hyperlink{structblockamr_1_1GmgResult_aefa38f5db62a870097f44d8af8fd76df}{00123}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_aefa38f5db62a870097f44d8af8fd76df}{sharedCoeffs}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00124}00124\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00125}00125\ \ \ \ \ \textcolor{comment}{//\ Whether\ level\ 0\ actually\ got\ its\ own\ decomposition\ (KokkosGmgOpts::aggLevel0Size).}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00126}\mbox{\hyperlink{structblockamr_1_1GmgResult_a8c64be39f3221c9e60be10e7a3a10830}{00126}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structblockamr_1_1GmgResult_a8c64be39f3221c9e60be10e7a3a10830}{aggLevel0}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00127}00127\ \};}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00129}\mbox{\hyperlink{namespaceblockamr_a0200f1f350065fddafd6ea9c4fb0cc2e}{00129}}\ std::vector<std::string>\ \mbox{\hyperlink{namespaceblockamr_a0200f1f350065fddafd6ea9c4fb0cc2e}{benchGmgBackends}}();}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00131}00131\ \textcolor{comment}{//\ batches\ x\ iters\ V-\/cycles,\ fenced\ per\ batch,\ each\ batch\ restarted\ from\ sol\ =\ 0.}}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00132}\mbox{\hyperlink{namespaceblockamr_a3672ffecd680cb8dfe1036ac0f4029d1}{00132}}\ \mbox{\hyperlink{structblockamr_1_1GmgResult}{GmgResult}}\ \mbox{\hyperlink{namespaceblockamr_a3672ffecd680cb8dfe1036ac0f4029d1}{benchGmgVcycle}}(\textcolor{keyword}{const}\ std::string\&\ backend,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1GmgArgs}{GmgArgs}}\&\ args,\ \textcolor{keywordtype}{int}\ iters,\ \textcolor{keywordtype}{int}\ batches);}
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{kokkosBench_8hpp_source_l00134}00134\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}
