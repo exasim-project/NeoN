@@ -22,6 +22,10 @@ def _has_gpu():
     return _make_multifab_with_memory(memory="device").is_device
 
 
+def test_executor_matches_build():
+    assert blockamr.executor() == ("GPU" if _has_gpu() else "CPU")
+
+
 def test_multifab_is_host():
     """Default MultiFab reports is_host consistent with build."""
     mf = _make_multifab()

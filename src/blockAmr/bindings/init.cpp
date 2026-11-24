@@ -67,6 +67,20 @@ void registerInit(nb::module_& m)
     );
     m.def("finalize", &finalizeRuntime);
     m.def(
+        "executor",
+        []()
+        {
+#ifdef AMREX_USE_GPU
+            return "GPU";
+#else
+            return "CPU";
+#endif
+        },
+        "Where blockAMR runs its kernels and keeps AMReX data: \"GPU\" or \"CPU\".\n\n"
+        "Fixed by the build: a GPU AMReX build allocates on and launches to the device, so it\n"
+        "cannot run on the host; CPU execution needs an AMReX built without a GPU backend."
+    );
+    m.def(
         "n_ranks",
         []() { return amrex::ParallelContext::NProcsSub(); },
         "Number of MPI ranks in the current AMReX communicator (1 without MPI).\n\n"
