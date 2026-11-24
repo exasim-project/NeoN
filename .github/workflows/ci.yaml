@@ -275,24 +275,12 @@ jobs:
     # pinned: the apt package list below targets Ubuntu 24.04
     runs-on: ubuntu-24.04
     strategy:
-      fail-fast: false
       matrix:
         compiler:
           - CC: clang
             CXX: clang++
-          - CC: gcc
-            CXX: g++
-        preset: ["develop", "profiling", "production"]
-        exclude:
-          - compiler:
-              CC: gcc
-              CXX: g++
-            preset: "develop"
-          - compiler:
-              CC: clang
-              CXX: clang++
-            preset: "profiling"
-    steps:
+        preset: ["develop"]
+    steps: &linux-steps
       - name: Checkout to repository
         uses: actions/checkout@v4
 
@@ -378,6 +366,25 @@ jobs:
             fi
           done
           exit $fail
+
+  # The other presets only start once the develop build passes, so a broken commit occupies one
+  # runner instead of four.
+  linux-production:
+    name: Linux ${{ matrix.compiler.CC }} ${{ matrix.preset }}
+    needs: [gate, linux]
+    if: needs.gate.outputs.build == 'true'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: {CC: clang, CXX: clang++}
+            preset: production
+          - compiler: {CC: gcc, CXX: g++}
+            preset: production
+          - compiler: {CC: gcc, CXX: g++}
+            preset: profiling
+    steps: *linux-steps
 
   macos:
     name: macOS ${{ matrix.compiler.CC }} ${{ matrix.preset }}
@@ -518,7 +525,7 @@ jobs:
           ctest --preset develop
 
   # ---------------------------------------------------------------- downstream / GPU
-  # Only started once the Linux CPU builds pass, so a broken commit does not occupy the GPUs.
+  # Only started once the Linux develop build passes, so a broken commit does not occupy the GPUs.
   gpu:
     name: Build and test NeoN on GPU
     needs: [gate, linux]
