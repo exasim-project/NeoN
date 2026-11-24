@@ -172,7 +172,8 @@ jobs:
 
   iwyu:
     name: Build with IWYU
-    needs: gate
+    # A full build: like the other builds it waits for the Linux develop build
+    needs: [gate, linux]
     if: needs.gate.outputs.build == 'true'
     # pinned: the compilation database must match the clang-tidy runner
     runs-on: ubuntu-24.04
@@ -367,8 +368,8 @@ jobs:
           done
           exit $fail
 
-  # The other presets, macOS and Windows only start once the Linux develop build passes, so a
-  # broken commit occupies one runner instead of six.
+  # The other presets, macOS, Windows and IWYU only start once the Linux develop build passes, so
+  # a broken commit occupies one runner instead of seven.
   linux-production:
     name: Linux ${{ matrix.compiler.CC }} ${{ matrix.preset }}
     needs: [gate, linux]
