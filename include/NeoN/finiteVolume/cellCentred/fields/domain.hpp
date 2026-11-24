@@ -38,15 +38,16 @@ public:
      * @param exec The executor object.
      * @param fieldName The name of the field.
      * @param mesh The unstructured mesh object.
-     * @param domainVector The domain field object.
+     * @param field The domain field object. Taken by value and moved in, so a temporary
+     * (e.g. a freshly allocated Field) is not deep-copied.
      */
     DomainMixin(
         const Executor& exec,
         std::string fieldName,
         const UnstructuredMesh& mesh,
-        const Field<ValueType>& field
+        Field<ValueType> field
     )
-        : name(fieldName), exec_(exec), mesh_(mesh), field_(field)
+        : name(std::move(fieldName)), exec_(exec), mesh_(mesh), field_(std::move(field))
     {}
 
     /**

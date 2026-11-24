@@ -13,6 +13,8 @@ on:
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
   OMPI_MCA_rmaps_base_oversubscribe: 1
+  # Open MPI 5 (Homebrew) launches through PRRTE, which ignores the OMPI_MCA variable above
+  PRTE_MCA_rmaps_default_mapping_policy: ":oversubscribe"
 
 concurrency:
   group: >

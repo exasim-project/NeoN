@@ -157,3 +157,33 @@ TEST_CASE("fixedValue")
         );
     }
 }
+
+TEST_CASE("VolumeBoundary rejects invalid input")
+{
+    using Boundary = NeoN::finiteVolume::cellCentred::VolumeBoundary<NeoN::scalar>;
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    auto mesh = NeoN::createSingleCellMesh(exec);
+
+    NeoN::Dictionary fixedValue(
+        {{"type", std::string("fixedValue")}, {"fixedValue", NeoN::scalar(1)}}
+    );
+    NeoN::Dictionary unknown(
+        {{"type", std::string("noSuchBoundary")}, {"fixedValue", NeoN::scalar(1)}}
+    );
+    NeoN::Dictionary noType({{"fixedValue", NeoN::scalar(1)}});
+
+    SECTION("valid input" + execName) { REQUIRE(Boundary(mesh, fixedValue, 3).patchID() == 3); }
+
+    SECTION("patch out of range" + execName)
+    {
+        // the single cell mesh has four patches
+        REQUIRE_THROWS_AS(Boundary(mesh, fixedValue, 4), NeoN::NeoNException);
+        REQUIRE_THROWS_AS(Boundary(mesh, fixedValue, 1000000), NeoN::NeoNException);
+    }
+
+    SECTION("unknown or missing type" + execName)
+    {
+        REQUIRE_THROWS_AS(Boundary(mesh, unknown, 0), NeoN::NeoNException);
+        REQUIRE_THROWS_AS(Boundary(mesh, noType, 0), NeoN::NeoNException);
+    }
+}

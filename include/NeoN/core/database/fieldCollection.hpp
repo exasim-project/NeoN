@@ -27,7 +27,7 @@ namespace NeoN::finiteVolume::cellCentred
  * @param doc The Document to validate.
  * @return true if the Document is valid, false otherwise.
  */
-bool validateVectorDoc(const Document& doc);
+bool validateVectorDoc(const Dictionary& doc);
 
 /**
  * @class VectorDocument
@@ -74,6 +74,13 @@ public:
      * @param doc The Document to construct the VectorDocument from.
      */
     VectorDocument(const Document& doc);
+
+    /**
+     * @brief Constructs a VectorDocument from the given Document, moving its entries.
+     *
+     * @param doc The Document to construct the VectorDocument from.
+     */
+    VectorDocument(Document&& doc);
 
     /**
      * @brief Retrieves the underlying Document.
@@ -256,6 +263,9 @@ public:
      */
     std::string insert(const VectorDocument& fd);
 
+    /** @copydoc insert(const VectorDocument&) */
+    std::string insert(VectorDocument&& fd);
+
     /**
      * @brief Retrieves a field document by its ID.
      *
@@ -344,7 +354,7 @@ public:
             throw std::runtime_error {"Document is not valid"};
         }
 
-        std::string key = insert(doc);
+        std::string key = insert(std::move(doc));
         VectorDocument& fd = fieldDoc(key);
         VectorType& field = fd.field<VectorType>();
         field.key = key;
@@ -386,7 +396,14 @@ public:
         );
 
         VectorType vf(
-            field.exec(), name, field.mesh(), domainVector, field.boundaryConditions(), db, "", ""
+            field.exec(),
+            name,
+            field.mesh(),
+            std::move(domainVector),
+            field.boundaryConditions(),
+            db,
+            "",
+            ""
         );
 
         if (field.registered())
@@ -406,14 +423,15 @@ public:
                 subCycleIndex = fieldDoc.subCycleIndex();
             }
         }
-        return NeoN::Document(
+        // The field is moved in: an initializer list would copy it twice.
+        Dictionary dict(
             {{"name", vf.name},
              {"timeIndex", timeIndex},
              {"iterationIndex", iterationIndex},
-             {"subCycleIndex", subCycleIndex},
-             {"field", vf}},
-            validateVectorDoc
+             {"subCycleIndex", subCycleIndex}}
         );
+        dict.insert("field", std::any(std::move(vf)));
+        return NeoN::Document(std::move(dict), validateVectorDoc);
     }
 };
 

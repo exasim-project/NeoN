@@ -55,14 +55,7 @@ if(NeoN_ENABLE_CUDA AND Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
   set_source_files_properties(${NeoN_PYTHON_BINDING_SRCS} PROPERTIES LANGUAGE CUDA)
 endif()
 
-# NB_SHARED is opt-in (see NeoN_NANOBIND_SHARED in the top-level CMakeLists): it is only needed to
-# exchange nanobind types with another extension module, and it makes _neon depend on a libnanobind
-# that must then be installed and found at runtime.
-if(NeoN_NANOBIND_SHARED)
-  set(NeoN_NANOBIND_LINKAGE NB_SHARED)
-endif()
-
-nanobind_add_module(_neon ${NeoN_NANOBIND_LINKAGE} NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
+nanobind_add_module(_neon NB_STATIC NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
 
 # nanobind builds the module -fvisibility=hidden, which hides the typeinfo it emits for the types
 # crossing into libNeoN. This is the reason NEON_TYPE_VISIBLE exists (core/visibility.hpp); applying
@@ -70,24 +63,6 @@ nanobind_add_module(_neon ${NeoN_NANOBIND_LINKAGE} NOMINSIZE ${NeoN_PYTHON_BINDI
 # was still missing, and it made oldTime()/ddt() throw "bad any cast" with requested == actual.
 # nanobind's own symbols stay hidden: NB_NAMESPACE carries visibility("hidden").
 set_target_properties(_neon PROPERTIES CXX_VISIBILITY_PRESET default)
-
-if(NeoN_NANOBIND_SHARED AND NOT WIN32)
-  # nanobind neither installs its shared library nor sets an RPATH, so the installed _neon would
-  # keep a DT_NEEDED that resolves nowhere. Install libnanobind next to _neon and look for it there.
-  # Appended so the RPATH inherited from CMAKE_INSTALL_RPATH (libNeoN) is kept. Windows has no
-  # RPATH; the DLL is found because it is installed into the same directory.
-  if(APPLE)
-    set_property(
-      TARGET _neon
-      APPEND
-      PROPERTY INSTALL_RPATH "@loader_path")
-  else()
-    set_property(
-      TARGET _neon
-      APPEND
-      PROPERTY INSTALL_RPATH "$ORIGIN")
-  endif()
-endif()
 
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
@@ -133,7 +108,7 @@ __version__ = \"${NeoN_PACKAGE_VERSION}\"
 try:
     from ._neon import *
     # Explicitly import module attributes that aren't exported by *
-    from ._neon import __has_serial__, __has_cpu__, __has_gpu__
+    from ._neon import __has_serial__, __has_cpu__, __has_gpu__, __has_ginkgo__
 except ImportError as e:
     raise ImportError(
         \"Failed to import NeoN C++ extension module. \"
@@ -141,7 +116,9 @@ except ImportError as e:
         f\"Error: {e}\"
     ) from e
 
-__all__ = [\"__version__\", \"__has_serial__\", \"__has_cpu__\", \"__has_gpu__\"]
+__all__ = [
+    \"__version__\", \"__has_serial__\", \"__has_cpu__\", \"__has_gpu__\", \"__has_ginkgo__\"
+]
 ")
 
 # Copy Python package files to build directory
@@ -152,23 +129,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
 if(DEFINED SKBUILD)
   # Install for scikit-build (into neon/ package)
   install(TARGETS _neon LIBRARY DESTINATION neon COMPONENT python)
-  if(NeoN_NANOBIND_SHARED)
-    install(
-      TARGETS nanobind
-      LIBRARY DESTINATION neon COMPONENT python
-      RUNTIME DESTINATION neon COMPONENT python)
-  endif()
   install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/__init__.py DESTINATION neon)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed DESTINATION neon)
 else()
   # Standalone installation
   install(TARGETS _neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
-  if(NeoN_NANOBIND_SHARED)
-    install(
-      TARGETS nanobind
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon
-      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
-  endif()
   install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/__init__.py
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed

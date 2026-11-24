@@ -62,13 +62,9 @@ class SurfaceBoundary : public BoundaryPatchMixin
 public:
 
     SurfaceBoundary(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : BoundaryPatchMixin(
-            mesh.boundaryMesh().offset()[static_cast<sizeType>(patchID)],
-            mesh.boundaryMesh().offset()[static_cast<sizeType>(patchID) + 1],
-            patchID
-        ),
+        : BoundaryPatchMixin(mesh, checkedPatchID(mesh, patchID)),
           boundaryCorrectionStrategy_(SurfaceBoundaryFactory<ValueType>::create(
-              dict.get<std::string>("type"), mesh, dict, patchID
+              boundaryType<SurfaceBoundaryFactory<ValueType>>(dict, patchID), mesh, dict, patchID
           ))
     {}
 

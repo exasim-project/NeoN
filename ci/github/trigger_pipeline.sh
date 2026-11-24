@@ -51,26 +51,11 @@ check_branch_exists() {
 # -----------------------------------------------------------------------------
 branch_exists=$(check_branch_exists "$PROJECT" "$BRANCH_ENC" "$CHECK_TOKEN")
 
-if [ "$PROJECT" = "NeoN" ]; then
-  if [ -n "$branch_exists" ]; then
-    echo "NeoN branch '$BRANCH' exists on LRZ GitLab. Using it for pipeline trigger."
-    TARGET_BRANCH="$BRANCH"
-  else
-    echo -e "\033[31m Error: Branch '$BRANCH' does not exist in NeoN. Exiting workflow.\033[0m"
-    exit 1
-  fi
-
-elif [ "$PROJECT" = "NeoFOAM" ]; then
-  if [ -n "$branch_exists" ]; then
-    echo "NeoFOAM branch '$BRANCH' exists on LRZ GitLab. Using it for pipeline trigger."
-    TARGET_BRANCH="$BRANCH"
-  else
-    echo -e "\033[33m️ Branch '$BRANCH' does not exist in NeoFOAM. Falling back to 'develop'.\033[0m"
-    TARGET_BRANCH="develop"
-  fi
-
+if [ -n "$branch_exists" ]; then
+  echo "Branch '$BRANCH' exists in $PROJECT on LRZ GitLab. Using it for pipeline trigger."
+  TARGET_BRANCH="$BRANCH"
 else
-  echo -e "\033[31m Error: Unknown project '$PROJECT'. Supported: NeoN, NeoFOAM.\033[0m"
+  echo -e "\033[31m Error: Branch '$BRANCH' does not exist in $PROJECT. Exiting workflow.\033[0m"
   exit 1
 fi
 

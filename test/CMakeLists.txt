@@ -53,6 +53,10 @@ function(NeoN_unit_test TEST)
     target_link_libraries(${NeoN_COMMAND} PRIVATE SUNDIALS::arkode)
 
   endif()
+  # Heavily templated tests exceed the default COFF section limit (C1128)
+  if(MSVC)
+    target_compile_options(${NeoN_COMMAND} PRIVATE /bigobj)
+  endif()
   if(WIN32)
     set_target_properties(
       ${NeoN_COMMAND}

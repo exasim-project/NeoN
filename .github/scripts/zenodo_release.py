@@ -69,8 +69,11 @@ def main():
         cff = yaml.safe_load(f)
 
     latest = call("GET", f"{API}/records/{CONCEPT_ID}/versions/latest")
+    # The release is already archived, e.g. by Zenodo's GitHub integration (which archived
+    # v0.3.0 before this workflow ran) or by an earlier run. That is the goal, not an error.
     if latest["metadata"].get("version") == TAG:
-        sys.exit(f"Zenodo already has version {TAG}: {latest['links']['self_html']}")
+        print(f"::notice::Zenodo already has version {TAG}: {latest['links']['self_html']}")
+        return
 
     # Returns the pending new-version draft if one already exists
     draft = call("POST", f"{API}/records/{latest['id']}/versions")
