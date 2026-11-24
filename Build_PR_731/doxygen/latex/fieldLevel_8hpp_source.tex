@@ -1,0 +1,89 @@
+\doxysection{field\+Level.\+hpp}
+\hypertarget{fieldLevel_8hpp_source}{}\label{fieldLevel_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp}}
+\mbox{\hyperlink{fieldLevel_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00013}00013\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00016}00016\ \textcolor{comment}{/*\ @brief\ One\ cell-\/centred\ field\ on\ ONE\ AMR\ level\ (one\ level\ of\ Python's\ CellField).}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ The\ const\ and\ non-\/const\ operator*\ are\ a\ PAIR:\ shared\_ptr\ does\ not\ propagate}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ constness,\ so\ a\ lone\ const\ overload\ would\ hand\ out\ a\ writable\ MultiFab\&.}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00019}00019\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00020}\mbox{\hyperlink{structblockamr_1_1CellFieldLevel}{00020}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1CellFieldLevel}{CellFieldLevel}}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00022}\mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a6f22ac6acfd2d72bba9a89f1968037ab}{00022}}\ \ \ \ \ std::shared\_ptr<amrex::MultiFab>\ \mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a6f22ac6acfd2d72bba9a89f1968037ab}{mf}};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00024}\mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a9cf8af1fa14f968b308fb71e21c66774}{00024}}\ \ \ \ \ amrex::MultiFab\&\ \mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a9cf8af1fa14f968b308fb71e21c66774}{operator*}}()\ \{\ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a6f22ac6acfd2d72bba9a89f1968037ab}{mf}};\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00025}\mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a77be275795ed9f2fb888e28939c2c416}{00025}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a77be275795ed9f2fb888e28939c2c416}{operator*}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a6f22ac6acfd2d72bba9a89f1968037ab}{mf}};\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00026}00026\ \};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00028}00028\ \textcolor{comment}{/*\ @brief\ The\ three\ direction\ fields\ of\ one\ face-\/centred\ field,\ on\ one\ level.\ Exists\ to}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00029}00029\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ remove\ the\ ux/lx/uy/ly/uz/lz\ hazard:\ six\ adjacent\ parameters\ of\ identical\ type,}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00030}00030\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ where\ transposing\ two\ compiles\ and\ silently\ answers\ wrongly.}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00031}00031\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00032}\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{00032}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{FaceFieldLevel}}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00033}00033\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00034}\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_af765631612c359382c0a438a255d00a9}{00034}}\ \ \ \ \ std::array<std::shared\_ptr<amrex::MultiFab>,\ 3>\ \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_af765631612c359382c0a438a255d00a9}{dir}}\ \{\};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00036}\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_ae30e83417d36efc19b4dca707900ee7a}{00036}}\ \ \ \ \ amrex::MultiFab\&\ \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_ae30e83417d36efc19b4dca707900ee7a}{operator[]}}(\textcolor{keywordtype}{int}\ d)\ \{\ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_af765631612c359382c0a438a255d00a9}{dir}}[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(d)];\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00037}\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_a650107cc18bbf4b32a268dfccc84566f}{00037}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_a650107cc18bbf4b32a268dfccc84566f}{operator[]}}(\textcolor{keywordtype}{int}\ d)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_af765631612c359382c0a438a255d00a9}{dir}}[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(d)];\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00038}00038\ \};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00040}00040\ \textcolor{comment}{/*\ @brief\ A\ read-\/only\ view\ of\ one\ cell-\/centred\ field\ on\ one\ level.}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00041}00041\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ Build\ it\ with\ constView();\ there\ is\ deliberately\ no\ way\ back\ to\ a\ writable\ handle.}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00042}00042\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00043}\mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{00043}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{ConstCellFieldLevel}}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00044}00044\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00045}\mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel_a690b2d6c62328c44bb56ddf969185f54}{00045}}\ \ \ \ \ std::shared\_ptr<const\ amrex::MultiFab>\ \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel_a690b2d6c62328c44bb56ddf969185f54}{mf}};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00047}\mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel_aff3ca97457ffd5fd1325dec9ab9560c4}{00047}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel_aff3ca97457ffd5fd1325dec9ab9560c4}{operator*}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel_a690b2d6c62328c44bb56ddf969185f54}{mf}};\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00048}00048\ \};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00050}00050\ \textcolor{comment}{/*\ @brief\ A\ read-\/only\ view\ of\ the\ three\ direction\ fields,\ for\ a\ consumer\ that\ promises\ not\ to}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00051}00051\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ write\ them.\ Exists\ because\ the\ mutable\ pair\ above\ cannot\ be\ built\ from\ a}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00052}00052\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \`{}const\ amrex::MultiFab\&`\ without\ a\ const\_cast,\ which\ would\ launder\ away\ the\ promise}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00053}00053\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ in\ kernels\ the\ layer\ requires\ to\ be\ bit-\/for-\/bit\ reproducible.}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00054}00054\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00055}\mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{00055}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{ConstFaceFieldLevel}}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00056}00056\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00057}\mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel_ac8f305c1879dda081137e040280d368b}{00057}}\ \ \ \ \ std::array<std::shared\_ptr<const\ amrex::MultiFab>,\ 3>\ \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel_ac8f305c1879dda081137e040280d368b}{dir}}\ \{\};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00059}\mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel_ad1718723ebcac04acd95cd26e71c4293}{00059}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel_ad1718723ebcac04acd95cd26e71c4293}{operator[]}}(\textcolor{keywordtype}{int}\ d)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel_ac8f305c1879dda081137e040280d368b}{dir}}[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(d)];\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00060}00060\ \};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00062}00062\ \textcolor{comment}{//\ A\ handle\ to\ a\ field\ owned\ elsewhere:\ an\ aliasing\ shared\_ptr\ with\ an\ EMPTY\ owner,\ so\ no}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00063}00063\ \textcolor{comment}{//\ control\ block\ is\ allocated\ and\ no\ deleter\ ever\ runs.}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00064}\mbox{\hyperlink{namespaceblockamr_aa73e148d34831409c795a22091de5edb}{00064}}\ \textcolor{keyword}{inline}\ std::shared\_ptr<amrex::MultiFab>\ \mbox{\hyperlink{namespaceblockamr_aa73e148d34831409c795a22091de5edb}{nonOwning}}(amrex::MultiFab\&\ mf)}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00065}00065\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{keywordflow}{return}\ std::shared\_ptr<amrex::MultiFab>\ \{std::shared\_ptr<amrex::MultiFab>\ \{\},\ \&mf\};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00067}00067\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00069}00069\ \textcolor{comment}{//\ The\ const\ overload\ is\ what\ lets\ a\ read-\/only\ consumer\ take\ a\ bundle\ at\ all:\ the\ mutable\ one}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00070}00070\ \textcolor{comment}{//\ binds\ only\ to\ \`{}MultiFab\&`,\ so\ a\ \`{}const\ MultiFab\&`\ caller\ would\ otherwise\ need\ a\ const\_cast.}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00071}\mbox{\hyperlink{namespaceblockamr_a5f1576be480c29bce11e6888e8713733}{00071}}\ \textcolor{keyword}{inline}\ std::shared\_ptr<const\ amrex::MultiFab>\ \mbox{\hyperlink{namespaceblockamr_aa73e148d34831409c795a22091de5edb}{nonOwning}}(\textcolor{keyword}{const}\ amrex::MultiFab\&\ mf)}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00072}00072\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keywordflow}{return}\ std::shared\_ptr<const\ amrex::MultiFab>\ \{std::shared\_ptr<const\ amrex::MultiFab>\ \{\},\ \&mf\};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00074}00074\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00076}\mbox{\hyperlink{namespaceblockamr_aed758df3c2b00844fe8abe3b2b50daa1}{00076}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{ConstCellFieldLevel}}\ \mbox{\hyperlink{namespaceblockamr_aed758df3c2b00844fe8abe3b2b50daa1}{constView}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1CellFieldLevel}{CellFieldLevel}}\&\ f)\ \{\ \textcolor{keywordflow}{return}\ \{f.\mbox{\hyperlink{structblockamr_1_1CellFieldLevel_a6f22ac6acfd2d72bba9a89f1968037ab}{mf}}\};\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00078}\mbox{\hyperlink{namespaceblockamr_a367a1e5b08a60d21367d943451a52a90}{00078}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{ConstFaceFieldLevel}}\ \mbox{\hyperlink{namespaceblockamr_aed758df3c2b00844fe8abe3b2b50daa1}{constView}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{FaceFieldLevel}}\&\ f)}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00079}00079\ \{}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\{f.\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_af765631612c359382c0a438a255d00a9}{dir}}[0],\ f.\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_af765631612c359382c0a438a255d00a9}{dir}}[1],\ f.\mbox{\hyperlink{structblockamr_1_1FaceFieldLevel_af765631612c359382c0a438a255d00a9}{dir}}[2]\}\};}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00081}00081\ \}}
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{fieldLevel_8hpp_source_l00083}00083\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}
