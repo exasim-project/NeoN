@@ -81,19 +81,7 @@ jobs:
 
       - name: Resolve stable or nightly version
         id: version
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            version="${GITHUB_REF_NAME#v}"
-            channel="stable"
-          else
-            serial="$(date -u +%Y%m%d%H%M)${GITHUB_RUN_NUMBER}"
-            version="$(python scripts/set_package_version.py --nightly "${serial}")"
-            channel="nightly"
-          fi
-
-          echo "version=${version}" >> "${GITHUB_OUTPUT}"
-          echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
+        uses: ./.github/actions/resolve-version
 
   build-cpu-wheels:
     name: CPU ${{ matrix.python }} ${{ matrix.os }}
@@ -185,7 +173,7 @@ jobs:
             cmake.define.Kokkos_ENABLE_HIP=OFF
           # Windows overrides (this replaces, not merges, the settings above): Ginkgo
           # 2.0 uses std::result_of, removed in C++20, which MSVC rejects. NeoN does
-          # not support Ginkgo on Windows (see build_on_windows.yaml), so disable it.
+          # not support Ginkgo on Windows (see the windows job in ci.yaml), so disable it.
           CIBW_CONFIG_SETTINGS_WINDOWS: >
             cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
             cmake.define.NeoN_BUILD_TESTS=OFF

@@ -2,6 +2,7 @@
 ## Features
 ### Misc
 - Label PRs automatically by area (`type:*`) and kind of change [#725](https://github.com/exasim-project/NeoN/pull/725)
+- Consolidate the GitHub CI workflows into a single `ci.yaml` with a label gate [#613](https://github.com/exasim-project/NeoN/pull/613)
 ## Fixes
 - Fix CI workflows: sanitizer runs on push/schedule, full-ci Ubuntu build, broken cache conditions and keys; remove unused AWS workflow [#612](https://github.com/exasim-project/NeoN/pull/612)
 
