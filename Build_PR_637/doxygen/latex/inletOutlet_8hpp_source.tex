@@ -58,7 +58,7 @@
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ range,}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i)\ \{}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internal\ =\ internalV[owner];}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40}{internal}}\ =\ internalV[owner];}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00058}00058\ }
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Inflow\ where\ the\ face\ flux\ is\ negative;\ otherwise\ outflow\ (zero-\/gradient).}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ valueFraction\ =\ (hasFlux\ \&\&\ boundaryFlux[i]\ <\ 0.0)\ ?\ 1.0\ :\ 0.0;}
@@ -66,7 +66,7 @@
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ valueFraction;}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ inletValue;}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{NeoN::zero<ValueType>}}();}
-\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ inletValue\ *\ valueFraction\ +\ internal\ *\ (1.0\ -\/\ valueFraction);}
+\DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ inletValue\ *\ valueFraction\ +\ \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40}{internal}}\ *\ (1.0\ -\/\ valueFraction);}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \},}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setInletOutletValue"{}}}
 \DoxyCodeLine{\Hypertarget{inletOutlet_8hpp_source_l00068}00068\ \ \ \ \ );}

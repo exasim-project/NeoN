@@ -26,6 +26,8 @@ Inheritance diagram for NeoN\+::Dictionary\+:\begin{figure}[H]
 \item 
 void \mbox{\hyperlink{classNeoN_1_1Dictionary_ac622f165a5d718e04bc3a22b80d949de}{insert}} (const std\+::string \&key, const std\+::any \&value)
 \begin{DoxyCompactList}\small\item\em Inserts a key-\/value pair into the dictionary. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1Dictionary_a40c51d252e0db2703d6dafcea324d2b6}{insert}} (const std\+::string \&key, std\+::any \&\&value)
+\begin{DoxyCompactList}\small\item\em Inserts a key-\/value pair into the dictionary, moving the value. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classNeoN_1_1Dictionary_af2254231b138f52a7aa1f20571184c71}{contains}} (const std\+::string \&key) const
 \begin{DoxyCompactList}\small\item\em Checks if the given key is present in the dictionary. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classNeoN_1_1Dictionary_a03de552905fac1356f4485d6643fbff6}{remove}} (const std\+::string \&key)
@@ -126,7 +128,7 @@ Checks whether the dictionary is empty.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00214}{214}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00221}{221}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_a2d6fe1f82f4da120f3cd76261873baed}\index{NeoN::Dictionary@{NeoN::Dictionary}!get@{get}}
 \index{get@{get}!NeoN::Dictionary@{NeoN::Dictionary}}
@@ -154,7 +156,7 @@ Retrieves the value associated with the given key, casting it to the specified t
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00106}{106}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00113}{113}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_a4142e336767babaaeae5ac77fab12251}\index{NeoN::Dictionary@{NeoN::Dictionary}!get@{get}}
 \index{get@{get}!NeoN::Dictionary@{NeoN::Dictionary}}
@@ -182,7 +184,7 @@ Retrieves the value associated with the given key, casting it to the specified t
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00128}{128}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00135}{135}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_a3b3158fb302bbc2480ce5b730d477ea0}\index{NeoN::Dictionary@{NeoN::Dictionary}!get@{get}}
 \index{get@{get}!NeoN::Dictionary@{NeoN::Dictionary}}
@@ -210,7 +212,7 @@ Retrieves the value associated with the given key, casting it to the specified t
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00157}{157}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_aeebf89cb5b38007e4747945fcc7e6cca}\index{NeoN::Dictionary@{NeoN::Dictionary}!getMap@{getMap}}
 \index{getMap@{getMap}!NeoN::Dictionary@{NeoN::Dictionary}}
@@ -240,13 +242,30 @@ Retrieves the underlying unordered map of the dictionary.
 \end{DoxyReturn}
 \Hypertarget{classNeoN_1_1Dictionary_ac622f165a5d718e04bc3a22b80d949de}\index{NeoN::Dictionary@{NeoN::Dictionary}!insert@{insert}}
 \index{insert@{insert}!NeoN::Dictionary@{NeoN::Dictionary}}
-\doxysubsubsection{\texorpdfstring{insert()}{insert()}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classNeoN_1_1Dictionary_ac622f165a5d718e04bc3a22b80d949de} 
 void Neo\+N\+::\+Dictionary\+::insert (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key}{, }\item[{const std\+::any \&}]{value}{}\end{DoxyParamCaption})}
 
 
 
 Inserts a key-\/value pair into the dictionary. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The key to insert. \\
+\hline
+{\em value} & The value to insert. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1Dictionary_a40c51d252e0db2703d6dafcea324d2b6}\index{NeoN::Dictionary@{NeoN::Dictionary}!insert@{insert}}
+\index{insert@{insert}!NeoN::Dictionary@{NeoN::Dictionary}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classNeoN_1_1Dictionary_a40c51d252e0db2703d6dafcea324d2b6} 
+void Neo\+N\+::\+Dictionary\+::insert (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{key}{, }\item[{std\+::any \&\&}]{value}{}\end{DoxyParamCaption})}
+
+
+
+Inserts a key-\/value pair into the dictionary, moving the value. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -294,7 +313,7 @@ True if the value is a dictionary, false otherwise.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00165}{165}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
+Definition at line \mbox{\hyperlink{dictionary_8hpp_source_l00172}{172}} of file \mbox{\hyperlink{dictionary_8hpp_source}{dictionary.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1Dictionary_ab7a9dfa55b6449147a8115f107771e88}\index{NeoN::Dictionary@{NeoN::Dictionary}!keys@{keys}}
 \index{keys@{keys}!NeoN::Dictionary@{NeoN::Dictionary}}

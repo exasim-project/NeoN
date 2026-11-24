@@ -41,6 +41,8 @@
     <innerclass refid="classNeoN_1_1Error" prot="public">NeoN::Error</innerclass>
     <innerclass refid="classNeoN_1_1DimensionMismatch" prot="public">NeoN::DimensionMismatch</innerclass>
     <innerclass refid="classNeoN_1_1BoundaryMesh" prot="public">NeoN::BoundaryMesh</innerclass>
+    <innerclass refid="structNeoN_1_1TrackingMeshView" prot="public">NeoN::TrackingMeshView</innerclass>
+    <innerclass refid="classNeoN_1_1TrackingMesh" prot="public">NeoN::TrackingMesh</innerclass>
     <innerclass refid="classNeoN_1_1UnstructuredMesh" prot="public">NeoN::UnstructuredMesh</innerclass>
     <innerconcept refid="conceptNeoN_1_1parallelForKernel">NeoN::parallelForKernel</innerconcept>
     <innerconcept refid="conceptNeoN_1_1parallelForContainerKernel">NeoN::parallelForContainerKernel</innerconcept>
@@ -78,11 +80,51 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="17" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="18" bodyend="21"/>
       </memberdef>
+      <memberdef kind="enum" id="namespaceNeoN_1abad01face12f9693da8be65752f00b4b" prot="public" static="no" strong="yes">
+        <type><ref refid="namespaceNeoN_1af43ac68faeeef4c3a36fd9eaf0849ab8" kindref="member">label</ref></type>
+        <name>TrackingFaceType</name>
+        <qualifiedname>NeoN::TrackingFaceType</qualifiedname>
+        <enumvalue id="namespaceNeoN_1abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40" prot="public">
+          <name>internal</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+<para>go to the neighbour cell </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1abad01face12f9693da8be65752f00b4ba0c3d06230722a86df2ff614ba26e44ba" prot="public">
+          <name>cyclic</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+<para>periodic: shift the position, continue in the partner cell </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1abad01face12f9693da8be65752f00b4bae0ebc3c409070d07f1df0f2f4132509e" prot="public">
+          <name>escape</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+<para>any other boundary: the point leaves the domain </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>What happens to a point that leaves a cell through a face. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp" line="17" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp" bodystart="18" bodyend="22"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="namespaceNeoN_1ae66b818e811f6d3d43911f7241cbacc8" prot="public" static="no">
-        <type>std::function&lt; bool(<ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>)&gt;</type>
-        <definition>using NeoN::DocumentValidator =  std::function&lt;bool(Dictionary)&gt;</definition>
+      <memberdef kind="typedef" id="namespaceNeoN_1a406d5c8ce9f8f72f54a5b17d930a3018" prot="public" static="no">
+        <type>std::function&lt; bool(const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;)&gt;</type>
+        <definition>using NeoN::DocumentValidator =  std::function&lt;bool(const Dictionary&amp;)&gt;</definition>
         <argsstring></argsstring>
         <name>DocumentValidator</name>
         <qualifiedname>NeoN::DocumentValidator</qualifiedname>
@@ -91,7 +133,7 @@
         </briefdescription>
         <detaileddescription>
 <para>This type alias represents a function that takes a <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> object as an argument and returns a boolean value indicating whether the <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> is valid or not.</para>
-<para>Example usage: <programlisting><codeline><highlight class="normal"><ref refid="namespaceNeoN_1ae66b818e811f6d3d43911f7241cbacc8" kindref="member">DocumentValidator</ref><sp/>validator<sp/>=<sp/>[](<ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref><sp/>dict)<sp/>-&gt;<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<para>Example usage: <programlisting><codeline><highlight class="normal"><ref refid="namespaceNeoN_1a406d5c8ce9f8f72f54a5b17d930a3018" kindref="member">DocumentValidator</ref><sp/>validator<sp/>=<sp/>[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict)<sp/>-&gt;<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Validation<sp/>logic<sp/>here</highlight><highlight class="normal"></highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>or<sp/>false<sp/>based<sp/>on<sp/>validation</highlight><highlight class="normal"></highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
@@ -780,14 +822,14 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/database.hpp" line="121" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/database.hpp" bodystart="121" bodyend="127"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1a1515bc3e21ebafd40f42151ea50ed85b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1ab78d8a6f87e97323bf4f4a68b6b475c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
         <definition>bool NeoN::hasId</definition>
-        <argsstring>(Dictionary doc)</argsstring>
+        <argsstring>(const Dictionary &amp;doc)</argsstring>
         <name>hasId</name>
         <qualifiedname>NeoN::hasId</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref></type>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
           <declname>doc</declname>
         </param>
         <briefdescription>
@@ -842,7 +884,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="110" column="19" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="110" declcolumn="19"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="118" column="19" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="118" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a508e5c2b8bf931a8a0921707f98b19e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string &amp;</type>
@@ -874,7 +916,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="121" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="121" declcolumn="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" line="129" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/database/document.hpp" declline="129" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a6ad7f4df2e8cf0dacc1c7262cc93f9e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -977,7 +1019,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" line="221" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" declline="221" declcolumn="1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" line="228" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/dictionary.hpp" declline="228" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a3457b41aba26d227a5cfa86d052abbfb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -3125,6 +3167,191 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp" line="159" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/helpers/exceptions.hpp" bodystart="159" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a17e66b8f18fbad2fbe45aae01fec0e72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar NeoN::pointToBarycentric</definition>
+        <argsstring>(const Vec3 &amp;x, const Vec3 &amp;a, const Vec3 &amp;b, const Vec3 &amp;c, const Vec3 &amp;d, scalar w[4])</argsstring>
+        <name>pointToBarycentric</name>
+        <qualifiedname>NeoN::pointToBarycentric</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>w</declname>
+          <array>[4]</array>
+        </param>
+        <briefdescription>
+<para>Barycentric coordinates w of x in the tetrahedron (a, b, c, d). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>GPU callable. x = w[0] a + w[1] b + w[2] c + w[3] d, with the w summing to 1.</para>
+<para><simplesect kind="return"><para>the determinant of the tetrahedron edges (6 x its signed volume). If it is zero (degenerate tet), w = (1, 0, 0, 0). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/pointInterpolation.hpp" line="23" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/pointInterpolation.hpp" bodystart="23" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1aac891ab7ee6f61ab202443b01a1ae9d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>KOKKOS_INLINE_FUNCTION ValueType</type>
+        <definition>KOKKOS_INLINE_FUNCTION ValueType NeoN::interpolateCellPoint</definition>
+        <argsstring>(const TrackingMeshView &amp;m, const View&lt; const ValueType &gt; &amp;cellValues, const View&lt; const ValueType &gt; &amp;pointValues, const label c, const Vec3 &amp;x)</argsstring>
+        <name>interpolateCellPoint</name>
+        <qualifiedname>NeoN::interpolateCellPoint</qualifiedname>
+        <param>
+          <type>const <ref refid="structNeoN_1_1TrackingMeshView" kindref="compound">TrackingMeshView</ref> &amp;</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt; &amp;</type>
+          <declname>cellValues</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt; &amp;</type>
+          <declname>pointValues</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1af43ac68faeeef4c3a36fd9eaf0849ab8" kindref="member">label</ref></type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Interpolate a field at x in cell c from cell and point values, as OpenFOAM&apos;s interpolationCellPoint. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Finds the tet (cell centre, face base point, two consecutive face points) containing x, as OpenFOAM cellPointWeight::findTetrahedron, and blends the cell value with the three point values by the barycentric weights. If no tet contains x, the tet with the largest smallest weight is used. If the cell has no valid tet, the cell value is returned.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>m</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>tracking mesh view </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cellValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>field value of every cell </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pointValues</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>field value of every mesh point (e.g. from volPointInterpolation) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>c</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>cell containing x </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/pointInterpolation.hpp" line="58" column="34" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/pointInterpolation.hpp" bodystart="58" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1a126fc623eacef4cf0cb35c0688236c6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION bool</type>
+        <definition>KOKKOS_INLINE_FUNCTION bool NeoN::pointInCell</definition>
+        <argsstring>(const Vec3 &amp;x, const label c, const TrackingMeshView &amp;m)</argsstring>
+        <name>pointInCell</name>
+        <qualifiedname>NeoN::pointInCell</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1af43ac68faeeef4c3a36fd9eaf0849ab8" kindref="member">label</ref></type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structNeoN_1_1TrackingMeshView" kindref="compound">TrackingMeshView</ref> &amp;</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+<para>Is x inside cell c? Face-plane test, as OpenFOAM primitiveMesh::pointInCell (FACE_PLANES): x is not in front of any (outward-oriented) face plane of c. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp" line="134" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp" bodystart="134" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1af89b37c9748f80495cbf34d96eb93359" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1af43ac68faeeef4c3a36fd9eaf0849ab8" kindref="member">label</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION label NeoN::locateCell</definition>
+        <argsstring>(Vec3 &amp;x, label hint, const TrackingMeshView &amp;m)</argsstring>
+        <name>locateCell</name>
+        <qualifiedname>NeoN::locateCell</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &amp;</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1af43ac68faeeef4c3a36fd9eaf0849ab8" kindref="member">label</ref></type>
+          <declname>hint</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structNeoN_1_1TrackingMeshView" kindref="compound">TrackingMeshView</ref> &amp;</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+<para>Locate the cell containing x, starting from cell hint. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The walk of OpenFOAM meshSearch::findCellWalk: if x is not in the current cell, test the neighbour cells (pointInCell); otherwise move to the neighbour whose centre is nearest to x, as long as that decreases the distance. For periodic meshes a neighbour across a cyclic face is the partner cell, seen from the shifted position x + shift (OpenFOAM&apos;s translational cyclic transform); x is shifted when the walk goes through the cyclic face.</para>
+<para><simplesect kind="return"><para>the cell containing x (x possibly shifted), or -1 if the walk gets stuck, i.e. x has left the domain through a non-periodic boundary. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp" line="166" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/trackingMesh.hpp" bodystart="166" bodyend="225"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a8e4ff733c9dc00a516d09fbdacb127f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref></type>

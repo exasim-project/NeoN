@@ -14,7 +14,7 @@ the import package is ``neon``:
    del v, executor          # Kokkos aborts if allocations outlive finalize
    neon.finalize()
 
-The package supports CPython 3.9–3.13 and depends on NumPy.
+The package supports CPython 3.11–3.13 and depends on NumPy.
 
 Installing
 ----------
@@ -44,23 +44,21 @@ get NeoN into a `pixi <https://pixi.sh>`_ project. The conda package is named
 
 .. code-block:: bash
 
-   pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
+   pixi add neon-pde -c https://prefix.dev/exasim-project/main -c conda-forge
 
 or, in ``pixi.toml``:
 
 .. code-block:: toml
 
    [project]
-   channels = ["https://prefix.dev/exasim-project", "conda-forge"]
+   channels = ["https://prefix.dev/exasim-project/main", "conda-forge"]
 
    [dependencies]
    neon-pde = "*"
 
-The channel provides CPython 3.10-3.13 packages for ``linux-64``,
+The channel provides CPython 3.11-3.13 packages for ``linux-64``,
 ``linux-aarch64``, ``osx-64`` and ``osx-arm64``. There is no ``win-64`` conda
-package, and no Python 3.9 one — use the PyPI wheel for those. (3.9 is excluded
-because conda-forge builds ``nanobind``, which the stub generation step needs,
-only for Python 3.10 and newer.)
+package — use the PyPI wheel on Windows.
 
 Unlike the wheels, the conda package installs the NeoN C++ runtime into
 ``$CONDA_PREFIX/lib`` and its headers and CMake package files into
@@ -73,7 +71,7 @@ selected by matching on it:
 .. code-block:: bash
 
    # CUDA 12.8, CPython 3.12, NVIDIA Ampere (sm_80), linux-64
-   pixi add "neon-pde=*=cuda_py312*" -c https://prefix.dev/exasim-project -c conda-forge
+   pixi add "neon-pde=*=cuda_py312*" -c https://prefix.dev/exasim-project/main -c conda-forge
 
 The CUDA package depends on the ``__cuda`` virtual package, so it only resolves
 on a machine whose NVIDIA driver is new enough. A ROCm flavour
@@ -95,7 +93,7 @@ The current CUDA wheel targets:
 
 * CUDA 12.8
 * CPython 3.12
-* Linux x86-64 (``manylinux_2_34``)
+* Linux x86-64 (``manylinux_2_35``, i.e. glibc 2.35 or newer: Ubuntu 22.04+, Debian 12+)
 * NVIDIA Ampere, compute capability ``sm_80``
 
 Download the wheel from the release page and install it, or install it directly
@@ -103,7 +101,9 @@ by URL:
 
 .. code-block:: bash
 
-   pip install https://github.com/exasim-project/NeoN/releases/download/v0.1.0/neon_pde-0.1.0+cuda128-cp312-cp312-manylinux_2_34_x86_64.whl
+   # scripts/release.sh stamps the latest release here; set another to pick that release instead.
+   VERSION=0.3.0
+   pip install "https://github.com/exasim-project/NeoN/releases/download/v${VERSION}/neon_pde-${VERSION}+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl"
 
 The CUDA wheel requires a host NVIDIA driver that provides ``libcuda.so.1``.
 That library is intentionally *not* bundled into the wheel, since it must match
@@ -191,6 +191,7 @@ them to confirm which executors a wheel supports:
    print(neon.__has_serial__)   # serial executor available
    print(neon.__has_cpu__)      # CPU (OpenMP) executor available
    print(neon.__has_gpu__)      # GPU (CUDA/HIP) executor available
+   print(neon.__has_ginkgo__)   # Ginkgo linear solvers, needed by neon.solve
 
 The repository ships an equivalent smoke test at ``ci/check_installed_wheel.py``
 that CI runs against every repaired CPU wheel.

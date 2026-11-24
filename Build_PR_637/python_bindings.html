@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Contributing" href="contributing.html"><link rel="prev" title="Installation" href="installation.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Contributing" href="contributing.html"><link rel="prev" title="Examples" href="examples.html">
         <link rel="canonical" href="https://exasim-project.com/NeoN/python_bindings.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
@@ -196,6 +196,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to NeoN!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Python bindings (<code class="docutils literal notranslate"><span class="pre">neon_pde</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="basics/index.html">Basics</a><input aria-label="Toggle navigation of Basics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -290,7 +291,7 @@ the import package is <code class="docutils literal notranslate"><span class="pr
 <span class="n">neon</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The package supports CPython 3.9–3.13 and depends on NumPy.</p>
+<p>The package supports CPython 3.11–3.13 and depends on NumPy.</p>
 <section id="installing">
 <h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
 <section id="cpu-wheels-from-pypi">
@@ -311,22 +312,20 @@ package installs without external HPC libraries.</p>
 <a class="reference external" href="https://prefix.dev">prefix.dev</a> channel, which is the most convenient way to
 get NeoN into a <a class="reference external" href="https://pixi.sh">pixi</a> project. The conda package is named
 <code class="docutils literal notranslate"><span class="pre">neon-pde</span></code> (the import package is still <code class="docutils literal notranslate"><span class="pre">neon</span></code>):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>add<span class="w"> </span>neon-pde<span class="w"> </span>-c<span class="w"> </span>https://prefix.dev/exasim-project<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>add<span class="w"> </span>neon-pde<span class="w"> </span>-c<span class="w"> </span>https://prefix.dev/exasim-project/main<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 <p>or, in <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>:</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project]</span>
-<span class="n">channels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;https://prefix.dev/exasim-project&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;conda-forge&quot;</span><span class="p">]</span>
+<span class="n">channels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;https://prefix.dev/exasim-project/main&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;conda-forge&quot;</span><span class="p">]</span>
 
 <span class="k">[dependencies]</span>
 <span class="n">neon-pde</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
 </pre></div>
 </div>
-<p>The channel provides CPython 3.10-3.13 packages for <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>,
+<p>The channel provides CPython 3.11-3.13 packages for <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>,
 <code class="docutils literal notranslate"><span class="pre">linux-aarch64</span></code>, <code class="docutils literal notranslate"><span class="pre">osx-64</span></code> and <code class="docutils literal notranslate"><span class="pre">osx-arm64</span></code>. There is no <code class="docutils literal notranslate"><span class="pre">win-64</span></code> conda
-package, and no Python 3.9 one — use the PyPI wheel for those. (3.9 is excluded
-because conda-forge builds <code class="docutils literal notranslate"><span class="pre">nanobind</span></code>, which the stub generation step needs,
-only for Python 3.10 and newer.)</p>
+package — use the PyPI wheel on Windows.</p>
 <p>Unlike the wheels, the conda package installs the NeoN C++ runtime into
 <code class="docutils literal notranslate"><span class="pre">$CONDA_PREFIX/lib</span></code> and its headers and CMake package files into
 <code class="docutils literal notranslate"><span class="pre">$CONDA_PREFIX/include</span></code> and <code class="docutils literal notranslate"><span class="pre">$CONDA_PREFIX/lib/cmake/NeoN</span></code>, so a C++ project
@@ -334,7 +333,7 @@ in the same environment can consume it with <code class="docutils literal notran
 <p>GPU conda packages carry the accelerator in their build string, so the flavour is
 selected by matching on it:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># CUDA 12.8, CPython 3.12, NVIDIA Ampere (sm_80), linux-64</span>
-pixi<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;neon-pde=*=cuda_py312*&quot;</span><span class="w"> </span>-c<span class="w"> </span>https://prefix.dev/exasim-project<span class="w"> </span>-c<span class="w"> </span>conda-forge
+pixi<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;neon-pde=*=cuda_py312*&quot;</span><span class="w"> </span>-c<span class="w"> </span>https://prefix.dev/exasim-project/main<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 <p>The CUDA package depends on the <code class="docutils literal notranslate"><span class="pre">__cuda</span></code> virtual package, so it only resolves
@@ -355,12 +354,14 @@ CUDA wheels carry a local version suffix such as <code class="docutils literal n
 <ul class="simple">
 <li><p>CUDA 12.8</p></li>
 <li><p>CPython 3.12</p></li>
-<li><p>Linux x86-64 (<code class="docutils literal notranslate"><span class="pre">manylinux_2_34</span></code>)</p></li>
+<li><p>Linux x86-64 (<code class="docutils literal notranslate"><span class="pre">manylinux_2_35</span></code>, i.e. glibc 2.35 or newer: Ubuntu 22.04+, Debian 12+)</p></li>
 <li><p>NVIDIA Ampere, compute capability <code class="docutils literal notranslate"><span class="pre">sm_80</span></code></p></li>
 </ul>
 <p>Download the wheel from the release page and install it, or install it directly
 by URL:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>https://github.com/exasim-project/NeoN/releases/download/v0.1.0/neon_pde-0.1.0+cuda128-cp312-cp312-manylinux_2_34_x86_64.whl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># scripts/release.sh stamps the latest release here; set another to pick that release instead.</span>
+<span class="nv">VERSION</span><span class="o">=</span><span class="m">0</span>.3.0
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;https://github.com/exasim-project/NeoN/releases/download/v</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">/neon_pde-</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl&quot;</span>
 </pre></div>
 </div>
 <p>The CUDA wheel requires a host NVIDIA driver that provides <code class="docutils literal notranslate"><span class="pre">libcuda.so.1</span></code>.
@@ -435,6 +436,7 @@ them to confirm which executors a wheel supports:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">neon</span><span class="o">.</span><span class="n">__has_serial__</span><span class="p">)</span>   <span class="c1"># serial executor available</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">neon</span><span class="o">.</span><span class="n">__has_cpu__</span><span class="p">)</span>      <span class="c1"># CPU (OpenMP) executor available</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">neon</span><span class="o">.</span><span class="n">__has_gpu__</span><span class="p">)</span>      <span class="c1"># GPU (CUDA/HIP) executor available</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">neon</span><span class="o">.</span><span class="n">__has_ginkgo__</span><span class="p">)</span>   <span class="c1"># Ginkgo linear solvers, needed by neon.solve</span>
 </pre></div>
 </div>
 <p>The repository ships an equivalent smoke test at <code class="docutils literal notranslate"><span class="pre">ci/check_installed_wheel.py</span></code>
@@ -493,14 +495,14 @@ already-built artifacts, see <a class="reference internal" href="ci.html"><span 
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="installation.html">
+          <a class="prev-page" href="examples.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Installation</div>
+                <div class="title">Examples</div>
                 
               </div>
             </a>
