@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <cstdlib>
+
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 
@@ -14,6 +16,21 @@
 
 namespace nb = nanobind;
 
+namespace
+{
+
+// Kokkos must finalize before AMReX (owner of the CUDA context), else teardown hits CUDA error 709.
+void finalizeRuntime()
+{
+    if (amrex::Initialized())
+    {
+        blockamr::kokkosFinalize();
+        amrex::Finalize();
+    }
+}
+
+} // namespace
+
 void registerInit(nb::module_& m)
 {
     m.def(
@@ -23,20 +40,18 @@ void registerInit(nb::module_& m)
             int argc = 0;
             char** argv = nullptr;
             amrex::Initialize(argc, argv);
-            // Kokkos must init after AMReX (owner of the CUDA context) and finalize before it,
-            // else teardown hits CUDA error 709. Kokkos cannot be re-initialized once finalized,
-            // so a second runtime() block in one process leaves it unavailable (entries raise).
+            // Kokkos must init after AMReX (owner of the CUDA context). Kokkos cannot be
+            // re-initialized once finalized, so a second runtime() block in one process leaves it
+            // unavailable (entries raise).
             blockamr::kokkosInitialize();
+            // A runtime left open (e.g. one never exited) is finalized at process exit. A C atexit
+            // handler runs after Python's teardown has freed what it frees, and -- registered after
+            // the CUDA runtime and Kokkos statics came up -- before their teardown.
+            static const bool registered = std::atexit(finalizeRuntime) == 0;
+            (void)registered;
         }
     );
-    m.def(
-        "finalize",
-        []()
-        {
-            blockamr::kokkosFinalize();
-            amrex::Finalize();
-        }
-    );
+    m.def("finalize", &finalizeRuntime);
     m.def(
         "n_ranks",
         []() { return amrex::ParallelContext::NProcsSub(); },
