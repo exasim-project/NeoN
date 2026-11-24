@@ -403,3 +403,74 @@ The diagonal term uses the **Dirichlet fraction** :math:`f_D`:
    ``valueRhs`` instead, so the total implicit coupling is still
    ``δ · γ · |S_f| · f_D``.  This differs from the internal face
    assembly where ``flux`` already absorbs ``δ``.
+
+
+Vector fields: shared scalar matrix vs. per-component diagonal
+--------------------------------------------------------------
+
+A vector field (``Vec3``) is **not** assembled as three independent scalar
+systems, nor as a block matrix. Instead NeoN builds a **single scalar sparsity
+pattern and matrix** whose entries are shared by all three components, and solves
+
+.. math::
+
+   A\,\mathbf{x} = \mathbf{b}, \qquad
+   \mathbf{x}, \mathbf{b} \in \mathbb{R}^{N \times 3}
+
+as one **multi-RHS** solve: the same scalar operator :math:`A` is applied to the
+:math:`x`, :math:`y`, and :math:`z` columns simultaneously (Ginkgo treats the
+right-hand side as an :math:`N \times 3` dense block). This is the common case —
+the diffusion/convection operators of the momentum equation are identical for each
+component, so one matrix and one Krylov solve serve all three. It halves memory
+versus three matrix copies and amortises the preconditioner setup across components.
+
+The assumption this relies on is that **the operator is the same for every
+component**. That holds as long as every diagonal and off-diagonal entry is a
+scalar that does not depend on the component index. A term whose coefficient is
+**direction dependent** — i.e. differs between the :math:`x`, :math:`y`, and
+:math:`z` rows of the same cell — breaks it, because a single shared scalar
+diagonal cannot store three different values.
+
+The escape hatch: ``diagCmpt``
+    ``LinearSystem`` carries an *optional* secondary store,
+    ``diagCmpt`` (a ``Vector<RHSValueType>``, i.e. one ``Vec3`` per cell,
+    allocated lazily via ``ensureDiagCmpt()``). It holds a **per-component
+    correction to the diagonal only**. An operator that needs a
+    direction-dependent diagonal accumulates the three component weights there
+    instead of into the shared scalar matrix.
+
+    When ``diagCmpt`` is populated the multi-RHS solve is no longer valid, so the
+    solver backend (see ``src/linearAlgebra/ginkgo/ginkgo.cpp``) falls back to
+    **three segregated scalar solves** — one per component. For column
+    :math:`c` it temporarily subtracts ``diagCmpt[·][c]`` from the shared scalar
+    diagonal *in place* (no matrix copy), runs the scalar solve, then restores the
+    diagonal. The off-diagonals — still identical across components — are reused
+    untouched.
+
+This is the mechanism behind the *implicit* slip/symmetry normal damping
+(:ref:`fvcc_BC`): the damping coefficient
+:math:`\gamma\,|S|\,\Delta\,|n_c|` carries a per-component :math:`|n_c|` factor, so
+it is routed through ``diagCmpt`` rather than the shared diagonal. Any future
+operator with a genuinely anisotropic (per-component) diagonal contribution should
+use the same ``diagCmpt`` path; a per-component *off-diagonal* coupling, by
+contrast, would require a true block matrix and is not supported by this scheme.
+
+.. list-table:: Trade-offs
+   :header-rows: 1
+   :widths: 30 35 35
+
+   * -
+     - Shared scalar matrix (default)
+     - ``diagCmpt`` per-component diagonal
+   * - Solve
+     - one multi-RHS (:math:`N \times 3`) solve
+     - three segregated scalar solves
+   * - Matrix storage
+     - one scalar matrix
+     - one scalar matrix + one ``Vec3``/cell
+   * - Requires
+     - component-independent operator
+     - direction-dependent **diagonal** only
+   * - Not supported
+     - direction-dependent entries
+     - per-component **off-diagonal** coupling (needs block matrix)

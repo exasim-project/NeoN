@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>NeoN::finiteVolume::cellCentred::GradOperatorFactory</compoundname>
     <basecompoundref refid="classNeoN_1_1RuntimeSelectionFactory" prot="public" virt="non-virtual">NeoN::RuntimeSelectionFactory&lt; GradOperatorFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</basecompoundref>
@@ -11,7 +11,7 @@
     </templateparamlist>
     <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ac594dc3a7e6def8f10162bc6bec89c6c" prot="protected" static="no" mutable="no">
-        <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref></type>
+        <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref></type>
         <definition>const Executor NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;::exec_</definition>
         <argsstring></argsstring>
         <name>exec_</name>
@@ -41,13 +41,13 @@
     </sectiondef>
     <sectiondef kind="public-static-func">
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a217945b9c46929fa56dcbddd201c9c4f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory" kindref="compound">GradOperatorFactory</ref>&lt; ValueType &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ad69e8a6c56980eb97e2c98203e1c63e0" kindref="member">GradOperatorFactory</ref>&lt; ValueType &gt; &gt;</type>
         <definition>static std::unique_ptr&lt; GradOperatorFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;::create</definition>
         <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;uMesh, const Input &amp;inputs)</argsstring>
         <name>create</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::create</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
           <declname>exec</declname>
         </param>
         <param>
@@ -55,7 +55,7 @@
           <declname>uMesh</declname>
         </param>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a0f89cac0ba212d1026c9fedc65742cea" kindref="member">Input</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a7832dfa5a418fe87dc2e3de60259dfbf" kindref="member">Input</ref> &amp;</type>
           <declname>inputs</declname>
         </param>
         <briefdescription>
@@ -89,7 +89,7 @@
         <name>GradOperatorFactory</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::GradOperatorFactory</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
           <declname>exec</declname>
         </param>
         <param>
@@ -124,6 +124,8 @@
         <argsstring>(const VolumeField&lt; scalar &gt; &amp;phi, const dsl::Coeff operatorScaling, la::LinearSystem&lt; ValueType &gt; &amp;ls) const =0</argsstring>
         <name>grad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::grad</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_1a27d7a4ae46b4cb897f4c4f18434c3c2d">grad</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1a71e44dccd01d657e5488ee21675c8e3c">grad</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>phi</declname>
@@ -150,6 +152,8 @@
         <argsstring>(const VolumeField&lt; scalar &gt; &amp;phi, const dsl::Coeff operatorScaling, Vector&lt; Vec3 &gt; &amp;gradPhi) const =0</argsstring>
         <name>grad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::grad</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_1a73843026ee03407aa42be2eb8ceae7ec">grad</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ae61920677e74df5fa41faf3a3b49ece0">grad</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>phi</declname>
@@ -176,6 +180,8 @@
         <argsstring>(const VolumeField&lt; scalar &gt; &amp;phi, const dsl::Coeff operatorScaling) const =0</argsstring>
         <name>grad</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::grad</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_1a707598205fb2c761b8ddae94c420e2cd">grad</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ac7942edc6d22c239a061a295cf659255">grad</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
           <declname>phi</declname>
@@ -198,6 +204,8 @@
         <argsstring>(const VolumeField&lt; Vec3 &gt; &amp;u, VolumeField&lt; Tensor &gt; &amp;gradU, const dsl::Coeff operatorScaling) const</argsstring>
         <name>gradTensor</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::gradTensor</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_1a5c7881c667afd7b0ff2c60da6a988559">gradTensor</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1ad9826d42f7c643342c5d331ac64cdaab">gradTensor</reimplementedby>
         <param>
           <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
           <declname>u</declname>
@@ -219,11 +227,13 @@
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="90" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="90" bodyend="95"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a1c1cb19fc919dbc0429ee91cf8f492cf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory" kindref="compound">GradOperatorFactory</ref>&lt; ValueType &gt; &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ad69e8a6c56980eb97e2c98203e1c63e0" kindref="member">GradOperatorFactory</ref>&lt; ValueType &gt; &gt;</type>
         <definition>virtual std::unique_ptr&lt; GradOperatorFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;::clone</definition>
         <argsstring>() const =0</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GradOperatorFactory::clone</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_1a86d9cf4e97f09ca27676ae2063a5e673">clone</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad_1abf7ff760f2f97a3cdad1dac28f2f360c">clone</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -238,18 +248,22 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>NeoN::RuntimeSelectionFactory&lt; GradOperatorFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
+        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
+      </node>
       <node id="1">
         <label>NeoN::finiteVolume::cellCentred::GradOperatorFactory&lt; ValueType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>NeoN::RuntimeSelectionFactory&lt; GradOperatorFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
         <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="3">
         <label>NeoN::UnstructuredMesh</label>
         <link refid="classNeoN_1_1UnstructuredMesh"/>
@@ -262,10 +276,6 @@
         <childnode refid="3" relation="usage">
           <edgelabel>mesh_</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>NeoN::RuntimeSelectionFactory&lt; GradOperatorFactory&lt; ValueType &gt;, Parameters&lt; const Executor &amp;, const UnstructuredMesh &amp;, const Input &amp; &gt; &gt;</label>
-        <link refid="classNeoN_1_1RuntimeSelectionFactory"/>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" line="24" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp" bodystart="28" bodyend="105"/>

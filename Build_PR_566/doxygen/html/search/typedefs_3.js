@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['defaultallocator_0',['DefaultAllocator',['../namespaceNeoN.html#ad21f9c627e11e11f4e33dd1717971ce6',1,'NeoN']]],
-  ['documentvalidator_1',['DocumentValidator',['../namespaceNeoN.html#a957a55577aca9a487c3965676ad7dd12',1,'NeoN']]]
+  ['defaultallocator_0',['DefaultAllocator',['../namespaceNeoN.html#a50df138959e457a4ed27f66898c17096',1,'NeoN']]],
+  ['documentvalidator_1',['DocumentValidator',['../namespaceNeoN.html#a406d5c8ce9f8f72f54a5b17d930a3018',1,'NeoN']]]
 ];

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['refholder_0',['RefHolder',['../structNeoN_1_1detail_1_1RefHolder.html',1,'NeoN::detail']]],
-  ['register_1',['register',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register&lt; derivedClass &gt;'],['../classRuntimeSelectionFactory_1_1Register.html',1,'Register']]],
+  ['register_1',['Register',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4_1_1Register.html',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::Register&lt; derivedClass &gt;'],['../classRuntimeSelectionFactory_1_1Register.html',1,'Register']]],
   ['registerdocumentation_2',['RegisterDocumentation',['../structNeoN_1_1RegisterDocumentation.html',1,'NeoN']]],
   ['registerdocumentation_3c_20base_20_3e_3',['RegisterDocumentation&lt; Base &gt;',['../structNeoN_1_1RegisterDocumentation.html',1,'NeoN']]],
   ['runtimeselectionfactory_4',['RuntimeSelectionFactory',['../classNeoN_1_1RuntimeSelectionFactory.html',1,'NeoN']]],

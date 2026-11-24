@@ -130,8 +130,8 @@ The following code snippet shows how to create a ``VectorDocument``:
     template<class VectorType>
     VectorDocument(
         const VectorType& field,
-        std::size_t timeIndex,
-        std::size_t iterationIndex,
+        NeoN::sizeType timeIndex,
+        NeoN::sizeType iterationIndex,
         std::int64_t subCycleIndex
     )
         : doc_(
@@ -169,13 +169,13 @@ The createFunction could look as followed:
     {
         std::string name;
         NeoN::UnstructuredMesh mesh;
-        std::size_t timeIndex = 0;
-        std::size_t iterationIndex = 0;
+        NeoN::sizeType timeIndex = 0;
+        NeoN::sizeType iterationIndex = 0;
         std::int64_t subCycleIndex = 0;
         NeoN::Document operator()(NeoN::Database& db)
         {
             std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs {};
-            for (auto patchi : std::vector<size_t> {0, 1, 2, 3})
+            for (auto patchi : std::vector<NeoN::sizeType> {0, 1, 2, 3})
             {
                 NeoN::Dictionary dict;
                 dict.insert("type", std::string("fixedValue"));
@@ -224,7 +224,7 @@ The ``Collection`` class provides a find method that allows the user to query th
         [](const Document& doc)
         {
             return doc.get<std::string>("name") == "someName";
-                && doc.get<std::size_t>("someValue") == 42.0;
+                && doc.get<NeoN::sizeType>("someValue") == 42.0;
         }
     );
 
