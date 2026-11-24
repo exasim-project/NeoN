@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['c_0',['c',['../structblockamr_1_1GmgProlongCell.html#a1182951dbea74f672330077836c9c847',1,'blockamr::GmgProlongCell::c'],['../structNeoN_1_1detail_1_1RefHolder.html#a19683965bd28878cf74e39159a9c8102',1,'NeoN::detail::RefHolder::c']]],
+  ['ca_1',['ca',['../structblockamr_1_1la_1_1ChebStep.html#a9c022ff38fa7df6a63e0ed1b130a908b',1,'blockamr::la::ChebStep']]],
+  ['cb_2',['cb',['../structblockamr_1_1la_1_1ChebStep.html#a6406dc70880fc90e587ad7a20f201a8d',1,'blockamr::la::ChebStep']]],
+  ['cellbasediteratordata_5f_3',['cellBasedIteratorData_',['../classNeoN_1_1la_1_1CellBasedIterator.html#a4017259e8843187c956e846ae4ebcc47',1,'NeoN::la::CellBasedIterator']]],
+  ['cellcenters_4',['cellCenters',['../structNeoN_1_1TrackingMeshView.html#a2e6dd4e6cb8f3204890c14a96a9a22a0',1,'NeoN::TrackingMeshView']]],
+  ['cellfaces_5',['cellFaces',['../structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData.html#a30829c4df80afa9bfe9ebf5993d6141b',1,'NeoN::la::CellBasedIterator::CellBasedData::cellFaces'],['../structNeoN_1_1TrackingMeshView.html#a0a05e1d56928c91a4a140cc292a4e7d7',1,'NeoN::TrackingMeshView::cellFaces']]],
+  ['cellsperlevel_6',['cellsPerLevel',['../structblockamr_1_1GmgResult.html#ad70a3ef800625599498179470f273efb',1,'blockamr::GmgResult']]],
+  ['cellvolumes_7',['cellVolumes',['../structNeoN_1_1TrackingMeshView.html#a4462112e9addabc48efc5c9d9d47ef05',1,'NeoN::TrackingMeshView']]],
+  ['centers_8',['centers',['../structNeoN_1_1detail_1_1CellData.html#ab0b25763674ccfa97d6e305901e5b2af',1,'NeoN::detail::CellData::centers'],['../structNeoN_1_1detail_1_1FaceData.html#ad394d054dc71d948a402802f7a98966f',1,'NeoN::detail::FaceData::centers']]],
+  ['chebd_9',['chebD',['../structblockamr_1_1la_1_1GmgLevelT.html#adfdd26f6334217bf09e8f25362380cf1',1,'blockamr::la::GmgLevelT']]],
+  ['coarsestsweeps_10',['coarsestSweeps',['../structblockamr_1_1KokkosGmgOpts.html#a6bd2e698b1814928f573a3041b0c9aae',1,'blockamr::KokkosGmgOpts::coarsestSweeps'],['../structblockamr_1_1la_1_1GmgConfig.html#adb2a1f8cd5b86d7b4c99fc2ebf639be5',1,'blockamr::la::GmgConfig::coarsestSweeps']]],
+  ['coeffprecision_11',['coeffPrecision',['../structblockamr_1_1KokkosGmgOpts.html#ad685e08d54e6dc8f4a55e62583b02a39',1,'blockamr::KokkosGmgOpts::coeffPrecision'],['../structblockamr_1_1la_1_1GmgConfig.html#aadb6d93fe65103a71ae4981d964fc164',1,'blockamr::la::GmgConfig::coeffPrecision']]],
+  ['coeffs_12',['coeffs',['../structblockamr_1_1la_1_1GmgSystem.html#a09c9f03c53ae7e2fbfb24af8cf3e1124',1,'blockamr::la::GmgSystem']]],
+  ['coeffs_5f_13',['coeffs_',['../classNeoN_1_1dsl_1_1OperatorMixin.html#aca2e5d4a971d6f5e412d9c3466f0890c',1,'NeoN::dsl::OperatorMixin']]],
+  ['colidxs_14',['colIdxs',['../structNeoN_1_1la_1_1SparsityView.html#a1cb5b4b48a9ed148cf8b403dac414c0e',1,'NeoN::la::SparsityView']]],
+  ['cols_15',['cols',['../structNeoN_1_1la_1_1Dimensions.html#a9f9d5717f4f139b7efc4b6a9a087eb7b',1,'NeoN::la::Dimensions']]],
+  ['contraction_16',['contraction',['../structblockamr_1_1la_1_1SolveResult.html#ab4b05268a9f4ec00048d14f88ad191a5',1,'blockamr::la::SolveResult']]],
+  ['control_5fdict_5fname_17',['CONTROL_DICT_NAME',['../classNeoN_1_1Time.html#ad5a35398d9c27636b32a69aa19db11e2',1,'NeoN::Time']]],
+  ['converged_18',['converged',['../structblockamr_1_1la_1_1SolveResult.html#a55214cdc69e9097de7f77cc5baf3a099',1,'blockamr::la::SolveResult']]],
+  ['count_19',['count',['../structblockamr_1_1la_1_1prof_1_1Acc.html#aadb20d868372c260941686b8819cbd25',1,'blockamr::la::prof::Acc']]],
+  ['cr_20',['cr',['../structblockamr_1_1GmgResidRestrictCell.html#aad8a1040dd5cd55532acaf91d493fac6',1,'blockamr::GmgResidRestrictCell']]],
+  ['creationts_21',['creationTS',['../classNeoN_1_1Logging_1_1LogEvent.html#ae08d532e07e1a1403f395756b2d07a68',1,'NeoN::Logging::LogEvent']]],
+  ['cycles_22',['cycles',['../structblockamr_1_1KokkosGmgOpts.html#ab99062baae20328a8261af2ffc84da4e',1,'blockamr::KokkosGmgOpts']]],
+  ['cyclicpartnercell_23',['cyclicPartnerCell',['../structNeoN_1_1TrackingMeshView.html#a1588de17724e56d31ad6bf00d0698f6d',1,'NeoN::TrackingMeshView']]],
+  ['cyclicshift_24',['cyclicShift',['../structNeoN_1_1TrackingMeshView.html#a3b72deffdf221d0209ad1772ce73a1ca',1,'NeoN::TrackingMeshView']]]
+];
