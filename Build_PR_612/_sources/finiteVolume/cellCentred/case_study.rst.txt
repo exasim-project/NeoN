@@ -34,8 +34,8 @@ the corresponding NeoN version is implemented as
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
             scalar flux = surfFaceFlux[i]*surfPhif[i];
-            threadsafe_add(&surfDivPhi[static_cast<size_t>(surfOwner[i])], flux);
-            threadsafe_sub(&surfDivPhi[static_cast<size_t>(surfNeighbour[i])], flux);
+            threadsafe_add(&surfDivPhi[static_cast<NeoN::sizeType>(surfOwner[i])], flux);
+            threadsafe_sub(&surfDivPhi[static_cast<NeoN::sizeType>(surfNeighbour[i])], flux);
         }
     );
 
