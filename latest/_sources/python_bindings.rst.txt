@@ -102,7 +102,7 @@ by URL:
 .. code-block:: bash
 
    # scripts/release.sh stamps the latest release here; set another to pick that release instead.
-   VERSION=0.3.0rc2
+   VERSION=0.3.0
    pip install "https://github.com/exasim-project/NeoN/releases/download/v${VERSION}/neon_pde-${VERSION}+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl"
 
 The CUDA wheel requires a host NVIDIA driver that provides ``libcuda.so.1``.
