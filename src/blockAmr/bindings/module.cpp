@@ -19,5 +19,8 @@ NB_MODULE(_blockamr, m)
     registerGeometry(m);
     registerPlotfile(m);
     registerFillPatch(m);
+    registerLinOp(m);
     registerStencilKernels(m);
+    registerLinearAlgebra(m);
+    registerKokkosBench(m);
 }

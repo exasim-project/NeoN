@@ -9,12 +9,14 @@
 # ``from ..dsl import EqTerm`` makes ``import blockamr.dsl`` fail with a confusing
 # partially-initialised-module error.
 from . import exp
+from . import imp
 from .solve import solve, evaluate
 from .eqterm import EqTerm
 from .equation import Equation
 
 __all__ = [
     "exp",
+    "imp",
     "EqTerm",
     "Equation",
     "solve",

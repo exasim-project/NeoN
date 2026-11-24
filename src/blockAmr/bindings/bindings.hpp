@@ -15,4 +15,7 @@ void registerMultiFab(nb::module_& m);
 void registerGeometry(nb::module_& m);
 void registerPlotfile(nb::module_& m);
 void registerFillPatch(nb::module_& m);
+void registerLinOp(nb::module_& m);
 void registerStencilKernels(nb::module_& m);
+void registerLinearAlgebra(nb::module_& m);
+void registerKokkosBench(nb::module_& m);
