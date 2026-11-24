@@ -55,6 +55,13 @@ else()
   target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_SUNDIALS=0)
 endif()
 
+if(NeoN_WITH_AMREX)
+  target_link_libraries(NeoN_public_api INTERFACE AMReX::amrex)
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_AMREX=1)
+else()
+  target_compile_definitions(NeoN_public_api INTERFACE NN_WITH_AMREX=0)
+endif()
+
 if(NeoN_WITH_SPDLOG)
   target_link_libraries(NeoN_public_api INTERFACE spdlog::spdlog_header_only)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_SPDLOG=1)
@@ -104,6 +111,13 @@ file(
   GLOB_RECURSE include_files
   RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/
   *.hpp)
+
+# NeoN/blockAmr/ is excluded unconditionally, not gated on NeoN_WITH_BLOCKAMR: NeoN.hpp is the
+# convenience header for NeoN core consumers, and every blockAmr header needs AMReX (and most need
+# Ginkgo), which NeoN core neither links nor requires. Letting the glob pick them up would make
+# every consumer of NeoN.hpp depend on AMReX, and would break outright with NeoN_WITH_AMREX=OFF.
+# blockAmr sources include their own headers by full path.
+list(FILTER include_files EXCLUDE REGEX "^NeoN/blockAmr/")
 
 # Convert the list of files into #includes
 foreach(include_file ${include_files})

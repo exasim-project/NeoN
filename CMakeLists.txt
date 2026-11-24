@@ -82,6 +82,7 @@ option(NeoN_WITH_KOKKOS "Enable using Kokkos as platform portability layer." ON)
 option(NeoN_WITH_UMPIRE "Enable using Umpire as memory manager [Experimental]." ON)
 option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
 option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support." OFF)
+option(NeoN_WITH_AMREX "Build NeoN with AMReX support" OFF)
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
 option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 
@@ -163,6 +164,28 @@ if(DEFINED SKBUILD)
     set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
   else()
     set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+  endif()
+endif()
+
+# The blockAmr component (src/blockAmr, include/NeoN/blockAmr): the block-structured AMReX engine
+# and its _blockamr Python module. Declared here rather than with the other options above because it
+# depends on NeoN_BUILD_PYTHON_BINDINGS, which the SKBUILD block just forced ON -- evaluating it
+# earlier would exclude the component from every wheel build. ON whenever AMReX and the bindings
+# are, which is exactly what the old implicit gate resolved to, and forced OFF otherwise since the
+# component needs both.
+include(CMakeDependentOption)
+cmake_dependent_option(
+  NeoN_WITH_BLOCKAMR "Build the blockAmr component (block-structured AMReX engine)" ON
+  "NeoN_WITH_AMREX;NeoN_BUILD_PYTHON_BINDINGS" OFF)
+
+# Enable CUDA early so Kokkos doesn't replace CMAKE_CXX_COMPILER with kokkos_launch_compiler, which
+# triggers a CMake re-configure that loses all -D flags and preset variables (e.g. NeoN_WITH_AMREX /
+# NeoN_AMREX_GPU_BACKEND).
+if(NeoN_WITH_AMREX)
+  include(CheckLanguage)
+  check_language(CUDA)
+  if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
   endif()
 endif()
 
@@ -334,8 +357,16 @@ if(NeoN_INSTALL_CMAKE_PACKAGE)
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
           DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
-  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+  # blockAmr's headers ship only when the component is built; they need AMReX to compile.
+  if(NeoN_WITH_BLOCKAMR)
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+  else()
+    install(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN
+      PATTERN "blockAmr" EXCLUDE)
+  endif()
 
   include(CMakePackageConfigHelpers)
   configure_package_config_file(
