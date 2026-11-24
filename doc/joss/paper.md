@@ -76,7 +76,7 @@ The existing works demonstrate that core finite-volume concepts - such as flux e
 
 # Software Design
 NeoN is built around a layered, modular architecture as illustrated in \autoref{fig:neon-arch}. Its design cleanly separates the distinct stages: DSL-based equation representation, discretisation, matrix assembly, and linear solver. This separation allows each layer to evolve independently, making the framework highly extensible and maintainable.
-At the heart of NeoN is a `C++` embedded DSL that allows users to express partial differential equations in a form close to their mathematical  representation, while the corresponding finite-volume discretisation is performed internally by the framework. 
+At the heart of NeoN is a `C++` embedded DSL that allows users to express partial differential equations in a form close to their mathematical  representation, while the corresponding finite-volume discretisation is performed internally by the framework.
 
 \newpage
 
