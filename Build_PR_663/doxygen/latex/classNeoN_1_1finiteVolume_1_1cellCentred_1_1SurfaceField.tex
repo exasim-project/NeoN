@@ -34,10 +34,12 @@ typedef Value\+Type \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_
 \item 
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_aeb32a1a639211bfc28b5f5726a491a6e}{Surface\+Field}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internal\+Vector}}, const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \&boundary\+Vectors, const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{boundary\+Conditions}})
 \item 
-\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a390ecfe6959df3bb4faae62444bf11be}{Surface\+Field}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}, std\+::string field\+Name, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{boundary\+Conditions}}, \mbox{\hyperlink{classNeoN_1_1Database}{Database}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ad29aea2f363666ef9a9f69b1af643e56}{db}}, std\+::string db\+Key, std\+::string collection\+Name)
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6a0db9d13c81218a360a2be8dd0d3412}{Surface\+Field}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}, std\+::string field\+Name, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}, \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ domain\+Vector, const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{boundary\+Conditions}}, \mbox{\hyperlink{classNeoN_1_1Database}{Database}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin_ad29aea2f363666ef9a9f69b1af643e56}{db}}, std\+::string db\+Key, std\+::string collection\+Name)
 \item 
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_aa17c15ae4b98784ee63baa2a515c6f19}{Surface\+Field}} (const Surface\+Field \&other)
 \begin{DoxyCompactList}\small\item\em Copy constructor for a surface field. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a7c04a461d15f728a406f787a6a52a863}{Surface\+Field}} (Surface\+Field \&\&other)
+\begin{DoxyCompactList}\small\item\em Move constructor. Without it, moving a \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field} would copy its data, since the user-\/declared copy constructor suppresses the implicit move constructor. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_ae8f0473ecb08d5feee81e9f03f2b5bde}{correct\+Boundary\+Conditions}} ()
 \begin{DoxyCompactList}\small\item\em Corrects the boundary conditions of the surface field. \end{DoxyCompactList}\item 
 std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{boundary\+Conditions}} () const
@@ -45,7 +47,7 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Su
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Domain\+Mixin$<$ Value\+Type $>$}}}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_acff205bf0a76976fccbf70294091587b}{Domain\+Mixin}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}, std\+::string field\+Name, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}, const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&field)
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a670745d260909dcf8d91a48b21b50e82}{Domain\+Mixin}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}, std\+::string field\+Name, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}, \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ field)
 \begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin}{Domain\+Mixin}. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a38cf4aa6c4a6d47e4f24f4e158950af3}{Domain\+Mixin}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}, std\+::string field\+Name, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internal\+Vector}}, const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \&boundary\+Vectors)
 \begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin}{Domain\+Mixin}. \end{DoxyCompactList}\item 
@@ -146,7 +148,7 @@ Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00034}{34}} of fil
 \doxysubsection{Constructor \& Destructor Documentation}
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a8e8bb4ca52f680de416bb96ddd0e8e64}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!SurfaceField@{SurfaceField}}
 \index{SurfaceField@{SurfaceField}!NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [1/6]}}
 {\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a8e8bb4ca52f680de416bb96ddd0e8e64} 
 template$<$typename Value\+Type$>$ \\
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ Value\+Type $>$\+::\+Surface\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&}]{exec}{, }\item[{std\+::string}]{field\+Name}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&}]{boundary\+Conditions}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
@@ -172,7 +174,7 @@ Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00044}{44}} of fil
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_ab4824ca4d836eb971d7020c0d74c576a}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!SurfaceField@{SurfaceField}}
 \index{SurfaceField@{SurfaceField}!NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [2/6]}}
 {\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_ab4824ca4d836eb971d7020c0d74c576a} 
 template$<$typename Value\+Type$>$ \\
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ Value\+Type $>$\+::\+Surface\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&}]{exec}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector}{, }\item[{const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&}]{boundary\+Conditions}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
@@ -183,7 +185,7 @@ Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00066}{66}} of fil
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_aeb32a1a639211bfc28b5f5726a491a6e}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!SurfaceField@{SurfaceField}}
 \index{SurfaceField@{SurfaceField}!NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [3/6]}}
 {\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_aeb32a1a639211bfc28b5f5726a491a6e} 
 template$<$typename Value\+Type$>$ \\
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ Value\+Type $>$\+::\+Surface\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&}]{exec}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{internal\+Vector}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1BoundaryData}{Boundary\+Data}}$<$ Value\+Type $>$ \&}]{boundary\+Vectors}{, }\item[{const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&}]{boundary\+Conditions}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
@@ -192,12 +194,12 @@ template$<$typename Value\+Type$>$ \\
 
 Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a390ecfe6959df3bb4faae62444bf11be}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!SurfaceField@{SurfaceField}}
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6a0db9d13c81218a360a2be8dd0d3412}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!SurfaceField@{SurfaceField}}
 \index{SurfaceField@{SurfaceField}!NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
-{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a390ecfe6959df3bb4faae62444bf11be} 
+\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [4/6]}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6a0db9d13c81218a360a2be8dd0d3412} 
 template$<$typename Value\+Type$>$ \\
-\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ Value\+Type $>$\+::\+Surface\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&}]{exec}{, }\item[{std\+::string}]{field\+Name}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector}{, }\item[{const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&}]{boundary\+Conditions}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Database}{Database}} \&}]{db}{, }\item[{std\+::string}]{db\+Key}{, }\item[{std\+::string}]{collection\+Name}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ Value\+Type $>$\+::\+Surface\+Field (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&}]{exec}{, }\item[{std\+::string}]{field\+Name}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$}]{domain\+Vector}{, }\item[{const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ Value\+Type $>$ $>$ \&}]{boundary\+Conditions}{, }\item[{\mbox{\hyperlink{classNeoN_1_1Database}{Database}} \&}]{db}{, }\item[{std\+::string}]{db\+Key}{, }\item[{std\+::string}]{collection\+Name}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -205,7 +207,7 @@ Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00108}{108}} of fi
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_aa17c15ae4b98784ee63baa2a515c6f19}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!SurfaceField@{SurfaceField}}
 \index{SurfaceField@{SurfaceField}!NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [5/6]}}
 {\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_aa17c15ae4b98784ee63baa2a515c6f19} 
 template$<$typename Value\+Type$>$ \\
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ Value\+Type $>$\+::\+Surface\+Field (\begin{DoxyParamCaption}\item[{const Surface\+Field$<$ Value\+Type $>$ \&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
@@ -223,6 +225,26 @@ Copy constructor for a surface field.
 
 Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00128}{128}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
 
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a7c04a461d15f728a406f787a6a52a863}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!SurfaceField@{SurfaceField}}
+\index{SurfaceField@{SurfaceField}!NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{SurfaceField()}{SurfaceField()}\hspace{0.1cm}{\footnotesize\ttfamily [6/6]}}
+{\footnotesize\ttfamily \label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a7c04a461d15f728a406f787a6a52a863} 
+template$<$typename Value\+Type$>$ \\
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ Value\+Type $>$\+::\+Surface\+Field (\begin{DoxyParamCaption}\item[{Surface\+Field$<$ Value\+Type $>$ \&\&}]{other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Move constructor. Without it, moving a \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field} would copy its data, since the user-\/declared copy constructor suppresses the implicit move constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The surface field to move from. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00139}{139}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
+
 
 
 \label{doc-func-members}
@@ -237,7 +259,7 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Su
 
 
 
-Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
+Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00173}{173}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_ae8f0473ecb08d5feee81e9f03f2b5bde}\index{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}!correctBoundaryConditions@{correctBoundaryConditions}}
 \index{correctBoundaryConditions@{correctBoundaryConditions}!NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceField$<$ ValueType $>$}}
@@ -252,7 +274,7 @@ Corrects the boundary conditions of the surface field.
 
 This function applies the \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_ae8f0473ecb08d5feee81e9f03f2b5bde}{correct\+Boundary\+Conditions()} method to each boundary condition in the field. 
 
-Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00139}{139}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
+Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
 
 
 
