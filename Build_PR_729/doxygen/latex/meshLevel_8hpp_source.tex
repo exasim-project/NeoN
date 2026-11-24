@@ -1,0 +1,41 @@
+\doxysection{mesh\+Level.\+hpp}
+\hypertarget{meshLevel_8hpp_source}{}\label{meshLevel_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/meshLevel.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/meshLevel.hpp}}
+\mbox{\hyperlink{meshLevel_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_BoxArray.H>}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <AMReX\_DistributionMapping.H>}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <AMReX\_Geometry.H>}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}\ \textcolor{comment}{//\ fillHalo}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00015}00015\ \textcolor{comment}{/*\ @brief\ The\ AMReX\ layout\ triple\ (BoxArray,\ DistributionMapping,\ Geometry)\ of\ ONE\ AMR}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00016}00016\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ level,\ as\ one\ argument.\ Held\ BY\ VALUE,\ so\ safe\ as\ a\ member;\ the\ executor\ is}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ deliberately\ NOT\ here\ -\/-\/\ la\ routes\ it\ through\ the\ MATRIX\ instead.}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00018}00018\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00019}\mbox{\hyperlink{structblockamr_1_1MeshLevel}{00019}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1MeshLevel}{MeshLevel}}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00021}\mbox{\hyperlink{structblockamr_1_1MeshLevel_a0d72344a61193b80de9cf8a86398f8d7}{00021}}\ \ \ \ \ amrex::BoxArray\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_a0d72344a61193b80de9cf8a86398f8d7}{ba}};}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00022}\mbox{\hyperlink{structblockamr_1_1MeshLevel_ab6543b2d0500afc3ef9cc57f1ff95881}{00022}}\ \ \ \ \ amrex::DistributionMapping\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_ab6543b2d0500afc3ef9cc57f1ff95881}{dm}};}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00023}\mbox{\hyperlink{structblockamr_1_1MeshLevel_a720cfbbcdf6a60768816f713416847a5}{00023}}\ \ \ \ \ amrex::Geometry\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_a720cfbbcdf6a60768816f713416847a5}{geom}};}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{comment}{//\ By\ value:\ a\ reference\ into\ a\ temporary\ geometry\ is\ the\ bug\ this\ avoids.}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00026}\mbox{\hyperlink{structblockamr_1_1MeshLevel_a337fa64ce46007699e0bc21137956b76}{00026}}\ \ \ \ \ amrex::GpuArray<amrex::Real,\ AMREX\_SPACEDIM>\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_a337fa64ce46007699e0bc21137956b76}{dx}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_a720cfbbcdf6a60768816f713416847a5}{geom}}.CellSizeArray();\ \}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00028}\mbox{\hyperlink{structblockamr_1_1MeshLevel_ae2d0fbbafe3786fe7cd332bad7acba79}{00028}}\ \ \ \ \ amrex::Periodicity\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_ae2d0fbbafe3786fe7cd332bad7acba79}{periodicity}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_a720cfbbcdf6a60768816f713416847a5}{geom}}.periodicity();\ \}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ The\ halo\ a\ coefficient\ field\ needs\ before\ a\ face\ average\ reads\ its\ neighbour.}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ Internal\ and\ periodic\ ghosts\ only\ -\/-\/\ a\ domain\ face\ is\ the\ BC's\ business.}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00032}\mbox{\hyperlink{structblockamr_1_1MeshLevel_a8155787363de2eb8dcd673f1eb1556fe}{00032}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structblockamr_1_1MeshLevel_a8155787363de2eb8dcd673f1eb1556fe}{fillHalo}}(amrex::MultiFab\&\ mf)\textcolor{keyword}{\ const\ }\{\ mf.FillBoundary(\mbox{\hyperlink{structblockamr_1_1MeshLevel_ae2d0fbbafe3786fe7cd332bad7acba79}{periodicity}}());\ \}}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00033}00033\ \};}
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{meshLevel_8hpp_source_l00035}00035\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}
