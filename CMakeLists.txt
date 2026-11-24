@@ -67,17 +67,13 @@ option(NeoN_DEVEL_TOOLS "Add development tools to the build system" OFF)
 # Build components
 option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
+option(NeoN_BUILD_EXAMPLES "Build the examples" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
 option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
-# Link _neon against a shared libnanobind instead of the default static one. Only needed when the
-# bindings must exchange nanobind types with another extension module built against the same
-# libnanobind (e.g. pybFoam, so create_adapter_run_time accepts a Foam::Time). Off by default: a
-# shared runtime has to be installed alongside _neon, and wheel repair tools (auditwheel, delocate,
-# delvewheel) vendor it under a mangled SONAME, which defeats the sharing it exists for.
-option(NeoN_NANOBIND_SHARED "Link the python bindings against a shared libnanobind" OFF)
 # Take nanobind from the active Python environment instead of fetching NeoN_NANOBIND_VERSION via
-# CPM. Useful together with NeoN_NANOBIND_SHARED: pybFoam builds against that same copy, so both
-# modules share one libnanobind ABI by construction rather than by a version pin.
+# CPM. _neon links nanobind statically and exchanges types with other extension modules, such as
+# pybFoam, through nanobind's internals. Building them against one copy makes their ABI match by
+# construction rather than by a version pin.
 option(NeoN_EXTERNAL_NANOBIND "Use the nanobind from the active Python environment" OFF)
 option(NeoN_INSTALL_CMAKE_PACKAGE "Install CMake package config files and exported targets" ON)
 
@@ -88,6 +84,17 @@ option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
 option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support." OFF)
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
 option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
+
+# Umpire needs a shared build: NeoN and Ginkgo then share one Umpire ResourceManager, so Ginkgo can
+# allocate from NeoN's DEVICE_POOL (Ginkgo rejects Umpire in static builds, see
+# CxxThirdParty.cmake).
+if(NeoN_WITH_UMPIRE AND NOT BUILD_SHARED_LIBS)
+  message(STATUS "NeoN_WITH_UMPIRE=ON: setting BUILD_SHARED_LIBS=ON")
+  set(BUILD_SHARED_LIBS
+      ON
+      CACHE BOOL "Build shared libraries" FORCE)
+endif()
+
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
@@ -244,6 +251,11 @@ endif()
 if(NeoN_BUILD_BENCHMARKS)
   enable_testing()
   add_subdirectory(benchmarks)
+endif()
+
+if(NeoN_BUILD_EXAMPLES)
+  enable_testing()
+  add_subdirectory(examples)
 endif()
 
 if(NeoN_BUILD_DOC)

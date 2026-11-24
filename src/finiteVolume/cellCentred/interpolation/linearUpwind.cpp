@@ -16,6 +16,43 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+namespace
+{
+// OpenFOAM's VSMALL: keeps the rescaling division finite for a vanishing correction.
+constexpr scalar LINEAR_UPWIND_V_SMALL = 1e-300;
+} // namespace
+
+/* @brief OpenFOAM's linearUpwindV limiter of one face correction.
+**
+** maxCorr is the jump from the upwind cell to the face value of central differencing,
+** (1 - w)(phi_N - phi_P) for an upwind owner and w(phi_P - phi_N) for an upwind neighbour. A
+** correction pointing against it is dropped; one longer than its projection on it is scaled back:
+**   corr . maxCorr < 0           -> 0
+**   |corr|^2 > corr . maxCorr    -> corr (corr . maxCorr)/|corr|^2
+** Scalars have no direction to limit; linearUpwindV is a vector scheme.
+*/
+NEON_INLINE_FUNCTION
+scalar limitLinearUpwindV(const scalar corr, const scalar) { return corr; }
+
+NEON_INLINE_FUNCTION
+Vec3 limitLinearUpwindV(const Vec3& corr, const Vec3& maxCorr)
+{
+    const scalar sfCorrs = corr & corr;
+    const scalar maxCorrs = corr & maxCorr;
+    if (sfCorrs > 0)
+    {
+        if (maxCorrs < 0)
+        {
+            return zero<Vec3>();
+        }
+        if (sfCorrs > maxCorrs)
+        {
+            return corr * (maxCorrs / (sfCorrs + LINEAR_UPWIND_V_SMALL));
+        }
+    }
+    return corr;
+}
+
 /* @brief applies the linearUpwind reconstruction for every face.
 **
 ** @tparam ValueType field value type (scalar or Vec3)
@@ -24,6 +61,8 @@ namespace NeoN::finiteVolume::cellCentred
 **        dst holds only the gradient correction (used for the implicit deferred correction). A
 **        runtime flag is used rather than a template/`if constexpr`, since nvcc forbids
 **        first-capturing a variable inside an `if constexpr` block in an extended device lambda.
+** @param limiterWeights central-differencing weights when linearUpwindV's directional limiter
+**        applies (limitLinearUpwindV), null for plain linearUpwind
 **
 ** For both ranks the correction is `grad & d`: with NeoN's row-major tensor convention
 ** (gradTensor(i,j) = d U_i / d x_j) the matrix-vector product `Tensor & Vec3` reproduces
@@ -37,11 +76,17 @@ void applyLinearUpwind(
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     const VolumeField<GradType>& gradPhi,
     SurfaceField<ValueType>& dst,
-    const bool withSrcValue
+    const bool withSrcValue,
+    const SurfaceField<scalar>* limiterWeights
 )
 {
     const auto exec = dst.exec();
     const auto& mesh = dst.mesh();
+
+    // linearUpwindV limits the correction of internal faces; without weights the view is unused.
+    const bool directional = limiterWeights != nullptr;
+    const auto wS = (directional ? *limiterWeights : flux).internalVector().view();
+    const auto wB = (directional ? *limiterWeights : flux).boundaryData().value().view();
 
     auto dstS = dst.internalVector().view();
     auto dstB = dst.boundaryData().value().view();
@@ -67,7 +112,15 @@ void applyLinearUpwind(
             const bool ownerUpwind = fluxS[facei] >= 0;
             const auto cell = ownerUpwind ? ownerS[facei] : neighS[facei];
             const Vec3 d = ownerUpwind ? dOwnS[facei] : dNeiS[facei];
-            const ValueType corr = gradS[cell] & d;
+            ValueType corr = gradS[cell] & d;
+            if (directional)
+            {
+                const auto own = ownerS[facei];
+                const auto nei = neighS[facei];
+                const ValueType maxCorr = ownerUpwind ? (1.0 - wS[facei]) * (srcS[nei] - srcS[own])
+                                                      : wS[facei] * (srcS[own] - srcS[nei]);
+                corr = limitLinearUpwindV(corr, maxCorr);
+            }
             dstS[facei] = withSrcValue ? (srcS[cell] + corr) : corr;
         },
         "computeLinearUpwindInternal"
@@ -157,7 +210,18 @@ void applyLinearUpwind(
                     // owner is upwind when the flux leaves it: normalSign * F >= 0. dstB now holds
                     // the neighbour's owner-side correction (corrNei) from the exchange.
                     const scalar outwardFlux = bNormalSignV[bcfacei] * bFluxV[bcfacei];
-                    dstB[bcfacei] = outwardFlux >= 0 ? corrOwnV[procFacei] : dstB[bcfacei];
+                    ValueType corr = outwardFlux >= 0 ? corrOwnV[procFacei] : dstB[bcfacei];
+                    if (directional)
+                    {
+                        // As on internal faces, with the local cell as owner and the neighbour
+                        // rank's cell value in the patch value; wB is the local cell's weight.
+                        const auto own = bfOwners[bcfacei];
+                        const ValueType maxCorr =
+                            outwardFlux >= 0 ? (1.0 - wB[bcfacei]) * (boundS[bcfacei] - srcS[own])
+                                             : wB[bcfacei] * (srcS[own] - boundS[bcfacei]);
+                        corr = limitLinearUpwindV(corr, maxCorr);
+                    }
+                    dstB[bcfacei] = corr;
                 },
                 "computeLinearUpwindProcCorrectionSelect"
             );
@@ -206,7 +270,8 @@ void computeLinearUpwind(
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
     const bool withSrcValue,
-    const bool cellLimitedGradient
+    const bool cellLimitedGradient,
+    const SurfaceField<scalar>* limiterWeights
 )
 {
     using GradType = typename detail::LinearUpwindGradType<ValueType>::type;
@@ -221,7 +286,14 @@ void computeLinearUpwind(
         GaussGreenGrad gradOp(exec, mesh);
         const VolumeField<GradType> gradPhi = gradOp.grad(src);
         applyLinearUpwind<ValueType, GradType>(
-            src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+            src,
+            flux,
+            faceDeltaOwner,
+            faceDeltaNeighbour,
+            gradPhi,
+            dst,
+            withSrcValue,
+            limiterWeights
         );
     }
     else
@@ -255,7 +327,14 @@ void computeLinearUpwind(
             {
                 Kokkos::Profiling::ScopedRegion region("luw.applyCorr");
                 applyLinearUpwind<ValueType, GradType>(
-                    src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+                    src,
+                    flux,
+                    faceDeltaOwner,
+                    faceDeltaNeighbour,
+                    gradPhi,
+                    dst,
+                    withSrcValue,
+                    limiterWeights
                 );
             }
         }
@@ -264,7 +343,14 @@ void computeLinearUpwind(
             GaussGreenGrad gradOp(exec, mesh);
             const VolumeField<GradType> gradPhi = gradOp.gradTensor(src);
             applyLinearUpwind<ValueType, GradType>(
-                src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+                src,
+                flux,
+                faceDeltaOwner,
+                faceDeltaNeighbour,
+                gradPhi,
+                dst,
+                withSrcValue,
+                limiterWeights
             );
         }
     }
@@ -277,11 +363,19 @@ void computeLinearUpwindInterpolation(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
-    const bool cellLimitedGradient
+    const bool cellLimitedGradient,
+    const SurfaceField<scalar>* limiterWeights
 )
 {
     computeLinearUpwind<ValueType>(
-        src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, true, cellLimitedGradient
+        src,
+        flux,
+        faceDeltaOwner,
+        faceDeltaNeighbour,
+        dst,
+        true,
+        cellLimitedGradient,
+        limiterWeights
     );
 }
 
@@ -292,14 +386,23 @@ void computeLinearUpwindCorrection(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
-    const bool cellLimitedGradient
+    const bool cellLimitedGradient,
+    const SurfaceField<scalar>* limiterWeights
 )
 {
     computeLinearUpwind<ValueType>(
-        src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, false, cellLimitedGradient
+        src,
+        flux,
+        faceDeltaOwner,
+        faceDeltaNeighbour,
+        dst,
+        false,
+        cellLimitedGradient,
+        limiterWeights
     );
 }
 
+// clang-format off
 #define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                \
     template void computeLinearUpwindInterpolation<TYPENAME>(                                      \
         const VolumeField<TYPENAME>&,                                                              \
@@ -307,7 +410,8 @@ void computeLinearUpwindCorrection(
         const SurfaceField<Vec3>&,                                                                 \
         const SurfaceField<Vec3>&,                                                                 \
         SurfaceField<TYPENAME>&,                                                                   \
-        const bool                                                                                 \
+        const bool,                                                                                \
+        const SurfaceField<scalar>*                                                                \
     );                                                                                             \
     template void computeLinearUpwindCorrection<TYPENAME>(                                         \
         const VolumeField<TYPENAME>&,                                                              \
@@ -315,8 +419,10 @@ void computeLinearUpwindCorrection(
         const SurfaceField<Vec3>&,                                                                 \
         const SurfaceField<Vec3>&,                                                                 \
         SurfaceField<TYPENAME>&,                                                                   \
-        const bool                                                                                 \
+        const bool,                                                                                \
+        const SurfaceField<scalar>*                                                                \
     )
+// clang-format on
 
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(Vec3);

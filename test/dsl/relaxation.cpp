@@ -218,6 +218,41 @@ TEMPLATE_TEST_CASE(
         }
     }
 
+    SECTION("a row of the opposite sign is relaxed with the system's sign on " + execName)
+    {
+        // Cell 2's diagonal has the opposite sign of the summed diagonal. As fvMatrix::relax()
+        // does, every relaxed row gets the system's sign, so cell 2 flips.
+        auto [ls, solution] = buildSystem({-4.0, -5.0, 1.0}, {1.0, -2.0, 3.0}, {0.7, -0.3, 0.5});
+
+        auto before = ls.copyToHost();
+        auto beforeView = before.view();
+        ValueType sumDiag = NeoN::zero<ValueType>();
+        for (localIdx c = 0; c < nCells; ++c)
+        {
+            sumDiag = sumDiag + beforeView.matrix.values[hostDiagIdx(beforeView.matrix, c)];
+        }
+
+        dsl::applyMatrixRelaxation(ls, solution, 0.5);
+
+        auto after = ls.copyToHost();
+        auto afterView = after.view();
+        for (localIdx c = 0; c < nCells; ++c)
+        {
+            const ValueType d1 = afterView.matrix.values[hostDiagIdx(afterView.matrix, c)];
+            INFO("cell " << c);
+            if constexpr (std::is_same_v<ValueType, scalar>)
+            {
+                REQUIRE(sgn(d1) == sgn(sumDiag));
+            }
+            else
+            {
+                REQUIRE(sgn(d1[0]) == sgn(sumDiag[0]));
+                REQUIRE(sgn(d1[1]) == sgn(sumDiag[1]));
+                REQUIRE(sgn(d1[2]) == sgn(sumDiag[2]));
+            }
+        }
+    }
+
     SECTION("alpha==1 is a bitwise no-op on " + execName)
     {
         auto [ls, solution] = buildSystem({-4.0, -5.0, -1.0}, {1.0, -2.0, 3.0}, {0.7, -0.3, 0.5});

@@ -37,7 +37,7 @@ def main() -> None:
             f"installed {dist_name} distribution version ({dist_version})"
         )
 
-    for attr in ("__has_serial__", "__has_cpu__", "__has_gpu__"):
+    for attr in ("__has_serial__", "__has_cpu__", "__has_gpu__", "__has_ginkgo__"):
         value = getattr(neon, attr, None)
         if not isinstance(value, bool):
             raise SystemExit(f"neon.{attr} should be a bool, got {value!r}")

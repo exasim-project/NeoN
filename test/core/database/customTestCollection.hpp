@@ -10,7 +10,7 @@
 #include "NeoN/NeoN.hpp"
 
 
-bool validateCustomDoc(const NeoN::Document& doc)
+bool validateCustomDoc(const NeoN::Dictionary& doc)
 {
     return doc.contains("name") && doc.contains("testValue");
 }

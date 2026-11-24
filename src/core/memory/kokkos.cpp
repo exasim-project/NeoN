@@ -4,8 +4,16 @@
 
 #include "NeoN/core/memory/kokkos.hpp"
 
+#include <cstdlib>
+
 namespace NeoN
 {
+
+// Host memory is taken from malloc instead of Kokkos::HostSpace: HostSpace::deallocate calls
+// Kokkos::fence() (all execution spaces, i.e. a device synchronisation) before every free, and
+// host vectors (e.g. the boundary offsets of every field) are freed many times per time step.
+// Host memory of the serial and CPU executors is never accessed by device kernels, and host
+// execution is synchronous, so the fence protects nothing here.
 
 void* KokkosAllocator::alloc(sizeType size)
 {
@@ -17,7 +25,10 @@ void* KokkosAllocator::alloc(sizeType size)
     }
     case MemorySpace::CPU:
     {
-        return Kokkos::kokkos_malloc<CPUMemSpace>("Vector", size);
+        // unlike kokkos_malloc, std::malloc reports a failure only through its result
+        void* ptr = std::malloc(size);
+        NF_ASSERT(ptr != nullptr || size == 0, "Host allocation failed");
+        return ptr;
     }
     default:
         NF_ERROR_EXIT("Unknown memory space");
@@ -34,7 +45,10 @@ void* KokkosAllocator::realloc(void* ptr, sizeType size)
     }
     case MemorySpace::CPU:
     {
-        return Kokkos::kokkos_realloc<CPUMemSpace>(ptr, size);
+        // on failure std::realloc returns null and keeps the original allocation
+        void* newPtr = std::realloc(ptr, size);
+        NF_ASSERT(newPtr != nullptr || size == 0, "Host reallocation failed");
+        return newPtr;
     }
     default:
         NF_ERROR_EXIT("Unknown memory space");
@@ -52,7 +66,7 @@ void KokkosAllocator::free(void* ptr)
     }
     case MemorySpace::CPU:
     {
-        Kokkos::kokkos_free<CPUMemSpace>(ptr);
+        std::free(ptr);
         break;
     }
     default:

@@ -4,6 +4,9 @@
 
 #include "catch2_common.hpp"
 
+#include <cmath>
+#include <filesystem>
+#include <fstream>
 #include "NeoN/NeoN.hpp"
 
 
@@ -79,6 +82,49 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
 
         gko::config::pnode expected(
             {{"key", gko::config::pnode({{"key", gko::config::pnode {"value"}}})}}
+        );
+        CHECK(node == expected);
+    }
+    SECTION("Nested solver::Ir keeps its inner solver")
+    {
+        // Ir names its inner solver 'solver'; inside a sub-dictionary that is not the backend key.
+        NeoN::Dictionary dict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"preconditioner",
+              NeoN::Dictionary {
+                  {{"type", "solver::Ir"},
+                   {"solver", NeoN::Dictionary {{{"type", "preconditioner::Jacobi"}}}}}
+              }}}
+        };
+
+        auto node = NeoN::la::ginkgo::parse(dict);
+
+        gko::config::pnode expected(
+            {{"type", gko::config::pnode {"solver::Cg"}},
+             {"preconditioner",
+              gko::config::pnode(
+                  {{"type", gko::config::pnode {"solver::Ir"}},
+                   {"solver",
+                    gko::config::pnode({{"type", gko::config::pnode {"preconditioner::Jacobi"}}})}}
+              )}}
+        );
+        CHECK(node == expected);
+    }
+    SECTION("Top-level solver::Ir takes its inner solver from 'preconditioner'")
+    {
+        NeoN::Dictionary dict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", std::string {"solver::Ir"}},
+             {"preconditioner", NeoN::Dictionary {{{"type", "preconditioner::Jacobi"}}}}}
+        };
+
+        auto node = NeoN::la::ginkgo::parse(dict);
+
+        gko::config::pnode expected(
+            {{"type", gko::config::pnode {"solver::Ir"}},
+             {"solver",
+              gko::config::pnode({{"type", gko::config::pnode {"preconditioner::Jacobi"}}})}}
         );
         CHECK(node == expected);
     }
@@ -237,6 +283,162 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         REQUIRE(numIter == 3);
         REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
         REQUIRE(finalResNorm < 1.0e-04);
+    }
+
+    SECTION("configFile with the L1 criterion reports the scaled residual " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+        Vector<scalar> bValues(exec, {});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
+        auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        // The criterion is named in the config, so it runs inside the solver; the stats must
+        // carry its scaled L1 residual, not the unscaled L2 norm of the generic solve path.
+        const auto configFile =
+            (std::filesystem::temp_directory_path() / "neon_test_l1_config.json").string();
+        std::ofstream(configFile) << R"({"type": "solver::Cg", "criteria": [)"
+                                  << R"({"type": "Iteration", "max_iters": 20}, )"
+                                  << R"("neon::l1ScaledResidual"]})";
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"configFile", configFile},
+             {"l1ScaledResidual", true},
+             {"tolerance", 1e-12},
+             {"relTol", 0.0}}
+        };
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        std::filesystem::remove(configFile);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+        // From x = 0 the scaled residual is |b| / |b| = 1; the unscaled L2 norm would be 3.74.
+        REQUIRE(initResNorm == Catch::Approx(1.0).margin(1e-12));
+        REQUIRE(finalResNorm < 1e-10);
+        REQUIRE(numIter > 0);
+        auto hostX = x.copyToHost();
+        REQUIRE(hostX.view()[0] == Catch::Approx(1.24489796).margin(1e-8));
+    }
+
+    SECTION("configFile with the L1 criterion reports another criterion's stop " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+        Vector<scalar> bValues(exec, {});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
+        auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        // The Iteration cap stops after 2 iterations, between the L1 criterion's checks (every
+        // 3rd iteration), so its report still describes iteration 0.
+        const auto configFile =
+            (std::filesystem::temp_directory_path() / "neon_test_l1_config_cap.json").string();
+        std::ofstream(configFile) << R"({"type": "solver::Cg", "criteria": [)"
+                                  << R"({"type": "Iteration", "max_iters": 2}, )"
+                                  << R"("neon::l1ScaledResidual"]})";
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"configFile", configFile},
+             {"l1ScaledResidual", true},
+             {"checkFrequency", 3},
+             {"tolerance", 1e-12},
+             {"relTol", 0.0}}
+        };
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        std::filesystem::remove(configFile);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+        // sum|b - A x| / normFactor, with normFactor = sum|b| = 6 at x = 0.
+        auto hostX = x.copyToHost();
+        auto xs = hostX.view();
+        const scalar l1Residual = std::abs(1.0 - (xs[0] - 0.1 * xs[1]))
+                                + std::abs(2.0 - (-0.1 * xs[0] + xs[1] - 0.1 * xs[2]))
+                                + std::abs(3.0 - (-0.1 * xs[1] + xs[2]));
+        REQUIRE(numIter == 2);
+        REQUIRE(initResNorm == Catch::Approx(1.0).margin(1e-12));
+        REQUIRE(finalResNorm == Catch::Approx(l1Residual / 6.0).margin(1e-12));
+        REQUIRE(finalResNorm < 0.1);
+    }
+
+    SECTION("Solve linear system scalar with solver::Ir " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+
+        Vector<scalar> bValues(exec, {});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
+
+        auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        // Richardson iteration with a Jacobi inner solver, given under 'preconditioner' because
+        // 'solver' selects the Ginkgo backend. Unlike the Krylov solvers, Ginkgo's Ir only takes
+        // typed criteria, not the short form {iteration: ..., relative_residual_norm: ...}.
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Ir"},
+             {"preconditioner", Dictionary {{{"type", "preconditioner::Jacobi"}}}},
+             {"criteria", Dictionary {{{"type", "Iteration"}, {"max_iters", 100}}}}}
+        };
+
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        solver.solve(linearSystem, x);
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
+    }
+
+    // The short form {iteration: .., <norm>: ..} is what NeoFOAM's fvSolution mapping writes;
+    // Ginkgo's Ir itself only parses typed criteria, so parse() has to translate it.
+    for (const bool l1 : {false, true})
+    {
+        SECTION(
+            std::string("solver::Ir with short-form criteria") + (l1 ? ", l1ScaledResidual " : " ")
+            + execName
+        )
+        {
+            Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+            CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+            Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+            Vector<scalar> bValues(exec, {});
+            COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+            Vector<scalar> bRhs(exec, {});
+            auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+            Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+            Dictionary solverDict {
+                {{"solver", std::string {"Ginkgo"}},
+                 {"type", "solver::Ir"},
+                 {"preconditioner", Dictionary {{{"type", "preconditioner::Jacobi"}}}},
+                 {"criteria", Dictionary {{{"iteration", 100}, {"absolute_residual_norm", 1e-12}}}}}
+            };
+            if (l1)
+            {
+                solverDict.insert("l1ScaledResidual", true);
+            }
+
+            auto solver = NeoN::la::Solver(exec, solverDict);
+            auto solverStats = solver.solve(linearSystem, x);
+
+            auto hostX = x.copyToHost();
+            auto hostXS = hostX.view();
+            REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
+            REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
+            REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
+            REQUIRE(solverStats.entries[0].numIter < 100);
+        }
     }
 
     SECTION("Solve linear system vector " + execName)
