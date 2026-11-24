@@ -403,6 +403,12 @@
       <node id="51">
         <label>NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp</label>
         <link refid="boundaryPatchMixin_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="52" relation="include">
         </childnode>
       </node>
@@ -480,6 +486,10 @@
         <childnode refid="38" relation="include">
         </childnode>
         <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
         </childnode>
         <childnode refid="65" relation="include">
         </childnode>
@@ -875,7 +885,7 @@
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1abecc224e396bf3a6a3a52c2e0d36fa80" kindref="member">localIdx</ref><sp/>owner<sp/>=<sp/>boundaryFaceOwnersV[i];</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>internal<sp/>=<sp/>internalV[owner];</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40" kindref="member">internal</ref><sp/>=<sp/>internalV[owner];</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"></highlight></codeline>
 <codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Inflow<sp/>where<sp/>the<sp/>face<sp/>flux<sp/>is<sp/>negative;<sp/>otherwise<sp/>outflow<sp/>(zero-gradient).</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref><sp/>valueFraction<sp/>=<sp/>(hasFlux<sp/>&amp;&amp;<sp/>boundaryFlux[i]<sp/>&lt;<sp/>0.0)<sp/>?<sp/>1.0<sp/>:<sp/>0.0;</highlight></codeline>
@@ -883,7 +893,7 @@
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFractionV[i]<sp/>=<sp/>valueFraction;</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValueV[i]<sp/>=<sp/>inletValue;</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGradV[i]<sp/>=<sp/><ref refid="namespaceNeoN_1a4beedab28f9499a108fea579a833f101" kindref="member">NeoN::zero&lt;ValueType&gt;</ref>();</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueV[i]<sp/>=<sp/>inletValue<sp/>*<sp/>valueFraction<sp/>+<sp/>internal<sp/>*<sp/>(1.0<sp/>-<sp/>valueFraction);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueV[i]<sp/>=<sp/>inletValue<sp/>*<sp/>valueFraction<sp/>+<sp/><ref refid="namespaceNeoN_1abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40" kindref="member">internal</ref><sp/>*<sp/>(1.0<sp/>-<sp/>valueFraction);</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;setInletOutletValue&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>

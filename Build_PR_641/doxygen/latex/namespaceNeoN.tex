@@ -101,6 +101,10 @@ class \mbox{\hyperlink{classNeoN_1_1DimensionMismatch}{Dimension\+Mismatch}}
 \begin{DoxyCompactList}\small\item\em \doxylink{classNeoN_1_1Error}{Error} for handling two containers of incompatible lengths. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}}
 \begin{DoxyCompactList}\small\item\em Represents boundaries of an unstructured mesh. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}}
+\begin{DoxyCompactList}\small\item\em Read-\/only views of a \doxylink{classNeoN_1_1TrackingMesh}{Tracking\+Mesh}, captured by value inside kernels. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1TrackingMesh}{Tracking\+Mesh}}
+\begin{DoxyCompactList}\small\item\em Connectivity for locating points (e.\+g. particles) in an \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} and interpolating cell values to them, on the executor (CPU or GPU). \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}}
 \begin{DoxyCompactList}\small\item\em Represents an unstructured mesh in \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Concepts}
@@ -115,7 +119,7 @@ concept \mbox{\hyperlink{conceptNeoN_1_1hasView}{has\+View}}
 \doxysubsubsection*{Typedefs}
 \begin{DoxyCompactItemize}
 \item 
-using \mbox{\hyperlink{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}{Document\+Validator}} = std\+::function$<$bool(\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}})$>$
+using \mbox{\hyperlink{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}{Document\+Validator}} = std\+::function$<$bool(const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&)$>$
 \begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} type alias for a function that validates a \doxylink{classNeoN_1_1Dictionary}{Dictionary} object. \end{DoxyCompactList}\item 
 using \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} = std\+::variant$<$\mbox{\hyperlink{classNeoN_1_1SerialExecutor}{Serial\+Executor}}, \mbox{\hyperlink{classNeoN_1_1CPUExecutor}{CPUExecutor}}, \mbox{\hyperlink{classNeoN_1_1GPUExecutor}{GPUExecutor}}$>$
 \item 
@@ -151,7 +155,12 @@ using \mbox{\hyperlink{namespaceNeoN_aa666e59c6354ed9a8afd09b40235af22}{vector\+
 enum class \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{Memory\+Space}} \{ \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d}{CPU}}
 , \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5a52f9ec21735243ad9917cda3ca077d32}{GPU}}
  \}
-\end{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4b}{Tracking\+Face\+Type}} \+: label \{ \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40}{internal}} = 0
+, \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4ba0c3d06230722a86df2ff614ba26e44ba}{cyclic}} = 1
+, \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4bae0ebc3c409070d07f1df0f2f4132509e}{escape}} = 2
+ \}
+\begin{DoxyCompactList}\small\item\em What happens to a point that leaves a cell through a face. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -177,7 +186,7 @@ bool \mbox{\hyperlink{namespaceNeoN_ab20832c5733e69df50d84b27fc9702a4}{has\+Gpu\
 \item 
 {\footnotesize template$<$typename Type$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1cdf9da8729a96756e0784e572829977}{validate\+Registration}} (const Type \&field, const std\+::string \&error\+Message)
 \begin{DoxyCompactList}\small\item\em Validates that a field is registered in the database. \end{DoxyCompactList}\item 
-bool \mbox{\hyperlink{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b}{has\+Id}} (\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} doc)
+bool \mbox{\hyperlink{namespaceNeoN_ab78d8a6f87e97323bf4f4a68b6b475c7}{has\+Id}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&doc)
 \begin{DoxyCompactList}\small\item\em Checks if a \doxylink{classNeoN_1_1Dictionary}{Dictionary} object has an "{}id"{} key. \end{DoxyCompactList}\item 
 const std\+::string \& \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}} (const \mbox{\hyperlink{classNeoN_1_1Document}{Neo\+N\+::\+Document}} \&doc)
 \begin{DoxyCompactList}\small\item\em Retrieves the name of a \doxylink{classNeoN_1_1Document}{Document}. \end{DoxyCompactList}\item 
@@ -359,6 +368,14 @@ void \mbox{\hyperlink{namespaceNeoN_a7656e70fc095635650cab909d1ecf543}{validate\
 \item 
 void \mbox{\hyperlink{namespaceNeoN_ab8cf36aae0d67a4aaac60dae748fd174}{validate\+Input}} (bool condition, std\+::string\+\_\+view message, const std\+::source\+\_\+location location=std\+::source\+\_\+location\+::current())
 \item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a17e66b8f18fbad2fbe45aae01fec0e72}{point\+To\+Barycentric}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&x, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&a, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&b, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&c, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&d, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} w\mbox{[}4\mbox{]})
+\begin{DoxyCompactList}\small\item\em Barycentric coordinates w of x in the tetrahedron (a, b, c, d). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type$>$ }\\KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{namespaceNeoN_aac891ab7ee6f61ab202443b01a1ae9d9}{interpolate\+Cell\+Point}} (const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&m, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \&cell\+Values, const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \&point\+Values, const \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} c, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&x)
+\begin{DoxyCompactList}\small\item\em Interpolate a field at x in cell c from cell and point values, as Open\+FOAM\textquotesingle{}s interpolation\+Cell\+Point. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION bool \mbox{\hyperlink{namespaceNeoN_a126fc623eacef4cf0cb35c0688236c6b}{point\+In\+Cell}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&x, const \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} c, const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&m)
+\begin{DoxyCompactList}\small\item\em Is x inside cell c? Face-\/plane test, as Open\+FOAM primitive\+Mesh\+::point\+In\+Cell (FACE\+\_\+\+PLANES)\+: x is not in front of any (outward-\/oriented) face plane of c. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} \mbox{\hyperlink{namespaceNeoN_af89b37c9748f80495cbf34d96eb93359}{locate\+Cell}} (\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&x, \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} hint, const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&m)
+\begin{DoxyCompactList}\small\item\em Locate the cell containing x, starting from cell hint. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4}{create\+Single\+Cell\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} exec)
 \begin{DoxyCompactList}\small\item\em creates a mesh containing only a single cell @warn currently this is only a 2D mesh \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a07b7707df15bdcd2cc2549ea39646bb8}{create1\+DUniform\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} exec, const \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{local\+Idx}} n\+Cells, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} lx=1.\+0)
@@ -406,11 +423,11 @@ using \mbox{\hyperlink{namespaceNeoN_a50df138959e457a4ed27f66898c17096}{Neo\+N\+
 
 Definition at line \mbox{\hyperlink{kokkos_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{kokkos_8hpp_source}{kokkos.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}\index{NeoN@{NeoN}!DocumentValidator@{DocumentValidator}}
+\Hypertarget{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}\index{NeoN@{NeoN}!DocumentValidator@{DocumentValidator}}
 \index{DocumentValidator@{DocumentValidator}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{DocumentValidator}{DocumentValidator}}
-{\footnotesize\ttfamily \label{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8} 
-using \mbox{\hyperlink{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}{Neo\+N\+::\+Document\+Validator}} = std\+::function$<$bool(\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}})$>$}
+{\footnotesize\ttfamily \label{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018} 
+using \mbox{\hyperlink{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}{Neo\+N\+::\+Document\+Validator}} = std\+::function$<$bool(const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&)$>$}
 
 
 
@@ -420,7 +437,7 @@ This type alias represents a function that takes a \doxylink{classNeoN_1_1Dictio
 
 Example usage\+: 
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\mbox{\hyperlink{namespaceNeoN_ae66b818e811f6d3d43911f7241cbacc8}{DocumentValidator}}\ validator\ =\ [](\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ dict)\ -\/>\ \textcolor{keywordtype}{bool}\ \{}
+\DoxyCodeLine{\mbox{\hyperlink{namespaceNeoN_a406d5c8ce9f8f72f54a5b17d930a3018}{DocumentValidator}}\ validator\ =\ [](\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict)\ -\/>\ \textcolor{keywordtype}{bool}\ \{}
 \DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Validation\ logic\ here}}
 \DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \textcolor{comment}{//\ or\ false\ based\ on\ validation}}
 \DoxyCodeLine{\};}
@@ -584,6 +601,34 @@ GPU&\\
 
 
 Definition at line \mbox{\hyperlink{allocator_8hpp_source_l00017}{17}} of file \mbox{\hyperlink{allocator_8hpp_source}{allocator.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_abad01face12f9693da8be65752f00b4b}\index{NeoN@{NeoN}!TrackingFaceType@{TrackingFaceType}}
+\index{TrackingFaceType@{TrackingFaceType}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{TrackingFaceType}{TrackingFaceType}}
+{\footnotesize\ttfamily \label{namespaceNeoN_abad01face12f9693da8be65752f00b4b} 
+enum class \mbox{\hyperlink{namespaceNeoN_abad01face12f9693da8be65752f00b4b}{Neo\+N\+::\+Tracking\+Face\+Type}} \+: \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+
+
+What happens to a point that leaves a cell through a face. 
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{internal@{internal}!NeoN@{NeoN}}\index{NeoN@{NeoN}!internal@{internal}}}\Hypertarget{namespaceNeoN_abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40}\label{namespaceNeoN_abad01face12f9693da8be65752f00b4bad1efad72dc5b17dc66a46767c32fff40} 
+internal&go to the neighbour cell \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{cyclic@{cyclic}!NeoN@{NeoN}}\index{NeoN@{NeoN}!cyclic@{cyclic}}}\Hypertarget{namespaceNeoN_abad01face12f9693da8be65752f00b4ba0c3d06230722a86df2ff614ba26e44ba}\label{namespaceNeoN_abad01face12f9693da8be65752f00b4ba0c3d06230722a86df2ff614ba26e44ba} 
+cyclic&periodic\+: shift the position, continue in the partner cell \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{escape@{escape}!NeoN@{NeoN}}\index{NeoN@{NeoN}!escape@{escape}}}\Hypertarget{namespaceNeoN_abad01face12f9693da8be65752f00b4bae0ebc3c409070d07f1df0f2f4132509e}\label{namespaceNeoN_abad01face12f9693da8be65752f00b4bae0ebc3c409070d07f1df0f2f4132509e} 
+escape&any other boundary\+: the point leaves the domain \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{trackingMesh_8hpp_source_l00017}{17}} of file \mbox{\hyperlink{trackingMesh_8hpp_source}{tracking\+Mesh.\+hpp}}.
 
 
 
@@ -833,11 +878,11 @@ bool Neo\+N\+::has\+Cpu\+Backend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCapt
 {\footnotesize\ttfamily \label{namespaceNeoN_ab20832c5733e69df50d84b27fc9702a4} 
 bool Neo\+N\+::has\+Gpu\+Backend (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [nodiscard]}, {\ttfamily [noexcept]}}
 
-\Hypertarget{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b}\index{NeoN@{NeoN}!hasId@{hasId}}
+\Hypertarget{namespaceNeoN_ab78d8a6f87e97323bf4f4a68b6b475c7}\index{NeoN@{NeoN}!hasId@{hasId}}
 \index{hasId@{hasId}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{hasId()}{hasId()}}
-{\footnotesize\ttfamily \label{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b} 
-bool Neo\+N\+::has\+Id (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}}]{doc}{}\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \label{namespaceNeoN_ab78d8a6f87e97323bf4f4a68b6b475c7} 
+bool Neo\+N\+::has\+Id (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{doc}{}\end{DoxyParamCaption})}
 
 
 
@@ -868,6 +913,36 @@ void Neo\+N\+::initialize (\begin{DoxyParamCaption}\item[{int}]{argc}{, }\item[{
 
 
 Definition at line \mbox{\hyperlink{initialization_8hpp_source_l00021}{21}} of file \mbox{\hyperlink{initialization_8hpp_source}{initialization.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_aac891ab7ee6f61ab202443b01a1ae9d9}\index{NeoN@{NeoN}!interpolateCellPoint@{interpolateCellPoint}}
+\index{interpolateCellPoint@{interpolateCellPoint}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{interpolateCellPoint()}{interpolateCellPoint()}}
+{\footnotesize\ttfamily \label{namespaceNeoN_aac891ab7ee6f61ab202443b01a1ae9d9} 
+template$<$typename Value\+Type$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type Neo\+N\+::interpolate\+Cell\+Point (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&}]{m}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \&}]{cell\+Values}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ \&}]{point\+Values}{, }\item[{const \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}}]{c}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{x}{}\end{DoxyParamCaption})}
+
+
+
+Interpolate a field at x in cell c from cell and point values, as Open\+FOAM\textquotesingle{}s interpolation\+Cell\+Point. 
+
+Finds the tet (cell centre, face base point, two consecutive face points) containing x, as Open\+FOAM cell\+Point\+Weight\+::find\+Tetrahedron, and blends the cell value with the three point values by the barycentric weights. If no tet contains x, the tet with the largest smallest weight is used. If the cell has no valid tet, the cell value is returned.
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & tracking mesh view \\
+\hline
+{\em cell\+Values} & field value of every cell \\
+\hline
+{\em point\+Values} & field value of every mesh point (e.\+g. from vol\+Point\+Interpolation) \\
+\hline
+{\em c} & cell containing x \\
+\hline
+{\em x} & position \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{pointInterpolation_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{pointInterpolation_8hpp_source}{point\+Interpolation.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a2e45ccd04c325d5db556b51e188f5d3a}\index{NeoN@{NeoN}!inv@{inv}}
 \index{inv@{inv}!NeoN@{NeoN}}
@@ -919,6 +994,25 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} 
 
 
 Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00211}{211}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_af89b37c9748f80495cbf34d96eb93359}\index{NeoN@{NeoN}!locateCell@{locateCell}}
+\index{locateCell@{locateCell}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{locateCell()}{locateCell()}}
+{\footnotesize\ttfamily \label{namespaceNeoN_af89b37c9748f80495cbf34d96eb93359} 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}} Neo\+N\+::locate\+Cell (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{x}{, }\item[{\mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}}]{hint}{, }\item[{const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&}]{m}{}\end{DoxyParamCaption})}
+
+
+
+Locate the cell containing x, starting from cell hint. 
+
+The walk of Open\+FOAM mesh\+Search\+::find\+Cell\+Walk\+: if x is not in the current cell, test the neighbour cells (point\+In\+Cell); otherwise move to the neighbour whose centre is nearest to x, as long as that decreases the distance. For periodic meshes a neighbour across a cyclic face is the partner cell, seen from the shifted position x + shift (Open\+FOAM\textquotesingle{}s translational cyclic transform); x is shifted when the walk goes through the cyclic face.
+
+\begin{DoxyReturn}{Returns}
+the cell containing x (x possibly shifted), or -\/1 if the walk gets stuck, i.\+e. x has left the domain through a non-\/periodic boundary. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{trackingMesh_8hpp_source_l00166}{166}} of file \mbox{\hyperlink{trackingMesh_8hpp_source}{tracking\+Mesh.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_af36e4b5b8ea30fdc52a7f31cff8136d1}\index{NeoN@{NeoN}!logBadAnyCast@{logBadAnyCast}}
 \index{logBadAnyCast@{logBadAnyCast}!NeoN@{NeoN}}
@@ -1540,6 +1634,39 @@ void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyper
 
 
 Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00295}{295}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a126fc623eacef4cf0cb35c0688236c6b}\index{NeoN@{NeoN}!pointInCell@{pointInCell}}
+\index{pointInCell@{pointInCell}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{pointInCell()}{pointInCell()}}
+{\footnotesize\ttfamily \label{namespaceNeoN_a126fc623eacef4cf0cb35c0688236c6b} 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION bool Neo\+N\+::point\+In\+Cell (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{x}{, }\item[{const \mbox{\hyperlink{namespaceNeoN_af43ac68faeeef4c3a36fd9eaf0849ab8}{label}}}]{c}{, }\item[{const \mbox{\hyperlink{structNeoN_1_1TrackingMeshView}{Tracking\+Mesh\+View}} \&}]{m}{}\end{DoxyParamCaption})}
+
+
+
+Is x inside cell c? Face-\/plane test, as Open\+FOAM primitive\+Mesh\+::point\+In\+Cell (FACE\+\_\+\+PLANES)\+: x is not in front of any (outward-\/oriented) face plane of c. 
+
+
+
+Definition at line \mbox{\hyperlink{trackingMesh_8hpp_source_l00134}{134}} of file \mbox{\hyperlink{trackingMesh_8hpp_source}{tracking\+Mesh.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a17e66b8f18fbad2fbe45aae01fec0e72}\index{NeoN@{NeoN}!pointToBarycentric@{pointToBarycentric}}
+\index{pointToBarycentric@{pointToBarycentric}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{pointToBarycentric()}{pointToBarycentric()}}
+{\footnotesize\ttfamily \label{namespaceNeoN_a17e66b8f18fbad2fbe45aae01fec0e72} 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::point\+To\+Barycentric (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{x}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{a}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{b}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{c}{, }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{d}{, }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{w}{\mbox{[}4\mbox{]}}\end{DoxyParamCaption})}
+
+
+
+Barycentric coordinates w of x in the tetrahedron (a, b, c, d). 
+
+GPU callable. x = w\mbox{[}0\mbox{]} a + w\mbox{[}1\mbox{]} b + w\mbox{[}2\mbox{]} c + w\mbox{[}3\mbox{]} d, with the w summing to 1.
+
+\begin{DoxyReturn}{Returns}
+the determinant of the tetrahedron edges (6 x its signed volume). If it is zero (degenerate tet), w = (1, 0, 0, 0). 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{pointInterpolation_8hpp_source_l00023}{23}} of file \mbox{\hyperlink{pointInterpolation_8hpp_source}{point\+Interpolation.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}\index{NeoN@{NeoN}!read@{read}}
 \index{read@{read}!NeoN@{NeoN}}
