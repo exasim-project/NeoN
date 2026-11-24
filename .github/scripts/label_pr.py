@@ -8,7 +8,7 @@ Area labels (type:*) come from the changed paths, a PR can get several. The kind
 (bug, enhancement, ...) comes from the conventional-commit prefix of the title, then from
 the branch prefix (feat/..., fix/...), then from the paths if they are all docs, CI or
 build files. Labels are only ever added, so a maintainer can correct them by hand.
-Labels that steer CI (skip-*, full-ci, benchmark, ready-*, auto-fix) are never set here.
+Labels that steer CI (skip-*, sanitize, benchmark, ready-*, auto-fix) are never set here.
 
 Only reads the PR through the API and never checks out its code, so it is safe to run
 from pull_request_target.
