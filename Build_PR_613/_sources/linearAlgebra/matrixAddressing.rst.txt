@@ -81,11 +81,11 @@ The following table gives as summary
    * - ``ownerOffset[facei]``
      - ``nInternalFaces``
      - Offset within the *owner* cell's row for the column pointing at the *neighbour* cell.
-     - Gives the **upper**-triangular entry :math:`A[\text{own},\text{nei}]`.
+       Gives the **upper**-triangular entry :math:`A[\text{own},\text{nei}]`.
    * - ``neighbourOffset[facei]``
      - ``nInternalFaces``
      - Offset within the *neighbour* cell's row for the column pointing at the *owner* cell.
-     - Gives the **lower**-triangular entry :math:`A[\text{nei},\text{own}]`.
+       Gives the **lower**-triangular entry :math:`A[\text{nei},\text{own}]`.
 
 
 Mesh - Matrix Example
