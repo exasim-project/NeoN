@@ -13,22 +13,30 @@ authors:
     orcid: 0009-0003-4854-6328
     affiliation: 1
   - name: Chih-Ta Wang
+    orcid: 0009-0005-0721-7274
     affiliation: 1
   - name: Hendrik Hetmann
     affiliation: 2
   - name: Andrei Maftei
+    orcid: 0009-0008-4946-9842
     affiliation: 1
-  - name: Bevan Jones
+  - name: Jakob Niessner
+    orcid: 0000-0002-4352-3368
     affiliation: 3
-  - name: Gregor Weiss
+  - name: Bevan Jones
     affiliation: 4
-  - name: Marcel Koch
+  - name: Gregor Weiss
+    orcid: 0000-0002-4345-4091
     affiliation: 5
+  - name: Marcel Koch
+    orcid: 0009-0004-8333-9313
+    affiliation: 6
   - name: Yu-Hsiang Tsai
     orcid: 0000-0001-5229-3739
     affiliation: 1
   - name: Henning Scheufler
-    affiliation: 3
+    orcid: 0000-0003-1578-9772
+    affiliation: 4
   - name: Gregor Olenik
     orcid: 0000-0002-0128-3933
     affiliation: 1
@@ -38,14 +46,16 @@ affiliations:
    index: 1
  - name: Upstream CFD GmbH, Germany
    index: 2
- - name: Independent Researcher, Germany
+ - name: Technical University of Darmstadt, Germany
    index: 3
- - name: High-Performance Computing Center Stuttgart (HLRS), Germany
+ - name: Independent Researcher, Germany
    index: 4
- - name: Karlsruhe Institute of Technology, Germany
+ - name: High-Performance Computing Center Stuttgart (HLRS), Germany
    index: 5
+ - name: Karlsruhe Institute of Technology, Germany
+   index: 6
 
-date: 04th November, 2026.
+date: 18th November, 2026.
 
 bibliography: paper.bib
 
@@ -65,10 +75,12 @@ Embedded DSLs like Life [@prudhomme2007] demonstrate improved expressiveness of 
 The existing works demonstrate that core finite-volume concepts - such as flux evaluation, control-volume integration, and discrete operators - can be expressed at a high level and optimised effectively when decoupled. Yet, a persistent gap remains: the lack of a modular CFD core that integrates high-level finite-volume abstractions with performance-portable execution on heterogeneous CPU-GPU architectures. NeoN aims to address this gap by combining the usability of embedded DSLs with the optimisation potential of external DSL approaches through a high-level finite-volume operator interface with lazy evaluation and performance-portable execution on heterogeneous architectures.
 
 # Software Design
-![Design overview of the NeoN software architecture.\label{fig:neon-arch}](figures/neon_schematic.png){width=100%}
-
 NeoN is built around a layered, modular architecture as illustrated in \autoref{fig:neon-arch}. Its design cleanly separates the distinct stages: DSL-based equation representation, discretisation, matrix assembly, and linear solver. This separation allows each layer to evolve independently, making the framework highly extensible and maintainable.
-At the heart of NeoN is a `C++` embedded DSL that allows users to express partial differential equations in a form close to their mathematical  representation, while the corresponding finite-volume discretisation is performed internally by the framework. Differential operators like `ddt`, `div`, `laplacian`, or `grad` can be composed directly into equation expressions, for example:
+At the heart of NeoN is a `C++` embedded DSL that allows users to express partial differential equations in a form close to their mathematical  representation, while the corresponding finite-volume discretisation is performed internally by the framework.
+
+\newpage
+
+Differential operators like `ddt`, `div`, `laplacian`, or `grad` can be composed directly into equation expressions, for example:
 
 ```cpp
 auto expr = dsl::imp::ddt(U) + dsl::imp::div(phi, U) - dsl::imp::laplacian(nu, U);
@@ -76,13 +88,17 @@ auto expr = dsl::imp::ddt(U) + dsl::imp::div(phi, U) - dsl::imp::laplacian(nu, U
 **Listing 1:** Example expression with multiple differential operators.
 
 Here, `imp` and `exp` denote implicit and explicit operators: implicit operators contribute coefficients to the system matrix, whereas explicit operators are evaluated from the known field values and contribute to the right-hand side. They are analogous to OpenFOAM's `fvm` and `fvc`, respectively, but unlike these, neither is evaluated eagerly. Instead, NeoN employs lazy evaluation to build an intermediate representation that is later interpreted by the discretisation engine. This approach avoids unnecessary temporary allocations and reduces memory traffic. Thus, the expression shown in Listing 1 is only fully assembled when an operation like `solve(expr, …)` requires the assembly.
+
+![Design overview of the NeoN software architecture.\label{fig:neon-arch}](figures/neon_schematic.png){width=100%}
+
 The discretisation engine then applies selected temporal and spatial schemes to generate local stencil contributions for the finite-volume formulation. The core data model encapsulates mesh topology, geometric metrics, and scalar or vector fields in performance-portable memory abstractions. These contributions are then forwarded to an assembly engine that constructs a linear system of equations in common sparse matrix storage formats such as CSR and COO, rather than solver-specific representations. This design choice improves interoperability with external solver libraries. NeoN integrates Ginkgo [@anzt2022; @ginkgo] to solve the resulting sparse linear systems, providing access to portable and scalable iterative solvers and preconditioners.
 High-level workflow concerns such as time loops, solver control, and I/O are intentionally handled outside the core library by external applications. The `Demonstrator` (e.g. NeoFOAM) illustrates how NeoN can be integrated into OpenFOAM-style workflows. Importantly, NeoN operates independently of OpenFOAM, and its Python bindings facilitate access to the DSL without NeoFOAM.
 
 # Performance Evaluation
+To evaluate the performance of NeoN, the wall-clock time required for the matrix assembly of the expression defined in Listing 1 (a simplified momentum transport equation) is measured across multiple hardware backends and problem sizes. The computational domain consists of a unit cube discretised using a uniform hexahedral mesh with varying resolutions. Benchmarks are conducted on representative high-performance computing hardware, including AMD EPYC 9555 (64 cores), Intel Xeon Gold 6438Y+ (32 cores) and Intel Xeon Platinum 8480+ (56 cores) processors, NVIDIA A100, H100, H200 and GB200 GPUs, an AMD MI210 GPU, and an Intel Data Center GPU Max 1100 (PVC). \autoref{fig:neon-performance}(a) reports the assembly time per cell for different grid resolutions, comparing single-core CPU execution, multi-core CPU execution (16 threads), and GPU execution on an A100, H100, H200, GB200, MI210 and PVC device. The results indicate that GPU acceleration reduces the assembly time per cell relative to single-core CPU execution by a factor of approximately 15 to 290, depending on the device and grid resolution, with the largest gains on the GB200 for the finest grids.
+
 ![Computational performance evaluating a simplified momentum transport equation. (a): required assembly time per cell for different grid resolutions on a single core and using 16 threads of three CPUs, and on NVIDIA A100, H100, H200 and GB200, AMD MI210, and Intel Data Center GPU Max 1100 (PVC) GPUs. (b)–(d): speed-up relative to a single core for different numbers of threads across various grid resolutions on each CPU.\label{fig:neon-performance}](figures/neon_performance.png){width=100%}
 
-To evaluate the performance of NeoN, the wall-clock time required for the matrix assembly of the expression defined in Listing 1 (a simplified momentum transport equation) is measured across multiple hardware backends and problem sizes. The computational domain consists of a unit cube discretised using a uniform hexahedral mesh with varying resolutions. Benchmarks are conducted on representative high-performance computing hardware, including AMD EPYC 9555 (64 cores), Intel Xeon Gold 6438Y+ (32 cores) and Intel Xeon Platinum 8480+ (56 cores) processors, NVIDIA A100, H100, H200 and GB200 GPUs, an AMD MI210 GPU, and an Intel Data Center GPU Max 1100 (PVC). \autoref{fig:neon-performance}(a) reports the assembly time per cell for different grid resolutions, comparing single-core CPU execution, multi-core CPU execution (16 threads), and GPU execution on an A100, H100, H200, GB200, MI210 and PVC device. The results indicate that GPU acceleration reduces the assembly time per cell relative to single-core CPU execution by a factor of approximately 15 to 290, depending on the device and grid resolution, with the largest gains on the GB200 for the finest grids.
 In addition, strong scaling experiments using the OpenMP backend on up to 32 CPU cores are presented in \autoref{fig:neon-performance}(b)–(d). Up to eight threads, the speedup is close to linear. At 16 and 32 threads, speedups of approximately 11x and 13x are achieved for most resolutions on the EPYC 9555 and Xeon 6438Y+, and approximately 13x and 20x on the Xeon 8480+. The diminishing gains beyond 16 threads are attributed to memory bandwidth limitations leading to increased contention among threads.
 
 # Research Impact Statement
