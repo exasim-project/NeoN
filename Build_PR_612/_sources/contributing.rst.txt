@@ -97,7 +97,7 @@ The following labels and their meaning are discussed here:
  * ``skip-changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
  * ``skip-build``: Don't run any build steps, including building the compile commands database.
  * ``skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
- * ``full-ci``: Run tests on AWS and enable sanitizer workflows.
+ * ``full-ci``: Also run the address and undefined-behavior sanitizer builds on the PR, which otherwise only run on ``develop``, ``main`` and nightly.
  * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
  * ``benchmark``: Run the benchmark jobs on GPUs in the LRZ pipeline.
  * ``skip-nvidia``, ``skip-amd``, ``skip-intel``: Skip the GPU tests on the respective vendor's hardware in the LRZ pipeline.
