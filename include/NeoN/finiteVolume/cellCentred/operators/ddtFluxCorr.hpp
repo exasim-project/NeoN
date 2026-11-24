@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include <algorithm>
+#include <memory>
+#include <string>
+
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -218,20 +222,16 @@ ddtFluxCorr(const VolVectorField& u, const SurfScalarField& phi, scalar dt, DdtS
 namespace detail
 {
 
-// The cell-centred product rho * U with 'calculated' boundaries (boundary value = rho_b * U_b),
-// which is what OpenFOAM interpolates in ddtScheme::fvcDdtPhiCorr(rho, U, phi)
+// Fills `rhoU` with the cell-centred product rho * U, boundary included (boundary value =
+// rho_b * U_b), which is what OpenFOAM interpolates in ddtScheme::fvcDdtPhiCorr(rho, U, phi)
 // (rhoU0 = rho.oldTime()*U.oldTime(), then dotInterpolate(Sf, rhoU0)). It is not the same as
 // interpolate(rho) * interpolate(U): the two differ wherever rho and U vary between the cells.
-inline VolVectorField
-densityWeightedVelocity(const VolumeField<scalar>& rho, const VolVectorField& u, std::string name)
+// `rhoU` is an existing field with 'calculated' patches; nothing is allocated here.
+inline void densityWeightedVelocity(
+    const VolumeField<scalar>& rho, const VolVectorField& u, VolVectorField& rhoU
+)
 {
-    const auto& mesh = u.mesh();
     const auto& exec = u.exec();
-
-    VolVectorField rhoU(
-        exec, std::move(name), mesh, createCalculatedProcBCs<VolumeBoundary<Vec3>>(mesh)
-    );
-
     {
         auto [outV, rhoV, uV] =
             views(rhoU.internalVector(), rho.internalVector(), u.internalVector());
@@ -254,7 +254,45 @@ densityWeightedVelocity(const VolumeField<scalar>& rho, const VolVectorField& u,
             "ddtFluxCorr::rhoU::boundary"
         );
     }
-    return rhoU;
+}
+
+// Everything the density-weighted ddtFluxCorr needs besides its inputs and its result: the linear
+// interpolation, the rho * U scratch field and the two interpolated face fields (rho^0 * U^0 and,
+// for BDF2, rho^00 * U^00). They depend on the mesh only, so they are built once and reused by
+// every call on that mesh. Rebuilding them per call allocated two volume/surface fields, their
+// boundary-condition objects and the interpolation scheme each time step, which is expensive on
+// GPUs. Same per-mesh cache as the linearUpwindV gradient operator (GeometryScheme::readOrCreate).
+struct DensityWeightedFluxCorrWorkspace
+{
+    SurfaceInterpolation<Vec3> interpolation;
+    VolVectorField rhoU;
+    SurfaceField<Vec3> rhoUf0;
+    SurfaceField<Vec3> rhoUf00;
+
+    DensityWeightedFluxCorrWorkspace(const Executor& exec, const UnstructuredMesh& mesh)
+        : interpolation(exec, mesh, TokenList({std::string("linear")})),
+          rhoU(
+              exec, "ddtFluxCorr::rhoU", mesh, createCalculatedProcBCs<VolumeBoundary<Vec3>>(mesh)
+          ),
+          rhoUf0(
+              exec, "ddtFluxCorr::rhoUf0", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
+          ),
+          rhoUf00(
+              exec, "ddtFluxCorr::rhoUf00", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
+          )
+    {}
+};
+
+inline DensityWeightedFluxCorrWorkspace&
+densityWeightedFluxCorrWorkspace(const Executor& exec, const UnstructuredMesh& mesh)
+{
+    auto& db = mesh.stencilDB();
+    const std::string key = "ddtFluxCorr::DensityWeightedFluxCorrWorkspace";
+    if (!db.contains(key))
+    {
+        db.insert(key, std::make_shared<DensityWeightedFluxCorrWorkspace>(exec, mesh));
+    }
+    return *db.get<std::shared_ptr<DensityWeightedFluxCorrWorkspace>>(key);
 }
 
 } // namespace detail
@@ -267,7 +305,15 @@ densityWeightedVelocity(const VolumeField<scalar>& rho, const VolVectorField& u,
 // 'calculated' and therefore fix their value: the correction is zero on every physical boundary
 // face (see createDensityWeightedFluxCorrBCs), unlike the incompressible overload, which only
 // zeroes it on patches where U itself fixes the value.
-inline SurfScalarField ddtFluxCorr(
+//
+// BDF2 needs a second old-time level of U, rho and phi alike: the scheme falls back to BDF1
+// (OpenFOAM's start-up step) as soon as any of the three has only one.
+//
+// This overload writes into `fluxCorr`, which the caller owns and which must carry the patches of
+// createDensityWeightedFluxCorrBCs(mesh); after the first call on a mesh it allocates nothing, so
+// a time loop should keep one `fluxCorr` and call this. The overload below returns a new field.
+inline void ddtFluxCorr(
+    SurfScalarField& fluxCorr,
     const VolumeField<scalar>& rho,
     const VolVectorField& u,
     const SurfScalarField& phi,
@@ -277,39 +323,49 @@ inline SurfScalarField ddtFluxCorr(
 {
     const auto& mesh = u.mesh();
     const auto& exec = phi.exec();
-
-    // --- interpolation
-    SurfaceInterpolation<Vec3> interpRhoU(exec, mesh, TokenList({std::string("linear")}));
-
-    // --- zero correction on physical boundary faces, see above
-    auto surfaceBCs = createDensityWeightedFluxCorrBCs(mesh);
-
-    SurfScalarField fluxCorr(exec, "ddtFluxCorr", mesh, surfaceBCs);
-
-    const int level = oldTimeLevel(u);
+    auto& work = detail::densityWeightedFluxCorrWorkspace(exec, mesh);
 
     // --- BDF1 / startup
     const auto& u0 = oldTime(u);
     const auto& rho0 = oldTime(rho);
     const auto& phi0 = oldTime(phi);
-    auto rhoUf0 = interpRhoU.interpolate(detail::densityWeightedVelocity(rho0, u0, "rhoU0"));
+    detail::densityWeightedVelocity(rho0, u0, work.rhoU);
+    work.interpolation.interpolate(work.rhoU, work.rhoUf0);
 
+    const int level = std::min({oldTimeLevel(u), oldTimeLevel(rho), oldTimeLevel(phi)});
     if (scheme == DdtScheme::BDF2 && level >= 2) // --- BDF2 contribution
     {
         const auto& u00 = oldTime(u0);
         const auto& rho00 = oldTime(rho0);
         const auto& phi00 = oldTime(phi0);
-        auto rhoUf00 =
-            interpRhoU.interpolate(detail::densityWeightedVelocity(rho00, u00, "rhoU00"));
+        detail::densityWeightedVelocity(rho00, u00, work.rhoU);
+        work.interpolation.interpolate(work.rhoU, work.rhoUf00);
 
-        detail::ddtFluxCorrBDF2Kernel(exec, mesh, phi0, phi00, rhoUf0, rhoUf00, fluxCorr, dt);
+        detail::ddtFluxCorrBDF2Kernel(
+            exec, mesh, phi0, phi00, work.rhoUf0, work.rhoUf00, fluxCorr, dt
+        );
     }
     else
     {
-        detail::ddtFluxCorrBDF1Kernel(exec, mesh, phi0, rhoUf0, fluxCorr, dt);
+        detail::ddtFluxCorrBDF1Kernel(exec, mesh, phi0, work.rhoUf0, fluxCorr, dt);
     }
 
     fluxCorr.correctBoundaryConditions();
+}
+
+inline SurfScalarField ddtFluxCorr(
+    const VolumeField<scalar>& rho,
+    const VolVectorField& u,
+    const SurfScalarField& phi,
+    scalar dt,
+    DdtScheme scheme
+)
+{
+    // --- zero correction on physical boundary faces, see above
+    SurfScalarField fluxCorr(
+        phi.exec(), "ddtFluxCorr", u.mesh(), createDensityWeightedFluxCorrBCs(u.mesh())
+    );
+    ddtFluxCorr(fluxCorr, rho, u, phi, dt, scheme);
     return fluxCorr;
 }
 

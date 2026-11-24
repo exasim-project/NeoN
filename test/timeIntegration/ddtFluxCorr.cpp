@@ -592,3 +592,172 @@ TEST_CASE(
         }
     }
 }
+
+TEST_CASE(
+    "timeIntegration: density-weighted ddtFluxCorr history depth and buffer reuse",
+    "[timeIntegration][ddtPhiCorr]"
+)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    // 1D mesh with internal faces; U, rho and phi get distinct, non-uniform old-time values so
+    // that BDF1 and BDF2 give different corrections. `rhoLevels` / `phiLevels` choose how many
+    // old-time levels rho and phi carry (U always has two).
+    struct Case
+    {
+        NeoN::Database db;
+        NeoN::UnstructuredMesh mesh;
+        VolVector* u;
+        VolScalar* rho;
+        SurfScalar* flux;
+        std::vector<fvcc::SurfaceBoundary<Scalar>> surfaceBCs;
+
+        Case(const NeoN::Executor& exec, int rhoLevels, int phiLevels)
+            : mesh(NeoN::create1DUniformMesh(exec, 5)),
+              surfaceBCs(fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<Scalar>>(mesh))
+        {
+            auto& fieldCollection = fvcc::VectorCollection::instance(db, "fieldCollection");
+            u = &fieldCollection.registerVector<VolVector>(CreateVolumeVector<Vec3> {
+                .name = "U", .mesh = mesh, .value = Vec3 {0.0, 0.0, 0.0}, .timeIndex = 1
+            });
+            rho = &fieldCollection.registerVector<VolScalar>(CreateVolumeVector<Scalar> {
+                .name = "rho", .mesh = mesh, .value = Scalar {0.0}, .timeIndex = 1
+            });
+            flux = &fieldCollection.registerVector<SurfScalar>(CreateSurfaceVector<Scalar> {
+                .name = "flux", .mesh = mesh, .bcs = &surfaceBCs, .value = 0.0, .timeIndex = 1
+            });
+
+            auto& u0 = fvcc::oldTime(*u);
+            auto& u00 = fvcc::oldTime(u0);
+            auto& rho0 = fvcc::oldTime(*rho);
+            auto& flux0 = fvcc::oldTime(*flux);
+            VolScalar* rho00 = rhoLevels >= 2 ? &fvcc::oldTime(rho0) : nullptr;
+            SurfScalar* flux00 = phiLevels >= 2 ? &fvcc::oldTime(flux0) : nullptr;
+
+            const auto nC = static_cast<std::size_t>(mesh.nCells());
+            const auto nInt = static_cast<std::size_t>(mesh.nInternalFaces());
+            const auto nBnd = static_cast<std::size_t>(mesh.nBoundaryFaces());
+            auto fillVolScalar = [&](VolScalar& f, Scalar a, Scalar b)
+            {
+                std::vector<Scalar> in(nC), bnd(nBnd);
+                for (std::size_t i = 0; i < nC; ++i)
+                    in[i] = a + b * Scalar(i) * Scalar(i);
+                for (std::size_t i = 0; i < nBnd; ++i)
+                    bnd[i] = a + 0.3 * Scalar(i);
+                f.internalVector() = NeoN::Vector<Scalar>(exec, in);
+                f.boundaryData().value() = NeoN::Vector<Scalar>(exec, bnd);
+            };
+            auto fillVolVec = [&](VolVector& f, Scalar a, Scalar b)
+            {
+                std::vector<Vec3> in(nC), bnd(nBnd);
+                for (std::size_t i = 0; i < nC; ++i)
+                    in[i] = Vec3 {a + 0.4 * Scalar(i), b - 0.2 * Scalar(i), 0.1 * Scalar(i * i)};
+                for (std::size_t i = 0; i < nBnd; ++i)
+                    bnd[i] = Vec3 {a + 0.7 * Scalar(i), b, 0.3 * Scalar(i)};
+                f.internalVector() = NeoN::Vector<Vec3>(exec, in);
+                f.boundaryData().value() = NeoN::Vector<Vec3>(exec, bnd);
+            };
+            auto fillSurfScalar = [&](SurfScalar& f, Scalar a)
+            {
+                std::vector<Scalar> in(nInt), bnd(nBnd);
+                for (std::size_t i = 0; i < nInt; ++i)
+                    in[i] = a * (1.0 + 0.3 * Scalar(i % 3));
+                for (std::size_t i = 0; i < nBnd; ++i)
+                    bnd[i] = a * (0.8 + 0.1 * Scalar(i));
+                f.internalVector() = NeoN::Vector<Scalar>(exec, in);
+                f.boundaryData().value() = NeoN::Vector<Scalar>(exec, bnd);
+            };
+            fillVolVec(u0, 1.0, 0.5);
+            fillVolVec(u00, 0.6, 1.0);
+            fillVolScalar(rho0, 1.0, 0.15);
+            if (rho00) fillVolScalar(*rho00, 0.7, 0.2);
+            fillSurfScalar(flux0, 0.9);
+            if (flux00) fillSurfScalar(*flux00, 0.4);
+        }
+    };
+
+    auto maxAbsDifference = [](const SurfScalar& a, const SurfScalar& b)
+    {
+        Scalar d = 0.0;
+        auto aI = a.internalVector().copyToHost();
+        auto bI = b.internalVector().copyToHost();
+        for (std::size_t i = 0; i < aI.size(); ++i)
+            d = std::max(d, std::abs(aI.view()[i] - bI.view()[i]));
+        auto aB = a.boundaryData().value().copyToHost();
+        auto bB = b.boundaryData().value().copyToHost();
+        for (std::size_t i = 0; i < aB.size(); ++i)
+            d = std::max(d, std::abs(aB.view()[i] - bB.view()[i]));
+        return d;
+    };
+
+    const Scalar dt = 0.2;
+
+    SECTION("BDF2 uses the second level only when U, rho and phi all have it on " + execName)
+    {
+        // all three have two levels: BDF2 really differs from BDF1
+        Case full(exec, 2, 2);
+        const auto bdf1 =
+            fvcc::ddtFluxCorr(*full.rho, *full.u, *full.flux, dt, fvcc::DdtScheme::BDF1);
+        const auto bdf2 =
+            fvcc::ddtFluxCorr(*full.rho, *full.u, *full.flux, dt, fvcc::DdtScheme::BDF2);
+        REQUIRE(maxAbsDifference(bdf1, bdf2) > 1e-3);
+
+        // rho has one level: a BDF2 request must not touch the missing level and falls back to
+        // BDF1 (OpenFOAM's start-up step)
+        Case rhoShort(exec, 1, 2);
+        const auto rhoBdf1 = fvcc::ddtFluxCorr(
+            *rhoShort.rho, *rhoShort.u, *rhoShort.flux, dt, fvcc::DdtScheme::BDF1
+        );
+        const auto rhoBdf2 = fvcc::ddtFluxCorr(
+            *rhoShort.rho, *rhoShort.u, *rhoShort.flux, dt, fvcc::DdtScheme::BDF2
+        );
+        REQUIRE(maxAbsDifference(rhoBdf1, rhoBdf2) == 0.0);
+
+        // phi has one level: the same
+        Case phiShort(exec, 2, 1);
+        const auto phiBdf1 = fvcc::ddtFluxCorr(
+            *phiShort.rho, *phiShort.u, *phiShort.flux, dt, fvcc::DdtScheme::BDF1
+        );
+        const auto phiBdf2 = fvcc::ddtFluxCorr(
+            *phiShort.rho, *phiShort.u, *phiShort.flux, dt, fvcc::DdtScheme::BDF2
+        );
+        REQUIRE(maxAbsDifference(phiBdf1, phiBdf2) == 0.0);
+    }
+
+    SECTION("scratch fields are built once per mesh and the output overload matches on " + execName)
+    {
+        Case c(exec, 2, 2);
+        auto& work = fvcc::detail::densityWeightedFluxCorrWorkspace(exec, c.mesh);
+        const auto* rhoUPtr = work.rhoU.internalVector().data();
+        const auto* rhoUf0Ptr = work.rhoUf0.internalVector().data();
+        const auto* rhoUf00Ptr = work.rhoUf00.internalVector().data();
+
+        // reference result: the value-returning overload (first call builds the workspace)
+        const auto reference = fvcc::ddtFluxCorr(*c.rho, *c.u, *c.flux, dt, fvcc::DdtScheme::BDF2);
+
+        // caller-owned output field, filled repeatedly
+        fvcc::SurfaceField<Scalar> out(
+            exec, "ddtFluxCorr", c.mesh, fvcc::createDensityWeightedFluxCorrBCs(c.mesh)
+        );
+        const auto* outPtr = out.internalVector().data();
+        for (int call = 0; call < 3; ++call)
+        {
+            fvcc::ddtFluxCorr(out, *c.rho, *c.u, *c.flux, dt, fvcc::DdtScheme::BDF2);
+            REQUIRE(maxAbsDifference(reference, out) == 0.0);
+        }
+
+        // nothing was reallocated: same workspace, same buffers, same output storage
+        REQUIRE(&fvcc::detail::densityWeightedFluxCorrWorkspace(exec, c.mesh) == &work);
+        REQUIRE(work.rhoU.internalVector().data() == rhoUPtr);
+        REQUIRE(work.rhoUf0.internalVector().data() == rhoUf0Ptr);
+        REQUIRE(work.rhoUf00.internalVector().data() == rhoUf00Ptr);
+        REQUIRE(out.internalVector().data() == outPtr);
+
+        // a different input is not served from stale scratch values
+        auto& rho0 = fvcc::oldTime(*c.rho);
+        NeoN::fill(rho0.internalVector(), Scalar(2.5));
+        NeoN::fill(rho0.boundaryData().value(), Scalar(2.5));
+        fvcc::ddtFluxCorr(out, *c.rho, *c.u, *c.flux, dt, fvcc::DdtScheme::BDF2);
+        REQUIRE(maxAbsDifference(reference, out) > 1e-6);
+    }
+}
