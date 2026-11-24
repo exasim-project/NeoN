@@ -101,6 +101,10 @@ if(NeoN_BUILD_PYTHON_BINDINGS)
   add_subdirectory(bindings)
 endif()
 
+if(NeoN_WITH_BLOCKAMR)
+  add_subdirectory(blockAmr)
+endif()
+
 include(${CMAKE_SOURCE_DIR}/cmake/Sanitizer.cmake)
 enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
                   NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)

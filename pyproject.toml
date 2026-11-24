@@ -40,6 +40,9 @@ test = [
 all = [
     "neon_pde[dev,test]",
 ]
+blockamr = [
+    "pydantic>=2.0",
+]
 
 [build-system]
 requires = [
@@ -77,6 +80,10 @@ testpaths = ["test"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
+markers = [
+    # Run with `mpirun -n 2 pytest -m mpi`; a bare `pytest` collects them and they skip.
+    "mpi: needs >1 MPI rank; skips itself otherwise",
+]
 
 [tool.ruff]
 line-length = 100
