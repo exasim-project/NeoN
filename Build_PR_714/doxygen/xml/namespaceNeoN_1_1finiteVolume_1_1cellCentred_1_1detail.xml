@@ -5,6 +5,7 @@
     <innerclass refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1_1LinearUpwindGradType" prot="public">NeoN::finiteVolume::cellCentred::detail::LinearUpwindGradType</innerclass>
     <innerclass refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1_1LinearUpwindGradType_3_01scalar_01_4" prot="public">NeoN::finiteVolume::cellCentred::detail::LinearUpwindGradType&lt; scalar &gt;</innerclass>
     <innerclass refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1_1LinearUpwindGradType_3_01Vec3_01_4" prot="public">NeoN::finiteVolume::cellCentred::detail::LinearUpwindGradType&lt; Vec3 &gt;</innerclass>
+    <innerclass refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1_1DensityWeightedFluxCorrWorkspace" prot="public">NeoN::finiteVolume::cellCentred::detail::DensityWeightedFluxCorrWorkspace</innerclass>
     <sectiondef kind="func">
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a502b3efc47c2f41b6a4cfb9dbe7ada3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
@@ -26,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="25" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="25" bodyend="30"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="29" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="29" bodyend="34"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a3ab3efbc6f9cb22226affb2305cc93a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -64,7 +65,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="35" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="35" bodyend="94"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="39" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="39" bodyend="98"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a9fb27d788ee7ab453d5b5b4a2b5e0bfb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -110,12 +111,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="103" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="103" bodyend="176"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="107" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="107" bodyend="180"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1aaf7ca34a8f1ede67bb1087fc7b8f1054" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab51a9c0a27243d5c72ee1e2c9ab1947d" kindref="member">VolVectorField</ref></type>
-        <definition>VolVectorField NeoN::finiteVolume::cellCentred::detail::densityWeightedVelocity</definition>
-        <argsstring>(const VolumeField&lt; scalar &gt; &amp;rho, const VolVectorField &amp;u, std::string name)</argsstring>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a6ad2fa4ca91fe3766dff96e67dd4e77b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::detail::densityWeightedVelocity</definition>
+        <argsstring>(const VolumeField&lt; scalar &gt; &amp;rho, const VolVectorField &amp;u, VolVectorField &amp;rhoU)</argsstring>
         <name>densityWeightedVelocity</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::detail::densityWeightedVelocity</qualifiedname>
         <param>
@@ -127,8 +128,8 @@
           <declname>u</declname>
         </param>
         <param>
-          <type>std::string</type>
-          <declname>name</declname>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab51a9c0a27243d5c72ee1e2c9ab1947d" kindref="member">VolVectorField</ref> &amp;</type>
+          <declname>rhoU</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -136,7 +137,29 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="226" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="226" bodyend="258"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="230" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="230" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1aab8fa75dbb47736eea75af6f911f2a15" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1_1DensityWeightedFluxCorrWorkspace" kindref="compound">DensityWeightedFluxCorrWorkspace</ref> &amp;</type>
+        <definition>DensityWeightedFluxCorrWorkspace &amp; NeoN::finiteVolume::cellCentred::detail::densityWeightedFluxCorrWorkspace</definition>
+        <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;mesh)</argsstring>
+        <name>densityWeightedFluxCorrWorkspace</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::detail::densityWeightedFluxCorrWorkspace</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a1100afa054a40cdbc07e3f94b712f389" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="287" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="287" bodyend="296"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
