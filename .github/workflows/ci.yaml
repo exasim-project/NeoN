@@ -15,22 +15,27 @@ env:
   CTEST_OUTPUT_ON_FAILURE: 1
   OMPI_MCA_rmaps_base_oversubscribe: 1
 
+# A label event that does not change what CI builds (see the gate) runs in its own group, so it
+# does not cancel the build of the same PR that is already running.
 concurrency:
   group: >
     ${{ github.workflow }}-
     ${{ github.event_name }}-
     ${{ github.event.pull_request.number || github.ref_name }}
+    ${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && !contains(fromJSON('["full-ci", "skip-build"]'), github.event.label.name) && format('-label-{0}', github.event.label.name) || '' }}
   cancel-in-progress: true
 
 jobs:
   # Evaluates the repository check and the PR labels once. Every other job needs it, so on
-  # forks everything is skipped.
+  # forks everything is skipped. Adding or removing a label only restarts the builds for
+  # full-ci and skip-build; skip-changelog only reruns the changelog check.
   gate:
     name: Gate
     if: github.repository == 'exasim-project/NeoN'
     runs-on: ubuntu-latest
     outputs:
       lint: ${{ steps.gate.outputs.lint }}
+      changelog: ${{ steps.gate.outputs.changelog }}
       build: ${{ steps.gate.outputs.build }}
       sanitize: ${{ steps.gate.outputs.sanitize }}
       benchmark: ${{ steps.gate.outputs.benchmark }}
@@ -42,10 +47,27 @@ jobs:
         id: gate
         env:
           LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          LABEL_EVENT: ${{ github.event.action == 'labeled' || github.event.action == 'unlabeled' }}
+          LABEL: ${{ github.event.label.name }}
           DAILY: ${{ github.event.schedule == '0 9 * * *' }}
         run: |
           has() { jq -e --arg l "$1" '(. // []) | index($l) != null' <<<"${LABELS:-[]}" >/dev/null; }
           is_pr=$([[ "$GITHUB_EVENT_NAME" == pull_request ]] && echo true || echo false)
+
+          # Only these labels change what is built; keep in sync with the concurrency group
+          rebuild=true
+          if [[ "$LABEL_EVENT" == true ]]; then
+            case "$LABEL" in
+              full-ci|skip-build) ;;
+              *) rebuild=false ;;
+            esac
+          fi
+
+          changelog=false
+          if $is_pr && ! has skip-changelog &&
+             { $rebuild || [[ "$LABEL" == skip-changelog ]]; }; then
+            changelog=true
+          fi
 
           # The daily cron only runs the sanitizers
           lint=$([[ "$DAILY" == true ]] && echo false || echo true)
@@ -55,8 +77,11 @@ jobs:
           sanitize=true
           if $is_pr && ! has full-ci; then sanitize=false; fi
 
+          if ! $rebuild; then lint=false; build=false; sanitize=false; fi
+
           {
             echo "lint=$lint"
+            echo "changelog=$changelog"
             echo "build=$build"
             echo "sanitize=$sanitize"
             echo "benchmark=$($is_pr && has benchmark && echo true || echo false)"
@@ -113,9 +138,7 @@ jobs:
   changelog:
     name: Changelog check
     needs: gate
-    if: >
-      github.event_name == 'pull_request' &&
-      !contains(github.event.pull_request.labels.*.name, 'skip-changelog')
+    if: needs.gate.outputs.changelog == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: dangoslen/changelog-enforcer@v3
