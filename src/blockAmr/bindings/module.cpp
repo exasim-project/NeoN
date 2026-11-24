@@ -18,7 +18,9 @@ NB_MODULE(_blockamr, m)
     registerMultiFab(m);
     registerGeometry(m);
     registerPlotfile(m);
+    registerTagBox(m);
     registerFillPatch(m);
+    registerAmrCore(m);
     registerLinOp(m);
     registerStencilKernels(m);
     registerLinearAlgebra(m);

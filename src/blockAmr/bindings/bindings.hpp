@@ -14,6 +14,8 @@ void registerBox(nb::module_& m);
 void registerMultiFab(nb::module_& m);
 void registerGeometry(nb::module_& m);
 void registerPlotfile(nb::module_& m);
+void registerAmrCore(nb::module_& m);
+void registerTagBox(nb::module_& m);
 void registerFillPatch(nb::module_& m);
 void registerLinOp(nb::module_& m);
 void registerStencilKernels(nb::module_& m);

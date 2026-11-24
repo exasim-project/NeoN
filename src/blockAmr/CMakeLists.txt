@@ -102,6 +102,8 @@ set(_blockamr_sources
     bindings/multifab.cpp
     bindings/geometry.cpp
     bindings/plotfile.cpp
+    bindings/amrcore.cpp
+    bindings/tagbox.cpp
     bindings/fillpatch.cpp
     bindings/linop.cpp
     bindings/stencilKernels.cpp
