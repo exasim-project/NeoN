@@ -27,6 +27,7 @@ namespace NeoN::bindings
 namespace
 {
 using ScalarVol = NeoN::finiteVolume::cellCentred::VolumeField<NeoN::scalar>;
+using VectorVol = NeoN::finiteVolume::cellCentred::VolumeField<NeoN::Vec3>;
 
 // Allocate a scalar VolumeField sized like `proto` (same executor/mesh, calculated
 // boundaries), pre-seeded with `proto`'s internal AND boundary values — the mutable
@@ -262,6 +263,25 @@ void sqrtVec(const NeoN::Executor& exec, ScalarVec& r, std::string label)
     );
 }
 
+void magSqrVec(
+    const NeoN::Executor& exec,
+    const NeoN::Vector<NeoN::Vec3>& in,
+    ScalarVec& out,
+    std::string label
+)
+{
+    auto inV = in.view();
+    auto outV = out.view();
+    NeoN::parallelFor(
+        exec,
+        {0, out.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) {
+            outV[i] = inV[i][0] * inV[i][0] + inV[i][1] * inV[i][1] + inV[i][2] * inV[i][2];
+        },
+        std::move(label)
+    );
+}
+
 ScalarVol mulFieldField(const ScalarVol& a, const ScalarVol& b)
 {
     requireCompatible(a, b, "field * field");
@@ -423,6 +443,17 @@ ScalarVol sqrtField(const ScalarVol& a)
     sqrtVec(r.exec(), r.boundaryData().value(), "fieldSqrt::b");
     return r;
 }
+
+// Elementwise magSqr of a Vec3 VolumeField, e.g. 2*K = magSqr(U) for kinetic energy.
+ScalarVol magSqrField(const VectorVol& a)
+{
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
+    auto bcs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(a.mesh());
+    ScalarVol r(a.exec(), "tmp", a.mesh(), bcs);
+    magSqrVec(a.exec(), a.internalVector(), r.internalVector(), "fieldMagSqr");
+    magSqrVec(a.exec(), a.boundaryData().value(), r.boundaryData().value(), "fieldMagSqr::b");
+    return r;
+}
 } // namespace
 
 void registerVolumeField(nb::module_& m)
@@ -434,6 +465,8 @@ void registerVolumeField(nb::module_& m)
     )
         .def(
             nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            // the boundary condition can keep a reference to the mesh
+            nb::keep_alive<1, 2>(),
             "mesh"_a,
             "dict"_a,
             "patch_id"_a,
@@ -448,6 +481,7 @@ void registerVolumeField(nb::module_& m)
     )
         .def(
             nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            nb::keep_alive<1, 2>(),
             "mesh"_a,
             "dict"_a,
             "patch_id"_a,
@@ -472,6 +506,8 @@ void registerVolumeField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            // the field keeps a reference to the mesh
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -489,6 +525,7 @@ void registerVolumeField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -506,6 +543,7 @@ void registerVolumeField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -517,6 +555,7 @@ void registerVolumeField(nb::module_& m)
                 std::string,
                 const NeoN::UnstructuredMesh&,
                 const std::vector<fvcc::VolumeBoundary<NeoN::scalar>>&>(),
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -637,6 +676,7 @@ void registerVolumeField(nb::module_& m)
                 new (&field
                 ) fvcc::VolumeField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -653,6 +693,7 @@ void registerVolumeField(nb::module_& m)
                 new (&field
                 ) fvcc::VolumeField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -669,6 +710,7 @@ void registerVolumeField(nb::module_& m)
                 new (&field
                 ) fvcc::VolumeField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -680,6 +722,7 @@ void registerVolumeField(nb::module_& m)
                 std::string,
                 const NeoN::UnstructuredMesh&,
                 const std::vector<fvcc::VolumeBoundary<NeoN::Vec3>>&>(),
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -695,6 +738,13 @@ void registerVolumeField(nb::module_& m)
         .def("mesh", &fvcc::VolumeField<NeoN::Vec3>::mesh, nb::rv_policy::reference_internal)
         .def("exec", &fvcc::VolumeField<NeoN::Vec3>::exec, nb::rv_policy::reference_internal)
         .def("size", &fvcc::VolumeField<NeoN::Vec3>::size)
+        .def(
+            "boundary_data_value",
+            [](fvcc::VolumeField<NeoN::Vec3>& field) -> NeoN::Vector<NeoN::Vec3>&
+            { return field.boundaryData().value(); },
+            nb::rv_policy::reference_internal,
+            "Get the boundary data value vector"
+        )
         .def(
             "correct_boundary_conditions",
             static_cast<void (fvcc::VolumeField<NeoN::Vec3>::*)()>(
@@ -782,6 +832,12 @@ void registerVolumeField(nb::module_& m)
         "field1"_a,
         "field2"_a,
         "Element-wise cross product of two Vec3 volume fields, internal and boundary alike"
+    );
+    m.def(
+        "mag_sqr",
+        &magSqrField,
+        "field"_a,
+        "Elementwise magSqr of a Vec3 VolumeField, returning a scalar VolumeField"
     );
 }
 

@@ -7,3 +7,4 @@ if(NeoN_WITH_MPI)
 endif()
 
 neon_unit_test(unstructuredMesh)
+neon_unit_test(trackingMesh)

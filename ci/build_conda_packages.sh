@@ -61,14 +61,11 @@ if [[ ! "${python_version}" =~ ^([0-9]+)\.([0-9]+) ]]; then
     exit 1
 fi
 
-# conda-forge only builds nanobind (needed for the nanobind.stubgen POST_BUILD step) for
-# python >=3.10, so that is the floor for the conda packages. Compare numerically rather than
-# listing versions: anything below the floor has to be rejected here, or it fails much later
-# inside rattler-build with an opaque dependency resolution error. Python 3.9 and older are
-# covered by the PyPI wheels instead.
-if (( BASH_REMATCH[1] < 3 || (BASH_REMATCH[1] == 3 && BASH_REMATCH[2] < 10) )); then
-    echo "python ${python_version} is not supported by the conda packages: conda-forge has no" >&2
-    echo "nanobind below python 3.10. Use the PyPI wheel for python 3.9 and older." >&2
+# NeoN supports python >=3.11. Compare numerically rather than listing versions: anything below
+# the floor has to be rejected here, or it fails much later inside rattler-build with an opaque
+# dependency resolution error.
+if (( BASH_REMATCH[1] < 3 || (BASH_REMATCH[1] == 3 && BASH_REMATCH[2] < 11) )); then
+    echo "python ${python_version} is not supported: NeoN requires python 3.11 or newer." >&2
     exit 1
 fi
 

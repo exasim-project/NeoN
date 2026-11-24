@@ -57,13 +57,13 @@ VolumeField<ValueType>::VolumeField(
     const Executor& exec,
     std::string fieldName,
     const UnstructuredMesh& mesh,
-    const Field<ValueType>& domainVector,
+    Field<ValueType> domainVector,
     const std::vector<VolumeBoundary<ValueType>>& boundaryConditions,
     Database& db,
     std::string dbKey,
     std::string collectionName
 )
-    : DomainMixin<ValueType>(exec, fieldName, mesh, domainVector),
+    : DomainMixin<ValueType>(exec, fieldName, mesh, std::move(domainVector)),
       FieldDatabaseMixin(db, std::move(dbKey), std::move(collectionName)),
       boundaryConditions_(boundaryConditions)
 {}
@@ -72,6 +72,12 @@ template<typename ValueType>
 VolumeField<ValueType>::VolumeField(const VolumeField& other)
     : DomainMixin<ValueType>(other), FieldDatabaseMixin(other),
       boundaryConditions_(other.boundaryConditions_)
+{}
+
+template<typename ValueType>
+VolumeField<ValueType>::VolumeField(VolumeField&& other)
+    : DomainMixin<ValueType>(std::move(other)), FieldDatabaseMixin(std::move(other)),
+      boundaryConditions_(std::move(other.boundaryConditions_))
 {}
 
 template<typename ValueType>
