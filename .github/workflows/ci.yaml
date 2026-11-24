@@ -10,6 +10,12 @@ on:
     - cron: "00 8 * * 0" # weekly full run, Sundays 10 AM CEST (08:00 UTC)
     - cron: "0 9 * * *" # daily sanitizer run
   workflow_dispatch:
+    inputs:
+      lrz_only:
+        # Set by mirror-fork-pr: the fork PR's own run already lints and builds the same commit
+        description: "Only run the LRZ GPU pipeline"
+        type: boolean
+        default: false
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
@@ -51,6 +57,7 @@ jobs:
           LABEL_EVENT: ${{ github.event.action == 'labeled' || github.event.action == 'unlabeled' }}
           LABEL: ${{ github.event.label.name }}
           DAILY: ${{ github.event.schedule == '0 9 * * *' }}
+          LRZ_ONLY: ${{ inputs.lrz_only == true }}
           WEEKLY: ${{ github.event.schedule == '00 8 * * 0' }}
         run: |
           has() { jq -e --arg l "$1" '(. // []) | index($l) != null' <<<"${LABELS:-[]}" >/dev/null; }
@@ -79,7 +86,7 @@ jobs:
           sanitize=true
           if $is_pr && ! has sanitize; then sanitize=false; fi
 
-          if ! $rebuild; then lint=false; build=false; sanitize=false; fi
+          if ! $rebuild || [[ "$LRZ_ONLY" == true ]]; then lint=false; build=false; sanitize=false; fi
 
           {
             echo "lint=$lint"
@@ -527,9 +534,15 @@ jobs:
 
   # ---------------------------------------------------------------- downstream / GPU
   # Only started once the Linux develop build passes, so a broken commit does not occupy the GPUs.
+  # Fork PRs get no secrets, so their own run skips this; mirror-fork-pr runs it with lrz_only
+  # once a maintainer sets ready-for-review.
   gpu:
     name: Build and test NeoN on GPU
     needs: [gate, linux]
+    if: >-
+      ${{ !cancelled() && needs.gate.result == 'success' &&
+          (needs.linux.result == 'success' || inputs.lrz_only) &&
+          !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 1440 # 24 hours
     env:

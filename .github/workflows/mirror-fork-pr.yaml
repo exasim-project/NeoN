@@ -1,9 +1,12 @@
 name: Mirror fork PR
 
-# Fork PRs can't use the LRZ secrets. When a maintainer sets ready-for-review,
-# push the fork's PR head to a branch of the same name here and start CI on it,
-# which includes the LRZ pipeline. This only runs on `labeled`, so new fork
-# commits need a fresh approval: re-apply the label.
+# Fork PRs can't use the LRZ secrets, so their own CI run skips the GPU jobs.
+# When a maintainer sets ready-for-review, push the fork's PR head to a branch of
+# the same name here and start the LRZ pipeline on it (ci.yaml with lrz_only; the
+# fork PR's own run already lints and builds the same commit). Its results show
+# up in the PR's checks. This only runs on `labeled`, so new fork commits need a
+# fresh approval: re-apply the label. Approving also means reviewing the PR's
+# changes to .github/: the dispatched run uses the workflow files of the PR.
 on:
   pull_request_target:
     types: [labeled]
@@ -46,6 +49,11 @@ jobs:
         run: |
           git fetch origin "refs/pull/$PR_NUMBER/head"
           test "$(git rev-parse FETCH_HEAD)" = "$HEAD_SHA"
+          # workflow_dispatch runs the workflow file of the dispatched branch
+          if ! git cat-file -e "$HEAD_SHA:.github/workflows/ci.yaml"; then
+            gh pr comment "$PR_NUMBER" --body "Can't start the LRZ pipeline: this branch has no \`.github/workflows/ci.yaml\` yet. Please rebase onto \`develop\`, then a maintainer can re-apply \`ready-for-review\`."
+            echo "::error::$HEAD_SHA has no .github/workflows/ci.yaml"; exit 1
+          fi
           git push --force origin "$HEAD_SHA:refs/heads/$BRANCH" "$HEAD_SHA:refs/heads/mirror-pr/$PR_NUMBER"
 
       # Pushes made with GITHUB_TOKEN don't trigger workflows, but workflow_dispatch does
@@ -54,11 +62,11 @@ jobs:
         run: |
           RUN_URL=$(gh api --method POST \
             "repos/${{ github.repository }}/actions/workflows/ci.yaml/dispatches" \
-            -f ref="$BRANCH" -F return_run_details=true --jq .html_url)
+            -f ref="$BRANCH" -f "inputs[lrz_only]=true" -F return_run_details=true --jq .html_url)
           echo "run_url=$RUN_URL" >> "$GITHUB_OUTPUT"
 
       - name: Comment
         env:
           RUN_URL: ${{ steps.trigger.outputs.run_url }}
         run: |
-          gh pr comment "$PR_NUMBER" --body "Mirrored \`${HEAD_SHA::7}\` to \`$BRANCH\` and triggered [CI including the LRZ pipeline]($RUN_URL). Re-apply \`ready-for-review\` to sync new commits."
+          gh pr comment "$PR_NUMBER" --body "Mirrored \`${HEAD_SHA::7}\` to \`$BRANCH\` and triggered the [LRZ pipeline]($RUN_URL). Re-apply \`ready-for-review\` to sync new commits."
