@@ -7,7 +7,7 @@
 [![c++ standard](https://img.shields.io/badge/c%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Gitter](https://img.shields.io/badge/Gitter-8A2BE2)](https://matrix.to/#/#NeoFOAM:gitter.im)
 [![doxygen](https://img.shields.io/badge/Doxygen-8A2BE2)](https://exasim-project.com/NeoN/latest/doxygen/html/index.html)
 
-![image](https://raw.githubusercontent.com/exasim-project/NeoN/refs/heads/color-logo/assets/NeonLogoCrop.png)
+![NeoN logo](assets/NeonLogoCrop.png)
 
 NeoN is an open-source, high-performance C++ CFD library for modern heterogeneous computing systems. It currently provides data structures, parallel algorithms, and numerical infrastructure for the finite volume method.
 
@@ -17,7 +17,8 @@ Its modular architecture enables performance-portable execution and solver backe
 
 > [!IMPORTANT]
 > The NeoN project needs you!
-> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
+> If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoFOAM:gitter.im).
+> All participants are expected to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Key Features
 
@@ -40,7 +41,7 @@ To build the C++ library from source you need CMake ≥ 3.22, a C++20 compiler (
     cmake --preset production -DNeoN_WITH_MPI=OFF
     cmake --build --preset production
 
-Alternatively, try NeoN from Python via the prebuilt CPU package from PyPI (Python 3.9–3.13):
+Alternatively, try NeoN from Python via the prebuilt CPU package from PyPI (Python 3.11–3.13):
 
     pip install neon_pde
 
@@ -58,6 +59,8 @@ neon.finalize()
 [![workflows/Build on OSX](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_macos.yaml?query=branch%3Amain)
 [![workflows/Build on windows](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml/badge.svg?branch=main)](https://github.com/exasim-project/NeoN/actions/workflows/build_on_windows.yaml?query=branch%3Amain)
 
+To build and run the [examples](examples), which show the basic workflow from setting up a mesh to solving equations written with NeoN's DSL, add `-DNeoN_BUILD_EXAMPLES=ON` to the first command and run e.g. `./build/production/bin/examples/neon_example_steadyDiffusion`.
+
 Further installation options (GPU builds, conda/pixi packages, CUDA wheels, Spack), the full list of requirements and how to run the tests are described in the [installation guide](https://exasim-project.com/NeoN/latest/installation.html) and the [Python bindings guide](https://exasim-project.com/NeoN/latest/python_bindings.html).
 
 ## Integration with other CFD Frameworks
@@ -69,3 +72,9 @@ Examples how to integrate NeoN into CFD frameworks and how to write applications
 ## Documentation
 
 The online documentation can be found [here](https://exasim-project.com/NeoN/latest). Since NeoN is evolving quickly, the documentation might not always reflect the latest state.
+
+## Contributing and Getting Help
+
+- **Contributing:** see the [contributing guide](https://exasim-project.com/NeoN/latest/contributing.html) for the code style, the pull request workflow and how to build the documentation.
+- **Reporting bugs and requesting features:** open an issue on the [GitHub issue tracker](https://github.com/exasim-project/NeoN/issues). The contributing guide lists [what to include in a bug report](https://exasim-project.com/NeoN/latest/contributing.html#reporting-issues-and-getting-help).
+- **Questions and help:** ask on [GitHub Discussions](https://github.com/exasim-project/NeoN/discussions) or in the [Gitter chat](https://matrix.to/#/#NeoFOAM:gitter.im).

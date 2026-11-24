@@ -277,6 +277,16 @@ if(${NeoN_WITH_GINKGO})
   find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
+    # An installed Ginkgo shares NeoN's Umpire pool only if it was built with Umpire.
+    if(NeoN_WITH_UMPIRE AND GINKGO_HAVE_UMPIRE)
+      set(NeoN_GINKGO_WITH_UMPIRE ON)
+    else()
+      set(NeoN_GINKGO_WITH_UMPIRE OFF)
+      if(NeoN_WITH_UMPIRE)
+        message(STATUS "System Ginkgo is built without Umpire: "
+                       "Ginkgo does not allocate from NeoN's Umpire pool")
+      endif()
+    endif()
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
     # Ginkgo shares NeoN's Umpire pool only in shared builds: it rejects Umpire in static builds,
@@ -349,8 +359,8 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
     REQUIRED)
   if(NeoN_EXTERNAL_NANOBIND)
     # Use the nanobind shipped in the active Python environment (a build requirement, see
-    # pyproject). pybFoam is built against that same copy, so _neon and pybFoam share one
-    # libnanobind ABI by construction and NeoN_NANOBIND_VERSION does not have to be kept in sync.
+    # pyproject). pybFoam is built against that same copy, so _neon and pybFoam share one nanobind
+    # ABI by construction and NeoN_NANOBIND_VERSION does not have to be kept in sync.
     execute_process(
       COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -378,5 +388,9 @@ if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
     VERSION
     ${NeoN_CATCH2_VERSION}
     SYSTEM
-    YES)
+    YES
+    # Static, like the test helper libraries: the installed test executables cannot find a shared
+    # Catch2, which is not installed (NeoN_WITH_UMPIRE forces BUILD_SHARED_LIBS=ON).
+    OPTIONS
+    "BUILD_SHARED_LIBS OFF")
 endif()

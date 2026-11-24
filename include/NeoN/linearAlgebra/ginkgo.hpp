@@ -123,6 +123,7 @@ struct L1ResidualResult
     gko::size_type numIter = 0; //!< iterations performed
     scalar initResNorm = 0.0;   //!< combined scaled L1 initial residual (sum of columns)
     scalar finalResNorm = 0.0;  //!< combined scaled L1 final residual (sum of columns)
+    scalar normFactor = 0.0;    //!< combined L1 norm factor, set on the first check (config path)
     bool fired = false;         //!< set by the criterion on its first check (config path)
     // Per-column scaled residuals; populated only for multi-RHS (Vec3) solves (size == ncols).
     std::vector<scalar> perColInitNorms;
@@ -147,6 +148,16 @@ std::shared_ptr<gko::stop::CriterionFactory> makeL1CriterionFactory(
     std::shared_ptr<const gko::Executor> exec,
     const L1ResidualControl& control,
     L1ResidualResult* report
+);
+
+/** @brief The L1-scaled residual sum|b - A x| / @p normFactor of the current @p x.
+ *
+ * @p b and @p x are both Dense or both distributed Vectors (globally reduced). Lets the solve
+ * path refresh the final residual when the criterion's report predates the last iteration.
+ * Defined in ginkgoL1Stop.cpp.
+ */
+scalar scaledL1Residual(
+    const gko::LinOp* mtx, const gko::LinOp* b, const gko::LinOp* x, scalar normFactor
 );
 
 /** @brief Solve @p solver with an L1-scaled residual stopping criterion attached.
@@ -410,6 +421,14 @@ private:
     bool l1InConfig_ = false;
     // Report sink the in-config criterion writes its scaled L1 residual / iters into.
     mutable L1ResidualResult l1Report_;
+
+    /* @brief Replace the solve's unscaled norms with the in-config L1 criterion's scaled ones,
+     * if that criterion ran during the solve. @p mtx, @p b and @p x (the solution after the
+     * solve) refresh the final residual when the report is stale.
+     */
+    SolverStatsEntry withL1Report(
+        SolverStatsEntry entry, const gko::LinOp* mtx, const gko::LinOp* b, const gko::LinOp* x
+    ) const;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>

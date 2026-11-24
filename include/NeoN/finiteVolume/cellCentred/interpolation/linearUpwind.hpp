@@ -61,6 +61,8 @@ struct LinearUpwindGradType<Vec3>
 ** @param faceDeltaOwner Cf - C_owner per internal face (from the geometry scheme)
 ** @param faceDeltaNeighbour Cf - C_neighbour per internal face (from the geometry scheme)
 ** @param dst the target surface field
+** @param limiterWeights when given, the central-differencing weights for OpenFOAM's linearUpwindV
+**        directional limiter (see applyLinearUpwind); null for plain linearUpwind
 */
 template<typename ValueType>
 void computeLinearUpwindInterpolation(
@@ -69,7 +71,8 @@ void computeLinearUpwindInterpolation(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
-    const bool cellLimitedGradient = false
+    const bool cellLimitedGradient = false,
+    const SurfaceField<scalar>* limiterWeights = nullptr
 );
 
 /* @brief computes only the gradient correction part of the linearUpwind face value,
@@ -87,13 +90,14 @@ void computeLinearUpwindCorrection(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
-    const bool cellLimitedGradient = false
+    const bool cellLimitedGradient = false,
+    const SurfaceField<scalar>* limiterWeights = nullptr
 );
 
-// @tparam CellLimited when true the gradient correction is built from the cell-limited (minmod,
-// k=1) gradient rather than the unlimited Gauss-Green gradient — this is the "linearUpwindV"
-// scheme, a directionally-bounded vector reconstruction. Only meaningful for Vec3 fields; the
-// scalar path ignores it.
+// @tparam CellLimited when true this is OpenFOAM's "linearUpwindV": the gradient correction of each
+// face is limited so it never points against, nor overshoots, the weighted jump between the two
+// cells (see applyLinearUpwind). The gradient itself is the one named in the spec, as for
+// linearUpwind. Only meaningful for Vec3 fields.
 template<typename ValueType, bool CellLimited = false>
 class LinearUpwind :
     public SurfaceInterpolationFactory<ValueType>::template Register<
@@ -120,7 +124,7 @@ public:
 
     static std::string doc()
     {
-        return CellLimited ? "linearUpwindV interpolation (cell-limited gradient correction)"
+        return CellLimited ? "linearUpwindV interpolation (directionally limited correction)"
                            : "linearUpwind interpolation";
     }
 
@@ -146,7 +150,8 @@ public:
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
             dst,
-            cellLimitedGradient_
+            cellLimitedGradient_,
+            CellLimited ? &geometryScheme_->weights() : nullptr
         );
     }
 
@@ -181,7 +186,8 @@ public:
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
             corr,
-            cellLimitedGradient_
+            cellLimitedGradient_,
+            CellLimited ? &geometryScheme_->weights() : nullptr
         );
     }
 
@@ -215,10 +221,11 @@ private:
         return "Gauss";
     }
 
-    // linearUpwindV forces it; otherwise honour the gradient named in the spec.
+    // Honour the gradient named in the spec, for linearUpwindV as well: OpenFOAM's linearUpwindV
+    // bounds the correction with its directional limiter, not by limiting the gradient.
     static bool readCellLimited(const std::string& gradSchemeName)
     {
-        return CellLimited || gradSchemeName == "cellLimited";
+        return gradSchemeName == "cellLimited";
     }
 
     const std::shared_ptr<GeometryScheme> geometryScheme_;
@@ -235,7 +242,7 @@ namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::LinearUpwind<scalar>;
 template class fvcc::LinearUpwind<Vec3>;
-// linearUpwindV: cell-limited gradient reconstruction, vector fields only.
+// linearUpwindV: directionally limited gradient correction, vector fields only.
 template class fvcc::LinearUpwind<Vec3, true>;
 
 }

@@ -4,6 +4,7 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/variant.h>
 #include <nanobind/stl/vector.h>
 
 #include <stdexcept>
@@ -25,11 +26,13 @@ namespace NeoN::bindings
 namespace
 {
 using ScalarSurf = NeoN::finiteVolume::cellCentred::SurfaceField<NeoN::scalar>;
+using VectorSurf = NeoN::finiteVolume::cellCentred::SurfaceField<NeoN::Vec3>;
 
 // Same precondition as the VolumeField binary operators: element i must mean the same face in
 // both operands. Without this the underlying Vector ops abort the interpreter on an assert
 // (or, for `assign`, silently resize the target) instead of raising in Python.
-void requireCompatible(const ScalarSurf& a, const ScalarSurf& b, const char* op)
+template<typename FieldA, typename FieldB>
+void requireCompatible(const FieldA& a, const FieldB& b, const char* op)
 {
     if (&a.mesh() != &b.mesh())
     {
@@ -56,12 +59,31 @@ void registerSurfaceField(nb::module_& m)
     nb::class_<fvcc::SurfaceBoundary<NeoN::scalar>>(
         m, "ScalarSurfaceBoundary", "Surface boundary for scalar fields"
     )
+        .def(
+            nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            // the boundary condition can keep a reference to the mesh
+            nb::keep_alive<1, 2>(),
+            "mesh"_a,
+            "dict"_a,
+            "patch_id"_a,
+            "Create the boundary condition selected by dict[\"type\"], e.g. \"fixedValue\", "
+            "for the patch"
+        )
         .def("patch_id", &fvcc::SurfaceBoundary<NeoN::scalar>::patchID)
         .def("patch_size", &fvcc::SurfaceBoundary<NeoN::scalar>::patchSize);
 
     nb::class_<fvcc::SurfaceBoundary<NeoN::Vec3>>(
         m, "VectorSurfaceBoundary", "Surface boundary for Vec3 fields"
     )
+        .def(
+            nb::init<const NeoN::UnstructuredMesh&, const NeoN::Dictionary&, NeoN::localIdx>(),
+            nb::keep_alive<1, 2>(),
+            "mesh"_a,
+            "dict"_a,
+            "patch_id"_a,
+            "Create the boundary condition selected by dict[\"type\"], e.g. \"fixedValue\", "
+            "for the patch"
+        )
         .def("patch_id", &fvcc::SurfaceBoundary<NeoN::Vec3>::patchID)
         .def("patch_size", &fvcc::SurfaceBoundary<NeoN::Vec3>::patchSize);
 
@@ -80,6 +102,8 @@ void registerSurfaceField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            // the field keeps a reference to the mesh
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -97,6 +121,7 @@ void registerSurfaceField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -114,6 +139,7 @@ void registerSurfaceField(nb::module_& m)
                     NeoN::Executor {exec}, std::move(name), mesh, bcs
                 );
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -125,6 +151,7 @@ void registerSurfaceField(nb::module_& m)
                 std::string,
                 const NeoN::UnstructuredMesh&,
                 const std::vector<fvcc::SurfaceBoundary<NeoN::scalar>>&>(),
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -218,6 +245,16 @@ void registerSurfaceField(nb::module_& m)
             [](const fvcc::SurfaceField<NeoN::scalar>& a, NeoN::scalar s) { return s * a; },
             "scalar"_a,
             "Scale a scalar surface field by a constant"
+        )
+        .def(
+            "__mul__",
+            [](const fvcc::SurfaceField<NeoN::scalar>& s, const fvcc::SurfaceField<NeoN::Vec3>& v)
+            {
+                requireCompatible(s, v, "scalar field * Vec3 field");
+                return s * v;
+            },
+            "other"_a,
+            "Scale a Vec3 surface field face-by-face by this scalar surface field"
         );
 
     nb::class_<fvcc::SurfaceField<NeoN::Vec3>>(
@@ -234,6 +271,7 @@ void registerSurfaceField(nb::module_& m)
                 new (&field
                 ) fvcc::SurfaceField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -250,6 +288,7 @@ void registerSurfaceField(nb::module_& m)
                 new (&field
                 ) fvcc::SurfaceField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -266,6 +305,7 @@ void registerSurfaceField(nb::module_& m)
                 new (&field
                 ) fvcc::SurfaceField<NeoN::Vec3>(NeoN::Executor {exec}, std::move(name), mesh, bcs);
             },
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -277,6 +317,7 @@ void registerSurfaceField(nb::module_& m)
                 std::string,
                 const NeoN::UnstructuredMesh&,
                 const std::vector<fvcc::SurfaceBoundary<NeoN::Vec3>>&>(),
+            nb::keep_alive<1, 4>(),
             "exec"_a,
             "name"_a,
             "mesh"_a,
@@ -293,10 +334,57 @@ void registerSurfaceField(nb::module_& m)
         .def("exec", &fvcc::SurfaceField<NeoN::Vec3>::exec, nb::rv_policy::reference_internal)
         .def("size", &fvcc::SurfaceField<NeoN::Vec3>::size)
         .def(
+            "boundary_data_value",
+            [](fvcc::SurfaceField<NeoN::Vec3>& field) -> NeoN::Vector<NeoN::Vec3>&
+            { return field.boundaryData().value(); },
+            nb::rv_policy::reference_internal,
+            "Get the boundary data value vector"
+        )
+        .def(
             "correct_boundary_conditions",
             &fvcc::SurfaceField<NeoN::Vec3>::correctBoundaryConditions
         )
-        .def_rw("name", &fvcc::SurfaceField<NeoN::Vec3>::name);
+        .def_rw("name", &fvcc::SurfaceField<NeoN::Vec3>::name)
+        .def(
+            "__mul__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& v, const fvcc::SurfaceField<NeoN::scalar>& s)
+            {
+                requireCompatible(v, s, "Vec3 field * scalar field");
+                return v * s;
+            },
+            "other"_a,
+            "Scale this Vec3 surface field face-by-face by a scalar surface field"
+        )
+        .def(
+            "__rmul__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& v, const fvcc::SurfaceField<NeoN::scalar>& s)
+            {
+                requireCompatible(v, s, "scalar field * Vec3 field");
+                return s * v;
+            },
+            "other"_a,
+            "Scale this Vec3 surface field face-by-face by a scalar surface field"
+        )
+        .def(
+            "__add__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& a, const fvcc::SurfaceField<NeoN::Vec3>& b)
+            {
+                requireCompatible(a, b, "Vec3 field + Vec3 field");
+                return a + b;
+            },
+            "other"_a,
+            "Element-wise addition of two Vec3 surface fields"
+        )
+        .def(
+            "__sub__",
+            [](const fvcc::SurfaceField<NeoN::Vec3>& a, const fvcc::SurfaceField<NeoN::Vec3>& b)
+            {
+                requireCompatible(a, b, "Vec3 field - Vec3 field");
+                return a - b;
+            },
+            "other"_a,
+            "Element-wise subtraction of two Vec3 surface fields"
+        );
 
     m.def(
         "create_calculated_surface_bcs_scalar",

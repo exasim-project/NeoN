@@ -227,3 +227,10 @@ def test_dictionary_get_token_list_missing_key():
     dictionary = neon.Dictionary()
     with pytest.raises(Exception):
         dictionary.get_token_list("does-not-exist")
+
+
+def test_dictionary_vec3():
+    d = neon.Dictionary()
+    d.insert_vec3("U", neon.Vec3(1.0, 2.0, 3.0))
+    assert d.contains("U")
+    assert d.get_vec3("U") == neon.Vec3(1.0, 2.0, 3.0)
