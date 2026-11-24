@@ -1,11 +1,19 @@
 \doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/finite\+Volume/cell\+Centred/operators/ddt\+Flux\+Corr.hpp File Reference}
 \hypertarget{ddtFluxCorr_8hpp}{}\label{ddtFluxCorr_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp}}
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
 {\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/database/old\+Time\+Collection.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/fields/volume\+Field.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/fields/surface\+Field.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/interpolation/surface\+Interpolation.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/boundary/surface/ddt\+Flux\+Corr\+Boundary.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1_1DensityWeightedFluxCorrWorkspace}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::detail\+::\+Density\+Weighted\+Flux\+Corr\+Workspace}}
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
@@ -35,7 +43,11 @@ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a9f
 \item 
 \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5fca028bdf41fbfaa14978cd43f76a76}{Surf\+Scalar\+Field}} \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae2be2580a8248d415eadc502ceebcf95}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::ddt\+Flux\+Corr}} (const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab51a9c0a27243d5c72ee1e2c9ab1947d}{Vol\+Vector\+Field}} \&u, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5fca028bdf41fbfaa14978cd43f76a76}{Surf\+Scalar\+Field}} \&phi, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{Ddt\+Scheme}} scheme)
 \item 
-\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab51a9c0a27243d5c72ee1e2c9ab1947d}{Vol\+Vector\+Field}} \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_aaf7ca34a8f1ede67bb1087fc7b8f1054}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::detail\+::density\+Weighted\+Velocity}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&rho, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab51a9c0a27243d5c72ee1e2c9ab1947d}{Vol\+Vector\+Field}} \&u, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
+void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a6ad2fa4ca91fe3766dff96e67dd4e77b}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::detail\+::density\+Weighted\+Velocity}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&rho, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab51a9c0a27243d5c72ee1e2c9ab1947d}{Vol\+Vector\+Field}} \&u, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab51a9c0a27243d5c72ee1e2c9ab1947d}{Vol\+Vector\+Field}} \&rhoU)
+\item 
+\mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1_1DensityWeightedFluxCorrWorkspace}{Density\+Weighted\+Flux\+Corr\+Workspace}} \& \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_aab8fa75dbb47736eea75af6f911f2a15}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::detail\+::density\+Weighted\+Flux\+Corr\+Workspace}} (const \mbox{\hyperlink{namespaceNeoN_a1100afa054a40cdbc07e3f94b712f389}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a78b7c217b626933ce570c60866c0c206}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::ddt\+Flux\+Corr}} (\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5fca028bdf41fbfaa14978cd43f76a76}{Surf\+Scalar\+Field}} \&flux\+Corr, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&rho, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab51a9c0a27243d5c72ee1e2c9ab1947d}{Vol\+Vector\+Field}} \&u, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5fca028bdf41fbfaa14978cd43f76a76}{Surf\+Scalar\+Field}} \&phi, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{Ddt\+Scheme}} scheme)
 \item 
 \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5fca028bdf41fbfaa14978cd43f76a76}{Surf\+Scalar\+Field}} \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a288f00d67685d2d20fe6c9a68159c68a}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::ddt\+Flux\+Corr}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&rho, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab51a9c0a27243d5c72ee1e2c9ab1947d}{Vol\+Vector\+Field}} \&u, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5fca028bdf41fbfaa14978cd43f76a76}{Surf\+Scalar\+Field}} \&phi, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{Ddt\+Scheme}} scheme)
 \end{DoxyCompactItemize}
