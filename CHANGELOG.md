@@ -1,3 +1,8 @@
+# Version 0.4.0 (unreleased)
+## Features
+### Misc
+- Label PRs automatically by area (`type:*`) and kind of change [#725](https://github.com/exasim-project/NeoN/pull/725)
+
 # Version 0.3.0 (2026/11/23)
 ## Features
 - Require Python 3.11 and `nanobind>=3,<4`, and always link nanobind statically, so `_neon` shares its ABI with pybFoam and NeoFOAM [#693](https://github.com/exasim-project/NeoN/pull/693)
