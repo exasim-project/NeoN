@@ -1026,7 +1026,7 @@ void registerMultiFab(nb::module_& m)
                 int ng = mf.nGrow();
 
                 // bc_types: 6 ints (lo_x, hi_x, lo_y, hi_y, lo_z, hi_z); 0=skip, 1=dirichlet,
-                // 2=neumann.
+                // 2=neumann, 3=slip (normal component reflect-odd, tangential zero-gradient).
                 GpuArray<int, 6> bc_types;
                 for (int i = 0; i < 6; ++i)
                     bc_types[i] = nb::cast<int>(bc_types_list[i]);
@@ -1083,6 +1083,8 @@ void registerMultiFab(nb::module_& m)
                                                 kc = ii;
                                             Real interior = arr(ic, jc, kc, n);
                                             if (bct == 1) arr(i, j, k, n) = 2.0 * bv[n] - interior;
+                                            else if (bct == 3)
+                                                arr(i, j, k, n) = (n == dir) ? -interior : interior;
                                             else
                                                 arr(i, j, k, n) = interior;
                                         }
@@ -1106,6 +1108,9 @@ void registerMultiFab(nb::module_& m)
                                                     Real interior = arr(ic, jc, kc, n);
                                                     if (bct == 1)
                                                         arr(i, j, k, n) = 2.0 * bv[n] - interior;
+                                                    else if (bct == 3)
+                                                        arr(i, j, k, n) =
+                                                            (n == d) ? -interior : interior;
                                                     else
                                                         arr(i, j, k, n) = interior;
                                                 }
@@ -1147,6 +1152,8 @@ void registerMultiFab(nb::module_& m)
                                                 kc = ii;
                                             Real interior = arr(ic, jc, kc, n);
                                             if (bct == 1) arr(i, j, k, n) = 2.0 * bv[n] - interior;
+                                            else if (bct == 3)
+                                                arr(i, j, k, n) = (n == dir) ? -interior : interior;
                                             else
                                                 arr(i, j, k, n) = interior;
                                         }
@@ -1170,6 +1177,9 @@ void registerMultiFab(nb::module_& m)
                                                     Real interior = arr(ic, jc, kc, n);
                                                     if (bct == 1)
                                                         arr(i, j, k, n) = 2.0 * bv[n] - interior;
+                                                    else if (bct == 3)
+                                                        arr(i, j, k, n) =
+                                                            (n == d) ? -interior : interior;
                                                     else
                                                         arr(i, j, k, n) = interior;
                                                 }
