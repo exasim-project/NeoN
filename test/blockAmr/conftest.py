@@ -2,10 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-import os
-
-os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
-
 import pytest
 
 import blockamr

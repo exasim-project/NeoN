@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <cstdlib>
+#include <functional>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
@@ -11,6 +12,7 @@
 #include <AMReX_ParallelContext.H>
 #include <AMReX_ParallelDescriptor.H>
 #include <AMReX_ParallelReduce.H>
+#include <AMReX_ParmParse.H>
 
 #include "NeoN/blockAmr/core/runtime.hpp"
 
@@ -29,6 +31,18 @@ void finalizeRuntime()
     }
 }
 
+// AMReX reserves 3/4 of the device for The_Arena by default, which OOMs as soon as another process
+// shares the GPU. Start empty and grow on demand instead; AMREX_THE_ARENA_INIT_SIZE or an explicit
+// amrex.the_arena_init_size still win.
+void addParmParseDefaults()
+{
+    amrex::ParmParse pp("amrex");
+    if (!pp.contains("the_arena_init_size") && std::getenv("AMREX_THE_ARENA_INIT_SIZE") == nullptr)
+    {
+        pp.add("the_arena_init_size", amrex::Long {0});
+    }
+}
+
 } // namespace
 
 void registerInit(nb::module_& m)
@@ -39,7 +53,7 @@ void registerInit(nb::module_& m)
         {
             int argc = 0;
             char** argv = nullptr;
-            amrex::Initialize(argc, argv);
+            amrex::Initialize(argc, argv, std::function<void()> {addParmParseDefaults});
             // Kokkos must init after AMReX (owner of the CUDA context). Kokkos cannot be
             // re-initialized once finalized, so a second runtime() block in one process leaves it
             // unavailable (entries raise).
