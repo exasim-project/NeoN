@@ -1,3 +1,7 @@
+# Version 0.5.0 (unreleased)
+## Features
+- Add the block-structured AMR module `blockamr`: an AMReX-based block-structured mesh with cell/face fields and boundary conditions, explicit finite-volume operators, matrix-free linear solvers (MLMG, GMG, Ginkgo Krylov), AMR regridding, an immersed boundary method and an fvm-style Python DSL [#TBD](https://github.com/exasim-project/NeoN/pull/TBD)
+
 # Version 0.4.0 (unreleased)
 ## Features
 ### Misc
