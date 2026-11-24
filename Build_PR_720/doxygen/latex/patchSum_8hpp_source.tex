@@ -1,0 +1,48 @@
+\doxysection{patch\+Sum.\+hpp}
+\hypertarget{patchSum_8hpp_source}{}\label{patchSum_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/patchSum.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/patchSum.hpp}}
+\mbox{\hyperlink{patchSum_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operators_8hpp}{NeoN/core/mpi/operators.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00020}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{00020}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00037}00037\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Kernel>}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00038}00038\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00039}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a354957c6832d19c636ef00a342495968}{00039}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a354957c6832d19c636ef00a342495968}{patchSum}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ std::pair<localIdx,\ localIdx>\ range,\ \textcolor{keyword}{const}\ Kernel\&\ kernel)}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00040}00040\ \{}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00041}00041\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ sum\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00042}00042\ \ \ \ \ Kokkos::Sum<scalar>\ reducer(sum);}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00043}00043\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}{NeoN::parallelReduce}}(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a91f561927648e0d9ca68cdde17feafc3}{exec}}(),\ range,\ kernel,\ reducer);}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00045}00045\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keywordflow}{if}\ (mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac300ef7b3ce5f62a2c952ffb0f4a16d3}{isDistributed}}())}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00047}00047\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ mpi::Environment\ env;}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ mpi::allReduce(sum,\ mpi::ReduceOp::Sum,\ env.comm());}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00050}00050\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00051}00051\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keywordflow}{return}\ sum;}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00054}00054\ \}}
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{patchSum_8hpp_source_l00056}00056\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary::detail}}
+
+\end{DoxyCode}

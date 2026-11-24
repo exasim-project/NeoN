@@ -1,0 +1,199 @@
+\doxysection{pressure\+Inlet\+Outlet\+Velocity.\+hpp}
+\hypertarget{pressureInletOutletVelocity_8hpp_source}{}\label{pressureInletOutletVelocity_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/pressureInletOutletVelocity.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/pressureInletOutletVelocity.hpp}}
+\mbox{\hyperlink{pressureInletOutletVelocity_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{traits_8hpp}{NeoN/core/primitives/traits.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryContext_8hpp}{NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00018}00018\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{detail}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00024}00024\ \textcolor{comment}{//\ Shared\ kernel\ behind\ PressureInletOutletVelocity,\ the\ velocity\ counterpart\ to\ a}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00025}00025\ \textcolor{comment}{//\ pressure-\/driven\ outlet\ (OpenFOAM's\ pressureInletOutletVelocityFvPatchVectorField,\ a}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00026}00026\ \textcolor{comment}{//\ directionMixedFvPatchVectorField).\ Literal\ OpenFOAM\ blends\ with\ a\ TENSOR-\/valued\ fraction}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00027}00027\ \textcolor{comment}{//\ \ \ valueFraction()\ =\ neg(phi)\ *\ (I\ -\/\ n\ (x)\ n)}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00028}00028\ \textcolor{comment}{//\ i.e.\ the\ tangential\ components\ are\ forced\ to\ a\ fixed\ tangentialVelocity\ on\ inflow\ and}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00029}00029\ \textcolor{comment}{//\ zero-\/gradient\ on\ outflow,\ while\ the\ normal\ component\ is\ *always*\ left\ to\ zero-\/gradient}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00030}00030\ \textcolor{comment}{//\ extrapolation\ (the\ pressure\ equation,\ not\ this\ BC,\ sets\ the\ normal\ velocity).\ NeoN's}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00031}00031\ \textcolor{comment}{//\ boundaryData()\ valueFraction\ is\ a\ single\ scalar\ shared\ by\ all\ 3\ components\ of\ a\ Vec3\ field}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00032}00032\ \textcolor{comment}{//\ (see\ e.g.\ gaussGreenDiv.cpp/gaussGreenLaplacian.cpp,\ which\ multiply\ a\ whole\ Vec3\ refValue\ by}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00033}00033\ \textcolor{comment}{//\ one\ scalar\ fraction),\ so\ that\ tensor\ cannot\ be\ represented\ directly.}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00034}00034\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00035}00035\ \textcolor{comment}{//\ It\ does\ not\ need\ to\ be:\ the\ tensor\ blend\ is\ reproduced\ exactly\ by\ making\ refValue\ itself\ carry}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00036}00036\ \textcolor{comment}{//\ the\ normal-\/direction\ extrapolation,\ recomputed\ every\ call\ from\ the\ CURRENT\ owner-\/cell\ value}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00037}00037\ \textcolor{comment}{//\ (the\ same\ "{}recompute\ from\ live\ field\ data"{}\ pattern\ already\ used\ by\ e.g.\ totalPressure):}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00038}00038\ \textcolor{comment}{//\ \ \ n\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ faceNormal\ /\ faceArea\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (unit\ outward\ normal)}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00039}00039\ \textcolor{comment}{//\ \ \ refValue\ \ \ \ \ \ \ =\ n*(n\ \&\ ownerValue)\ +\ (tangentialVelocity\ -\/\ n*(n\ \&\ tangentialVelocity))}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00040}00040\ \textcolor{comment}{//\ \ \ valueFraction\ \ =\ neg(phi)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (plain\ scalar,\ as\ inletOutlet)}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00041}00041\ \textcolor{comment}{//\ \ \ refGrad\ \ \ \ \ \ \ \ =\ 0}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00042}00042\ \textcolor{comment}{//\ \ \ value\ =\ valueFraction*refValue\ +\ (1\ -\/\ valueFraction)*ownerValue}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00043}00043\ \textcolor{comment}{//\ On\ inflow\ (valueFraction\ =\ 1):\ value\ =\ n*(n\ \&\ ownerValue)\ +\ tangentialVelocity\_projected,}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00044}00044\ \textcolor{comment}{//\ identical\ to\ literal's\ tensor-\/blend\ inflow\ value.\ On\ outflow\ (valueFraction\ =\ 0):\ value\ =}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00045}00045\ \textcolor{comment}{//\ ownerValue,\ identical\ to\ literal's\ outflow\ value\ (full\ zero-\/gradient\ on\ all\ 3\ components).\ This}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00046}00046\ \textcolor{comment}{//\ holds\ for\ any\ U,\ not\ just\ a\ flow\ aligned\ with\ a\ coordinate\ axis\ -\/-\/\ no\ approximation,\ and\ no}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00047}00047\ \textcolor{comment}{//\ change\ to\ NeoN's\ scalar\ valueFraction\ machinery.}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00048}00048\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00049}00049\ \textcolor{comment}{//\ When\ no\ flux\ is\ available\ (hasFlux\ ==\ false)\ every\ face\ is\ treated\ as\ outflow,\ degenerating\ to}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00050}00050\ \textcolor{comment}{//\ a\ pure\ zeroGradient\ BC\ -\/-\/\ the\ same\ fallback\ inletOutlet\ uses.}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00051}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a11d45583988cbf2413d26f51cc570759}{00051}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a11d45583988cbf2413d26f51cc570759}{setPressureInletOutletVelocityValue}}(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00052}00052\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00054}00054\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00055}00055\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ tangentialVelocity,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00056}00056\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ NeoN::scalar>}}\ boundaryFlux,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasFlux}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00058}00058\ )}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00059}00059\ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ internalV\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keyword}{auto}\ [faceNormalsV,\ faceAreasV,\ boundaryFaceOwnersV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_ac30779545e5ddceb9955d7b77d58b279}{faceNormals}}(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_af424606847d2c9f5595745e62ddde1a0}{faceAreas}}(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{faceOwners}}()}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00066}00066\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue()}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00073}00073\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00075}00075\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ ownerValue\ =\ internalV[owner];}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ n\ =\ faceNormalsV[i]\ /\ faceAreasV[i];}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ valueFraction\ =}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (hasFlux\ \&\&\ boundaryFlux[i]\ <\ 0.0)\ ?\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1)\ :\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ tangentialVelocityProjected\ =}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tangentialVelocity\ -\/\ n\ *\ (n\ \&\ tangentialVelocity);}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ refValue\ =\ n\ *\ (n\ \&\ ownerValue)\ +\ tangentialVelocityProjected;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{NeoN::zero<NeoN::Vec3>}}();}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ refValue;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ valueFraction;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ valueFraction\ *\ refValue\ +\ (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1)\ -\/\ valueFraction)\ *\ ownerValue;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setPressureInletOutletVelocityValue"{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00096}00096\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00097}00097\ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00099}00099\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00101}00101\ \textcolor{comment}{//\ PressureInletOutletVelocity:\ velocity\ outlet\ counterpart\ to\ a\ pressure-\/driven\ boundary}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00102}00102\ \textcolor{comment}{//\ (mirrors\ OpenFOAM's\ pressureInletOutletVelocity).\ See\ detail::setPressureInletOutletVelocityValue}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00103}00103\ \textcolor{comment}{//\ for\ the\ exact\ formula\ and\ its\ exact\ equivalence\ to\ OpenFOAM's\ tensor-\/valued\ directionMixed}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00104}00104\ \textcolor{comment}{//\ blend.}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00105}00105\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00106}00106\ \textcolor{comment}{//\ Needs,\ via\ the\ context-\/aware\ correctBoundaryCondition(domainVector,\ ctx)\ overload,\ a}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00107}00107\ \textcolor{comment}{//\ surface-\/scalar\ flux,\ key\ \`{}phiName\_`\ (dict\ key\ "{}phi"{},\ default\ "{}phi"{}).\ Without\ it,\ degrades\ to}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00108}00108\ \textcolor{comment}{//\ plain\ zero-\/gradient\ (the\ same\ fallback\ the\ plain,\ context-\/less\ overload\ always\ uses).}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity}{00109}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a9d3e189579cb4ced8d9426fe5a6f4cb4}{PressureInletOutletVelocity}}\ :}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{VolumeBoundaryFactory}}<NeoN::Vec3>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<PressureInletOutletVelocity>}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00111}00111\ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory_a805723729eacf9d559d686233df8eb27}{VolumeBoundaryFactory<NeoN::Vec3>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<PressureInletOutletVelocity>}};}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00114}00114\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00116}00116\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{comment}{//\ assignable\ =\ true:\ recomputed\ every\ correctBoundaryConditions()\ call.\ fixesValue\ =\ false:}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{comment}{//\ this\ is\ a\ mixed\ BC\ (per-\/face\ valueFraction),\ not\ a\ global\ Dirichlet\ patch.}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00120}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a9d3e189579cb4ced8d9426fe5a6f4cb4}{00120}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a9d3e189579cb4ced8d9426fe5a6f4cb4}{PressureInletOutletVelocity}}(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_abecc224e396bf3a6a3a52c2e0d36fa80}{localIdx}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00122}00122\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_a33d95d3e0b72d8383358f886b925f764}{patchID}},\ \{.assignable\ =\ \textcolor{keyword}{true},\ .fixesValue\ =\ \textcolor{keyword}{false}\}),\ mesh\_(mesh),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ tangentialVelocity\_(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dict.contains(\textcolor{stringliteral}{"{}tangentialVelocity"{}})\ ?\ dict.get<\mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}>(\textcolor{stringliteral}{"{}tangentialVelocity"{}})}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ \{\}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ phiName\_(dict.contains(\textcolor{stringliteral}{"{}phi"{}})\ ?\ dict.get<std::string>(\textcolor{stringliteral}{"{}phi"{}})\ :\ std::string(\textcolor{stringliteral}{"{}phi"{}}))}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00129}00129\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00131}00131\ \ \ \ \ \textcolor{comment}{//\ No\ context\ =>\ no\ flux\ available:\ behave\ as\ zero-\/gradient\ (all\ faces\ treated\ as\ outflow).}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00132}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a0d6656d353bb20439437ad4facab3acd}{00132}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a0d6656d353bb20439437ad4facab3acd}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00133}00133\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a11d45583988cbf2413d26f51cc570759}{detail::setPressureInletOutletVelocityValue}}(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}}(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ tangentialVelocity\_,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ NeoN::scalar>}}\ \{\},}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ false}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00142}00142\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00144}00144\ \ \ \ \ \textcolor{comment}{//\ Context-\/aware:\ read\ the\ face\ flux\ phi\ and\ switch\ inflow/outflow\ per\ face.}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00145}00145\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00146}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_ad52dd68a1a95680aa6457f1b20efd569}{00146}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_ad52dd68a1a95680aa6457f1b20efd569}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<NeoN::Vec3>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{BoundaryContext}}\&\ ctx)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00147}00147\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ctx.hasSurfaceScalar(phiName\_))}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ phi\ =\ ctx.surfaceScalarField(phiName\_);}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a11d45583988cbf2413d26f51cc570759}{detail::setPressureInletOutletVelocityValue}}(}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin_ac3d7e3335fc87d8c40af60de9eca56c0}{range}}(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tangentialVelocity\_,}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ phi.boundaryData().value().view(),}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{true}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a0d6656d353bb20439437ad4facab3acd}{correctBoundaryCondition}}(domainVector);}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00164}00164\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00166}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a689d7cff482ab8dd8fb207b9afe03f04}{00166}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a689d7cff482ab8dd8fb207b9afe03f04}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}pressureInletOutletVelocity"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00168}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a1e6796099f98c8c96c53159e3a5cee6d}{00168}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a1e6796099f98c8c96c53159e3a5cee6d}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a689d7cff482ab8dd8fb207b9afe03f04}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00170}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_ace5c130045a903d1ed83863e87a7c4ba}{00170}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_ace5c130045a903d1ed83863e87a7c4ba}{doc}}()}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00171}00171\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Velocity\ outlet\ paired\ with\ a\ pressure-\/driven\ boundary\ (OpenFOAM's\ "{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}pressureInletOutletVelocity):\ on\ inflow\ faces\ (phi\ <\ 0)\ the\ tangential\ velocity\ "{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}is\ set\ to\ tangentialVelocity\ (default\ zero)\ while\ the\ normal\ component\ is\ left\ "{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}to\ zero-\/gradient;\ on\ outflow\ faces\ all\ 3\ components\ are\ zero-\/gradient.\ Switched\ "{}}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}per\ face\ by\ the\ sign\ of\ the\ face\ flux\ phi."{}};}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00177}00177\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00179}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a1f07f921ed7d79e209bfe83b6cdc1504}{00179}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a1f07f921ed7d79e209bfe83b6cdc1504}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00181}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a9a1893e22a052edb794b1bd3ea3ea188}{00181}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<NeoN::Vec3>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1PressureInletOutletVelocity_a9a1893e22a052edb794b1bd3ea3ea188}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00182}00182\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<PressureInletOutletVelocity>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00184}00184\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00186}00186\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00188}00188\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00189}00189\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vec3}{NeoN::Vec3}}\ tangentialVelocity\_;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00190}00190\ \ \ \ \ std::string\ phiName\_;}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00191}00191\ \};}
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{pressureInletOutletVelocity_8hpp_source_l00193}00193\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
+
+\end{DoxyCode}
