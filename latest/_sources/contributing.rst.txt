@@ -77,7 +77,7 @@ If you want to contribute a specific feature or fix, please don't hesitate to op
  * At least one (ideally two) approval(s) is/are required before a PR can be merged.
  * Make sure that all required pipelines succeed.
  * If you add new features, make sure to provide sufficient unit tests.
-   Also at some point before merging you can add the ``full-ci`` label to include build and tests on GPU hardware.
+   Also at some point before merging you can add the ``sanitize`` label to run the sanitizer builds on the PR.
  * If you add a new feature or bug-fix, please add an entry to the ``CHANGELOG.md`` file.
    For pure refactor PRs, the ``skip-changelog`` label can be set.
  * If the PR should be merged in a specific order or if you don't have the permission to merge, add the ``ready-to-merge`` label.
@@ -96,10 +96,10 @@ The following labels and their meaning are discussed here:
  * ``ready-to-merge``: Signal that the work on this PR has been finished and can be merged.
  * ``skip-changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
  * ``skip-build``: Don't run any build steps, including building the compile commands database.
- * ``skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
- * ``full-ci``: Also run the address and undefined-behavior sanitizer builds on the PR, which otherwise only run on ``develop``, ``main`` and nightly.
+ * ``skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub. Adding the label restarts CI with a clean build.
+ * ``sanitize``: Also run the address and undefined-behavior sanitizer builds on the PR, which otherwise only run on ``develop``, ``main`` and nightly.
  * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
- * ``benchmark``: Run the benchmark jobs on GPUs in the LRZ pipeline.
+ * ``benchmark``: Run the benchmark jobs on GPUs in the LRZ pipeline. They also run weekly on ``develop``, with results on the ``NeoN_develop`` branch of `NeoFOAM-BenchmarkData <https://github.com/exasim-project/NeoFOAM-BenchmarkData>`_.
  * ``skip-nvidia``, ``skip-amd``, ``skip-intel``: Skip the GPU tests on the respective vendor's hardware in the LRZ pipeline.
 
 A full list of the labels can be found `here <https://github.com/exasim-project/NeoN/labels>`_.
