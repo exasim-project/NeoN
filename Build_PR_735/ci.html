@@ -377,7 +377,8 @@ development version such as <code class="docutils literal notranslate"><span cla
 versions sort above the latest release, so keeping them out of <code class="docutils literal notranslate"><span class="pre">exasim-project/main</span></code> keeps that
 channel resolving to releases. The nightly only builds if
 <code class="docutils literal notranslate"><span class="pre">develop</span></code> moved since the last successful nightly run, so an unchanged <code class="docutils literal notranslate"><span class="pre">develop</span></code> costs a single
-short job, and a failed nightly is retried the next night.</p>
+short job, and a failed nightly is retried the next night. Uploads to the nightly channel use their
+own API key, the <code class="docutils literal notranslate"><span class="pre">PREFIX_DEV_NIGHTLY_API_KEY</span></code> secret of the <code class="docutils literal notranslate"><span class="pre">prefix-dev</span></code> environment.</p>
 <p>The recipe lives in <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code>. <code class="docutils literal notranslate"><span class="pre">ci/build_conda_packages.sh</span></code> is the single entry point
 used by both CI and local builds: it exports <code class="docutils literal notranslate"><span class="pre">NEON_VERSION</span></code>, writes the per-build variant
 configuration (python version, GPU flavour, C runtime floor) and calls <code class="docutils literal notranslate"><span class="pre">rattler-build</span></code>.

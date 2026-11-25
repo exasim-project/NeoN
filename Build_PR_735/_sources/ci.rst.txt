@@ -110,7 +110,8 @@ development version such as ``0.3.1.dev2026112602001`` to the separate
 versions sort above the latest release, so keeping them out of ``exasim-project/main`` keeps that
 channel resolving to releases. The nightly only builds if
 ``develop`` moved since the last successful nightly run, so an unchanged ``develop`` costs a single
-short job, and a failed nightly is retried the next night.
+short job, and a failed nightly is retried the next night. Uploads to the nightly channel use their
+own API key, the ``PREFIX_DEV_NIGHTLY_API_KEY`` secret of the ``prefix-dev`` environment.
 
 The recipe lives in ``recipe/recipe.yaml``. ``ci/build_conda_packages.sh`` is the single entry point
 used by both CI and local builds: it exports ``NEON_VERSION``, writes the per-build variant
