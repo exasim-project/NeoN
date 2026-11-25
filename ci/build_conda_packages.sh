@@ -7,7 +7,8 @@
 # Build the NeoN conda package for one python version and one GPU flavour.
 #
 # Usage:
-#   ci/build_conda_packages.sh [--python 3.12] [--gpu cpu|cuda|rocm] [--output-dir output]
+#   ci/build_conda_packages.sh [--python 3.12] [--gpu cpu|cuda|rocm] [--mpi nompi|openmpi]
+#                              [--output-dir output]
 #                              [--target-platform linux-64] [--cuda-version 12.8]
 #                              [--rocm-version 6.3] [--] [extra rattler-build arguments]
 #
@@ -22,6 +23,10 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 python_version="3.12"
 gpu_variant="cpu"
+mpi_variant="nompi"
+# Open MPI series of the openmpi flavour. 4.1 is what Ubuntu 24.04 ships, so the package also runs
+# against the system Open MPI through conda-forge's openmpi=4.1.*=external_* placeholder.
+openmpi_version="4.1"
 output_dir="${repo_root}/output"
 target_platform=""
 cuda_version="12.8"
@@ -38,6 +43,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --python) python_version="$2"; shift 2 ;;
         --gpu) gpu_variant="$2"; shift 2 ;;
+        --mpi) mpi_variant="$2"; shift 2 ;;
         --output-dir) output_dir="$2"; shift 2 ;;
         --target-platform) target_platform="$2"; shift 2 ;;
         --cuda-version) cuda_version="$2"; shift 2 ;;
@@ -54,6 +60,11 @@ done
 case "${gpu_variant}" in
     cpu | cuda | rocm) ;;
     *) echo "--gpu must be one of cpu, cuda, rocm (got ${gpu_variant})" >&2; exit 1 ;;
+esac
+
+case "${mpi_variant}" in
+    nompi | openmpi) ;;
+    *) echo "--mpi must be one of nompi, openmpi (got ${mpi_variant})" >&2; exit 1 ;;
 esac
 
 if [[ ! "${python_version}" =~ ^([0-9]+)\.([0-9]+) ]]; then
@@ -81,7 +92,7 @@ fi
 
 NEON_VERSION="${NEON_VERSION:-$(python3 "${repo_root}/scripts/set_package_version.py" --print)}"
 export NEON_VERSION
-echo "Building neon-pde ${NEON_VERSION} for ${target_platform} (python ${python_version}, ${gpu_variant})" >&2
+echo "Building neon-pde ${NEON_VERSION} for ${target_platform} (python ${python_version}, ${gpu_variant}, ${mpi_variant})" >&2
 
 variant_file="$(mktemp -t neon-variant.XXXXXX)"
 trap 'rm -f "${variant_file}"' EXIT
@@ -91,6 +102,12 @@ trap 'rm -f "${variant_file}"' EXIT
     echo "  - \"${python_version}\""
     echo "gpu_variant:"
     echo "  - ${gpu_variant}"
+    echo "mpi_variant:"
+    echo "  - ${mpi_variant}"
+    if [[ "${mpi_variant}" == "openmpi" ]]; then
+        echo "openmpi:"
+        echo "  - \"${openmpi_version}\""
+    fi
 
     # ${{ stdlib('c') }} in the recipe has no built-in default; the C runtime floor has to be
     # named per target platform.

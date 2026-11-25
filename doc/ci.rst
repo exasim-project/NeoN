@@ -123,6 +123,14 @@ CPU packages are built for CPython 3.11-3.13 on ``linux-64``, ``linux-aarch64``,
 wheel is the supported Windows path. The GPU flavour is encoded in the build string
 (``cpu_py312_*``, ``cuda_py312_*``, ``rocm_py312_*``) so all flavours can coexist in one channel.
 
+Like the wheels, these packages are built without MPI. For downstream MPI codes such as NeoFOAM
+there is one additional ``linux-64`` CPython 3.12 build with ``NeoN_WITH_MPI=ON`` against
+conda-forge's Open MPI 4.1, with the build string ``cpu_openmpi_py312_*``. It ranks below the
+``nompi`` build, so it is only installed when asked for, e.g.
+``pixi add "neon-pde=*=cpu_openmpi*"``. On a machine with a system Open MPI 4.1 (as on Ubuntu 24.04),
+adding ``"openmpi=4.1.*=external_*"`` makes the package use the system library instead of a second
+copy.
+
 Unlike the wheels, the conda package is installed by CMake rather than by ``pip``: the C++ runtime
 and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to ``$PREFIX/lib``, headers and
 CMake package files to ``$PREFIX/include`` and ``$PREFIX/lib/cmake/NeoN``, and only the python
