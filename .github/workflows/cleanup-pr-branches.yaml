@@ -1,0 +1,68 @@
+name: Clean up PR branches
+
+# When a PR is closed (merged or not), delete the copy of its branch that the gpu job of ci.yaml
+# pushed to the LRZ GitLab mirror, so stale branches don't pile up there (#449). For fork PRs, also
+# delete the branches mirror-fork-pr created here (the branch of the same name and
+# mirror-pr/<number>). Branches of this repository are deleted by GitHub on merge
+# (delete_branch_on_merge). Runs as pull_request_target to get the LRZ token for fork PRs too; it
+# never checks out or runs PR code and only uses the branch name.
+on:
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    if: github.repository == 'exasim-project/NeoN'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      LRZ_GROUP: greole
+      LRZ_HOST: gitlab-ce.lrz.de
+      REPO_NAME: ${{ github.event.repository.name }}
+      BRANCH: ${{ github.event.pull_request.head.ref }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+      NEON_PROJECT_TOKEN: ${{ secrets.LRZ_GITLAB_PROJECT_TOKEN }}
+    steps:
+      - name: Check branch name
+        id: check
+        run: |
+          git check-ref-format --branch "$BRANCH" > /dev/null
+          case "$BRANCH" in
+            develop|main|gh-pages|mirror-pr/*)
+              echo "::notice::Keeping protected branch '$BRANCH'"; echo "delete=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+          esac
+          # Another open PR from a branch of the same name still needs the LRZ copy
+          others=$(gh pr list --state open --head "$BRANCH" --json number --jq "[.[] | select(.number != $PR_NUMBER)] | length")
+          if [[ "$others" != 0 ]]; then
+            echo "::notice::Branch '$BRANCH' is used by another open PR, keeping it"; echo "delete=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "delete=true" >> "$GITHUB_OUTPUT"
+
+      - name: Delete branch on LRZ GitLab
+        if: steps.check.outputs.delete == 'true' && env.NEON_PROJECT_TOKEN != ''
+        run: |
+          remote="https://oauth2:${NEON_PROJECT_TOKEN}@${LRZ_HOST}/${LRZ_GROUP}/${REPO_NAME}.git"
+          if git ls-remote --exit-code --heads "$remote" "refs/heads/$BRANCH" > /dev/null; then
+            git push "$remote" --delete "refs/heads/$BRANCH"
+            echo "Deleted '$BRANCH' on LRZ GitLab"
+          else
+            echo "No branch '$BRANCH' on LRZ GitLab"
+          fi
+
+      - name: Delete fork mirror branches
+        if: steps.check.outputs.delete == 'true' && env.IS_FORK == 'true'
+        run: |
+          # Only delete what mirror-fork-pr created for this PR
+          if gh api "repos/$GH_REPO/git/ref/heads/mirror-pr/$PR_NUMBER" > /dev/null 2>&1; then
+            gh api --method DELETE "repos/$GH_REPO/git/refs/heads/$BRANCH" || true
+            gh api --method DELETE "repos/$GH_REPO/git/refs/heads/mirror-pr/$PR_NUMBER"
+            echo "Deleted mirror branches '$BRANCH' and 'mirror-pr/$PR_NUMBER'"
+          else
+            echo "PR #$PR_NUMBER was not mirrored"
+          fi
