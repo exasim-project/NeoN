@@ -7,11 +7,12 @@ name: Conda packages
 # the release channel keeps resolving to releases. It only builds if develop changed since the
 # last successful nightly.
 #
-# Requires two repository settings:
-#   vars.PREFIX_DEV_CHANNEL   the prefix.dev channel, e.g. exasim-project/main
-#   secrets.PREFIX_DEV_API_KEY  an API key with write access to that channel and the nightly one
-# The nightly channel defaults to exasim-project/nightlies, vars.PREFIX_DEV_NIGHTLY_CHANNEL
-# overrides it.
+# Requires these settings:
+#   vars.PREFIX_DEV_CHANNEL               the release channel, e.g. exasim-project/main
+#   secrets.PREFIX_DEV_API_KEY            an API key with write access to the release channel
+#   secrets.PREFIX_DEV_NIGHTLY_API_KEY    an API key with write access to the nightly channel
+# Both secrets live in the prefix-dev environment. The nightly channel defaults to
+# exasim-project/nightlies, vars.PREFIX_DEV_NIGHTLY_CHANNEL overrides it.
 
 on:
   push:
@@ -286,6 +287,9 @@ jobs:
       (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'schedule' ||
       (github.event_name == 'workflow_dispatch' && inputs.publish))
     runs-on: ubuntu-latest
+    env:
+      PREFIX_CHANNEL: ${{ inputs.channel || (github.event_name == 'schedule' && (vars.PREFIX_DEV_NIGHTLY_CHANNEL || 'exasim-project/nightlies')) || vars.PREFIX_DEV_CHANNEL }}
+      NIGHTLY_CHANNEL: ${{ vars.PREFIX_DEV_NIGHTLY_CHANNEL || 'exasim-project/nightlies' }}
     environment:
       name: prefix-dev
       url: https://prefix.dev/channels/${{ inputs.channel || (github.event_name == 'schedule' && (vars.PREFIX_DEV_NIGHTLY_CHANNEL || 'exasim-project/nightlies')) || vars.PREFIX_DEV_CHANNEL }}
@@ -310,8 +314,8 @@ jobs:
 
       - name: Publish to prefix.dev
         env:
-          PREFIX_API_KEY: ${{ secrets.PREFIX_DEV_API_KEY }}
-          PREFIX_CHANNEL: ${{ inputs.channel || (github.event_name == 'schedule' && (vars.PREFIX_DEV_NIGHTLY_CHANNEL || 'exasim-project/nightlies')) || vars.PREFIX_DEV_CHANNEL }}
+          # Each channel has its own key, also for a manual upload to the nightly channel
+          PREFIX_API_KEY: ${{ env.PREFIX_CHANNEL == env.NIGHTLY_CHANNEL && secrets.PREFIX_DEV_NIGHTLY_API_KEY || secrets.PREFIX_DEV_API_KEY }}
         run: |
           if [[ -z "${PREFIX_CHANNEL}" ]]; then
             echo "No prefix.dev channel configured."
