@@ -23,6 +23,9 @@ GitHub CI is responsible for managing the overall NeoN CI workflow.
 * Push the source code and commit metadata to **LRZ GitLab**.
 * Cancel outdated pipelines on LRZ GitLab for the same branch.
 * Trigger new LRZ GitLab pipelines for GPU builds and benchmarks.
+* Build the documentation. A pull request gets a preview at
+  ``https://exasim-project.com/NeoN/Build_PR_<number>`` only if it changes ``doc/`` or
+  ``examples/``; the ``latest`` documentation is rebuilt on every push to ``develop``.
 
 .. note::
    The GitHub CI acts as the *control layer* for all NeoN CI operations.
