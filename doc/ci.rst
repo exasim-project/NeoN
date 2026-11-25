@@ -128,8 +128,9 @@ there is one additional ``linux-64`` CPython 3.12 build with ``NeoN_WITH_MPI=ON`
 conda-forge's Open MPI 4.1, with the build string ``cpu_openmpi_py312_*``. It ranks below the
 ``nompi`` build, so it is only installed when asked for, e.g.
 ``pixi add "neon-pde=*=cpu_openmpi*"``. On a machine with a system Open MPI 4.1 (as on Ubuntu 24.04),
-adding ``"openmpi=4.1.*=external_*"`` makes the package use the system library instead of a second
-copy.
+adding ``"openmpi=4.1.*=external_*"`` from the ``conda-forge/label/mpi-external`` channel (the 4.1
+external builds in ``conda-forge`` itself are marked broken) makes the package use the system library
+instead of a second copy.
 
 Unlike the wheels, the conda package is installed by CMake rather than by ``pip``: the C++ runtime
 and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to ``$PREFIX/lib``, headers and
