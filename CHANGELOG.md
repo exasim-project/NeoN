@@ -4,7 +4,7 @@
 - Label PRs automatically by area (`type:*`) and kind of change [#725](https://github.com/exasim-project/NeoN/pull/725)
 - Consolidate the GitHub CI workflows into a single `ci.yaml` with a label gate [#613](https://github.com/exasim-project/NeoN/pull/613)
 - Bump Kokkos to 5.3.0 [#658](https://github.com/exasim-project/NeoN/pull/658)
-- Publish nightly `neon-pde` conda packages of develop to prefix.dev when develop changed [#PR](https://github.com/exasim-project/NeoN/pull/PR)
+- Publish nightly `neon-pde` conda packages of develop to prefix.dev when develop changed [#735](https://github.com/exasim-project/NeoN/pull/735)
 ## Fixes
 - Fix CI workflows: sanitizer runs on push/schedule, a skipped Ubuntu build step, broken cache conditions and keys; remove unused AWS workflow [#612](https://github.com/exasim-project/NeoN/pull/612)
 
