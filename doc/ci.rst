@@ -104,8 +104,11 @@ workflow (``v*.*.*`` tags and manual dispatch) and resolves its version with the
 ``scripts/set_package_version.py`` logic, so a wheel and a conda package built from one commit report
 the same ``neon.__version__``.
 
-It also runs nightly at 02:00 UTC on ``develop`` and publishes the CPU and CUDA packages to the same
-channel with a development version such as ``0.3.1.dev2026112602001``. The nightly only builds if
+It also runs nightly at 02:00 UTC on ``develop`` and publishes the CPU and CUDA packages with a
+development version such as ``0.3.1.dev2026112602001`` to the separate
+`exasim-project/nightlies <https://prefix.dev/channels/exasim-project/nightlies>`_ channel. Nightly
+versions sort above the latest release, so keeping them out of ``exasim-project/main`` keeps that
+channel resolving to releases. The nightly only builds if
 ``develop`` moved since the last successful nightly run, so an unchanged ``develop`` costs a single
 short job, and a failed nightly is retried the next night.
 

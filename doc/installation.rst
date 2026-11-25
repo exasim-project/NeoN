@@ -116,9 +116,11 @@ NeoN specific build flags are prefixed by ``NeoN_``.
 
       pixi add neon-pde -c https://prefix.dev/exasim-project/main -c conda-forge
 
-   The channel also carries nightly builds of ``develop``. Their versions (e.g.
-   ``0.3.1.dev2026112602001``) sort above the latest release, so pin the version to get a release,
-   e.g. ``pixi add "neon-pde==0.3.0" ...``.
+   Nightly builds of ``develop`` are published to a separate channel:
+
+   .. code-block:: bash
+
+      pixi add neon-pde -c https://prefix.dev/exasim-project/nightlies -c conda-forge
 
    See :doc:`python_bindings` for the available platforms and GPU flavours.
 
