@@ -1,17 +1,20 @@
-name: Clean up PR branches
+name: Clean up closed PRs
 
-# When a PR is closed (merged or not), delete the copy of its branch that the gpu job of ci.yaml
-# pushed to the LRZ GitLab mirror, so stale branches don't pile up there (#449). For fork PRs, also
-# delete the branches mirror-fork-pr created here (the branch of the same name and
-# mirror-pr/<number>). Branches of this repository are deleted by GitHub on merge
+# When a PR is closed (merged or not), cancel its running CI (the GitHub Actions runs on its branch
+# and the LRZ GitLab pipelines that the gpu job of ci.yaml triggered), then delete the copy of its
+# branch that the gpu job pushed to the LRZ GitLab mirror, so stale branches don't pile up there
+# (#449). For fork PRs, also delete the branches mirror-fork-pr created here (the branch of the same
+# name and mirror-pr/<number>). Branches of this repository are deleted by GitHub on merge
 # (delete_branch_on_merge). Runs as pull_request_target to get the LRZ token for fork PRs too; it
-# never checks out or runs PR code and only uses the branch name.
+# only checks out the base branch (for the ci/github scripts) and uses the PR's branch name, never
+# its code.
 on:
   pull_request_target:
     types: [closed]
 
 permissions:
   contents: write
+  actions: write
   pull-requests: read
 
 jobs:
@@ -43,6 +46,26 @@ jobs:
             echo "::notice::Branch '$BRANCH' is used by another open PR, keeping it"; echo "delete=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
           echo "delete=true" >> "$GITHUB_OUTPUT"
+
+      - name: Cancel GitHub Actions runs of the branch
+        if: steps.check.outputs.delete == 'true'
+        run: |
+          for status in queued in_progress waiting requested pending; do
+            gh run list --branch "$BRANCH" --status "$status" --limit 100 --json databaseId,workflowName \
+              --jq '.[] | select(.workflowName != "${{ github.workflow }}") | .databaseId'
+          done | sort -u | while read -r id; do
+            echo "Cancelling run $id"
+            gh run cancel "$id" || true
+          done
+
+      # Checks out the base branch: pull_request_target never checks out the PR head by default
+      - name: Checkout base branch
+        if: steps.check.outputs.delete == 'true' && env.NEON_PROJECT_TOKEN != ''
+        uses: actions/checkout@v4
+
+      - name: Cancel LRZ GitLab pipelines of the branch
+        if: steps.check.outputs.delete == 'true' && env.NEON_PROJECT_TOKEN != ''
+        run: ./ci/github/cancel_triggered_pipelines.sh "${REPO_NAME}" "${BRANCH}" "${NEON_PROJECT_TOKEN}"
 
       - name: Delete branch on LRZ GitLab
         if: steps.check.outputs.delete == 'true' && env.NEON_PROJECT_TOKEN != ''
