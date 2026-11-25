@@ -1,7 +1,7 @@
 name: Label PR
 
 # Add area (type:*) and kind labels based on the PR title, branch and diff, see
-# .github/scripts/label_pr.py. Runs as pull_request_target so fork PRs can be labeled too;
+# .github/scripts/label_pr.py, and post the welcome comment on new PRs. Runs as pull_request_target so fork PRs can be labeled too;
 # it checks out the base branch for the script and only reads the PR through the API.
 on:
   pull_request_target:
@@ -24,3 +24,16 @@ jobs:
           sparse-checkout: .github/scripts
       - name: Label PR
         run: python3 .github/scripts/label_pr.py ${{ github.event.pull_request.number }}
+      - name: Welcome comment
+        if: github.event.action == 'opened'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Thank you for your PR, here are some useful tips:
+            - If this is your first PR, please add yourself to the AUTHORS.md file
+            - Use labels to change the workflow behavior. Set `auto-fix` to automatically apply fixes, `sanitize` for the address and undefined-behavior sanitizer builds, `benchmark` for GPU benchmarks on the LRZ pipeline, `ready-for-review` to show that you're done and need a review.
+            - If the PR changes `doc/` or `examples/`, a preview of the documentation is deployed to https://exasim-project.com/NeoN/Build_PR_${{ github.event.pull_request.number }}
+            - For `benchmark` runs the results are available at https://github.com/exasim-project/NeoFOAM-BenchmarkData/tree/NeoN_PR_${{ github.event.pull_request.number }}/NeoN/${{ github.event.pull_request.number }}
+            - Also check if the GPU pipelines on https://gitlab-ce.lrz.de/greole/neon/-/jobs are successful.
+          comment_tag: build_url
+          mode: createIfNotExists
