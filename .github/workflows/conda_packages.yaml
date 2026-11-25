@@ -118,9 +118,11 @@ jobs:
         include:
           # NeoN with MPI for downstream MPI codes such as NeoFOAM. Its python version only matters
           # for the bindings, NeoFOAM's CI uses the C++ library.
+          # Entries that add a combination get no value from the matrix axes, so name all of them
           - os: ubuntu-latest
             python: "3.12"
             mpi: openmpi
+            toolchain: default
             target-platform: linux-64
           # The same built with clang, for clang-built downstream codes (see the recipe)
           - os: ubuntu-latest
