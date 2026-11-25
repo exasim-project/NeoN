@@ -14,11 +14,23 @@ set(NeoN_WITH_PETSC @NeoN_WITH_PETSC@)
 set(NeoN_WITH_SPDLOG @NeoN_WITH_SPDLOG@)
 set(NeoN_WITH_UMPIRE @NeoN_WITH_UMPIRE@)
 set(NeoN_WITH_MPI @NeoN_WITH_MPI@)
+set(NeoN_BUNDLED_FMT @fmt_ADDED@)
+
+# NeoN's bundled header-only fmt has no fmt package config. umpire's exported targets link
+# NeoN::fmt-header-only and its config only looks for an fmt package without fmt::fmt-header-only.
+if(NeoN_BUNDLED_FMT)
+include("${CMAKE_CURRENT_LIST_DIR}/NeoNFmtTargets.cmake")
+if(NOT TARGET fmt::fmt-header-only)
+add_library(fmt::fmt-header-only ALIAS NeoN::fmt-header-only)
+endif()
+endif()
 
 find_dependency(Kokkos REQUIRED)
 find_dependency(cpptrace REQUIRED)
 find_dependency(nlohmann_json REQUIRED)
+if(NOT NeoN_BUNDLED_FMT)
 find_dependency(fmt REQUIRED)
+endif()
 
 # NeoN::NeoN_public_api links MPI::MPI_CXX
 if(${NeoN_WITH_MPI})

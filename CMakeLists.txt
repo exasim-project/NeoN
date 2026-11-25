@@ -394,8 +394,15 @@ if(NeoN_INSTALL_CMAKE_PACKAGE)
       NAMESPACE spdlog::)
   endif()
 
+  # In its own export set: umpire's exported targets link NeoN::fmt-header-only too, and NeoNTargets
+  # needs umpire's, so NeoNConfig.cmake loads this one before finding umpire.
   if(fmt_ADDED)
-    install(TARGETS fmt-header-only EXPORT NeoNTargets)
+    install(TARGETS fmt-header-only EXPORT NeoNFmtTargets)
+    install(
+      EXPORT NeoNFmtTargets
+      FILE NeoNFmtTargets.cmake
+      NAMESPACE NeoN::
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
     install(DIRECTORY "${fmt_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
   endif()
 
