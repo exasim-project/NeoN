@@ -377,7 +377,8 @@ development version such as <code class="docutils literal notranslate"><span cla
 versions sort above the latest release, so keeping them out of <code class="docutils literal notranslate"><span class="pre">exasim-project/main</span></code> keeps that
 channel resolving to releases. The nightly only builds if
 <code class="docutils literal notranslate"><span class="pre">develop</span></code> moved since the last successful nightly run, so an unchanged <code class="docutils literal notranslate"><span class="pre">develop</span></code> costs a single
-short job, and a failed nightly is retried the next night.</p>
+short job, and a failed nightly is retried the next night. Uploads to the nightly channel use their
+own API key, the <code class="docutils literal notranslate"><span class="pre">PREFIX_DEV_NIGHTLY_API_KEY</span></code> secret of the <code class="docutils literal notranslate"><span class="pre">prefix-dev</span></code> environment.</p>
 <p>The recipe lives in <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code>. <code class="docutils literal notranslate"><span class="pre">ci/build_conda_packages.sh</span></code> is the single entry point
 used by both CI and local builds: it exports <code class="docutils literal notranslate"><span class="pre">NEON_VERSION</span></code>, writes the per-build variant
 configuration (python version, GPU flavour, C runtime floor) and calls <code class="docutils literal notranslate"><span class="pre">rattler-build</span></code>.
@@ -391,8 +392,9 @@ there is one additional <code class="docutils literal notranslate"><span class="
 conda-forge’s Open MPI 4.1, with the build string <code class="docutils literal notranslate"><span class="pre">cpu_openmpi_py312_*</span></code>. It ranks below the
 <code class="docutils literal notranslate"><span class="pre">nompi</span></code> build, so it is only installed when asked for, e.g.
 <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">add</span> <span class="pre">&quot;neon-pde=*=cpu_openmpi*&quot;</span></code>. On a machine with a system Open MPI 4.1 (as on Ubuntu 24.04),
-adding <code class="docutils literal notranslate"><span class="pre">&quot;openmpi=4.1.*=external_*&quot;</span></code> makes the package use the system library instead of a second
-copy.</p>
+adding <code class="docutils literal notranslate"><span class="pre">&quot;openmpi=4.1.*=external_*&quot;</span></code> from the <code class="docutils literal notranslate"><span class="pre">conda-forge/label/mpi-external</span></code> channel (the 4.1
+external builds in <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> itself are marked broken) makes the package use the system library
+instead of a second copy.</p>
 <p>Unlike the wheels, the conda package is installed by CMake rather than by <code class="docutils literal notranslate"><span class="pre">pip</span></code>: the C++ runtime
 and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to <code class="docutils literal notranslate"><span class="pre">$PREFIX/lib</span></code>, headers and
 CMake package files to <code class="docutils literal notranslate"><span class="pre">$PREFIX/include</span></code> and <code class="docutils literal notranslate"><span class="pre">$PREFIX/lib/cmake/NeoN</span></code>, and only the python
