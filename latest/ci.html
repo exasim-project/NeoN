@@ -387,6 +387,19 @@ configuration (python version, GPU flavour, C runtime floor) and calls <code cla
 <code class="docutils literal notranslate"><span class="pre">osx-arm64</span></code>. There is no <code class="docutils literal notranslate"><span class="pre">win-64</span></code> conda package, because NeoN disables Ginkgo on Windows and the
 wheel is the supported Windows path. The GPU flavour is encoded in the build string
 (<code class="docutils literal notranslate"><span class="pre">cpu_py312_*</span></code>, <code class="docutils literal notranslate"><span class="pre">cuda_py312_*</span></code>, <code class="docutils literal notranslate"><span class="pre">rocm_py312_*</span></code>) so all flavours can coexist in one channel.</p>
+<p>Like the wheels, these packages are built without MPI. For downstream MPI codes such as NeoFOAM
+there is one additional <code class="docutils literal notranslate"><span class="pre">linux-64</span></code> CPython 3.12 build with <code class="docutils literal notranslate"><span class="pre">NeoN_WITH_MPI=ON</span></code> against
+conda-forge’s Open MPI 4.1, with the build string <code class="docutils literal notranslate"><span class="pre">cpu_openmpi_py312_*</span></code>. It ranks below the
+<code class="docutils literal notranslate"><span class="pre">nompi</span></code> build, so it is only installed when asked for, e.g.
+<code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">add</span> <span class="pre">&quot;neon-pde=*=cpu_openmpi*&quot;</span></code>. On a machine with a system Open MPI 4.1 (as on Ubuntu 24.04),
+adding <code class="docutils literal notranslate"><span class="pre">&quot;openmpi=4.1.*=external_*&quot;</span></code> from the <code class="docutils literal notranslate"><span class="pre">conda-forge/label/mpi-external</span></code> channel (the 4.1
+external builds in <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> itself are marked broken) makes the package use the system library
+instead of a second copy.</p>
+<p>That Open MPI build exists twice: built with GCC (<code class="docutils literal notranslate"><span class="pre">cpu_openmpi_py312_*</span></code>) and with clang 19
+(<code class="docutils literal notranslate"><span class="pre">cpu_openmpi_clang_py312_*</span></code>). GCC 14+ and clang 18+ mangle C++20 requires-clauses differently,
+so code compiled with clang 18 or newer cannot link the constrained members a GCC-built NeoN
+exports, and needs the clang build. The clang build ranks lowest, so it is only installed when asked
+for, e.g. <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">add</span> <span class="pre">&quot;neon-pde=*=cpu_openmpi_clang*&quot;</span></code>.</p>
 <p>Unlike the wheels, the conda package is installed by CMake rather than by <code class="docutils literal notranslate"><span class="pre">pip</span></code>: the C++ runtime
 and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to <code class="docutils literal notranslate"><span class="pre">$PREFIX/lib</span></code>, headers and
 CMake package files to <code class="docutils literal notranslate"><span class="pre">$PREFIX/include</span></code> and <code class="docutils literal notranslate"><span class="pre">$PREFIX/lib/cmake/NeoN</span></code>, and only the python
