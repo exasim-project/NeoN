@@ -81,6 +81,26 @@ else()
   message(STATUS "Found Kokkos ${NeoN_KOKKOS_CHECKOUT_VERSION}")
 endif()
 
+# Build the CUDA code of the other dependencies (Ginkgo, Umpire) for the architectures Kokkos
+# targets. Kokkos passes its architecture flags itself and leaves CMAKE_CUDA_ARCHITECTURES unset, so
+# the first enable_language(CUDA) of a dependency would set it to the nvcc default (e.g. 52). A
+# fetched Kokkos sets KOKKOS_CUDA_ARCHITECTURES in its own directory scope, an installed one exports
+# Kokkos_CUDA_ARCHITECTURES. A user-provided CMAKE_CUDA_ARCHITECTURES is kept.
+if(Kokkos_ENABLE_CUDA AND NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+  set(NeoN_KOKKOS_CUDA_ARCHITECTURES "${Kokkos_CUDA_ARCHITECTURES}")
+  if(NOT NeoN_KOKKOS_CUDA_ARCHITECTURES AND kokkos_SOURCE_DIR)
+    get_directory_property(NeoN_KOKKOS_CUDA_ARCHITECTURES DIRECTORY ${kokkos_SOURCE_DIR} DEFINITION
+                                                                    KOKKOS_CUDA_ARCHITECTURES)
+  endif()
+  if(NeoN_KOKKOS_CUDA_ARCHITECTURES)
+    message(STATUS "Using the Kokkos CUDA architectures for all dependencies: "
+                   "${NeoN_KOKKOS_CUDA_ARCHITECTURES}")
+    set(CMAKE_CUDA_ARCHITECTURES
+        ${NeoN_KOKKOS_CUDA_ARCHITECTURES}
+        CACHE STRING "CUDA architectures, taken from Kokkos")
+  endif()
+endif()
+
 include(cmake/CPM.cmake)
 
 cpmaddpackage(
@@ -289,23 +309,6 @@ if(${NeoN_WITH_GINKGO})
     endif()
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
-    # Build Ginkgo's CUDA kernels for the architectures Kokkos targets. Without
-    # CMAKE_CUDA_ARCHITECTURES, Ginkgo detects the GPUs of the build machine (and builds for all
-    # architectures if there are none, e.g. on a login node), which can differ from Kokkos_ARCH_*. A
-    # fetched Kokkos sets KOKKOS_CUDA_ARCHITECTURES in its own directory scope, an installed one
-    # exports Kokkos_CUDA_ARCHITECTURES.
-    if(Kokkos_ENABLE_CUDA AND NOT CMAKE_CUDA_ARCHITECTURES)
-      set(NeoN_KOKKOS_CUDA_ARCHITECTURES "${Kokkos_CUDA_ARCHITECTURES}")
-      if(NOT NeoN_KOKKOS_CUDA_ARCHITECTURES AND kokkos_SOURCE_DIR)
-        get_directory_property(NeoN_KOKKOS_CUDA_ARCHITECTURES
-                               DIRECTORY ${kokkos_SOURCE_DIR} DEFINITION KOKKOS_CUDA_ARCHITECTURES)
-      endif()
-      if(NeoN_KOKKOS_CUDA_ARCHITECTURES)
-        message(STATUS "Building Ginkgo for the Kokkos CUDA architectures: "
-                       "${NeoN_KOKKOS_CUDA_ARCHITECTURES}")
-        set(CMAKE_CUDA_ARCHITECTURES ${NeoN_KOKKOS_CUDA_ARCHITECTURES})
-      endif()
-    endif()
     # Ginkgo shares NeoN's Umpire pool only in shared builds: it rejects Umpire in static builds,
     # where each library would also carry its own Umpire ResourceManager.
     if(NeoN_WITH_UMPIRE AND BUILD_SHARED_LIBS)
