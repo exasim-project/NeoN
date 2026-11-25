@@ -8,7 +8,7 @@
 #
 # Usage:
 #   ci/build_conda_packages.sh [--python 3.12] [--gpu cpu|cuda|rocm] [--mpi nompi|openmpi]
-#                              [--output-dir output]
+#                              [--toolchain default|clang] [--output-dir output]
 #                              [--target-platform linux-64] [--cuda-version 12.8]
 #                              [--rocm-version 6.3] [--] [extra rattler-build arguments]
 #
@@ -24,6 +24,10 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 python_version="3.12"
 gpu_variant="cpu"
 mpi_variant="nompi"
+# default: conda-forge's default compilers (GCC on linux). clang: conda-forge's clang, see the
+# toolchain variant in the recipe.
+toolchain_variant="default"
+clang_version="19.1"
 # Open MPI series of the openmpi flavour. 4.1 is what Ubuntu 24.04 ships, so the package also runs
 # against the system Open MPI through conda-forge's openmpi=4.1.*=external_* placeholder (from the
 # conda-forge/label/mpi-external channel).
@@ -45,6 +49,7 @@ while [[ $# -gt 0 ]]; do
         --python) python_version="$2"; shift 2 ;;
         --gpu) gpu_variant="$2"; shift 2 ;;
         --mpi) mpi_variant="$2"; shift 2 ;;
+        --toolchain) toolchain_variant="$2"; shift 2 ;;
         --output-dir) output_dir="$2"; shift 2 ;;
         --target-platform) target_platform="$2"; shift 2 ;;
         --cuda-version) cuda_version="$2"; shift 2 ;;
@@ -66,6 +71,11 @@ esac
 case "${mpi_variant}" in
     nompi | openmpi) ;;
     *) echo "--mpi must be one of nompi, openmpi (got ${mpi_variant})" >&2; exit 1 ;;
+esac
+
+case "${toolchain_variant}" in
+    default | clang) ;;
+    *) echo "--toolchain must be one of default, clang (got ${toolchain_variant})" >&2; exit 1 ;;
 esac
 
 if [[ ! "${python_version}" =~ ^([0-9]+)\.([0-9]+) ]]; then
@@ -93,7 +103,7 @@ fi
 
 NEON_VERSION="${NEON_VERSION:-$(python3 "${repo_root}/scripts/set_package_version.py" --print)}"
 export NEON_VERSION
-echo "Building neon-pde ${NEON_VERSION} for ${target_platform} (python ${python_version}, ${gpu_variant}, ${mpi_variant})" >&2
+echo "Building neon-pde ${NEON_VERSION} for ${target_platform} (python ${python_version}, ${gpu_variant}, ${mpi_variant}, ${toolchain_variant})" >&2
 
 variant_file="$(mktemp -t neon-variant.XXXXXX)"
 trap 'rm -f "${variant_file}"' EXIT
@@ -108,6 +118,18 @@ trap 'rm -f "${variant_file}"' EXIT
     if [[ "${mpi_variant}" == "openmpi" ]]; then
         echo "openmpi:"
         echo "  - \"${openmpi_version}\""
+    fi
+    echo "toolchain_variant:"
+    echo "  - ${toolchain_variant}"
+    if [[ "${toolchain_variant}" == "clang" ]]; then
+        echo "c_compiler:"
+        echo "  - clang"
+        echo "c_compiler_version:"
+        echo "  - \"${clang_version}\""
+        echo "cxx_compiler:"
+        echo "  - clangxx"
+        echo "cxx_compiler_version:"
+        echo "  - \"${clang_version}\""
     fi
 
     # ${{ stdlib('c') }} in the recipe has no built-in default; the C runtime floor has to be

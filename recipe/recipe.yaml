@@ -19,6 +19,11 @@ context:
   # nompi or openmpi. The openmpi flavour is for downstream codes such as NeoFOAM that link NeoN
   # into MPI applications; NeoN_WITH_MPI changes NeoN's public API, so it is a separate build.
   mpi: ${{ mpi_variant }}
+  # default or clang. clang and GCC mangle C++20 requires-clauses differently (clang 18+ qualifies
+  # names inside them), so code built with clang cannot link the constrained members NeoN exports
+  # from a GCC build. The clang flavour is for clang-built downstream codes such as NeoFOAM's clang
+  # CI build. On linux the default toolchain is GCC.
+  toolchain: ${{ toolchain_variant }}
 
 package:
   name: ${{ name }}
@@ -32,13 +37,14 @@ build:
   # The GPU flavour has to appear in the build string: the cpu, cuda and rocm packages share a
   # name and version and would otherwise be indistinguishable builds of the same package.
   # The nompi builds keep the build string they had before the MPI flavour existed.
-  string: ${{ gpu }}${{ "_openmpi" if mpi == "openmpi" else "" }}_py${{ python | version_to_buildstring }}_h${{ hash }}_${{ build_number }}
+  string: ${{ gpu }}${{ "_openmpi" if mpi == "openmpi" else "" }}${{ "_clang" if toolchain == "clang" else "" }}_py${{ python | version_to_buildstring }}_h${{ hash }}_${{ build_number }}
   skip:
     # No Windows conda package: NeoN disables Ginkgo there and the wheel build is the supported
     # Windows path. GPU flavours only make sense on Linux.
     - win
     - gpu != "cpu" and not linux
     - mpi != "nompi" and (gpu != "cpu" or not linux)
+    - toolchain != "default" and (mpi != "openmpi" or not linux)
   script:
     file: build.sh
     env:
@@ -52,8 +58,10 @@ build:
     use_keys:
       - gpu_variant
       - mpi_variant
-    # A plain `neon-pde` spec should resolve to the nompi build, which needs no MPI library
-    down_prioritize_variant: ${{ 1 if mpi == "openmpi" else 0 }}
+      - toolchain_variant
+    # A plain `neon-pde` spec should resolve to the nompi build, which needs no MPI library, and an
+    # openmpi spec to the GCC build
+    down_prioritize_variant: ${{ (1 if mpi == "openmpi" else 0) + (1 if toolchain == "clang" else 0) }}
   dynamic_linking:
     # NeoN vendors Kokkos, Ginkgo, Umpire, fmt and cpptrace through CPM and installs them beside
     # libNeoN in $PREFIX/lib, which is exactly where the default rpath rewrite points.

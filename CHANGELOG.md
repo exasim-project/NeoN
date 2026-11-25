@@ -5,7 +5,7 @@
 - Consolidate the GitHub CI workflows into a single `ci.yaml` with a label gate [#613](https://github.com/exasim-project/NeoN/pull/613)
 - Bump Kokkos to 5.3.0 [#658](https://github.com/exasim-project/NeoN/pull/658)
 - Publish nightly `neon-pde` conda packages of develop to the prefix.dev `exasim-project/nightlies` channel when develop changed [#735](https://github.com/exasim-project/NeoN/pull/735)
-- Add an Open MPI flavour of the `neon-pde` conda package for downstream MPI codes such as NeoFOAM [#736](https://github.com/exasim-project/NeoN/pull/736)
+- Add Open MPI flavours of the `neon-pde` conda package, built with GCC and with clang, for downstream MPI codes such as NeoFOAM [#736](https://github.com/exasim-project/NeoN/pull/736)
 ## Fixes
 - Fix CI workflows: sanitizer runs on push/schedule, a skipped Ubuntu build step, broken cache conditions and keys; remove unused AWS workflow [#612](https://github.com/exasim-project/NeoN/pull/612)
 
