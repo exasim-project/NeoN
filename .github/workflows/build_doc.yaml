@@ -3,17 +3,25 @@ name: Build documentation
 env:
   PR_NUMBER: ${{ github.event.number }}
 
+# PR previews are only built when the PR changes something the docs are built from. The
+# doxygen API pages also read include/, but nearly every PR touches it; those changes show up
+# in latest once merged. latest and the versioned docs are always rebuilt.
 on:
- pull_request:
-    types: [closed, synchronize, opened]
- push:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    paths:
+      - "doc/**"
+      - "examples/**" # literalinclude'd by the docs
+      - ".github/workflows/build_doc.yaml"
+  push:
+    branches: [develop]
     tags:
-       - v*
+      - v*
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.repository == 'exasim-project/NeoN'
+    if: github.repository == 'exasim-project/NeoN' && github.event.action != 'closed'
     steps:
     - name: Requirements
       run: sudo apt-get update
@@ -44,8 +52,7 @@ jobs:
         cd docs_build
         ls doxygen
         touch .nojekyll
-    # The PR preview and comment steps only make sense for pull requests; on a tag push they
-    # deployed to Build_PR_ and failed to find a PR to comment on.
+    # The welcome comment that links the preview is posted by label-pr.yaml
     - name: Deploy PR Build
       if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
       uses: JamesIves/github-pages-deploy-action@v4
@@ -60,43 +67,20 @@ jobs:
         target-folder: ${{ github.ref_name }}
 
     - name: Deploy Latest Build
-      if: ${{ github.event.pull_request.merged && github.event.pull_request.base.ref == 'develop' }}
+      if: ${{ github.ref == 'refs/heads/develop' }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: docs_build
         target-folder: latest
 
-    - name: Find Comment
-      if: ${{ github.event_name == 'pull_request' }}
-      uses: peter-evans/find-comment@v1
-      id: fc
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-author: 'github-actions[bot]'
-
-    - name: Comment PR
-      uses: thollander/actions-comment-pull-request@v2
-      if: ${{ github.event_name == 'pull_request' && steps.fc.outputs.comment-id == '' }}
-      with:
-        message: |
-          Thank you for your PR, here are some useful tips:
-          - If this is your first PR, please add yourself to the AUTHORS.md file
-          - Use labels to change the workflow behavior. Set `auto-fix` to automatically apply fixes, `sanitize` for the address and undefined-behavior sanitizer builds, `benchmark` for GPU benchmarks on the LRZ pipeline, `ready-for-review` to show that you're done and need a review.
-          - I deployed a test documentation to https://exasim-project.com/NeoN/Build_PR_${{ env.PR_NUMBER }}
-          - For `benchmark` runs the results are available at https://github.com/exasim-project/NeoFOAM-BenchmarkData/tree/NeoN_PR_${{ env.PR_NUMBER }}/NeoN/${{ env.PR_NUMBER }}
-          - Also check if the GPU pipelines on https://gitlab-ce.lrz.de/greole/neon/-/jobs are successful.
-        comment_tag: build_url
-        mode: createIfNotExists
-
     - name: Echo Build PR URL
-      if: ${{ github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
       run: |
         echo "Deploy to: https://exasim-project.com/NeoN/Build_PR_${{ env.PR_NUMBER }}"
 
   remove-pr-preview:
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() && github.repository == 'exasim-project/NeoN' && github.event.action == 'closed' }}
-    needs: build
+    if: github.repository == 'exasim-project/NeoN' && github.event.action == 'closed'
     permissions:
       contents: write
     steps:
