@@ -3,12 +3,15 @@ name: Conda packages
 # Builds the neon-pde conda package with rattler-build and publishes it to a prefix.dev
 # channel, so that `pixi add neon-pde -c https://prefix.dev/<channel>` resolves a release.
 #
-# A nightly run builds develop and publishes it to the same channel with a .dev version, but only
-# if develop changed since the last successful nightly.
+# A nightly run builds develop and publishes it with a .dev version to a separate channel, so that
+# the release channel keeps resolving to releases. It only builds if develop changed since the
+# last successful nightly.
 #
 # Requires two repository settings:
 #   vars.PREFIX_DEV_CHANNEL   the prefix.dev channel, e.g. exasim-project/main
-#   secrets.PREFIX_DEV_API_KEY  an API key with write access to that channel
+#   secrets.PREFIX_DEV_API_KEY  an API key with write access to that channel and the nightly one
+# The nightly channel defaults to exasim-project/nightlies, vars.PREFIX_DEV_NIGHTLY_CHANNEL
+# overrides it.
 
 on:
   push:
@@ -285,7 +288,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: prefix-dev
-      url: https://prefix.dev/channels/${{ inputs.channel || vars.PREFIX_DEV_CHANNEL }}
+      url: https://prefix.dev/channels/${{ inputs.channel || (github.event_name == 'schedule' && (vars.PREFIX_DEV_NIGHTLY_CHANNEL || 'exasim-project/nightlies')) || vars.PREFIX_DEV_CHANNEL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -308,7 +311,7 @@ jobs:
       - name: Publish to prefix.dev
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_DEV_API_KEY }}
-          PREFIX_CHANNEL: ${{ inputs.channel || vars.PREFIX_DEV_CHANNEL }}
+          PREFIX_CHANNEL: ${{ inputs.channel || (github.event_name == 'schedule' && (vars.PREFIX_DEV_NIGHTLY_CHANNEL || 'exasim-project/nightlies')) || vars.PREFIX_DEV_CHANNEL }}
         run: |
           if [[ -z "${PREFIX_CHANNEL}" ]]; then
             echo "No prefix.dev channel configured."
