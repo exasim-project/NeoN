@@ -104,6 +104,11 @@ workflow (``v*.*.*`` tags and manual dispatch) and resolves its version with the
 ``scripts/set_package_version.py`` logic, so a wheel and a conda package built from one commit report
 the same ``neon.__version__``.
 
+It also runs nightly at 02:00 UTC on ``develop`` and publishes the CPU and CUDA packages to the same
+channel with a development version such as ``0.3.1.dev2026112602001``. The nightly only builds if
+``develop`` moved since the last successful nightly run, so an unchanged ``develop`` costs a single
+short job, and a failed nightly is retried the next night.
+
 The recipe lives in ``recipe/recipe.yaml``. ``ci/build_conda_packages.sh`` is the single entry point
 used by both CI and local builds: it exports ``NEON_VERSION``, writes the per-build variant
 configuration (python version, GPU flavour, C runtime floor) and calls ``rattler-build``.
