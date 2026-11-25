@@ -371,8 +371,11 @@ be consumed from a <a class="reference external" href="https://pixi.sh">pixi</a>
 workflow (<code class="docutils literal notranslate"><span class="pre">v*.*.*</span></code> tags and manual dispatch) and resolves its version with the same
 <code class="docutils literal notranslate"><span class="pre">scripts/set_package_version.py</span></code> logic, so a wheel and a conda package built from one commit report
 the same <code class="docutils literal notranslate"><span class="pre">neon.__version__</span></code>.</p>
-<p>It also runs nightly at 02:00 UTC on <code class="docutils literal notranslate"><span class="pre">develop</span></code> and publishes the CPU and CUDA packages to the same
-channel with a development version such as <code class="docutils literal notranslate"><span class="pre">0.3.1.dev2026112602001</span></code>. The nightly only builds if
+<p>It also runs nightly at 02:00 UTC on <code class="docutils literal notranslate"><span class="pre">develop</span></code> and publishes the CPU and CUDA packages with a
+development version such as <code class="docutils literal notranslate"><span class="pre">0.3.1.dev2026112602001</span></code> to the separate
+<a class="reference external" href="https://prefix.dev/channels/exasim-project/nightlies">exasim-project/nightlies</a> channel. Nightly
+versions sort above the latest release, so keeping them out of <code class="docutils literal notranslate"><span class="pre">exasim-project/main</span></code> keeps that
+channel resolving to releases. The nightly only builds if
 <code class="docutils literal notranslate"><span class="pre">develop</span></code> moved since the last successful nightly run, so an unchanged <code class="docutils literal notranslate"><span class="pre">develop</span></code> costs a single
 short job, and a failed nightly is retried the next night.</p>
 <p>The recipe lives in <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code>. <code class="docutils literal notranslate"><span class="pre">ci/build_conda_packages.sh</span></code> is the single entry point
