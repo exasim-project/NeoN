@@ -96,7 +96,7 @@ The following labels and their meaning are discussed here:
  * ``ready-to-merge``: Signal that the work on this PR has been finished and can be merged.
  * ``skip-changelog``: Don't check whether the changelog has been updated. Use this label if the changes are not any new features or bug-fixes.
  * ``skip-build``: Don't run any build steps, including building the compile commands database.
- * ``skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub.
+ * ``skip-cache``: Don't cache the build folders. Forces to rebuild the build folder after every push to GitHub. Adding the label restarts CI with a clean build.
  * ``sanitize``: Also run the address and undefined-behavior sanitizer builds on the PR, which otherwise only run on ``develop``, ``main`` and nightly.
  * ``auto-fix``: Apply changes from pre-commit and clang-tidy.
  * ``benchmark``: Run the benchmark jobs on GPUs in the LRZ pipeline. They also run weekly on ``develop``, with results on the ``NeoN_develop`` branch of `NeoFOAM-BenchmarkData <https://github.com/exasim-project/NeoFOAM-BenchmarkData>`_.

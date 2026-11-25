@@ -28,13 +28,13 @@ concurrency:
     ${{ github.workflow }}-
     ${{ github.event_name }}-
     ${{ github.event.pull_request.number || github.ref_name }}
-    ${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && !contains(fromJSON('["sanitize", "skip-build"]'), github.event.label.name) && format('-label-{0}', github.event.label.name) || '' }}
+    ${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && !contains(fromJSON('["sanitize", "skip-build", "skip-cache"]'), github.event.label.name) && format('-label-{0}', github.event.label.name) || '' }}
   cancel-in-progress: true
 
 jobs:
   # Evaluates the repository check and the PR labels once. Every other job needs it, so on
   # forks everything is skipped. Adding or removing a label only restarts the builds for
-  # sanitize and skip-build; skip-changelog only reruns the changelog check. The GPU benchmarks
+  # sanitize, skip-build and skip-cache; skip-changelog only reruns the changelog check. The GPU benchmarks
   # run on PRs with the benchmark label and on the weekly run on develop.
   gate:
     name: Gate
@@ -67,7 +67,7 @@ jobs:
           rebuild=true
           if [[ "$LABEL_EVENT" == true ]]; then
             case "$LABEL" in
-              sanitize|skip-build) ;;
+              sanitize|skip-build|skip-cache) ;;
               *) rebuild=false ;;
             esac
           fi
