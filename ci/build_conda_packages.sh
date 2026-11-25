@@ -25,7 +25,8 @@ python_version="3.12"
 gpu_variant="cpu"
 mpi_variant="nompi"
 # Open MPI series of the openmpi flavour. 4.1 is what Ubuntu 24.04 ships, so the package also runs
-# against the system Open MPI through conda-forge's openmpi=4.1.*=external_* placeholder.
+# against the system Open MPI through conda-forge's openmpi=4.1.*=external_* placeholder (from the
+# conda-forge/label/mpi-external channel).
 openmpi_version="4.1"
 output_dir="${repo_root}/output"
 target_platform=""
