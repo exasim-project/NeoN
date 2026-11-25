@@ -214,6 +214,11 @@ NeoN’s GitHub repository uses labels to control the CI behavior.
 
 These labels allow developers to customize the CI process according to their needs.
 
+Pull requests that only change documentation (``doc/``, ``assets/``, ``LICENSES/``, Markdown and
+reStructuredText files, ``CITATION.cff`` or the documentation workflow) skip the build-and-test
+jobs automatically, as with ``skip-build``. Pre-commit and the changelog check still run, and the
+documentation is built by its own workflow.
+
 .. _ci-neon-summary:
 
 -------------------------------

@@ -34,7 +34,8 @@ concurrency:
 jobs:
   # Evaluates the repository check and the PR labels once. Every other job needs it, so on
   # forks everything is skipped. Adding or removing a label only restarts the builds for
-  # sanitize, skip-build and skip-cache; skip-changelog only reruns the changelog check. The GPU benchmarks
+  # sanitize, skip-build and skip-cache; skip-changelog only reruns the changelog check. PRs that
+  # only change documentation (DOCS_ONLY_RE) skip the builds. The GPU benchmarks
   # run on PRs with the benchmark label and on the weekly run on develop.
   gate:
     name: Gate
@@ -59,6 +60,10 @@ jobs:
           DAILY: ${{ github.event.schedule == '0 9 * * *' }}
           LRZ_ONLY: ${{ inputs.lrz_only == true }}
           WEEKLY: ${{ github.event.schedule == '00 8 * * 0' }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # Files a PR may change and still skip the builds; build_doc.yaml builds the docs
+          DOCS_ONLY_RE: '^(doc/|assets/|LICENSES/)|\.(md|rst)$|^CITATION\.cff$|^\.github/workflows/build_doc\.yaml$'
         run: |
           has() { jq -e --arg l "$1" '(. // []) | index($l) != null' <<<"${LABELS:-[]}" >/dev/null; }
           is_pr=$([[ "$GITHUB_EVENT_NAME" == pull_request ]] && echo true || echo false)
@@ -87,6 +92,15 @@ jobs:
           if $is_pr && ! has sanitize; then sanitize=false; fi
 
           if ! $rebuild || [[ "$LRZ_ONLY" == true ]]; then lint=false; build=false; sanitize=false; fi
+
+          # A PR that only changes documentation skips the builds, here and on LRZ (#390)
+          if $is_pr && [[ "$build" == true || "$sanitize" == true ]]; then
+            files=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename')
+            if [[ -n "$files" ]] && ! grep -qvE "$DOCS_ONLY_RE" <<<"$files"; then
+              echo "::notice::Only documentation changed, skipping the builds"
+              build=false; sanitize=false
+            fi
+          fi
 
           {
             echo "lint=$lint"

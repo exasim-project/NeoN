@@ -1,6 +1,7 @@
 # Version 0.4.0 (unreleased)
 ## Features
 ### Misc
+- Skip the build-and-test jobs, on GitHub and LRZ, for PRs that only change documentation [#390](https://github.com/exasim-project/NeoN/issues/390)
 - When a PR is closed, cancel its GitHub Actions runs and LRZ GitLab pipelines and delete the LRZ copy of its branch and the mirror branches of fork PRs [#449](https://github.com/exasim-project/NeoN/issues/449)
 - Label PRs automatically by area (`type:*`) and kind of change [#725](https://github.com/exasim-project/NeoN/pull/725)
 - Consolidate the GitHub CI workflows into a single `ci.yaml` with a label gate [#613](https://github.com/exasim-project/NeoN/pull/613)
