@@ -132,6 +132,12 @@ adding ``"openmpi=4.1.*=external_*"`` from the ``conda-forge/label/mpi-external`
 external builds in ``conda-forge`` itself are marked broken) makes the package use the system library
 instead of a second copy.
 
+That Open MPI build exists twice: built with GCC (``cpu_openmpi_py312_*``) and with clang 19
+(``cpu_openmpi_clang_py312_*``). GCC 14+ and clang 18+ mangle C++20 requires-clauses differently,
+so code compiled with clang 18 or newer cannot link the constrained members a GCC-built NeoN
+exports, and needs the clang build. The clang build ranks lowest, so it is only installed when asked
+for, e.g. ``pixi add "neon-pde=*=cpu_openmpi_clang*"``.
+
 Unlike the wheels, the conda package is installed by CMake rather than by ``pip``: the C++ runtime
 and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to ``$PREFIX/lib``, headers and
 CMake package files to ``$PREFIX/include`` and ``$PREFIX/lib/cmake/NeoN``, and only the python
