@@ -99,7 +99,7 @@ jobs:
         uses: ./.github/actions/resolve-version
 
   build-cpu:
-    name: CPU ${{ matrix.python }} ${{ matrix.target-platform }}
+    name: CPU ${{ matrix.mpi == 'openmpi' && 'Open MPI ' || '' }}${{ matrix.python }} ${{ matrix.target-platform }}
     needs: version
     runs-on: ${{ matrix.os }}
     if: >
@@ -112,8 +112,15 @@ jobs:
         # One job per (platform x python version), mirroring the wheel matrix.
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-15, macos-15-intel]
         python: ["3.11", "3.12", "3.13"]
+        mpi: [nompi]
         # target-platform is attached per os rather than being a matrix dimension of its own.
         include:
+          # NeoN with MPI for downstream MPI codes such as NeoFOAM. Its python version only matters
+          # for the bindings, NeoFOAM's CI uses the C++ library.
+          - os: ubuntu-latest
+            python: "3.12"
+            mpi: openmpi
+            target-platform: linux-64
           - os: ubuntu-latest
             target-platform: linux-64
           - os: ubuntu-24.04-arm
@@ -150,13 +157,14 @@ jobs:
           ci/build_conda_packages.sh \
             --python "${{ matrix.python }}" \
             --gpu cpu \
+            --mpi "${{ matrix.mpi }}" \
             --target-platform "${{ matrix.target-platform }}" \
             --output-dir output
 
       - name: Upload conda package artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: conda-cpu-${{ matrix.target-platform }}-py${{ matrix.python }}
+          name: conda-cpu-${{ matrix.mpi }}-${{ matrix.target-platform }}-py${{ matrix.python }}
           path: output/**/*.conda
 
   build-cuda:

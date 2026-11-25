@@ -7,6 +7,7 @@
 set -euxo pipefail
 
 gpu_variant="${NEON_GPU_VARIANT:?NEON_GPU_VARIANT must be set by the recipe}"
+mpi_variant="${NEON_MPI_VARIANT:?NEON_MPI_VARIANT must be set by the recipe}"
 
 build_dir="${SRC_DIR}/build-conda"
 
@@ -30,9 +31,8 @@ cmake_args=(
     -D NeoN_BUILD_BENCHMARKS=OFF
     -D NeoN_BUILD_DOC=OFF
     -D NeoN_DEVEL_TOOLS=OFF
-    # Same reduced dependency set as the published wheels: no MPI or optional HPC backends, so the
-    # package resolves without an external HPC stack.
-    -D NeoN_WITH_MPI=OFF
+    # Same reduced dependency set as the published wheels: no optional HPC backends, so the package
+    # resolves without an external HPC stack. MPI only in the openmpi flavour, see below.
     -D NeoN_WITH_PETSC=OFF
     -D NeoN_WITH_ADIOS2=OFF
     -D NeoN_WITH_SUNDIALS=OFF
@@ -42,6 +42,24 @@ cmake_args=(
     -D NeoN_INSTALL_CMAKE_PACKAGE=ON
     -D Kokkos_ENABLE_SERIAL=ON
 )
+
+case "${mpi_variant}" in
+    nompi) cmake_args+=(-D NeoN_WITH_MPI=OFF) ;;
+    openmpi)
+        # Thread support is a runtime property of the MPI the package ends up running with, which
+        # need not be the one in the build environment (openmpi=*=external_* defers to a system
+        # Open MPI). Leave it off, as NeoFOAM's CI builds do.
+        cmake_args+=(
+            -D NeoN_WITH_MPI=ON
+            -D MPI_HOME="${PREFIX}"
+            -D NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
+        )
+        ;;
+    *)
+        echo "Unknown NEON_MPI_VARIANT: ${mpi_variant}" >&2
+        exit 1
+        ;;
+esac
 
 case "${gpu_variant}" in
     cpu)
