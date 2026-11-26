@@ -2,33 +2,32 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Regression tests for runtime-selection operator registration in the ``_neon`` module.
+"""Regression tests for runtime-selection operator registration as seen from ``_neon``.
 
 The Gauss ``div``/``laplacian`` operators self-register into a runtime-selection
-factory table only when their template is instantiated. Their headers are declared
-``extern template``, so that instantiation normally happens once, in ``libNeoN``.
-Because the ``_neon`` extension is compiled with ``-fvisibility=hidden``, it would
-otherwise get a private, empty copy of that table and scheme resolution would abort
-with ``Could not find constructor for Gauss``. ``src/bindings/dsl.cpp`` forces the
-explicit instantiations inside ``_neon`` so its table is populated.
+factory table when their template is instantiated. Their headers are declared
+``extern template``, so that instantiation happens once, in ``libNeoN``. The
+``_neon`` extension is compiled with ``-fvisibility=hidden``; it sees those
+registrations because the factory tables live in one process-wide registry in
+``libNeoN`` (#588) rather than in a function-local static per shared object.
 
 These tests drive ``Expression.read`` — the call that performs the factory lookup
-(``create("Gauss")``) — so they fail loudly if that registration ever regresses.
+(``create("Gauss")``) — so they fail loudly if that sharing ever regresses.
 A scalar equation exercises the ``<scalar>`` instantiation; a vector equation
 additionally exercises the ``<Vec3>`` and ``<Vec3, scalar>`` instantiations (the
 vector ``div``/``laplacian`` build both same-type and scalar-matrix strategies).
 
 ``test_registered_operator_schemes_match_expected`` additionally asserts the exact
-contents of each factory table, so a newly force-instantiated scheme (or one that
+contents of each factory table, so a newly registered scheme (or one that
 silently disappears) has to be reflected here.
 """
 
 import neon
 from neon import imp
 
-# The schemes each operator factory is expected to have registered in ``_neon``.
-# Equality (below) makes this the source of truth: force-instantiate another scheme in
-# ``dsl.cpp`` and this must be updated in lockstep, so registration drift is caught.
+# The schemes each operator factory is expected to have registered, as seen from ``_neon``.
+# Equality (below) makes this the source of truth: register another scheme and this must be
+# updated in lockstep, so registration drift is caught.
 EXPECTED_SCHEMES = {
     "div<scalar>": {"Gauss", "bounded"},
     "div<Vector>": {"Gauss", "bounded"},
@@ -36,9 +35,8 @@ EXPECTED_SCHEMES = {
     "laplacian<scalar>": {"Gauss"},
     "laplacian<Vector>": {"Gauss"},
     "laplacian<Vector,scalar>": {"Gauss"},
-    # Surface-interpolation schemes register from their headers, so they are not part of the
-    # explicit-instantiation workaround above -- but they share the table with it, and the sets
-    # differ by design (linearUpwindV is vector-only, limitedLinear is scalar-only), so pin both.
+    # The surface-interpolation sets differ by design (linearUpwindV is vector-only,
+    # limitedLinear is scalar-only), so pin both.
     "surfaceInterpolation<scalar>": {"linear", "upwind", "linearUpwind", "limitedLinear"},
     "surfaceInterpolation<Vector>": {"linear", "upwind", "linearUpwind", "linearUpwindV"},
 }

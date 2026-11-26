@@ -18,13 +18,46 @@
 #include <iostream>
 #include <memory>
 #include <ranges>
+#include <string>
+#include <typeinfo>
 #include <unordered_map>
 
 #include "error.hpp"
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/visibility.hpp"
 
 namespace NeoN
 {
+
+namespace detail
+{
+
+/**
+ * @brief Returns the process-wide object stored under @p key, creating it with @p create first.
+ *
+ * Defined once in libNeoN. The lookup and documentation tables below would otherwise be
+ * function-local statics of inline functions, of which every shared object compiled with hidden
+ * (inline) visibility -- the Python bindings, a conda-forge build, a downstream code -- gets its
+ * own, separately populated copy (#588). Routing their storage through this exported function
+ * gives one table per key in the process, independent of how the callers were compiled.
+ * The objects are never destroyed: the creator functions they hold may live in shared objects
+ * that are already finalized at exit.
+ */
+NEON_EXPORT void* sharedRegistryObject(const std::string& key, void* (*create)());
+
+/**
+ * @brief Typed access to sharedRegistryObject.
+ *
+ * All users of one key must agree on @p T, which holds because the key is derived from the type
+ * that owns the table.
+ */
+template<typename T>
+T& sharedRegistryObject(const std::string& key)
+{
+    return *static_cast<T*>(sharedRegistryObject(key, []() -> void* { return new T(); }));
+}
+
+} // namespace detail
 
 /**
  * @class BaseClassData
@@ -104,7 +137,8 @@ public:
 
     static LookupTable& docTable()
     {
-        static LookupTable tbl;
+        static LookupTable& tbl =
+            detail::sharedRegistryObject<LookupTable>("NeoN::BaseClassDocumentation::docTable");
         return tbl;
     }
 };
@@ -353,13 +387,16 @@ public:
      * @brief Returns the lookup table for runtime selection.
      *
      * This function returns a reference to the lookup table used for runtime selection.
-     * The lookup table is a static object that is lazily initialized and only created once.
+     * The table is created on first use and shared by every shared object in the process, see
+     * detail::sharedRegistryObject.
      *
      * @return A reference to the lookup table.
      */
     static LookupTable& table()
     {
-        static LookupTable tbl;
+        static LookupTable& tbl = detail::sharedRegistryObject<LookupTable>(
+            std::string(typeid(RuntimeSelectionFactory).name()) + "::table"
+        );
         return tbl;
     }
 
@@ -367,13 +404,16 @@ public:
      * @brief Returns the documentation table for runtime selection.
      *
      * This function returns a reference to the documentation table used for runtime selection.
-     * The documentation table is a static object that is lazily initialized and only created once.
+     * The table is created on first use and shared by every shared object in the process, see
+     * detail::sharedRegistryObject.
      *
      * @return A reference to the documentation table.
      */
     static ClassDocTable& docTable()
     {
-        static ClassDocTable tbl;
+        static ClassDocTable& tbl = detail::sharedRegistryObject<ClassDocTable>(
+            std::string(typeid(RuntimeSelectionFactory).name()) + "::docTable"
+        );
         return tbl;
     }
 

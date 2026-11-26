@@ -11,6 +11,7 @@
 - Add Open MPI flavours of the `neon-pde` conda package, built with GCC and with clang, for downstream MPI codes such as NeoFOAM [#736](https://github.com/exasim-project/NeoN/pull/736)
 ## Fixes
 - Build the `neon-pde` conda packages without conda-forge's `-fvisibility-inlines-hidden`, which gave every library linking libNeoN its own runtime-selection tables, so downstream codes did not see NeoN's boundary conditions and operators
+- Share the runtime-selection factory tables across shared objects through one registry in libNeoN, so libraries built with hidden (inline) visibility, such as the Python bindings or a downstream code linking a conda-forge build, see NeoN's registered boundary conditions and operators; removes the forced operator instantiations in the Python bindings [#588](https://github.com/exasim-project/NeoN/issues/588)
 - Build the CUDA code of Ginkgo and Umpire for the architectures Kokkos targets, unless `CMAKE_CUDA_ARCHITECTURES` is set: Umpire enabled the CUDA language first, so `CMAKE_CUDA_ARCHITECTURES` defaulted to the nvcc default (sm_52) and Ginkgo and Umpire were built for sm_52 only (e.g. instead of sm_90 on H200) [#738](https://github.com/exasim-project/NeoN/pull/738)
 - Fix CI workflows: sanitizer runs on push/schedule, a skipped Ubuntu build step, broken cache conditions and keys; remove unused AWS workflow [#612](https://github.com/exasim-project/NeoN/pull/612)
 

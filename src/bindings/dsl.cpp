@@ -22,35 +22,15 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "bindings.hpp"
 
-#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" // these are required for registration
-#include "NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp" // these are required for registration
-#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" // these are required for registration
-#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
-#include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" // these are required for registration
-#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
-#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp" // these are required for registration
-#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.hpp"
 
-// TODO(operator-registration workaround): drop this once the runtime-selection registry is shared
-// across shared objects (e.g. exporting the factory table with default visibility). The operators
-// above are declared `extern template`, so simply including the headers does NOT instantiate them
-// here and their self-registration only fires in libNeoN. The `_neon` module is compiled
-// `-fvisibility=hidden`, giving it a private, empty copy of the factory's lookup table, so scheme
-// resolution at assembly time (e.g. "Gauss" for div/laplacian) aborts with "Could not find
-// constructor for Gauss". Forcing explicit instantiation here runs the self-registration inside
-// `_neon` so its table is populated.
-namespace NeoN::finiteVolume::cellCentred
-{
-template class GaussGreenDiv<scalar>;
-template class GaussGreenDiv<Vec3>;
-template class GaussGreenDiv<Vec3, scalar>;
-template class BoundedDiv<scalar>;
-template class BoundedDiv<Vec3>;
-template class BoundedDiv<Vec3, scalar>;
-template class GaussGreenLaplacian<scalar>;
-template class GaussGreenLaplacian<Vec3>;
-template class GaussGreenLaplacian<Vec3, scalar>;
-} // namespace NeoN::finiteVolume::cellCentred
 
 namespace nb = nanobind;
 using namespace nb::literals;
@@ -420,8 +400,8 @@ void registerDSL(nb::module_& m)
     );
 
     // Registered runtime-selection scheme names per operator factory, keyed by
-    // "<operator><value-type>". Regression hook for the force-instantiated operator
-    // registration above: an empty list means self-registration did not fire in _neon.
+    // "<operator><value-type>". Regression hook for the shared registry (#588): the operators
+    // register in libNeoN, so an empty list means _neon does not see libNeoN's tables.
     namespace fvcc = NeoN::finiteVolume::cellCentred;
     m.def(
         "registered_operator_schemes",
@@ -435,10 +415,8 @@ void registerDSL(nb::module_& m)
             schemes["laplacian<Vector>"] = fvcc::LaplacianOperatorFactory<Vec3>::entries();
             schemes["laplacian<Vector,scalar>"] =
                 fvcc::LaplacianOperatorFactory<Vec3, scalar>::entries();
-            // Surface-interpolation schemes register from their headers rather than through the
-            // explicit instantiations above, but they are listed here for the same reason: a
-            // failed lookup aborts the process (NF_ERROR_EXIT), so a Python test cannot probe for
-            // a missing scheme by catching an exception -- it has to read the table instead.
+            // A failed lookup aborts the process (NF_ERROR_EXIT), so a Python test cannot probe
+            // for a missing scheme by catching an exception -- it has to read the table instead.
             schemes["surfaceInterpolation<scalar>"] =
                 fvcc::SurfaceInterpolationFactory<scalar>::entries();
             schemes["surfaceInterpolation<Vector>"] =

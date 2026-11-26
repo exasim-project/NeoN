@@ -31,6 +31,7 @@ set(NeoN_SRCS
     "core/memory/kokkos.cpp"
     "core/dictionary.cpp"
     "core/demangle.cpp"
+    "core/runtimeSelectionFactory.cpp"
     "core/tokenList.cpp"
     "core/logging.cpp"
     "dsl/coeff.cpp"
