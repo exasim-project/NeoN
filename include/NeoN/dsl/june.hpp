@@ -8,6 +8,7 @@
 #ifdef NeoN_WITH_JULIA
 
 #include <chrono>
+#include <vector>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -152,28 +153,51 @@ const HoldType* findConfig(
     return nullptr;
 }
 
+// JuNe.<funcName>(args...), or JuNe.<wrapper>(:<funcName>, args...) when a wrapper is given; the
+// arguments are rooted by the caller, the symbol is permanent
+inline void callJulia(
+    jl_module_t* mod, const char* funcName, const char* wrapper, jl_value_t** args, size_t nargs
+)
+{
+    if (!wrapper)
+    {
+        jl_call(jl_get_function(mod, funcName), args, static_cast<uint32_t>(nargs));
+        return;
+    }
+    std::vector<jl_value_t*> wrapped {(jl_value_t*)jl_symbol(funcName)};
+    wrapped.insert(wrapped.end(), args, args + nargs);
+    jl_call(jl_get_function(mod, wrapper), wrapped.data(), static_cast<uint32_t>(wrapped.size()));
+}
+
 } // namespace detail
 
 /* @brief assemble all implicit operators of expr into ls with JuNe
  *
- * Only valid if canAssemble(expr). JuNe adds to the existing coefficients, so ls must be reset.
+ * Only valid if canAssemble(expr), or with field for an expression of ddt alone. JuNe adds to the
+ * existing coefficients, so ls must be reset.
+ * With juliaWrapper, JuNe.<juliaWrapper>(:<entry>, args...) is called instead of
+ * JuNe.<entry>(args...), with the same arguments (benchmarks, e.g. "benchmark_precision").
  */
 template<typename ValueType, typename IndexType, typename MatrixValueType = ValueType>
 void assemble(
     const Expression<ValueType, IndexType>& expr,
     la::LinearSystem<MatrixValueType, ValueType>& ls,
     scalar dt,
-    Strategy strategy = Strategy::FromIterator
+    Strategy strategy = Strategy::FromIterator,
+    const char* juliaWrapper = nullptr,
+    const finiteVolume::cellCentred::VolumeField<ValueType>* field = nullptr
 )
 {
     namespace fvcc = NeoN::finiteVolume::cellCentred;
 
+    // the solution field comes from the div or laplacian operator; temporal operators do not expose
+    // it, so an expression without either (ddt alone) passes it as field
     const auto* divPhi =
         detail::findConfig<fvcc::VolumeField<ValueType>>(expr, "DivOperator", "field");
     const auto* lapPhi =
         detail::findConfig<fvcc::VolumeField<ValueType>>(expr, "LaplacianOperator", "field");
-    NF_ASSERT(divPhi || lapPhi, "JuNe assembly needs a div or laplacian operator");
-    const auto& phi = divPhi ? *divPhi : *lapPhi;
+    NF_ASSERT(divPhi || lapPhi || field, "JuNe assembly needs a div or laplacian operator or the field");
+    const auto& phi = divPhi ? *divPhi : lapPhi ? *lapPhi : *field;
     const auto& mesh = phi.mesh();
 
     // JuNe skips the inputs of operators that are not in the op string, so absent operators
@@ -325,8 +349,7 @@ void assemble(
             args[28] = root(jl_box_int32(nTotalFaces));
         }
         auto funcName = useGPU ? "cellBased_gpu" : "cellBased_";
-        jl_function_t* func = jl_get_function(mod, funcName);
-        jl_call(func, args, static_cast<uint32_t>(nbinputs));
+        detail::callJulia(mod, funcName, juliaWrapper, args, nbinputs);
         detail::checkJuliaException();
         JL_GC_POP();
         return;
@@ -409,8 +432,7 @@ void assemble(
                          : batched ? (useGPU ? "assemble_batched_gpu" : "assemble_batched")
                          : useGPU  ? (global ? "globalassemble_gpu" : "assemble_gpu")
                                    : (global ? "globalassemble" : "assemble");
-    jl_function_t* func = jl_get_function(mod, funcName);
-    jl_call(func, args, static_cast<uint32_t>(nbinputs));
+    detail::callJulia(mod, funcName, juliaWrapper, args, nbinputs);
     detail::checkJuliaException();
     }
     catch (...)
