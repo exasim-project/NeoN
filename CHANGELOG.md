@@ -1,5 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
+- Add `waveTransmissive` volume boundary condition (non-reflecting compressible outflow) and a scalar-value slot (`insertValue`/`value`/`hasValue`) in `BoundaryContext` [#717](https://github.com/exasim-project/NeoN/pull/717)
 - Add the `mixedEnergy` volume boundary condition for energy fields built from a mixed temperature patch [#716](https://github.com/exasim-project/NeoN/pull/716)
 - Add `fixedEnergy` and `gradientEnergy` volume boundary conditions and `mapEnergyBoundaryFromTemperature`, which maps a temperature field's boundary data onto an energy field (`he = Cv*(T - Tref)`) for solvers that transport `he` [#715](https://github.com/exasim-project/NeoN/pull/715)
 - Expose `BoundaryContext` to Python: `correct_boundary_conditions(ctx)` on scalar and Vec3 volume fields, plus a `(mesh, dict, patch_id)` constructor for volume boundaries, so context-aware BCs (`inletOutlet`, `totalPressure`, ...) work from Python instead of silently using their no-context fallback [#714](https://github.com/exasim-project/NeoN/pull/714)
