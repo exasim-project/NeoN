@@ -1,5 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
+- Add `pressureInletOutletVelocity` volume boundary condition (OpenFOAM's velocity outlet paired with a pressure-driven boundary) [#718](https://github.com/exasim-project/NeoN/pull/718)
 - Add `waveTransmissive` volume boundary condition (non-reflecting compressible outflow) and a scalar-value slot (`insertValue`/`value`/`hasValue`) in `BoundaryContext` [#717](https://github.com/exasim-project/NeoN/pull/717)
 - Add the `mixedEnergy` volume boundary condition for energy fields built from a mixed temperature patch [#716](https://github.com/exasim-project/NeoN/pull/716)
 - Add `fixedEnergy` and `gradientEnergy` volume boundary conditions and `mapEnergyBoundaryFromTemperature`, which maps a temperature field's boundary data onto an energy field (`he = Cv*(T - Tref)`) for solvers that transport `he` [#715](https://github.com/exasim-project/NeoN/pull/715)
