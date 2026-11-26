@@ -1,5 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
+- Add `fixedMean` and `flowRateInletVelocity` volume boundary conditions [#720](https://github.com/exasim-project/NeoN/pull/720)
 - Add `sineFixedValue` volume boundary condition (time-varying uniform value, OpenFOAM's `uniformFixedValue` with a sine Function1) and a scalar-value slot (`insertValue`/`value`/`hasValue`) in `BoundaryContext` [#719](https://github.com/exasim-project/NeoN/pull/719)
 - Add `pressureInletOutletVelocity` volume boundary condition (OpenFOAM's velocity outlet paired with a pressure-driven boundary) [#718](https://github.com/exasim-project/NeoN/pull/718)
 - Add `waveTransmissive` volume boundary condition (non-reflecting compressible outflow) and a scalar-value slot (`insertValue`/`value`/`hasValue`) in `BoundaryContext` [#717](https://github.com/exasim-project/NeoN/pull/717)
