@@ -43,7 +43,8 @@ build:
     # Windows path. GPU flavours only make sense on Linux.
     - win
     - gpu != "cpu" and not linux
-    - mpi != "nompi" and (gpu != "cpu" or not linux)
+    # The openmpi flavour is CPU only; CI builds it for linux-64 and osx-arm64.
+    - mpi != "nompi" and gpu != "cpu"
     - toolchain != "default" and (mpi != "openmpi" or not linux)
   script:
     file: build.sh

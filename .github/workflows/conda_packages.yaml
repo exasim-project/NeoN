@@ -124,6 +124,12 @@ jobs:
             mpi: openmpi
             toolchain: default
             target-platform: linux-64
+          # On macOS against conda-forge's Open MPI 5.0, the MPI OpenFOAM for macOS ships
+          - os: macos-15
+            python: "3.12"
+            mpi: openmpi
+            toolchain: default
+            target-platform: osx-arm64
           # The same built with clang, for clang-built downstream codes (see the recipe)
           - os: ubuntu-latest
             python: "3.12"

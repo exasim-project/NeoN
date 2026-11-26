@@ -28,9 +28,9 @@ mpi_variant="nompi"
 # toolchain variant in the recipe.
 toolchain_variant="default"
 clang_version="19.1"
-# Open MPI series of the openmpi flavour. 4.1 is what Ubuntu 24.04 ships, so the package also runs
-# against the system Open MPI through conda-forge's openmpi=4.1.*=external_* placeholder (from the
-# conda-forge/label/mpi-external channel).
+# Open MPI series of the openmpi flavour. On linux 4.1, what Ubuntu 24.04 ships, so the package also
+# runs against the system Open MPI through conda-forge's openmpi=4.1.*=external_* placeholder (from
+# the conda-forge/label/mpi-external channel). On macOS see below.
 openmpi_version="4.1"
 output_dir="${repo_root}/output"
 target_platform=""
@@ -103,6 +103,13 @@ fi
 
 NEON_VERSION="${NEON_VERSION:-$(python3 "${repo_root}/scripts/set_package_version.py" --print)}"
 export NEON_VERSION
+# On macOS there is no external Open MPI placeholder. OpenFOAM for macOS (gerlero/openfoam-app,
+# also what setup-openfoam installs) bundles conda-forge's Open MPI 5.0, so the osx flavour builds
+# against the same series and the same conda-forge build of the library.
+if [[ "${mpi_variant}" == "openmpi" && "${target_platform}" == osx-* ]]; then
+    openmpi_version="5.0"
+fi
+
 echo "Building neon-pde ${NEON_VERSION} for ${target_platform} (python ${python_version}, ${gpu_variant}, ${mpi_variant}, ${toolchain_variant})" >&2
 
 variant_file="$(mktemp -t neon-variant.XXXXXX)"

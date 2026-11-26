@@ -132,7 +132,14 @@ adding ``"openmpi=4.1.*=external_*"`` from the ``conda-forge/label/mpi-external`
 external builds in ``conda-forge`` itself are marked broken) makes the package use the system library
 instead of a second copy.
 
-That Open MPI build exists twice: built with GCC (``cpu_openmpi_py312_*``) and with clang 19
+There is also an ``osx-arm64`` CPython 3.12 Open MPI build (``cpu_openmpi_py312_*``). conda-forge has
+no external Open MPI placeholder for macOS, so it is built against conda-forge's Open MPI 5.0, the
+library OpenFOAM for macOS (``gerlero/openfoam-app``, which ``setup-openfoam`` installs) bundles
+from conda-forge itself. A downstream code that also links OpenFOAM's ``libPstream`` must load only
+one of the two copies, e.g. by pinning the same Open MPI version and putting one ``lib`` directory
+first.
+
+On ``linux-64`` that Open MPI build exists twice: built with GCC (``cpu_openmpi_py312_*``) and with clang 19
 (``cpu_openmpi_clang_py312_*``). GCC 14+ and clang 18+ mangle C++20 requires-clauses differently,
 so code compiled with clang 18 or newer cannot link the constrained members a GCC-built NeoN
 exports, and needs the clang build. The clang build ranks lowest, so it is only installed when asked
