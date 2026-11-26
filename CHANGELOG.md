@@ -1,5 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
+- Add `fixedEnergy` and `gradientEnergy` volume boundary conditions and `mapEnergyBoundaryFromTemperature`, which maps a temperature field's boundary data onto an energy field (`he = Cv*(T - Tref)`) for solvers that transport `he` [#715](https://github.com/exasim-project/NeoN/pull/715)
 - Expose `BoundaryContext` to Python: `correct_boundary_conditions(ctx)` on scalar and Vec3 volume fields, plus a `(mesh, dict, patch_id)` constructor for volume boundaries, so context-aware BCs (`inletOutlet`, `totalPressure`, ...) work from Python instead of silently using their no-context fallback [#714](https://github.com/exasim-project/NeoN/pull/714)
 - Add division operators (`field / field`, `field / scalar`, `scalar / field`) for scalar `SurfaceField`s in the Python bindings [#713](https://github.com/exasim-project/NeoN/pull/713)
 - Add a density-weighted `ddtFluxCorr(rho, U, phi, dt, scheme)` overload for compressible mass fluxes, and make `ddtFluxCorr` follow OpenFOAM's `fvcDdtPhiCorr` for BDF2 (one coupling coefficient) and on boundary faces (zero for the density-weighted overload) [#711](https://github.com/exasim-project/NeoN/pull/711)
