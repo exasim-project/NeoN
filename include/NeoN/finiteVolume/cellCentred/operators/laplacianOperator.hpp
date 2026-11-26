@@ -209,9 +209,9 @@ public:
         const auto& ret = this->getVector();
         const auto& coeff = this->getCoefficient();
         return {
-            {"field", detail::RefHolder<VolumeField<FieldValueType>> {ret}},
-            {"coeff", detail::RefHolder<dsl::Coeff> {coeff}},
-            {"gamma", detail::RefHolder<SurfaceField<NeoN::scalar>> {gamma_}}
+            {"field", NeoN::detail::RefHolder<VolumeField<FieldValueType>> {ret}},
+            {"coeff", NeoN::detail::RefHolder<dsl::Coeff> {coeff}},
+            {"gamma", NeoN::detail::RefHolder<SurfaceField<NeoN::scalar>> {gamma_}}
         };
     }
 
