@@ -42,6 +42,7 @@ jobs:
     if: github.repository == 'exasim-project/NeoN'
     runs-on: ubuntu-latest
     outputs:
+      stack: ${{ steps.stack.outputs.key }}
       lint: ${{ steps.gate.outputs.lint }}
       changelog: ${{ steps.gate.outputs.changelog }}
       build: ${{ steps.gate.outputs.build }}
@@ -112,6 +113,29 @@ jobs:
             echo "skip-amd=$(has skip-amd && echo true || echo false)"
             echo "skip-intel=$(has skip-intel && echo true || echo false)"
           } | tee -a "$GITHUB_OUTPUT"
+
+      # PRs of one stacked-PR chain queue their build jobs behind each other instead of occupying a
+      # full set of runners each (see the job-level concurrency groups below). Other runs get a key
+      # of their own, so nothing else is serialized.
+      - name: Find the PR's stack
+        id: stack
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # How many PRs of one stack may run their build jobs at the same time
+          STACK_SLOTS: 1
+        run: |
+          key="run-${GITHUB_RUN_ID}"
+          if [[ -n "$PR_NUMBER" ]]; then
+            stack=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" \
+              --jq 'select(.stack != null) | "\(.stack.number) \(.stack.position) \(.stack.size)"' || true)
+            if [[ -n "$stack" ]]; then
+              read -r number position size <<<"$stack"
+              key="stack-${number}-slot-$(( position % STACK_SLOTS ))"
+              echo "::notice::PR #$PR_NUMBER is $position of $size in stack $number, its build jobs queue behind the stack's other PRs"
+            fi
+          fi
+          echo "key=$key" | tee -a "$GITHUB_OUTPUT"
 
   # ---------------------------------------------------------------- static checks
   pre-commit:
@@ -198,6 +222,10 @@ jobs:
     if: needs.gate.outputs.build == 'true'
     # pinned: the compilation database must match the clang-tidy runner
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-iwyu
+      cancel-in-progress: false
+      queue: max
     steps:
       - uses: actions/checkout@v4
 
@@ -245,8 +273,12 @@ jobs:
 
   clang-tidy:
     name: Clang-tidy Check
-    needs: iwyu
+    needs: [gate, iwyu]
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-clang-tidy
+      cancel-in-progress: false
+      queue: max
     steps:
       - uses: actions/checkout@v4
         with:
@@ -296,6 +328,10 @@ jobs:
     if: needs.gate.outputs.build == 'true'
     # pinned: the apt package list below targets Ubuntu 24.04
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-linux-${{ strategy.job-index }}
+      cancel-in-progress: false
+      queue: max
     strategy:
       matrix:
         compiler:
@@ -396,6 +432,10 @@ jobs:
     needs: [gate, linux]
     if: needs.gate.outputs.build == 'true'
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-linux-production-${{ strategy.job-index }}
+      cancel-in-progress: false
+      queue: max
     strategy:
       fail-fast: false
       matrix:
@@ -413,6 +453,10 @@ jobs:
     needs: [gate, linux]
     if: needs.gate.outputs.build == 'true'
     runs-on: macos-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-macos-${{ strategy.job-index }}
+      cancel-in-progress: false
+      queue: max
     env:
       # Open MPI 5 (Homebrew) launches through PRRTE, which ignores OMPI_MCA_rmaps_base_oversubscribe
       PRTE_MCA_rmaps_default_mapping_policy: ":oversubscribe"
@@ -469,6 +513,10 @@ jobs:
     needs: [gate, linux]
     if: needs.gate.outputs.build == 'true'
     runs-on: windows-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-windows
+      cancel-in-progress: false
+      queue: max
     steps:
       - name: Checkout the latest code (shallow clone)
         uses: actions/checkout@v4
@@ -495,6 +543,10 @@ jobs:
     needs: gate
     if: needs.gate.outputs.sanitize == 'true'
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-sanitizer-${{ strategy.job-index }}
+      cancel-in-progress: false
+      queue: max
     # Ginkgo nightly (develop) image from exasim-project/ginkgo-packaging: Ubuntu 24.04, GCC 13,
     # MPICH, Ginkgo in /opt/ginkgo on CMAKE_PREFIX_PATH, so find_package(Ginkgo) picks it up.
     permissions:
@@ -558,6 +610,10 @@ jobs:
           (needs.linux.result == 'success' || inputs.lrz_only) &&
           !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-gpu
+      cancel-in-progress: false
+      queue: max
     timeout-minutes: 1440 # 24 hours
     env:
       LRZ_GROUP: greole
@@ -613,6 +669,10 @@ jobs:
     needs: [gate, gpu]
     if: needs.gate.outputs.benchmark == 'true'
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.gate.outputs.stack }}-gpu-benchmark
+      cancel-in-progress: false
+      queue: max
     timeout-minutes: 1440
     env:
       REPO_NAME: ${{ github.event.repository.name }}

@@ -226,6 +226,12 @@ reStructuredText files, ``CITATION.cff`` or the documentation workflow) skip the
 jobs automatically, as with ``skip-build``. Pre-commit and the changelog check still run, and the
 documentation is built by its own workflow.
 
+Pull requests that are part of a stack (stacked pull requests) run their build-and-test jobs one
+stack member at a time: the gate looks up the stack, and each build job joins a concurrency group
+per stack and job that queues (``queue: max``) instead of running in parallel. Every pull request
+still gets its own results, they just arrive later for the upper ones. ``STACK_SLOTS`` in the gate
+sets how many members of one stack may build at the same time.
+
 .. _ci-neon-summary:
 
 -------------------------------

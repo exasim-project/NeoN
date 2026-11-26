@@ -1,6 +1,7 @@
 # Version 0.4.0 (unreleased)
 ## Features
 ### Misc
+- Run the build-and-test jobs of stacked pull requests one stack member at a time, through per-stack job concurrency groups that queue, instead of a full set of runners per pull request
 - Add an `osx-arm64` Open MPI flavour of the `neon-pde` conda package, built against conda-forge's Open MPI 5.0 as bundled by OpenFOAM for macOS
 - Skip the build-and-test jobs, on GitHub and LRZ, for PRs that only change documentation [#390](https://github.com/exasim-project/NeoN/issues/390)
 - When a PR is closed, cancel its GitHub Actions runs and LRZ GitLab pipelines and delete the LRZ copy of its branch and the mirror branches of fork PRs [#449](https://github.com/exasim-project/NeoN/issues/449)
