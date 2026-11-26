@@ -395,7 +395,13 @@ conda-forge’s Open MPI 4.1, with the build string <code class="docutils litera
 adding <code class="docutils literal notranslate"><span class="pre">&quot;openmpi=4.1.*=external_*&quot;</span></code> from the <code class="docutils literal notranslate"><span class="pre">conda-forge/label/mpi-external</span></code> channel (the 4.1
 external builds in <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> itself are marked broken) makes the package use the system library
 instead of a second copy.</p>
-<p>That Open MPI build exists twice: built with GCC (<code class="docutils literal notranslate"><span class="pre">cpu_openmpi_py312_*</span></code>) and with clang 19
+<p>There is also an <code class="docutils literal notranslate"><span class="pre">osx-arm64</span></code> CPython 3.12 Open MPI build (<code class="docutils literal notranslate"><span class="pre">cpu_openmpi_py312_*</span></code>). conda-forge has
+no external Open MPI placeholder for macOS, so it is built against conda-forge’s Open MPI 5.0, the
+library OpenFOAM for macOS (<code class="docutils literal notranslate"><span class="pre">gerlero/openfoam-app</span></code>, which <code class="docutils literal notranslate"><span class="pre">setup-openfoam</span></code> installs) bundles
+from conda-forge itself. A downstream code that also links OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">libPstream</span></code> must load only
+one of the two copies, e.g. by pinning the same Open MPI version and putting one <code class="docutils literal notranslate"><span class="pre">lib</span></code> directory
+first.</p>
+<p>On <code class="docutils literal notranslate"><span class="pre">linux-64</span></code> that Open MPI build exists twice: built with GCC (<code class="docutils literal notranslate"><span class="pre">cpu_openmpi_py312_*</span></code>) and with clang 19
 (<code class="docutils literal notranslate"><span class="pre">cpu_openmpi_clang_py312_*</span></code>). GCC 14+ and clang 18+ mangle C++20 requires-clauses differently,
 so code compiled with clang 18 or newer cannot link the constrained members a GCC-built NeoN
 exports, and needs the clang build. The clang build ranks lowest, so it is only installed when asked
