@@ -1,5 +1,6 @@
 # Version 0.4.0 (unreleased)
 ## Features
+- Add the `limitedLinearV` surface interpolation scheme for vector fields, which limits the whole vector with one limiter along its face difference, as OpenFOAM does [#724](https://github.com/exasim-project/NeoN/pull/724)
 - Add `freestreamVelocity` and `freestreamPressure` volume boundary conditions and a `mixed` boundary attribute [#722](https://github.com/exasim-project/NeoN/pull/722)
 - Add the `plenumPressure` and `pressureInletVelocity` volume boundary conditions, and let `fixedMean` keep its values for an evaluation that follows a solve (context value `evaluateOnly`), as OpenFOAM does [#721](https://github.com/exasim-project/NeoN/pull/721)
 - Add `fixedMean` and `flowRateInletVelocity` volume boundary conditions [#720](https://github.com/exasim-project/NeoN/pull/720)
@@ -23,6 +24,7 @@
 - Publish nightly `neon-pde` conda packages of develop to the prefix.dev `exasim-project/nightlies` channel when develop changed [#735](https://github.com/exasim-project/NeoN/pull/735)
 - Add Open MPI flavours of the `neon-pde` conda package, built with GCC and with clang, for downstream MPI codes such as NeoFOAM [#736](https://github.com/exasim-project/NeoN/pull/736)
 ## Fixes
+- Make the `limitedLinear` and `limitedLinearV` weights deterministic on a flat scalar field: slopes that are only floating-point round-off no longer decide between central and upwind differencing [#724](https://github.com/exasim-project/NeoN/pull/724)
 - Honour a cell-limited gradient scheme in the scalar `linearUpwind` interpolation, as OpenFOAM does [#723](https://github.com/exasim-project/NeoN/pull/723)
 - Use the `ddtSchemes` default entry in `DdtOperator::read` for a field without an entry of its own, as OpenFOAM does [#712](https://github.com/exasim-project/NeoN/pull/712)
 - Fix explicit temporal operators (e.g. `exp.ddt(p)`, `exp.ddt(rho, K)`) being silently dropped when an `Expression` is assembled into the right-hand side, and make the non-density-weighted explicit `ddt` honor its coefficient [#707](https://github.com/exasim-project/NeoN/pull/707)
