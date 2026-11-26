@@ -11,6 +11,14 @@ mpi_variant="${NEON_MPI_VARIANT:?NEON_MPI_VARIANT must be set by the recipe}"
 
 build_dir="${SRC_DIR}/build-conda"
 
+# conda-forge's default CXXFLAGS contain -fvisibility-inlines-hidden. It hides inline functions
+# such as RuntimeSelectionFactory::table(), so each shared object that links libNeoN gets its own
+# copy of the factory tables: a downstream code (e.g. NeoFOAM) then sees none of NeoN's registered
+# boundary conditions and operators ("unknown boundary condition type 'fixedValue'"). Builds from
+# source do not set the flag. See #588 for making the tables independent of it.
+CXXFLAGS="${CXXFLAGS//-fvisibility-inlines-hidden/}"
+export CXXFLAGS
+
 cmake_args=(
     -G Ninja
     -D CMAKE_BUILD_TYPE=Release
