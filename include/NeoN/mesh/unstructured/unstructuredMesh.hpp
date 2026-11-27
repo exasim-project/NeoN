@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "Kokkos_Sort.hpp"
-
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"

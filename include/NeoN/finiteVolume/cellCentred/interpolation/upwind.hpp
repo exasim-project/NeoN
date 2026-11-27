@@ -113,7 +113,8 @@ namespace NeoN
 
 namespace fvcc = finiteVolume::cellCentred;
 
-template class fvcc::Upwind<scalar>;
-template class fvcc::Upwind<Vec3>;
+// Instantiated in upwind.cpp, so includers do not compile the members again.
+extern template class fvcc::Upwind<scalar>;
+extern template class fvcc::Upwind<Vec3>;
 
 }

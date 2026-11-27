@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include <fmt/core.h>
-#include <fmt/chrono.h>
 
 #include "NeoN/core/mpi/environment.hpp"
 
@@ -58,25 +57,7 @@ public:
     std::chrono::time_point<std::chrono::steady_clock> creationTS; // store time of constructor call
 
     /** @brief convert event to a json string */
-    std::string toJson(std::string_view delim)
-    {
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::steady_clock::now() - creationTS
-        );
-
-        return fmt::format(
-            fmt::runtime(
-                "{{\n\"message\": \"{}\",\n\"sourceLocation\": \"{}:{}\",\n\"timeStarted\": "
-                "\"{}\",\n\"duration\": \"{:m}ms\"\n}}{}"
-            ),
-            message,
-            location.file_name(),
-            location.line(),
-            creationTS.time_since_epoch(),
-            duration,
-            delim
-        );
-    }
+    std::string toJson(std::string_view delim);
 };
 
 /** Configure the default "NeoN" logger and the rank-based mute policy. Reads the

@@ -257,3 +257,10 @@ void computeLimitedLinearWeights(
 }
 
 } // namespace NeoN::finiteVolume::cellCentred
+
+namespace NeoN
+{
+
+template class fvcc::LimitedLinear<scalar>;
+
+}

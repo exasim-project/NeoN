@@ -101,10 +101,11 @@ namespace NeoN
 
 namespace fvcc = finiteVolume::cellCentred;
 
-template class fvcc::SurfaceInterpolationFactory<scalar>;
-template class fvcc::SurfaceInterpolationFactory<Vec3>;
+// Instantiated in linear.cpp, so includers do not compile the members again.
+extern template class fvcc::SurfaceInterpolationFactory<scalar>;
+extern template class fvcc::SurfaceInterpolationFactory<Vec3>;
 
-template class fvcc::Linear<scalar>;
-template class fvcc::Linear<Vec3>;
+extern template class fvcc::Linear<scalar>;
+extern template class fvcc::Linear<Vec3>;
 
 }

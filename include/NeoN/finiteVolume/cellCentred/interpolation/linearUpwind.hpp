@@ -240,9 +240,10 @@ namespace NeoN
 
 namespace fvcc = finiteVolume::cellCentred;
 
-template class fvcc::LinearUpwind<scalar>;
-template class fvcc::LinearUpwind<Vec3>;
+// Instantiated in linearUpwind.cpp, so includers do not compile the members again.
+extern template class fvcc::LinearUpwind<scalar>;
+extern template class fvcc::LinearUpwind<Vec3>;
 // linearUpwindV: directionally limited gradient correction, vector fields only.
-template class fvcc::LinearUpwind<Vec3, true>;
+extern template class fvcc::LinearUpwind<Vec3, true>;
 
 }

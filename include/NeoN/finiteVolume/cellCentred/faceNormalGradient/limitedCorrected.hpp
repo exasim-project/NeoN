@@ -124,8 +124,8 @@ private:
     scalar limitCoeff_;
 };
 
-// instantiate the template class
-template class LimitedCorrected<scalar>;
-template class LimitedCorrected<Vec3>;
+// Instantiated in limitedCorrected.cpp, so includers do not compile the members again.
+extern template class LimitedCorrected<scalar>;
+extern template class LimitedCorrected<Vec3>;
 
 } // namespace NeoN

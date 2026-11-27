@@ -87,8 +87,8 @@ private:
     const std::shared_ptr<GeometryScheme> geometryScheme_;
 };
 
-// instantiate the template class
-template class Corrected<scalar>;
-template class Corrected<Vec3>;
+// Instantiated in corrected.cpp, so includers do not compile the members again.
+extern template class Corrected<scalar>;
+extern template class Corrected<Vec3>;
 
 } // namespace NeoN
