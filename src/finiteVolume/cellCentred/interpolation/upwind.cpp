@@ -132,3 +132,11 @@ NF_DECLARE_COMPUTE_IMP_UPW_INT_W(scalar);
 NF_DECLARE_COMPUTE_IMP_UPW_INT_W(Vec3);
 
 } // namespace NeoN
+
+namespace NeoN
+{
+
+template class fvcc::Upwind<scalar>;
+template class fvcc::Upwind<Vec3>;
+
+}

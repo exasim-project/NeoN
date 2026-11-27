@@ -82,3 +82,13 @@ NF_DECLARE_COMPUTE_IMP_LIN_INT(SymmTensor);
 // template class Linear<Vec3>;
 
 } // namespace NeoN
+
+namespace NeoN
+{
+
+template class fvcc::SurfaceInterpolationFactory<scalar>;
+template class fvcc::SurfaceInterpolationFactory<Vec3>;
+template class fvcc::Linear<scalar>;
+template class fvcc::Linear<Vec3>;
+
+}

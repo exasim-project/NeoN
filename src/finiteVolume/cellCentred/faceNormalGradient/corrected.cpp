@@ -297,3 +297,11 @@ NF_DECLARE_COMPUTE_CORRECTION_TERM(scalar);
 NF_DECLARE_COMPUTE_CORRECTION_TERM(Vec3);
 
 } // namespace NeoN
+
+namespace NeoN::finiteVolume::cellCentred
+{
+
+template class Corrected<scalar>;
+template class Corrected<Vec3>;
+
+}

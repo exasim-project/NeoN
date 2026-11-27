@@ -71,8 +71,8 @@ private:
     const std::shared_ptr<GeometryScheme> geometryScheme_;
 };
 
-// instantiate the template class
-template class Uncorrected<scalar>;
-template class Uncorrected<Vec3>;
+// Instantiated in uncorrected.cpp, so includers do not compile the members again.
+extern template class Uncorrected<scalar>;
+extern template class Uncorrected<Vec3>;
 
 } // namespace NeoN

@@ -360,3 +360,11 @@ NF_DECLARE_COMPUTE_LIMITED_CORRECTION_TERM(scalar);
 NF_DECLARE_COMPUTE_LIMITED_CORRECTION_TERM(Vec3);
 
 } // namespace NeoN
+
+namespace NeoN::finiteVolume::cellCentred
+{
+
+template class LimitedCorrected<scalar>;
+template class LimitedCorrected<Vec3>;
+
+}

@@ -80,3 +80,11 @@ NF_DECLARE_COMPUTE_IMP_FNG(scalar);
 NF_DECLARE_COMPUTE_IMP_FNG(Vec3);
 
 } // namespace NeoN
+
+namespace NeoN::finiteVolume::cellCentred
+{
+
+template class Uncorrected<scalar>;
+template class Uncorrected<Vec3>;
+
+}

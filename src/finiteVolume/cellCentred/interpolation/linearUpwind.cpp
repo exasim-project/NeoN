@@ -428,3 +428,12 @@ NF_DECLARE_COMPUTE_IMP_LINUPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(Vec3);
 
 } // namespace NeoN::finiteVolume::cellCentred
+
+namespace NeoN
+{
+
+template class fvcc::LinearUpwind<scalar>;
+template class fvcc::LinearUpwind<Vec3>;
+template class fvcc::LinearUpwind<Vec3, true>;
+
+}

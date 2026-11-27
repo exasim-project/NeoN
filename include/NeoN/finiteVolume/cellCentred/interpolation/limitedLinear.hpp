@@ -206,6 +206,7 @@ namespace NeoN
 
 namespace fvcc = finiteVolume::cellCentred;
 
-template class fvcc::LimitedLinear<scalar>;
+// Instantiated in limitedLinear.cpp, so includers do not compile the members again.
+extern template class fvcc::LimitedLinear<scalar>;
 
 }

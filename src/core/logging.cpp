@@ -4,6 +4,8 @@
 
 #include "NeoN/core/logging.hpp"
 
+#include <fmt/chrono.h>
+
 #if NF_WITH_SPDLOG
 
 // See https://github.com/fmtlib/fmt/issues/4610
@@ -24,6 +26,26 @@ auto noAssert = []() {};
 
 namespace NeoN::Logging
 {
+
+std::string LogEvent::toJson(std::string_view delim)
+{
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now() - creationTS
+    );
+
+    return fmt::format(
+        fmt::runtime(
+            "{{\n\"message\": \"{}\",\n\"sourceLocation\": \"{}:{}\",\n\"timeStarted\": "
+            "\"{}\",\n\"duration\": \"{:m}ms\"\n}}{}"
+        ),
+        message,
+        location.file_name(),
+        location.line(),
+        creationTS.time_since_epoch(),
+        duration,
+        delim
+    );
+}
 
 void SupportsLoggingMixin::setLogger(const std::shared_ptr<BaseLogger> logger) { logger_ = logger; }
 
