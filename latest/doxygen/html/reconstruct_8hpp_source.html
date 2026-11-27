@@ -87,46 +87,44 @@ $(function() {
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="scalar_8hpp.html">NeoN/core/primitives/scalar.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="vec3_8hpp.html">NeoN/core/primitives/vec3.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="surfaceField_8hpp.html">NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="volumeField_8hpp.html">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1finiteVolume.html">finiteVolume</a></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html">cellCentred</a></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>} <span class="comment">// namespace cellCentred</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>} <span class="comment">// namespace finiteVolume</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>} <span class="comment">// namespace NeoN</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html">NeoN::finiteVolume::cellCentred</a></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">/* @brief explicit reconstruction of a cell vector field from a surface scalar flux.</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> * Computes the least-squares cell vector whose face projections reproduce the flux:</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"> *   reconstruct(ssf)_C = inv( Σ_f Sf⊗Sf / |Sf| ) &amp; Σ_f (Sf / |Sf|) · ssf_f</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> * with surfaceSum semantics — each internal face contributes to both its owner and</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"> * neighbour cell, each boundary face contributes to its owner cell. The per-cell</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> * symmetric 3×3 matrix is inverted analytically.</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment"> * @param ssf [in] - surface scalar flux to reconstruct</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"> * @return the reconstructed cell-centred vector field (calculated BCs, corrected)</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a8cefb24542c6975b722d2814028ebd41">   38</a></span><a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField&lt;Vec3&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a8cefb24542c6975b722d2814028ebd41">reconstruct</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField&lt;scalar&gt;</a>&amp; ssf);</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>} <span class="comment">// namespace NeoN::finiteVolume::cellCentred</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="volumeField_8hpp.html">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1finiteVolume.html">finiteVolume</a></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html">cellCentred</a></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>} <span class="comment">// namespace cellCentred</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>} <span class="comment">// namespace finiteVolume</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>} <span class="comment">// namespace NeoN</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html">NeoN::finiteVolume::cellCentred</a></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">/* @brief explicit reconstruction of a cell vector field from a surface scalar flux.</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> * Computes the least-squares cell vector whose face projections reproduce the flux:</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> *   reconstruct(ssf)_C = inv( Σ_f Sf⊗Sf / |Sf| ) &amp; Σ_f (Sf / |Sf|) · ssf_f</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"> * with surfaceSum semantics — each internal face contributes to both its owner and</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> * neighbour cell, each boundary face contributes to its owner cell. The per-cell</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"> * symmetric 3×3 matrix is inverted analytically.</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"> * @param ssf [in] - surface scalar flux to reconstruct</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment"> * @return the reconstructed cell-centred vector field (calculated BCs, corrected)</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a8cefb24542c6975b722d2814028ebd41">   37</a></span><a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField&lt;Vec3&gt;</a> <a class="code hl_function" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a8cefb24542c6975b722d2814028ebd41">reconstruct</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField&lt;scalar&gt;</a>&amp; ssf);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>} <span class="comment">// namespace NeoN::finiteVolume::cellCentred</span></div>
 <div class="ttc" id="aclassNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_html"><div class="ttname"><a href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">NeoN::finiteVolume::cellCentred::SurfaceField</a></div><div class="ttdoc">Represents a surface field in a finite volume method.</div><div class="ttdef"><b>Definition</b> <a href="surfaceField_8hpp_source.html#l00029">surfaceField.hpp:30</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField_html"><div class="ttname"><a href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">NeoN::finiteVolume::cellCentred::VolumeField</a></div><div class="ttdoc">Represents a volume field in a finite volume method.</div><div class="ttdef"><b>Definition</b> <a href="volumeField_8hpp_source.html#l00030">volumeField.hpp:31</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1finiteVolume_1_1cellCentred_html"><div class="ttname"><a href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html">NeoN::finiteVolume::cellCentred</a></div><div class="ttdef"><b>Definition</b> <a href="fieldCollection_8hpp_source.html#l00025">fieldCollection.hpp:26</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1finiteVolume_1_1cellCentred_html"><div class="ttname"><a href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html">NeoN::finiteVolume::cellCentred</a></div><div class="ttdef"><b>Definition</b> <a href="fieldCollection_8hpp_source.html#l00021">fieldCollection.hpp:22</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1finiteVolume_1_1cellCentred_html_a8cefb24542c6975b722d2814028ebd41"><div class="ttname"><a href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a8cefb24542c6975b722d2814028ebd41">NeoN::finiteVolume::cellCentred::reconstruct</a></div><div class="ttdeci">VolumeField&lt; Vec3 &gt; reconstruct(const SurfaceField&lt; scalar &gt; &amp;ssf)</div></div>
-<div class="ttc" id="anamespaceNeoN_1_1finiteVolume_html"><div class="ttname"><a href="namespaceNeoN_1_1finiteVolume.html">NeoN::finiteVolume</a></div><div class="ttdef"><b>Definition</b> <a href="fieldCollection_8hpp_source.html#l00025">fieldCollection.hpp:26</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1finiteVolume_html"><div class="ttname"><a href="namespaceNeoN_1_1finiteVolume.html">NeoN::finiteVolume</a></div><div class="ttdef"><b>Definition</b> <a href="fieldCollection_8hpp_source.html#l00021">fieldCollection.hpp:22</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdoc">Integer types used throughout NeoN.</div><div class="ttdef"><b>Definition</b> <a href="array_8hpp_source.html#l00017">array.hpp:18</a></div></div>
 <div class="ttc" id="ascalar_8hpp_html"><div class="ttname"><a href="scalar_8hpp.html">scalar.hpp</a></div></div>
-<div class="ttc" id="asurfaceField_8hpp_html"><div class="ttname"><a href="surfaceField_8hpp.html">surfaceField.hpp</a></div></div>
 <div class="ttc" id="avec3_8hpp_html"><div class="ttname"><a href="vec3_8hpp.html">vec3.hpp</a></div></div>
 <div class="ttc" id="avolumeField_8hpp_html"><div class="ttname"><a href="volumeField_8hpp.html">volumeField.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
