@@ -41,9 +41,16 @@ To build the C++ library from source you need CMake ≥ 3.22, a C++20 compiler (
     cmake --preset production -DNeoN_WITH_MPI=OFF
     cmake --build --preset production
 
-Alternatively, try NeoN from Python via the prebuilt CPU package from PyPI (Python 3.11–3.13):
+Alternatively, try NeoN from Python via the prebuilt CPU package from PyPI (cpuonly, Python 3.11–3.13):
 
     pip install neon_pde
+
+or from prefix for GPU support
+
+    conda config --add channels https://prefix.dev/exasim-project/main  # or .../nightlies for develop
+    conda create -n neon-gpu -c https://prefix.dev/exasim-project/main -c conda-forge  python=3.12 "neon-pde=*=cuda*"
+    conda activate neon-gpu
+
 
 ```python
 import neon
