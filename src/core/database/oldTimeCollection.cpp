@@ -9,6 +9,9 @@
 #include <vector>
 
 #include "NeoN/core/database/database.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

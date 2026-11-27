@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "NeoN/core/dictionary.hpp"
-#include "NeoN/core/primitives/tensor.hpp"
-#include "NeoN/core/primitives/symmTensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/helpers/exceptions.hpp"
 #include "boundary/volume/empty.hpp"

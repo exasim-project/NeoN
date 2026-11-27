@@ -7,12 +7,9 @@
 #include <stdint.h>
 #include <string>
 
-#include "NeoN/core/database/database.hpp"
 #include "NeoN/core/database/collection.hpp"
 #include "NeoN/core/database/document.hpp"
 #include "NeoN/core/database/fieldCollection.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/core/error.hpp"
 
 namespace NeoN

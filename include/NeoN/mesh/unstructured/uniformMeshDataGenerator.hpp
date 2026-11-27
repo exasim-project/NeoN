@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"

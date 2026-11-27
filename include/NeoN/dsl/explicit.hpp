@@ -8,16 +8,11 @@
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
-#include "NeoN/dsl/ddt.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 // TODO: decouple from fvcc
-#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
-#include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
-#include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
 #include "NeoN/dsl/operator.hpp"
 
 namespace NeoN

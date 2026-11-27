@@ -5,13 +5,11 @@
 #pragma once
 
 #include <string>
-#include <typeindex>
 #include <vector>
 #include <sstream>
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/mpi/environment.hpp"
-#include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/core/view.hpp"
 #include "NeoN/core/primitives/label.hpp"
 
