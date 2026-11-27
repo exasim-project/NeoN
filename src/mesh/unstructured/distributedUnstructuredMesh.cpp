@@ -2,11 +2,23 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <utility>
+#include <vector>
+
 #include "NeoN/core/mpi/operators.hpp"
-#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/helpers/exceptions.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/mpi/environment.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/vector/vectorTypeDefs.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 
 namespace NeoN
 {

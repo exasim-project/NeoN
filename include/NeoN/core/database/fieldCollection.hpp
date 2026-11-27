@@ -7,6 +7,10 @@
 #include <limits>
 #include <string>
 #include <functional>
+#include <any>
+#include <cstdint>
+#include <stdexcept>
+#include <utility>
 
 #include "NeoN/core/demangle.hpp"
 #include "NeoN/core/error.hpp"
@@ -16,6 +20,7 @@
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/core/database/collection.hpp"
 #include "NeoN/core/database/document.hpp"
+#include "NeoN/core/dictionary.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

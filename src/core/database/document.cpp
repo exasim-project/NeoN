@@ -4,6 +4,10 @@
 
 #include "NeoN/core/database/document.hpp"
 
+#include <any>
+#include <stdexcept>
+#include <utility>
+
 namespace NeoN
 {
 

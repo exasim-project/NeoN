@@ -9,6 +9,18 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
+namespace NeoN
+{
+namespace finiteVolume
+{
+namespace cellCentred
+{
+template<typename ValueType>
+class SurfaceField;
+} // namespace cellCentred
+} // namespace finiteVolume
+} // namespace NeoN
+
 namespace NeoN::finiteVolume::cellCentred
 {
 

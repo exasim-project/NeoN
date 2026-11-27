@@ -5,6 +5,9 @@
 #include "NeoN/core/memory/kokkos.hpp"
 
 #include <cstdlib>
+#include <memory>
+
+#include "NeoN/core/error.hpp"
 
 namespace NeoN
 {

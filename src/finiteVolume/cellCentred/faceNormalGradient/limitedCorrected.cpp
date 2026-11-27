@@ -3,10 +3,26 @@
 // SPDX-License-Identifier: MIT
 
 #include <memory>
-#include <type_traits>
+#include <algorithm>
+#include <cstdlib>
 
-#include "NeoN/core/error.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

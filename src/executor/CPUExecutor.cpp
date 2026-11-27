@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/core/executor/CPUExecutor.hpp"
+
+#include <utility>
+
 #include "NeoN/core/memory/kokkos.hpp"
 
 NeoN::CPUExecutor::CPUExecutor() : CPUExecutor(std::make_unique<DefaultAllocator>()) {};

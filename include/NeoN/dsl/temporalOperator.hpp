@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <concepts>
+#include <string>
+#include <utility>
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
@@ -16,6 +18,13 @@
 #include "NeoN/dsl/coeff.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
+#include "NeoN/core/executor/executor.hpp"
+
+namespace NeoN
+{
+template<typename ValueType>
+class Vector;
+} // namespace NeoN
 
 namespace NeoN::dsl
 {
@@ -185,6 +194,7 @@ private:
     // Templated derived class to implement the type-specific behavior
     template<typename ConcreteTemporalOperatorType>
     struct TemporalOperatorModel : TemporalOperatorConcept
+
     {
         /* @brief build with concrete TemporalOperator */
         TemporalOperatorModel(ConcreteTemporalOperatorType concreteOp)

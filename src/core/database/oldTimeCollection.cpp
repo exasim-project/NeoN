@@ -4,6 +4,12 @@
 
 #include "NeoN/core/database/oldTimeCollection.hpp"
 
+#include <functional>
+#include <unordered_map>
+#include <vector>
+
+#include "NeoN/core/database/database.hpp"
+
 namespace NeoN::finiteVolume::cellCentred
 {
 

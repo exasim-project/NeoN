@@ -4,14 +4,34 @@
 
 #pragma once
 
+#include <Kokkos_Core.hpp>
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <variant>
+
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/tokenList.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
-#include <Kokkos_Core.hpp>
+namespace NeoN
+{
+class UnstructuredMesh;
+class Vec3;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

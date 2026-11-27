@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/core/executor/GPUExecutor.hpp"
+
+#include <utility>
+
 #include "NeoN/core/memory/kokkos.hpp"
 
 NeoN::GPUExecutor::GPUExecutor() : GPUExecutor(std::make_unique<DefaultAllocator>()) {};

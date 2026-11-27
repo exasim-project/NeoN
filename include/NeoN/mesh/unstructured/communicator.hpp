@@ -7,9 +7,12 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-
+#include <sstream>
+#include <string>
 
 #include "NeoN/fields/field.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/core/mpi/fullDuplexCommBuffer.hpp"
@@ -19,6 +22,8 @@
 
 namespace NeoN
 {
+template<typename ValueType>
+class Vector;
 
 #ifdef NF_WITH_MPI_SUPPORT
 /**

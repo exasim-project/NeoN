@@ -2,11 +2,20 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <memory>
+#include <utility>
+
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
-#include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
 #include "NeoN/helpers/exceptions.hpp"
+#include "NeoN/core/executor/serialExecutor.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
 
 
 namespace NeoN::la

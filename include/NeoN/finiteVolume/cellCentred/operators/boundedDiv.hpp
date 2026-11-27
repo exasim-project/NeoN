@@ -4,6 +4,11 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <variant>
+
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
@@ -11,6 +16,25 @@
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+
+namespace NeoN
+{
+class UnstructuredMesh;
+namespace finiteVolume
+{
+namespace cellCentred
+{
+template<typename ValueType>
+class SurfaceField;
+} // namespace cellCentred
+} // namespace finiteVolume
+template<typename ValueType>
+class Vector;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

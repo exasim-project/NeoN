@@ -4,6 +4,26 @@
 
 #include "NeoN/dsl/explicit.hpp"
 
+#include <variant>
+
+#include "NeoN/core/logging.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
+
+namespace NeoN
+{
+namespace finiteVolume
+{
+namespace cellCentred
+{
+template<typename ValueType>
+class SurfaceField;
+template<typename ValueType>
+class VolumeField;
+} // namespace cellCentred
+} // namespace finiteVolume
+} // namespace NeoN
+
 namespace NeoN::dsl::exp
 {
 namespace fvcc = NeoN::finiteVolume::cellCentred;

@@ -2,10 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <stdexcept>
-
-#include "NeoN/linearAlgebra/ginkgo.hpp"
-
 namespace NeoN::la::ginkgo
 {
 

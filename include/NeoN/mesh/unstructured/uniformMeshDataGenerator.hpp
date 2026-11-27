@@ -4,11 +4,14 @@
 
 #pragma once
 
-#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-
-#include "NeoN/core/primitives/vec3.hpp"
-
 #include <vector>
+
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 
 namespace NeoN::detail
 {

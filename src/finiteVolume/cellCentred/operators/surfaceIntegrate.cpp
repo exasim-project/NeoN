@@ -2,8 +2,20 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <Kokkos_Core.hpp>
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/surfaceIntegrate.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/dsl/coeff.hpp"
+
+namespace NeoN
+{
+class Vec3;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

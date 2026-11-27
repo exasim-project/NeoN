@@ -3,11 +3,23 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp"
+
+#include <any>
+#include <utility>
+
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/cellLimitedGrad.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

@@ -2,12 +2,40 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/core/containerFreeFunctions.hpp"
+#include <memory>
+#include <string>
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
-#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/segmentedVector.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+namespace NeoN
+{
+namespace finiteVolume
+{
+namespace cellCentred
+{
+template<typename ValueType>
+class FaceNormalGradient;
+template<typename ValueType>
+class VolumeField;
+} // namespace cellCentred
+} // namespace finiteVolume
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

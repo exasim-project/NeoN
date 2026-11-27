@@ -2,15 +2,44 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/core/containerFreeFunctions.hpp"
-#include "NeoN/core/parallelAlgorithms.hpp"
+#include <Kokkos_Core.hpp>
+#include <algorithm>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <unordered_map>
+#include <variant>
 
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp"
 #include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/tokenList.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/dsl/operator.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

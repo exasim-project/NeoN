@@ -2,11 +2,15 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <utility>
+
 #include "NeoN/core/macros.hpp"
-#include "NeoN/core/containerFreeFunctions.hpp"
-#include "NeoN/core/array.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/linearAlgebra/sparsityView.hpp"
 
 namespace NeoN::la
 {

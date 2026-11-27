@@ -2,8 +2,21 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/core/macros.hpp"
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/segmentedVector.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::la
 {

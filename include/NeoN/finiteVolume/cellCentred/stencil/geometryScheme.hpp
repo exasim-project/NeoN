@@ -6,12 +6,20 @@
 
 
 #include <optional>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+namespace NeoN
+{
+class UnstructuredMesh;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

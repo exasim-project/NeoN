@@ -4,8 +4,25 @@
 
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 
+#include "NeoN/finiteVolume/cellCentred/boundary/surface/calculated.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surface/empty.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surface/fixedValue.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surface/symmetry.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/calculated.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/empty.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/fixedFluxPressure.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/fixedGradient.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/fixedValue.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/inletOutlet.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/slip.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/symmetry.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/totalPressure.hpp"
+
 namespace NeoN
 {
+class SymmTensor;
+class Tensor;
 
 template class fvcc::VolumeBoundaryFactory<scalar>;
 template class fvcc::VolumeBoundaryFactory<Vec3>;

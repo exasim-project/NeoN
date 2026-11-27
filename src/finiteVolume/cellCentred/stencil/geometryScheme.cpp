@@ -3,11 +3,23 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+
+#include <memory>
+#include <algorithm>
+#include <any>
+#include <utility>
+#include <variant>
+
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
-
-#include <memory>
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

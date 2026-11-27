@@ -5,6 +5,28 @@
 #include <memory>
 
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+namespace NeoN
+{
+namespace finiteVolume
+{
+namespace cellCentred
+{
+template<typename ValueType>
+class VolumeField;
+} // namespace cellCentred
+} // namespace finiteVolume
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

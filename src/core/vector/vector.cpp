@@ -2,12 +2,21 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <variant>
+#include <vector>
+
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/executor/serialExecutor.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/symmTensor.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 
 namespace NeoN
 {

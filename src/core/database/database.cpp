@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/core/database/database.hpp"
+
+#include <utility>
+
 #include "NeoN/core/database/collection.hpp"
 
 namespace NeoN

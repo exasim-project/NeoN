@@ -5,10 +5,13 @@
 #pragma once
 
 #include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include <cmath>
+#include <iosfwd>
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 
 namespace NeoN

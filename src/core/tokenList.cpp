@@ -4,6 +4,9 @@
 
 #include "NeoN/core/tokenList.hpp"
 
+#include <algorithm>
+#include <iostream>
+
 namespace NeoN
 {
 void logOutRange(const std::out_of_range& e, const sizeType& key, const std::vector<std::any>& data)

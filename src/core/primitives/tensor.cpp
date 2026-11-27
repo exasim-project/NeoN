@@ -4,6 +4,8 @@
 
 #include "NeoN/core/primitives/tensor.hpp"
 
+#include <ostream>
+
 
 namespace NeoN
 {

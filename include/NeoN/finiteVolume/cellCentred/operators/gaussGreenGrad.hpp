@@ -4,12 +4,28 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/input.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+
+namespace NeoN
+{
+class UnstructuredMesh;
+template<typename ValueType>
+class Vector;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

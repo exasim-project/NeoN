@@ -2,11 +2,26 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <Kokkos_Core.hpp>
+#include <memory>
+#include <utility>
+
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/helpers/exceptions.hpp"
+#include "NeoN/core/array.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 namespace NeoN::la
 {

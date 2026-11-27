@@ -4,9 +4,18 @@
 
 #include <algorithm>
 #include <numeric>
+#include <utility>
+#include <vector>
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/vector/vectorTypeDefs.hpp"
+#include "NeoN/core/view.hpp"
 
 
 namespace NeoN

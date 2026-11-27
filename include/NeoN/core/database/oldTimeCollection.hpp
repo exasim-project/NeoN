@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <string>
 
 #include "NeoN/core/database/database.hpp"
@@ -12,6 +13,12 @@
 #include "NeoN/core/database/fieldCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/core/error.hpp"
+
+namespace NeoN
+{
+class Database;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {
