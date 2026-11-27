@@ -38,3 +38,16 @@ add_test(
   NAME runTimeSelectionFactory
   COMMAND runTimeSelectionFactory
   WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests)
+
+# The runtime-selection tables must be shared with a library built with hidden (inline) visibility,
+# like the Python bindings or a conda-forge build (#588). NeoN is a static library on Windows, so a
+# DLL would carry its own copy of the registry there.
+if(NOT WIN32)
+  add_library(neon_test_shared_registry_plugin SHARED "sharedRegistry/plugin.cpp")
+  target_link_libraries(neon_test_shared_registry_plugin PRIVATE NeoN::NeoN)
+  set_target_properties(neon_test_shared_registry_plugin PROPERTIES CXX_VISIBILITY_PRESET hidden
+                                                                    VISIBILITY_INLINES_HIDDEN ON)
+  install(TARGETS neon_test_shared_registry_plugin)
+  neon_unit_test(sharedRegistry/sharedRegistry COMMAND neon_test_sharedRegistry)
+  target_link_libraries(neon_test_sharedRegistry PRIVATE neon_test_shared_registry_plugin)
+endif()
