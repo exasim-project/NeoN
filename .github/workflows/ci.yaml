@@ -593,7 +593,7 @@ jobs:
         run: |
           # github.workspace is the host path, the container mounts the checkout elsewhere
           export LSAN_OPTIONS=suppressions=$GITHUB_WORKSPACE/scripts/san_ignores.txt
-          if [[ "${{ matrix.sanitizer }}" == ADDRESS ]]; then
+          if [ "${{ matrix.sanitizer }}" = ADDRESS ]; then
             export LD_PRELOAD="$(gcc -print-file-name=libasan.so)"
           fi
           ctest --preset develop
