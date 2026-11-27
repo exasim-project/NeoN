@@ -34,10 +34,8 @@ std::string LogEvent::toJson(std::string_view delim)
     );
 
     return fmt::format(
-        fmt::runtime(
-            "{{\n\"message\": \"{}\",\n\"sourceLocation\": \"{}:{}\",\n\"timeStarted\": "
-            "\"{}\",\n\"duration\": \"{:m}ms\"\n}}{}"
-        ),
+        fmt::runtime("{{\n\"message\": \"{}\",\n\"sourceLocation\": \"{}:{}\",\n\"timeStarted\": "
+                     "\"{}\",\n\"duration\": \"{:m}ms\"\n}}{}"),
         message,
         location.file_name(),
         location.line(),
