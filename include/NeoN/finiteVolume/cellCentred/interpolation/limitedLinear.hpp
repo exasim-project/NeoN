@@ -16,7 +16,6 @@
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
-#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/primitives/label.hpp"

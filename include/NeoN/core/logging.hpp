@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <fmt/core.h>
 #include <fmt/format.h>
 #include <chrono>
 #include <source_location>
@@ -12,7 +11,6 @@
 #include <string>
 #include <string_view>
 
-#include "NeoN/core/mpi/environment.hpp"
 
 namespace NeoN::Logging
 {

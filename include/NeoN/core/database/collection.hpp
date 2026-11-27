@@ -13,7 +13,6 @@
 #include <typeinfo>
 #include <vector>
 
-#include "NeoN/core/database/document.hpp"
 #include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN

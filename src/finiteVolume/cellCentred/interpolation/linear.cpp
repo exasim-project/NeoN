@@ -6,6 +6,8 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/symmTensor.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/view.hpp"
 #include "NeoN/fields/boundaryData.hpp"

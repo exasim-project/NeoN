@@ -11,10 +11,8 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 #include "NeoN/dsl/coeff.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"

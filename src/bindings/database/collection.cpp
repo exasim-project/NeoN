@@ -8,6 +8,7 @@
 
 #include "NeoN/core/database/collection.hpp"
 #include "NeoN/core/database/database.hpp"
+#include "NeoN/core/database/document.hpp"
 #include "../bindings.hpp"
 
 namespace nb = nanobind;

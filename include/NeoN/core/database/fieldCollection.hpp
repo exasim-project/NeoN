@@ -12,10 +12,6 @@
 #include <stdexcept>
 #include <utility>
 
-#include "NeoN/core/demangle.hpp"
-#include "NeoN/core/error.hpp"
-#include "NeoN/core/vector/vector.hpp"
-#include "NeoN/core/logging.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/core/database/collection.hpp"

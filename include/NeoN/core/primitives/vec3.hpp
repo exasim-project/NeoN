@@ -10,7 +10,6 @@
 
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/label.hpp"
-#include "NeoN/core/primitives/traits.hpp"
 
 
 namespace NeoN

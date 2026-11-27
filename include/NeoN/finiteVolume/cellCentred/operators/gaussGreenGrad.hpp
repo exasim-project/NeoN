@@ -9,7 +9,6 @@
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
-#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"

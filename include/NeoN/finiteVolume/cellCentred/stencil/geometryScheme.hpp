@@ -14,7 +14,6 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
-#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN
 {

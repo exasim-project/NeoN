@@ -4,13 +4,10 @@
 
 #pragma once
 
-#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/primitives/vec3.hpp"
-#include "NeoN/core/primitives/tensor.hpp"
 
 namespace NeoN
 {
