@@ -239,7 +239,6 @@ void computeLinearUpwind(
             Kokkos::Profiling::pushRegion("luw.gradAlloc");
             auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(mesh);
             VolumeField<GradType> gradPhi(exec, "gradULimited", mesh, calcBC);
-            fill(gradPhi.internalVector(), zero<GradType>());
             Kokkos::Profiling::popRegion();
 
             // Reuse the mesh-cached operator instead of rebuilding it every assemble. First call

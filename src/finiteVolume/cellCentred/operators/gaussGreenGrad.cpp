@@ -323,7 +323,7 @@ void computeGradTensor(
                     }
                 }
             }
-            gT[celli] += g;
+            gT[celli] = g; // overwrite: every cell is visited, so callers need not zero gradU
         },
         "computeGradTensorInternal"
     );
@@ -450,7 +450,6 @@ void GaussGreenGrad::gradTensor(
     const VolumeField<Vec3>& u, VolumeField<Tensor>& gradU, const dsl::Coeff operatorScaling
 ) const
 {
-    fill(gradU.internalVector(), zero<Tensor>());
     computeGradTensor(u, surfaceInterpolationVec_, gradU.internalVector(), operatorScaling);
     computeBoundaryGradTensor(u, gradU);
 }
@@ -462,7 +461,6 @@ GaussGreenGrad::gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operator
     // tensor gradient's neighbour value can be fetched via correctBoundaryConditions().
     auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(u.mesh());
     VolumeField<Tensor> gradU(u.exec(), "gradU", u.mesh(), calcBC);
-    fill(gradU.internalVector(), zero<Tensor>());
 
     computeGradTensor(u, surfaceInterpolationVec_, gradU.internalVector(), operatorScaling);
     computeBoundaryGradTensor(u, gradU);
