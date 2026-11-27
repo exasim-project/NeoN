@@ -2,6 +2,13 @@
 //
 // SPDX-License-Identifier: MIT
 
+// The code below only exists with NF_WITH_GINKGO, which the IWYU build does not enable
+// IWYU pragma: begin_keep
+#include <stdexcept>
+
+#include "NeoN/linearAlgebra/ginkgo.hpp"
+// IWYU pragma: end_keep
+
 namespace NeoN::la::ginkgo
 {
 
