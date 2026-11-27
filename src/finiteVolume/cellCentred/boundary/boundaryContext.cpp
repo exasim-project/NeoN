@@ -3,8 +3,14 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
-#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+
+#include <utility>
+
+namespace NeoN
+{
+class Tensor;
+class Vec3;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

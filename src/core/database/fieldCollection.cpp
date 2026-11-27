@@ -4,6 +4,8 @@
 
 #include "NeoN/core/database/fieldCollection.hpp"
 
+#include <unordered_map>
+
 namespace NeoN::finiteVolume::cellCentred
 {
 

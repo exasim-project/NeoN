@@ -2,7 +2,11 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // IWYU pragma: keep, linearUpwind correction phase regions
+#include <Kokkos_Core.hpp>
 #include <memory>
+#include <any>
+#include <string>
 
 #include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
@@ -10,8 +14,33 @@
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/tokenList.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
-#include <Kokkos_Profiling_ScopedRegion.hpp> // linearUpwind correction phase regions (no-op w/o a tool)
+namespace NeoN
+{
+class Tensor;
+namespace finiteVolume
+{
+namespace cellCentred
+{
+template<typename ValueType>
+class VolumeBoundary;
+} // namespace cellCentred
+} // namespace finiteVolume
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

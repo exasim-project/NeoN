@@ -4,6 +4,8 @@
 
 #include "NeoN/core/mpi/halfDuplexCommBuffer.hpp"
 
+#include "NeoN/core/mpi/operators.hpp"
+
 namespace NeoN
 {
 

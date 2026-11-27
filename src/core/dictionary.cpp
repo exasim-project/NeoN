@@ -5,9 +5,15 @@
 #include <numeric>
 #include <ranges>
 #include <iostream> // for operator<<, basic_ostream, endl, cerr, ostream
+#include <any>
+#include <initializer_list>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "NeoN/core/dictionary.hpp"
-#include "NeoN/core/error.hpp"
 
 namespace NeoN
 {

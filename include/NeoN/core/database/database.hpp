@@ -7,8 +7,10 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <stdexcept>
 
 #include "NeoN/core/database/collection.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {

@@ -9,6 +9,9 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <functional>
+#include <typeinfo>
+#include <vector>
 
 #include "NeoN/core/database/document.hpp"
 #include "NeoN/core/primitives/label.hpp"
@@ -19,6 +22,7 @@ namespace NeoN
 
 // forward declaration
 class Database;
+class Document;
 
 /**
  * @class Collection

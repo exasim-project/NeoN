@@ -4,11 +4,14 @@
 
 #pragma once
 
+#include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include <memory>
+#include <string>
+
 #include "NeoN/core/logging.hpp"
 #include "NeoN/core/memory/allocator.hpp"
 #include "NeoN/core/primitives/label.hpp"
-
-#include <Kokkos_Core.hpp> // IWYU pragma: keep
+#include "NeoN/core/error.hpp"
 
 namespace NeoN
 {

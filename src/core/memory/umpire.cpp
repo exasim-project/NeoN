@@ -8,7 +8,13 @@
 #include "umpire/ResourceManager.hpp"
 #endif
 
+#include <string>
+#include <vector>
+
 #include "NeoN/core/memory/umpire.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/memory/allocator.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 
 namespace NeoN

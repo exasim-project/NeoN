@@ -4,12 +4,14 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/core/primitives/symmTensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/helpers/exceptions.hpp"
-
 #include "boundary/volume/empty.hpp"
 #include "boundary/volume/calculated.hpp"
 #include "boundary/volume/extrapolated.hpp"
@@ -20,11 +22,22 @@
 #include "boundary/volume/slip.hpp"
 #include "boundary/volume/inletOutlet.hpp"
 #include "boundary/volume/totalPressure.hpp"
-
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
 #include "boundary/surface/fixedValue.hpp"
 #include "boundary/surface/symmetry.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/surfaceBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+
+namespace NeoN
+{
+class SymmTensor;
+class Tensor;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

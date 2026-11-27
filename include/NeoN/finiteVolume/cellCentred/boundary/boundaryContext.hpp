@@ -12,12 +12,17 @@
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
 
+namespace NeoN
+{
+class Tensor;
+class Vec3;
+} // namespace NeoN
+
 namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
 class VolumeField;
-
 template<typename ValueType>
 class SurfaceField;
 

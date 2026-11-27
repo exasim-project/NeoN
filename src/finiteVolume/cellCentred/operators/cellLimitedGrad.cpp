@@ -3,11 +3,29 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/finiteVolume/cellCentred/operators/cellLimitedGrad.hpp"
+
+#include <Kokkos_Core.hpp>
+#include <algorithm>
+#include <unordered_map>
+#include <utility>
+#include <variant>
+
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/view.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/logging.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/tokenList.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

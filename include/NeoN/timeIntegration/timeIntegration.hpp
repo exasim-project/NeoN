@@ -5,10 +5,15 @@
 #pragma once
 
 #include <functional>
+#include <memory>
+#include <string>
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/dsl/expression.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/runtimeSelectionFactory.hpp"
 
 namespace NeoN::timeIntegration
 {

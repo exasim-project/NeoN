@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <concepts>
+#include <string>
+#include <utility>
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
@@ -15,6 +17,14 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/coeff.hpp"
 #include "NeoN/dsl/operator.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/executor/executor.hpp"
+
+namespace NeoN
+{
+template<typename ValueType>
+class Vector;
+} // namespace NeoN
 
 namespace la = NeoN::la;
 
@@ -163,6 +173,7 @@ private:
     // Templated derived class to implement the type-specific behavior
     template<typename ConcreteOperatorType>
     struct OperatorModel : OperatorConcept
+
     {
         /* @brief build with concrete operator */
         OperatorModel(ConcreteOperatorType concreteOp) : concreteOp_(std::move(concreteOp)) {}

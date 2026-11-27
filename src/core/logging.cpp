@@ -4,7 +4,9 @@
 
 #include "NeoN/core/logging.hpp"
 
-#include <fmt/chrono.h>
+#include <fmt/chrono.h> // IWYU pragma: keep, formats std::chrono durations in the log
+
+#include <cpptrace/cpptrace.hpp>
 
 #if NF_WITH_SPDLOG
 
@@ -22,7 +24,9 @@ auto noAssert = []() {};
 #include <cstdlib>
 #include <iostream>
 
-#include "cpptrace/cpptrace.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/mpi/environment.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN::Logging
 {

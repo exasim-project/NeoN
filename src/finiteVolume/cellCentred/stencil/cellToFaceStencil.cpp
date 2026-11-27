@@ -2,8 +2,20 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <Kokkos_Core.hpp>
+#include <memory>
+#include <utility>
+
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/executor/serialExecutor.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/segmentedVector.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

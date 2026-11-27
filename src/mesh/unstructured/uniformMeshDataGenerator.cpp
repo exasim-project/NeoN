@@ -4,7 +4,7 @@
 
 #include "NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp"
 
-#include <memory>
+#include <utility>
 
 namespace NeoN::detail
 {

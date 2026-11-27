@@ -16,6 +16,26 @@
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+
+namespace NeoN
+{
+class Tensor;
+class UnstructuredMesh;
+namespace finiteVolume
+{
+namespace cellCentred
+{
+class GeometryScheme;
+} // namespace cellCentred
+} // namespace finiteVolume
+template<typename ValueType>
+class Vector;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

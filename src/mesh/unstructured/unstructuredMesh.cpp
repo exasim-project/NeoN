@@ -3,12 +3,20 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp"
 
+#include <any>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp"
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
+#include "NeoN/helpers/exceptions.hpp"
 
 #ifdef NF_WITH_MPI_SUPPORT
 #include <mpi.h>
+
 #include "NeoN/core/mpi/environment.hpp"
 #endif
 

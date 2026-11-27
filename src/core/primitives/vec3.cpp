@@ -4,6 +4,8 @@
 
 #include "NeoN/core/primitives/vec3.hpp"
 
+#include <ostream>
+
 
 namespace NeoN
 {

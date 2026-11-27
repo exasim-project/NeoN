@@ -7,6 +7,7 @@
 
 namespace NeoN
 {
+class Document;
 
 Document& Collection::doc(const std::string& id) { return impl_->doc(id); }
 

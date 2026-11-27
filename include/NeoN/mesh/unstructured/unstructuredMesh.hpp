@@ -9,6 +9,8 @@
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 #include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
 
 namespace NeoN
 {

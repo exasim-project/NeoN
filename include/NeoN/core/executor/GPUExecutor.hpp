@@ -4,10 +4,14 @@
 
 #pragma once
 
+#include <Kokkos_Core.hpp>
+#include <memory>
+#include <string>
+
 #include "NeoN/core/logging.hpp"
 #include "NeoN/core/memory/allocator.hpp"
-
-#include <Kokkos_Core.hpp>
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/label.hpp"
 
 namespace NeoN
 {

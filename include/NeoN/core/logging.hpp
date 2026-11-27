@@ -4,13 +4,13 @@
 
 #pragma once
 
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <chrono>
 #include <source_location>
 #include <memory>
 #include <string>
 #include <string_view>
-
-#include <fmt/core.h>
 
 #include "NeoN/core/mpi/environment.hpp"
 

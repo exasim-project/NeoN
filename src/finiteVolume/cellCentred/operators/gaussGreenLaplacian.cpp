@@ -2,9 +2,49 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <Kokkos_Core.hpp>
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 #include "NeoN/helpers/exceptions.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+namespace NeoN
+{
+namespace finiteVolume
+{
+namespace cellCentred
+{
+template<typename ValueType>
+class FaceNormalGradient;
+template<typename ValueType>
+class SurfaceBoundary;
+} // namespace cellCentred
+} // namespace finiteVolume
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

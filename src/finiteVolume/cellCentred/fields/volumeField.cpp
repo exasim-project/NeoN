@@ -2,10 +2,40 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <algorithm>
+#include <format>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/core/database/fieldDatabase.hpp"
+#include "NeoN/core/primitives/symmTensor.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/fields/field.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+namespace NeoN
+{
+class Database;
+namespace finiteVolume
+{
+namespace cellCentred
+{
+class BoundaryContext;
+} // namespace cellCentred
+} // namespace finiteVolume
+template<typename ValueType>
+class Vector;
+} // namespace NeoN
 
 namespace NeoN::finiteVolume::cellCentred
 {

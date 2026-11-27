@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/core/executor/serialExecutor.hpp"
+
+#include <utility>
+
 #include "NeoN/core/memory/kokkos.hpp"
 
 NeoN::SerialExecutor::SerialExecutor() : SerialExecutor(std::make_unique<DefaultAllocator>()) {};

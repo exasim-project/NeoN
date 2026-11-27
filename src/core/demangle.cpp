@@ -6,6 +6,7 @@
 #include <cxxabi.h> // for __cxa_demangle
 #endif
 #include <stdlib.h> // for free
+#include <string>
 
 #include "NeoN/core/demangle.hpp"
 

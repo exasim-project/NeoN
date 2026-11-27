@@ -4,6 +4,8 @@
 
 #include "NeoN/core/primitives/symmTensor.hpp"
 
+#include <ostream>
+
 
 namespace NeoN
 {

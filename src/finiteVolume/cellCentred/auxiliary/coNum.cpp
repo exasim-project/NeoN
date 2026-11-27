@@ -2,9 +2,13 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <Kokkos_Core.hpp>
 #include <limits>
+#include <algorithm>
+#include <memory>
+#include <unordered_map>
+#include <utility>
 
-#include "NeoN/core/info.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/auxiliary/coNum.hpp"
@@ -12,6 +16,13 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/operators.hpp"

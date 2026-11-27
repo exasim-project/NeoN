@@ -3,9 +3,23 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/finiteVolume/cellCentred/operators/reconstruct.hpp"
+
+#include <Kokkos_Core.hpp>
+#include <algorithm>
+#include <string>
+#include <unordered_map>
+#include <utility>
+
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/fields/boundaryData.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

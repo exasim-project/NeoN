@@ -2,8 +2,26 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <memory>
+#include <utility>
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/sourceTerm.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/dsl/coeff.hpp"
+#include "NeoN/dsl/operator.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

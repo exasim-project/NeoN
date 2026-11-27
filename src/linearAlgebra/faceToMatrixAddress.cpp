@@ -2,17 +2,34 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/core/macros.hpp"
+#include <stdint.h>
+#include <Kokkos_Core.hpp>
+#include <memory>
+#include <string>
+#include <typeinfo>
+#include <algorithm>
+#include <utility>
+#include <vector>
+
 #include "NeoN/core/segmentedVector.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 #include "NeoN/helpers/exceptions.hpp"
-
-#include <memory>
-#include <string>
-#include <typeinfo>
+#include "NeoN/core/array.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
+#include "NeoN/core/dictionary.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/executor/serialExecutor.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/label.hpp"
+#include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/view.hpp"
+#include "NeoN/linearAlgebra/sparsityView.hpp"
+#include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/distributed/communicationPattern.hpp"
