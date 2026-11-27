@@ -15,6 +15,7 @@
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/fixedGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/fixedValue.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/inletOutlet.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/outletInlet.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/slip.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/symmetry.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/totalPressure.hpp"
@@ -47,6 +48,8 @@ template class fvcc::volumeBoundary::Slip<scalar>;
 template class fvcc::volumeBoundary::Slip<Vec3>;
 template class fvcc::volumeBoundary::InletOutlet<scalar>;
 template class fvcc::volumeBoundary::InletOutlet<Vec3>;
+template class fvcc::volumeBoundary::OutletInlet<scalar>;
+template class fvcc::volumeBoundary::OutletInlet<Vec3>;
 template class fvcc::volumeBoundary::TotalPressure<scalar>;
 template class fvcc::SurfaceBoundaryFactory<scalar>;
 template class fvcc::SurfaceBoundaryFactory<Vec3>;

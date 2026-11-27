@@ -19,6 +19,7 @@
 #include "boundary/volume/symmetry.hpp"
 #include "boundary/volume/slip.hpp"
 #include "boundary/volume/inletOutlet.hpp"
+#include "boundary/volume/outletInlet.hpp"
 #include "boundary/volume/totalPressure.hpp"
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
@@ -152,6 +153,8 @@ extern template class fvcc::volumeBoundary::Slip<Vec3>;
 
 extern template class fvcc::volumeBoundary::InletOutlet<scalar>;
 extern template class fvcc::volumeBoundary::InletOutlet<Vec3>;
+extern template class fvcc::volumeBoundary::OutletInlet<scalar>;
+extern template class fvcc::volumeBoundary::OutletInlet<Vec3>;
 extern template class fvcc::volumeBoundary::TotalPressure<scalar>;
 
 extern template class fvcc::SurfaceBoundaryFactory<scalar>;
