@@ -296,6 +296,9 @@ if(${NeoN_WITH_GINKGO})
     else()
       set(NeoN_GINKGO_WITH_UMPIRE OFF)
     endif()
+    # Csr::extract_diagonal with an 8-lane subwarp a row instead of a full warp (~6x faster on FV
+    # matrices; Jacobi, Schwarz and MergedPgm call it on every solve). Applied once, idempotently.
+    set(GINKGO_EXTRACT_DIAGONAL_PATCH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_extract_diagonal_subwarp.patch)
     cpmaddpackage(
       NAME
       Ginkgo
@@ -305,6 +308,8 @@ if(${NeoN_WITH_GINKGO})
       ginkgo-project/ginkgo
       GIT_TAG
       ${NeoN_GINKGO_TAG}
+      PATCH_COMMAND
+      sh -c "git apply --reverse --check ${GINKGO_EXTRACT_DIAGONAL_PATCH} 2>/dev/null || git apply ${GINKGO_EXTRACT_DIAGONAL_PATCH}"
       SYSTEM
       YES
       OPTIONS

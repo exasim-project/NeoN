@@ -107,6 +107,41 @@ TEST_CASE("readFlag - Ginkgo")
     CHECK(readFlag(dict, "missing", false) == false);
 }
 
+// Jacobi, Schwarz and MergedPgm take their diagonal from Csr::extract_diagonal on every solve;
+// NeoN patches its GPU kernel (cmake/patches/ginkgo_extract_diagonal_subwarp.patch). Rows of 1 to
+// 20 entries cover rows shorter and longer than the kernel's 8-lane subwarp; row 7 has no diagonal.
+TEST_CASE("Csr extract_diagonal - Ginkgo")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+    using csr = gko::matrix::Csr<scalar, int>;
+
+    const int n = 64, missing = 7;
+    gko::matrix_data<scalar, int> data {gko::dim<2>(n, n)};
+    for (int row = 0; row < n; ++row)
+    {
+        const int len = row % 20 + 1; // entries in this row, the diagonal among them
+        for (int k = 0; k < len; ++k)
+        {
+            const int col = (row + k) % n; // k == 0 is the diagonal
+            if (k == 0 && row == missing) continue;
+            data.nonzeros.emplace_back(row, col, k == 0 ? 100.0 + row : -1.0);
+        }
+    }
+    data.sort_row_major();
+    auto host = csr::create(NeoN::la::ginkgo::getGkoExecutor(NeoN::SerialExecutor {}));
+    host->read(data);
+
+    auto mtx = gko::clone(NeoN::la::ginkgo::getGkoExecutor(exec), host);
+    auto diag = gko::clone(host->get_executor(), mtx->extract_diagonal());
+
+    for (int row = 0; row < n; ++row)
+    {
+        INFO("row " << row);
+        REQUIRE(diag->get_const_values()[row] == (row == missing ? 0.0 : 100.0 + row));
+    }
+}
+
 TEST_CASE("gkoVecView - Ginkgo")
 {
     NeoN::Executor exec = NeoN::SerialExecutor {};

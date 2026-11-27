@@ -1,0 +1,35 @@
+diff --git a/common/cuda_hip/matrix/csr_kernels.template.cpp b/common/cuda_hip/matrix/csr_kernels.template.cpp
+index 40c319cd2e..08c1f7bf1e 100644
+--- a/common/cuda_hip/matrix/csr_kernels.template.cpp
++++ b/common/cuda_hip/matrix/csr_kernels.template.cpp
+@@ -708,6 +708,9 @@ __global__ __launch_bounds__(default_block_size) void fill_in_dense(
+ }
+ 
+ 
++constexpr int extract_diagonal_subwarp_size = 8;
++
++
+ template <typename ValueType, typename IndexType>
+ __global__ __launch_bounds__(default_block_size) void extract_diagonal(
+     size_type diag_size, size_type nnz,
+@@ -715,7 +718,8 @@ __global__ __launch_bounds__(default_block_size) void extract_diagonal(
+     const IndexType* __restrict__ orig_row_ptrs,
+     const IndexType* __restrict__ orig_col_idxs, ValueType* __restrict__ diag)
+ {
+-    constexpr auto warp_size = config::warp_size;
++    // a subwarp per row: FV/FE rows hold a few entries, a full warp leaves most lanes idle
++    constexpr auto warp_size = extract_diagonal_subwarp_size;
+     const auto row = thread::get_subwarp_id_flat<warp_size>();
+     const auto local_tidx = threadIdx.x % warp_size;
+ 
+@@ -1855,8 +1859,8 @@ void extract_diagonal(std::shared_ptr<const DefaultExecutor> exec,
+ {
+     const auto nnz = orig.num_stored_elements;
+     const auto diag_size = diag->get_size()[0];
+-    const auto num_blocks =
+-        ceildiv(config::warp_size * diag_size, default_block_size);
++    const auto num_blocks = ceildiv(
++        kernel::extract_diagonal_subwarp_size * diag_size, default_block_size);
+ 
+     const auto orig_values = orig.values;
+     const auto orig_row_ptrs = orig.row_ptrs;
