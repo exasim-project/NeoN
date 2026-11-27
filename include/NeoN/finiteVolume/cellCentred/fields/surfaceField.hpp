@@ -4,7 +4,9 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
@@ -186,9 +188,50 @@ private:
     bool boundaryConditionsSet_ {false};
 };
 
+namespace surfaceFieldOps
+{
+
+/**
+ * @brief Throws unless both surface fields can be combined element by element.
+ *
+ * The operators below launch kernels over the size of one operand and read the other, so a
+ * shorter or differently placed operand would be read out of bounds. The checks are O(1) and
+ * always on; the Vector operators' own checks are debug-only and do not cover the Vec3-by-scalar
+ * kernel at all.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ * @param op The operation, for the error message.
+ */
+template<typename LhsType, typename RhsType>
+inline void validateSurfaceFieldOperands(
+    const SurfaceField<LhsType>& lhs, const SurfaceField<RhsType>& rhs, const char* op
+)
+{
+    NF_ASSERT_THROW(
+        lhs.exec() == rhs.exec(),
+        "SurfaceField '" << lhs.name << "' " << op << " '" << rhs.name << "': executors differ"
+    );
+    NF_ASSERT_THROW(
+        lhs.internalVector().size() == rhs.internalVector().size(),
+        "SurfaceField '" << lhs.name << "' " << op << " '" << rhs.name
+                         << "': " << lhs.internalVector().size() << " and "
+                         << rhs.internalVector().size() << " internal faces"
+    );
+    NF_ASSERT_THROW(
+        lhs.boundaryData().value().size() == rhs.boundaryData().value().size(),
+        "SurfaceField '" << lhs.name << "' " << op << " '" << rhs.name
+                         << "': " << lhs.boundaryData().value().size() << " and "
+                         << rhs.boundaryData().value().size() << " boundary faces"
+    );
+}
+
+} // namespace surfaceFieldOps
+
 inline SurfaceField<scalar>
 operator*(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 {
+    surfaceFieldOps::validateSurfaceFieldOperands(lhs, rhs, "*");
     SurfaceField<scalar> result(lhs);
     result.internalVector() *= rhs.internalVector();
     result.boundaryData().value() *= rhs.boundaryData().value();
@@ -198,6 +241,7 @@ operator*(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 inline SurfaceField<scalar>
 operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 {
+    surfaceFieldOps::validateSurfaceFieldOperands(lhs, rhs, "+");
     SurfaceField<scalar> result(lhs);
     result.internalVector() += rhs.internalVector();
     result.boundaryData().value() += rhs.boundaryData().value();
@@ -207,6 +251,7 @@ operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 inline SurfaceField<scalar>
 operator-(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 {
+    surfaceFieldOps::validateSurfaceFieldOperands(lhs, rhs, "-");
     SurfaceField<scalar> result(lhs);
     result.internalVector() -= rhs.internalVector();
     result.boundaryData().value() -= rhs.boundaryData().value();
@@ -223,6 +268,12 @@ inline SurfaceField<scalar> operator*(scalar s, const SurfaceField<scalar>& fld)
 
 inline void surfaceFieldScaleVec3ByScalar(Vector<Vec3>& out, const Vector<scalar>& coeff)
 {
+    NF_ASSERT_THROW(
+        out.size() == coeff.size(),
+        "surfaceFieldScaleVec3ByScalar: " << out.size() << " values and " << coeff.size()
+                                          << " coefficients"
+    );
+    NF_ASSERT_THROW(out.exec() == coeff.exec(), "surfaceFieldScaleVec3ByScalar: executors differ");
     auto [outV, coeffV] = views(out, coeff);
     parallelFor(
         out.exec(),
@@ -234,6 +285,7 @@ inline void surfaceFieldScaleVec3ByScalar(Vector<Vec3>& out, const Vector<scalar
 
 inline SurfaceField<Vec3> operator*(const SurfaceField<scalar>& s, const SurfaceField<Vec3>& v)
 {
+    surfaceFieldOps::validateSurfaceFieldOperands(s, v, "*");
     SurfaceField<Vec3> result(v);
     surfaceFieldScaleVec3ByScalar(result.internalVector(), s.internalVector());
     surfaceFieldScaleVec3ByScalar(result.boundaryData().value(), s.boundaryData().value());
@@ -247,6 +299,7 @@ inline SurfaceField<Vec3> operator*(const SurfaceField<Vec3>& v, const SurfaceFi
 
 inline SurfaceField<Vec3> operator+(const SurfaceField<Vec3>& lhs, const SurfaceField<Vec3>& rhs)
 {
+    surfaceFieldOps::validateSurfaceFieldOperands(lhs, rhs, "+");
     SurfaceField<Vec3> result(lhs);
     result.internalVector() += rhs.internalVector();
     result.boundaryData().value() += rhs.boundaryData().value();
@@ -255,6 +308,7 @@ inline SurfaceField<Vec3> operator+(const SurfaceField<Vec3>& lhs, const Surface
 
 inline SurfaceField<Vec3> operator-(const SurfaceField<Vec3>& lhs, const SurfaceField<Vec3>& rhs)
 {
+    surfaceFieldOps::validateSurfaceFieldOperands(lhs, rhs, "-");
     SurfaceField<Vec3> result(lhs);
     result.internalVector() -= rhs.internalVector();
     result.boundaryData().value() -= rhs.boundaryData().value();

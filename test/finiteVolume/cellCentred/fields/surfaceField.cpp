@@ -154,4 +154,77 @@ TEST_CASE("surfaceVector")
         requireAll(a.internalVector(), NeoN::Vec3(1.0, 2.0, 3.0));
         requireAll(a.boundaryData().value(), NeoN::Vec3(4.0, 5.0, 6.0));
     }
+    SECTION("arithmetic rejects operands of different sizes on: " + execName)
+    {
+        // 1D meshes of 4 and 5 cells: 3 and 4 internal faces, both with 2 boundary faces
+        NeoN::UnstructuredMesh mesh4 = NeoN::create1DUniformMesh(exec, 4);
+        NeoN::UnstructuredMesh mesh5 = NeoN::create1DUniformMesh(exec, 5);
+        auto sBcs4 = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh4);
+        auto sBcs5 = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh5);
+        auto vBcs4 = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::Vec3>>(mesh4);
+        auto vBcs5 = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::Vec3>>(mesh5);
+
+        fvcc::SurfaceField<NeoN::scalar> s4(exec, "s4", mesh4, sBcs4);
+        fvcc::SurfaceField<NeoN::scalar> s5(exec, "s5", mesh5, sBcs5);
+        fvcc::SurfaceField<NeoN::Vec3> v4(exec, "v4", mesh4, vBcs4);
+        fvcc::SurfaceField<NeoN::Vec3> v5(exec, "v5", mesh5, vBcs5);
+        NeoN::fill(s4.internalVector(), 1.0);
+        NeoN::fill(s5.internalVector(), 1.0);
+        NeoN::fill(v4.internalVector(), NeoN::Vec3(1.0, 1.0, 1.0));
+        NeoN::fill(v5.internalVector(), NeoN::Vec3(1.0, 1.0, 1.0));
+
+        REQUIRE_THROWS(s4 * s5);
+        REQUIRE_THROWS(s4 + s5);
+        REQUIRE_THROWS(s4 - s5);
+        REQUIRE_THROWS(s4 * v5);
+        REQUIRE_THROWS(s5 * v4);
+        REQUIRE_THROWS(v4 * s5);
+        REQUIRE_THROWS(v4 + v5);
+        REQUIRE_THROWS(v5 - v4);
+
+        // operands of equal size still work
+        REQUIRE_NOTHROW(s4 * s4);
+        REQUIRE_NOTHROW(s4 * v4);
+        REQUIRE_NOTHROW(v4 - v4);
+    }
+
+    SECTION("arithmetic rejects boundary data of a different size on: " + execName)
+    {
+        // single-cell mesh: 0 internal and 4 boundary faces; 1D mesh of 4 cells: 3 and 2
+        NeoN::UnstructuredMesh single = NeoN::createSingleCellMesh(exec);
+        NeoN::UnstructuredMesh line = NeoN::create1DUniformMesh(exec, 4);
+        fvcc::SurfaceField<NeoN::scalar> a(
+            exec,
+            "a",
+            single,
+            fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(single)
+        );
+        fvcc::SurfaceField<NeoN::scalar> b(
+            exec, "b", line, fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(line)
+        );
+        REQUIRE_THROWS(a + b);
+    }
+
+    SECTION("arithmetic rejects operands on different executors on: " + execName)
+    {
+        NeoN::Executor serial = NeoN::SerialExecutor {};
+        if (exec != serial)
+        {
+            NeoN::UnstructuredMesh meshSerial = NeoN::create1DUniformMesh(serial, 4);
+            NeoN::UnstructuredMesh meshExec = NeoN::create1DUniformMesh(exec, 4);
+            fvcc::SurfaceField<NeoN::scalar> a(
+                serial,
+                "a",
+                meshSerial,
+                fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(meshSerial)
+            );
+            fvcc::SurfaceField<NeoN::scalar> b(
+                exec,
+                "b",
+                meshExec,
+                fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(meshExec)
+            );
+            REQUIRE_THROWS(a + b);
+        }
+    }
 }

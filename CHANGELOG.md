@@ -12,6 +12,7 @@
 - Publish nightly `neon-pde` conda packages of develop to the prefix.dev `exasim-project/nightlies` channel when develop changed [#735](https://github.com/exasim-project/NeoN/pull/735)
 - Add Open MPI flavours of the `neon-pde` conda package, built with GCC and with clang, for downstream MPI codes such as NeoFOAM [#736](https://github.com/exasim-project/NeoN/pull/736)
 ## Fixes
+- Check that the operands of the `SurfaceField` arithmetic operators (`+`, `-`, scalar `*` and scalar-by-Vec3 `*`) have the same executor and the same number of internal and boundary faces: a shorter coefficient field was read out of bounds, a differently placed one launched a kernel on inaccessible memory [#NNN](https://github.com/exasim-project/NeoN/pull/NNN)
 - Build the `neon-pde` conda packages without conda-forge's `-fvisibility-inlines-hidden`, which gave every library linking libNeoN its own runtime-selection tables, so downstream codes did not see NeoN's boundary conditions and operators
 - Build the CUDA code of Ginkgo and Umpire for the architectures Kokkos targets, unless `CMAKE_CUDA_ARCHITECTURES` is set: Umpire enabled the CUDA language first, so `CMAKE_CUDA_ARCHITECTURES` defaulted to the nvcc default (sm_52) and Ginkgo and Umpire were built for sm_52 only (e.g. instead of sm_90 on H200) [#738](https://github.com/exasim-project/NeoN/pull/738)
 - Fix CI workflows: sanitizer runs on push/schedule, a skipped Ubuntu build step, broken cache conditions and keys; remove unused AWS workflow [#612](https://github.com/exasim-project/NeoN/pull/612)
