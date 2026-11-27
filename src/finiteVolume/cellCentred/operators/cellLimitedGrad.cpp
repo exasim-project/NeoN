@@ -9,6 +9,15 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/view.hpp"
 
+#include <Kokkos_BitManipulation.hpp>
+
+#include <any>
+#include <cstdint>
+#include <cstdio>
+#include <optional>
+#include <string>
+#include <typeinfo>
+
 namespace NeoN::finiteVolume::cellCentred
 {
 
@@ -231,12 +240,91 @@ void computeCellLimitedGrad(
     );
 }
 
+
+namespace
+{
+
+// Text of a TokenList scheme, numbers as %.17g so `1`, `1.0` and a scalar 1 give the same key.
+// shortcut: Dictionary input returns "" (no sharing), add a Dictionary form when one is needed
+std::string gradTensorMemoKey(const Input& inputs)
+{
+    if (!std::holds_alternative<TokenList>(inputs)) return "";
+    auto tokens = std::get<TokenList>(inputs); // copy: TokenList's element access is non-const
+    std::string key;
+    for (const auto& t : tokens.tokens())
+    {
+        char num[32] = "";
+        // the factory hands the full spec ("cellLimited Gauss linear 1"), direct construction
+        // (linearUpwind) only the base scheme and coefficient ("Gauss linear 1")
+        if (t.type() == typeid(std::string) && key.empty() && std::any_cast<std::string>(t) == "cellLimited") continue;
+        if (t.type() == typeid(std::string)) key += std::any_cast<std::string>(t);
+        else if (t.type() == typeid(double)) std::snprintf(num, sizeof(num), "%.17g", std::any_cast<double>(t));
+        else if (t.type() == typeid(float)) std::snprintf(num, sizeof(num), "%.17g", double(std::any_cast<float>(t)));
+        else if (t.type() == typeid(int)) std::snprintf(num, sizeof(num), "%d", std::any_cast<int>(t));
+        else if (t.type() == typeid(long)) std::snprintf(num, sizeof(num), "%ld", std::any_cast<long>(t));
+        else return ""; // unknown token type: do not share
+        key += num;
+        key += ' ';
+    }
+    return key;
+}
+
+KOKKOS_INLINE_FUNCTION std::uint64_t splitmix64(std::uint64_t z)
+{
+    z += 0x9e3779b97f4a7c15ULL;
+    z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
+    return z ^ (z >> 31);
+}
+
+// Order-independent 64-bit fingerprint of every value grad(U) reads from U: internal values and
+// boundary values (processor halo included) and boundary reference gradients. Each scalar's bits
+// are mixed with its position, so equal values in other places give another sum.
+std::uint64_t fingerprint(const VolumeField<Vec3>& u)
+{
+    std::uint64_t total = 0;
+    std::uint64_t salt = 0;
+    for (const Vector<Vec3>* v :
+         {&u.internalVector(), &u.boundaryData().value(), &u.boundaryData().refGrad()})
+    {
+        const auto view = v->view();
+        std::uint64_t part = 0;
+        const std::uint64_t s = ++salt;
+        parallelReduce(
+            v->exec(),
+            {0, v->size()},
+            NEON_LAMBDA(const localIdx i, std::uint64_t& acc) {
+                for (int k = 0; k < 3; ++k)
+                {
+                    const auto bits = Kokkos::bit_cast<std::uint64_t>(view[i][k]);
+                    const auto pos = (std::uint64_t(i) * 3 + std::uint64_t(k)) ^ (s << 56);
+                    acc += splitmix64(bits ^ splitmix64(pos));
+                }
+            },
+            part
+        );
+        total += splitmix64(part + s);
+    }
+    return total;
+}
+
+// Last limited grad(U) of a scheme on a mesh and the fingerprint of the U it was computed from.
+struct GradTensorMemo
+{
+    std::uint64_t fingerprint = 0;
+    std::optional<Vector<Tensor>> internal;
+    std::optional<Vector<Tensor>> boundary;
+};
+
+} // namespace
+
 CellLimitedGrad::CellLimitedGrad(
     const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs
 )
     : Base(exec, mesh), baseGradScheme_(readBaseGradScheme(exec, mesh, inputs)),
       coeff_(readCoeff(inputs)), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
-      cellInternalFaces_(CellToFaceStencil(mesh).computeInternalStencil())
+      cellInternalFaces_(CellToFaceStencil(mesh).computeInternalStencil()),
+      memoKey_(gradTensorMemoKey(inputs))
 {
     if (!(coeff_ >= scalar(0) && coeff_ <= scalar(1)))
     {
@@ -564,9 +652,43 @@ void CellLimitedGrad::gradTensor(
     const VolumeField<Vec3>& u, VolumeField<Tensor>& gradU, const dsl::Coeff operatorScaling
 ) const
 {
-    computeCellLimitedGradTensor(
-        u, *baseGradScheme_, *geometryScheme_, cellInternalFaces_, coeff_, operatorScaling, gradU
-    );
+    auto compute = [&]
+    {
+        computeCellLimitedGradTensor(
+            u, *baseGradScheme_, *geometryScheme_, cellInternalFaces_, coeff_, operatorScaling, gradU
+        );
+    };
+    // Share the result between callers on this mesh with the same scheme while U is unchanged
+    // (momentum convection and viscous stress within an outer corrector, the turbulence model's
+    // grad(U) and the next step's first corrector). Only unscaled calls are shared.
+    auto scaling = operatorScaling;
+    if (memoKey_.empty() || scaling.hasView() || scaling[0] != scalar(1))
+    {
+        compute();
+        return;
+    }
+    auto& db = u.mesh().stencilDB();
+    const std::string key = "CellLimitedGrad::gradTensor " + memoKey_;
+    if (!db.contains(key))
+    {
+        db.insert(key, std::make_shared<GradTensorMemo>());
+    }
+    auto memo = db.get<std::shared_ptr<GradTensorMemo>>(key);
+
+    auto& gI = gradU.internalVector();
+    auto& gB = gradU.boundaryData().value();
+    const auto fp = fingerprint(u);
+    if (memo->internal && memo->fingerprint == fp && memo->internal->size() == gI.size()
+        && memo->boundary->size() == gB.size() && memo->internal->exec() == gI.exec())
+    {
+        gI = *memo->internal;
+        gB = *memo->boundary;
+        return;
+    }
+    compute();
+    memo->internal.emplace(gI);
+    memo->boundary.emplace(gB);
+    memo->fingerprint = fp;
 }
 
 } // namespace NeoN::finiteVolume::cellCentred

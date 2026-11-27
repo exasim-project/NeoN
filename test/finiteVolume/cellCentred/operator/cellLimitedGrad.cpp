@@ -337,4 +337,105 @@ TEST_CASE("cellLimited tensor gradient")
     }
 }
 
+// grad(U) is shared between callers that see the same U (cellLimitedGrad.cpp keeps the last result
+// per mesh and scheme, keyed by a fingerprint of U). Whatever is shared, the result must equal a
+// computation on a fresh mesh without any stored result: for an unchanged U, after one internal
+// value changes, after one boundary value changes, and from a second operator whose scheme tokens
+// differ only in how the coefficient is written (scalar 1.0 vs integer 1).
+TEST_CASE("cellLimited tensor gradient is never stale")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    auto makeOp = [&](const UnstructuredMesh& mesh, std::any coeff)
+    {
+        Input input = TokenList(
+            {std::string("cellLimited"), std::string("Gauss"), std::string("linear"), coeff}
+        );
+        return fvcc::GradOperatorFactory<Vec3>::create(exec, mesh, input);
+    };
+    // U whose components vary differently from cell to cell, so the limiter is active
+    auto setU = [](fvcc::VolumeField<Vec3>& u, scalar shift)
+    {
+        parallelFor(
+            u.internalVector(),
+            NEON_LAMBDA(const localIdx i) {
+                const scalar x = scalar(i);
+                return Vec3(x * x * scalar(0.1) + shift, scalar(3) - x, std::sin(x));
+            }
+        );
+        u.correctBoundaryConditions();
+    };
+    // gradient of the same U on a fresh mesh: no stored result can be involved
+    auto fresh = [&](const fvcc::VolumeField<Vec3>& u)
+    {
+        auto mesh = create3DUniformMesh(exec, 4, 3, 2, 1.0, 1.0, 1.0);
+        fvcc::VolumeField<Vec3> v(
+            exec, "U", mesh, fvcc::createCalculatedProcBCs<fvcc::VolumeBoundary<Vec3>>(mesh)
+        );
+        v.internalVector() = u.internalVector();
+        v.boundaryData().value() = u.boundaryData().value();
+        fvcc::VolumeField<Tensor> g(
+            exec, "gradU", mesh, fvcc::createCalculatedProcBCs<fvcc::VolumeBoundary<Tensor>>(mesh)
+        );
+        makeOp(mesh, scalar(1))->gradTensor(v, g, dsl::Coeff {});
+        return std::pair {g.internalVector().copyToHost(), g.boundaryData().value().copyToHost()};
+    };
+    auto requireEqual = [](const auto& g, const auto& ref)
+    {
+        const auto [gI, gB] = std::pair {
+            g.internalVector().copyToHost(), g.boundaryData().value().copyToHost()
+        };
+        for (localIdx c = 0; c < gI.size(); ++c)
+            for (sizeType r = 0; r < 3; ++r)
+                for (sizeType k = 0; k < 3; ++k)
+                    REQUIRE(gI.view()[c](r, k) == ref.first.view()[c](r, k));
+        for (localIdx f = 0; f < gB.size(); ++f)
+            for (sizeType r = 0; r < 3; ++r)
+                for (sizeType k = 0; k < 3; ++k)
+                    REQUIRE(gB.view()[f](r, k) == ref.second.view()[f](r, k));
+    };
+
+    auto mesh = create3DUniformMesh(exec, 4, 3, 2, 1.0, 1.0, 1.0);
+    fvcc::VolumeField<Vec3> u(
+        exec, "U", mesh, fvcc::createCalculatedProcBCs<fvcc::VolumeBoundary<Vec3>>(mesh)
+    );
+    fvcc::VolumeField<Tensor> gradU(
+        exec, "gradU", mesh, fvcc::createCalculatedProcBCs<fvcc::VolumeBoundary<Tensor>>(mesh)
+    );
+    auto opA = makeOp(mesh, scalar(1));
+    auto opB = makeOp(mesh, int(1));
+    // constructed directly from the base scheme, as linearUpwind does
+    fvcc::CellLimitedGrad opC(
+        exec,
+        mesh,
+        Input(TokenList({std::string("Gauss"), std::string("linear"), static_cast<scalar>(1)}))
+    );
+
+    setU(u, 0.0);
+    opA->gradTensor(u, gradU, dsl::Coeff {});
+    requireEqual(gradU, fresh(u));
+    opB->gradTensor(u, gradU, dsl::Coeff {}); // unchanged U, equivalent scheme
+    requireEqual(gradU, fresh(u));
+
+    opC.gradTensor(u, gradU, dsl::Coeff {}); // unchanged U, base-scheme construction
+    requireEqual(gradU, fresh(u));
+
+    setU(u, 0.5); // every internal value changes
+    opB->gradTensor(u, gradU, dsl::Coeff {});
+    requireEqual(gradU, fresh(u));
+
+    auto uI = u.internalVector().copyToHost(); // one internal value changes
+    uI.view()[5] = uI.view()[5] + Vec3(1e-9, 0.0, 0.0);
+    u.internalVector() = uI.copyToExecutor(exec);
+    opA->gradTensor(u, gradU, dsl::Coeff {});
+    requireEqual(gradU, fresh(u));
+
+    auto uB = u.boundaryData().value().copyToHost(); // one boundary value changes
+    uB.view()[3] = uB.view()[3] + Vec3(0.0, 2.0, 0.0);
+    u.boundaryData().value() = uB.copyToExecutor(exec);
+    opA->gradTensor(u, gradU, dsl::Coeff {});
+    requireEqual(gradU, fresh(u));
+}
+
 } // namespace NeoN

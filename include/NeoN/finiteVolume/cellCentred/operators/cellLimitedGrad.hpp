@@ -123,6 +123,10 @@ private:
     std::shared_ptr<GeometryScheme> geometryScheme_;
     // Per-cell internal-face stencil for the atomic-free cell-based tensor gather.
     SegmentedVector<localIdx, localIdx> cellInternalFaces_;
+
+    // Scheme tokens as text (numbers normalised): gradTensor() shares its result between operators
+    // with the same key on a mesh while U is unchanged. Empty: no sharing (Dictionary input).
+    std::string memoKey_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred
