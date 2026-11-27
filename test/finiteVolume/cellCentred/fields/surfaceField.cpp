@@ -227,4 +227,67 @@ TEST_CASE("surfaceVector")
             REQUIRE_THROWS(a + b);
         }
     }
+
+    SECTION("an arithmetic result keeps its computed boundary values on: " + execName)
+    {
+        // The operands carry fixedValue boundary conditions. A result that copied them would
+        // reset its boundary values to the operand's stored value at the next
+        // correctBoundaryConditions(), although the values were just computed.
+        NeoN::UnstructuredMesh mesh = NeoN::createSingleCellMesh(exec);
+        auto fixed = [&](auto value)
+        {
+            using V = decltype(value);
+            std::vector<fvcc::SurfaceBoundary<V>> bcs {};
+            for (auto patchi : I<NeoN::localIdx> {0, 1, 2, 3})
+            {
+                NeoN::Dictionary dict;
+                dict.insert("type", std::string("fixedValue"));
+                dict.insert("fixedValue", value);
+                bcs.push_back(fvcc::SurfaceBoundary<V>(mesh, dict, patchi));
+            }
+            return bcs;
+        };
+        fvcc::SurfaceField<NeoN::scalar> s(exec, "s", mesh, fixed(2.0));
+        fvcc::SurfaceField<NeoN::scalar> t(exec, "t", mesh, fixed(3.0));
+        fvcc::SurfaceField<NeoN::Vec3> a(exec, "a", mesh, fixed(NeoN::Vec3(1.0, 2.0, 3.0)));
+        fvcc::SurfaceField<NeoN::Vec3> b(exec, "b", mesh, fixed(NeoN::Vec3(0.5, 0.5, 0.5)));
+        for (auto* f : {&s, &t})
+            f->correctBoundaryConditions();
+        for (auto* f : {&a, &b})
+            f->correctBoundaryConditions();
+
+        auto requireBoundary = [](const auto& field, auto expected)
+        {
+            auto host = field.boundaryData().value().copyToHost();
+            REQUIRE(host.size() == 4);
+            for (NeoN::localIdx i = 0; i < host.size(); ++i)
+            {
+                REQUIRE(host.view()[i] == expected);
+            }
+        };
+
+        auto st = s * t;
+        auto sum = s + t;
+        auto diff = t - s;
+        auto scaled = s * a;
+        auto vsum = a + b;
+        auto vdiff = a - b;
+        auto scaledByNumber = 4.0 * s;
+        for (auto* f : {&st, &sum, &diff, &scaledByNumber})
+            f->correctBoundaryConditions();
+        for (auto* f : {&scaled, &vsum, &vdiff})
+            f->correctBoundaryConditions();
+
+        requireBoundary(st, 6.0);
+        requireBoundary(sum, 5.0);
+        requireBoundary(diff, 1.0);
+        requireBoundary(scaledByNumber, 8.0);
+        requireBoundary(scaled, NeoN::Vec3(2.0, 4.0, 6.0));
+        requireBoundary(vsum, NeoN::Vec3(1.5, 2.5, 3.5));
+        requireBoundary(vdiff, NeoN::Vec3(0.5, 1.5, 2.5));
+
+        // the operands are not changed by building or correcting a result
+        requireBoundary(s, 2.0);
+        requireBoundary(a, NeoN::Vec3(1.0, 2.0, 3.0));
+    }
 }
