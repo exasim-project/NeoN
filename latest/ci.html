@@ -474,6 +474,11 @@ caused by NeoN are reported as NeoN issues.</p>
 reStructuredText files, <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> or the documentation workflow) skip the build-and-test
 jobs automatically, as with <code class="docutils literal notranslate"><span class="pre">skip-build</span></code>. Pre-commit and the changelog check still run, and the
 documentation is built by its own workflow.</p>
+<p>Pull requests that are part of a stack (stacked pull requests) run their build-and-test jobs one
+stack member at a time: the gate looks up the stack, and each build job joins a concurrency group
+per stack and job that queues (<code class="docutils literal notranslate"><span class="pre">queue:</span> <span class="pre">max</span></code>) instead of running in parallel. Every pull request
+still gets its own results, they just arrive later for the upper ones. <code class="docutils literal notranslate"><span class="pre">STACK_SLOTS</span></code> in the gate
+sets how many members of one stack may build at the same time.</p>
 </section>
 <section id="summary">
 <span id="ci-neon-summary"></span><h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
